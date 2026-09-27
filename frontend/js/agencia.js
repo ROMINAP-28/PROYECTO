@@ -305,6 +305,8 @@ if (formLoginAgencia) {
             });
 
             const resultado = await respuesta.json();
+            console.log("RESPUESTA DEL LOGIN:", resultado);
+            console.log("DATOS DE AGENCIA:", resultado.agencia);
 
             if (resultado.status === "success") {
 
@@ -1251,28 +1253,36 @@ async function cargarReservas() {
 // =====================================================
 
 function actualizarResumenReservas(lista) {
-    if (!totalReservas) return;
+    const total = document.getElementById("totalReservas");
+    const confirmadas = document.getElementById("reservasConfirmadas");
+    const pendientes = document.getElementById("reservasPendientes");
+    const canceladas = document.getElementById("reservasCanceladas");
 
-    const total = lista.length;
+    // Evitar errores si los elementos no existen en esta página.
+    if (!total || !confirmadas || !pendientes || !canceladas) {
+        return;
+    }
 
-    const confirmadas = lista.filter(reserva =>
+    const cantidadTotal = lista.length;
+
+    const cantidadConfirmadas = lista.filter(reserva =>
         normalizarEstadoReserva(reserva.estado) === "confirmada"
     ).length;
 
-    const pendientes = lista.filter(reserva =>
+    const cantidadPendientes = lista.filter(reserva =>
         normalizarEstadoReserva(reserva.estado) === "pendiente"
     ).length;
 
-    const canceladas = lista.filter(reserva =>
+    const cantidadCanceladas = lista.filter(reserva =>
         normalizarEstadoReserva(reserva.estado) === "cancelada"
     ).length;
 
-    totalReservas.textContent = total;
-    reservasConfirmadas.textContent = confirmadas;
-    reservasPendientes.textContent = pendientes;
-    reservasCanceladas.textContent = canceladas;
+    // Actualizar los contadores del panel.
+    total.textContent = cantidadTotal;
+    confirmadas.textContent = cantidadConfirmadas;
+    pendientes.textContent = cantidadPendientes;
+    canceladas.textContent = cantidadCanceladas;
 }
-
 // =====================================================
 // MOSTRAR RESERVAS EN LA TABLA
 // =====================================================
@@ -1521,3 +1531,274 @@ if (btnCerrarSesionAgencia) {
 if (tablaReservas) {
     cargarReservas();
 }
+
+
+// =====================================================
+// MÓDULO: PAGOS Y LIQUIDACIONES DE LA AGENCIA
+// =====================================================
+
+(function iniciarModuloPagos() {
+    const tablaPagos = document.getElementById("tablaPagos");
+    const tablaLiquidaciones = document.getElementById("tablaLiquidaciones");
+
+    // Solo se ejecuta en la página de pagos
+    if (!tablaPagos || !tablaLiquidaciones) return;
+
+    const API_PAGOS = "http://localhost:8080/api/agencia/pagos";
+
+    let pagos = [];
+    let liquidaciones = [];
+
+    // Obtener el ID de la agencia desde la sesión
+    function obtenerIdAgencia() {
+        try {
+            const sesion = JSON.parse(
+                localStorage.getItem("agenciaSesion") || "{}"
+            );
+
+            return Number(sesion.idAgencia) || 0;
+        } catch (error) {
+            console.error("No se pudo leer la sesión de agencia:", error);
+            return 0;
+        }
+    }
+
+    // Evitar que los datos de la API se interpreten como HTML
+    function escaparHTML(valor) {
+        return String(valor ?? "").replace(/[&<>"']/g, caracter => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[caracter]);
+    }
+
+    // Formatear montos en soles
+    function formatoSoles(valor) {
+        return "S/ " + Number(valor || 0).toLocaleString("es-PE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Formatear fechas recibidas desde MySQL
+    function formatoFecha(fecha) {
+        if (!fecha) return "—";
+
+        const fechaTexto = String(fecha).replace(" ", "T");
+        const fechaObjeto = new Date(fechaTexto);
+
+        if (Number.isNaN(fechaObjeto.getTime())) {
+            return escaparHTML(fecha);
+        }
+
+        return fechaObjeto.toLocaleDateString("es-PE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        });
+    }
+
+    // Mostrar el estado con una etiqueta visual
+    function etiquetaEstado(estado) {
+        const valor = String(estado || "SIN ESTADO").toUpperCase();
+
+        let clase = "estado-pendiente";
+
+        if (["COMPLETADO", "LIQUIDADO", "CONFIRMADO"].includes(valor)) {
+            clase = "estado-completado";
+        } else if (["RECHAZADO", "ANULADO", "CANCELADO"].includes(valor)) {
+            clase = "estado-rechazado";
+        }
+
+        return `<span class="${clase}">${escaparHTML(valor)}</span>`;
+    }
+
+    // Actualizar las tarjetas del resumen financiero
+    function actualizarResumen() {
+        const totalPagos = pagos
+            .filter(p => String(p.estado).toUpperCase() === "COMPLETADO")
+            .reduce((suma, p) => suma + Number(p.monto || 0), 0);
+
+        const totalComisiones = liquidaciones
+            .reduce((suma, l) => suma + Number(l.montoComision || 0), 0);
+
+        const netoPorRecibir = liquidaciones
+            .filter(l => String(l.estado).toUpperCase() === "PENDIENTE")
+            .reduce((suma, l) => suma + Number(l.montoNeto || 0), 0);
+
+        const pendientes = liquidaciones
+            .filter(l => String(l.estado).toUpperCase() === "PENDIENTE")
+            .length;
+
+        document.getElementById("totalPagos").textContent =
+            formatoSoles(totalPagos);
+
+        document.getElementById("totalComisiones").textContent =
+            formatoSoles(totalComisiones);
+
+        document.getElementById("netoPorRecibir").textContent =
+            formatoSoles(netoPorRecibir);
+
+        document.getElementById("liquidacionesPendientes").textContent =
+            pendientes;
+    }
+
+    // Dibujar la tabla de pagos
+    function renderizarPagos() {
+        const busqueda = (
+            document.getElementById("buscarPago")?.value || ""
+        ).trim().toLowerCase();
+
+        const estadoFiltro = (
+            document.getElementById("filtroEstadoPago")?.value || "todos"
+        ).toUpperCase();
+
+        const filtrados = pagos.filter(p => {
+            const texto = [
+                p.idPago,
+                p.numeroOperacion,
+                p.idReserva,
+                p.codigoReserva,
+                p.nombreTour
+            ].join(" ").toLowerCase();
+
+            const coincideTexto = texto.includes(busqueda);
+            const coincideEstado =
+                estadoFiltro === "TODOS" ||
+                String(p.estado || "").toUpperCase() === estadoFiltro;
+
+            return coincideTexto && coincideEstado;
+        });
+
+        if (filtrados.length === 0) {
+            tablaPagos.innerHTML = `
+                <tr>
+                    <td colspan="7">No se encontraron pagos registrados.</td>
+                </tr>`;
+            return;
+        }
+
+        tablaPagos.innerHTML = filtrados.map(p => `
+            <tr>
+                <td>${escaparHTML(p.idPago)}</td>
+                <td>${escaparHTML(p.numeroOperacion || "—")}</td>
+                <td>
+                    ${escaparHTML(p.codigoReserva || ("Reserva #" + p.idReserva))}
+                </td>
+                <td>${formatoFecha(p.fechaPago)}</td>
+                <td>${escaparHTML(p.metodoPago || "—")}</td>
+                <td>${formatoSoles(p.monto)}</td>
+                <td>${etiquetaEstado(p.estado)}</td>
+            </tr>
+        `).join("");
+    }
+
+    // Dibujar la tabla de liquidaciones
+    function renderizarLiquidaciones() {
+        const estadoFiltro = (
+            document.getElementById("filtroEstadoLiquidacion")?.value || "todos"
+        ).toUpperCase();
+
+        const filtradas = liquidaciones.filter(l =>
+            estadoFiltro === "TODOS" ||
+            String(l.estado || "").toUpperCase() === estadoFiltro
+        );
+
+        if (filtradas.length === 0) {
+            tablaLiquidaciones.innerHTML = `
+                <tr>
+                    <td colspan="6">No se encontraron liquidaciones registradas.</td>
+                </tr>`;
+            return;
+        }
+
+        tablaLiquidaciones.innerHTML = filtradas.map(l => `
+            <tr>
+                <td>${escaparHTML(l.idLiquidacion)}</td>
+                <td>${formatoFecha(l.fechaGeneracion)}</td>
+                <td>${formatoSoles(l.montoBruto)}</td>
+                <td>${formatoSoles(l.montoComision)}</td>
+                <td>${formatoSoles(l.montoNeto)}</td>
+                <td>${etiquetaEstado(l.estado)}</td>
+            </tr>
+        `).join("");
+    }
+
+    // Consultar el backend
+    async function cargarPagosYLiquidaciones() {
+        const idAgencia = obtenerIdAgencia();
+
+        if (!idAgencia) {
+            tablaPagos.innerHTML = `
+                <tr><td colspan="7">
+                    No se encontró el ID de la agencia en la sesión.
+                    Inicia sesión nuevamente.
+                </td></tr>`;
+
+            tablaLiquidaciones.innerHTML = `
+                <tr><td colspan="6">
+                    No se pudo identificar la agencia.
+                </td></tr>`;
+            return;
+        }
+
+        tablaPagos.innerHTML = `
+            <tr><td colspan="7">Cargando pagos...</td></tr>`;
+
+        tablaLiquidaciones.innerHTML = `
+            <tr><td colspan="6">Cargando liquidaciones...</td></tr>`;
+
+        try {
+            const respuesta = await fetch(
+                `${API_PAGOS}?idAgencia=${encodeURIComponent(idAgencia)}`
+            );
+
+            if (!respuesta.ok) {
+                throw new Error("Error HTTP " + respuesta.status);
+            }
+
+            const datos = await respuesta.json();
+
+            if (datos.status !== "success") {
+                throw new Error(datos.message || "No se pudieron cargar los datos.");
+            }
+
+            pagos = Array.isArray(datos.pagos) ? datos.pagos : [];
+            liquidaciones = Array.isArray(datos.liquidaciones)
+                ? datos.liquidaciones
+                : [];
+
+            actualizarResumen();
+            renderizarPagos();
+            renderizarLiquidaciones();
+
+        } catch (error) {
+            console.error("Error al cargar pagos y liquidaciones:", error);
+
+            tablaPagos.innerHTML = `
+                <tr><td colspan="7">
+                    No se pudieron cargar los pagos. Verifica que el servidor esté activo.
+                </td></tr>`;
+
+            tablaLiquidaciones.innerHTML = `
+                <tr><td colspan="6">
+                    No se pudieron cargar las liquidaciones.
+                </td></tr>`;
+        }
+    }
+
+    // Eventos de búsqueda y filtros
+    document.getElementById("buscarPago")
+        ?.addEventListener("input", renderizarPagos);
+
+    document.getElementById("filtroEstadoPago")
+        ?.addEventListener("change", renderizarPagos);
+
+    document.getElementById("filtroEstadoLiquidacion")
+        ?.addEventListener("change", renderizarLiquidaciones);
+
+    // Iniciar módulo
+    cargarPagosYLiquidaciones();
+})();

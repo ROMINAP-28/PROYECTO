@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Pagos y liquidaciones</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+</head>
+
+<body class="dashboard-page">
+
+<div class="dashboard">
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Travelink</h1>
+            <span>Portal de agencias</span>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="inicio.html">Inicio</a>
+            <a href="servicios.html">Servicios turísticos</a>
+            <a href="disponibilidad.html">Disponibilidad y cupos</a>
+            <a href="paquetes.html">Paquetes turísticos</a>
+            <a href="reservas.html">Reservas</a>
+            <a href="pagos.html" class="active">Pagos y liquidaciones</a>
+            <a href="configuracion.html">Configuración</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="dashboard-content">
+
+        <!-- ENCABEZADO -->
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Pagos y liquidaciones</h1>
+                <p>Consulta tus pagos, comisiones y liquidaciones.</p>
+            </div>
+
+            <div class="header-actions">
+                <div class="agency-user">
+                    <div class="agency-avatar">A</div>
+                    <div>
+                        <strong>Mi agencia</strong>
+                        <span>Agencia turística</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- RESUMEN FINANCIERO -->
+        <section>
+
+            <div class="module-toolbar">
+                <div>
+                    <h2>Resumen financiero</h2>
+                    <p>Visualiza el estado financiero de tu agencia.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-stats">
+
+                <article class="stat-card">
+                    <span>Total de pagos</span>
+                    <strong id="totalPagos">S/ 0.00</strong>
+                </article>
+
+                <article class="stat-card">
+                    <span>Comisiones Travelink</span>
+                    <strong id="totalComisiones">S/ 0.00</strong>
+                </article>
+
+                <article class="stat-card">
+                    <span>Neto por recibir</span>
+                    <strong id="netoPorRecibir">S/ 0.00</strong>
+                </article>
+
+                <article class="stat-card">
+                    <span>Liquidaciones pendientes</span>
+                    <strong id="liquidacionesPendientes">0</strong>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- HISTORIAL DE PAGOS -->
+        <section>
+
+            <div class="module-toolbar">
+                <div>
+                    <h2>Historial de pagos</h2>
+                    <p>Consulta los pagos asociados a tus reservas.</p>
+                </div>
+            </div>
+
+            <!-- FILTROS DE PAGOS -->
+            <div class="service-filters">
+
+                <div class="form-group">
+                    <label for="buscarPago">Buscar pago</label>
+                    <input
+                            type="text"
+                            id="buscarPago"
+                            placeholder="Código de pago o reserva">
+                </div>
+
+                <div class="form-group">
+                    <label for="filtroEstadoPago">Estado</label>
+                    <select id="filtroEstadoPago">
+                        <option value="todos">Todos los estados</option>
+                        <option value="COMPLETADO">Completado</option>
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="RECHAZADO">Rechazado</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- TABLA DE PAGOS -->
+            <div class="table-container">
+                <h3>Pagos registrados</h3>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>N.º</th>
+                        <th>Operación</th>
+                        <th>Reserva</th>
+                        <th>Fecha</th>
+                        <th>Método</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="tablaPagos">
+                    <tr>
+                        <td colspan="7">Cargando pagos...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- HISTORIAL DE LIQUIDACIONES -->
+        <section>
+
+            <div class="module-toolbar">
+                <div>
+                    <h2>Historial de liquidaciones</h2>
+                    <p>
+                        Consulta los montos, comisiones y estados
+                        de tus liquidaciones.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FILTRO DE LIQUIDACIONES -->
+            <div class="service-filters">
+
+                <div class="form-group">
+                    <label for="filtroEstadoLiquidacion">
+                        Estado de liquidación
+                    </label>
+
+                    <select id="filtroEstadoLiquidacion">
+                        <option value="todos">Todos los estados</option>
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="LIQUIDADO">Liquidado</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- TABLA DE LIQUIDACIONES -->
+            <div class="table-container">
+                <h3>Liquidaciones registradas</h3>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>N.º</th>
+                        <th>Fecha de generación</th>
+                        <th>Monto bruto</th>
+                        <th>Comisión</th>
+                        <th>Monto neto</th>
+                        <th>Estado</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="tablaLiquidaciones">
+                    <tr>
+                        <td colspan="6">Cargando liquidaciones...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="../../js/agencia.js"></script>
+</body>
+</html>

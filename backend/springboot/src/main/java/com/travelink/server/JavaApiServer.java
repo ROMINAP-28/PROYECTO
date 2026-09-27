@@ -55,6 +55,7 @@ public class JavaApiServer {
         server.createContext("/api/agencia/disponibilidad", new DisponibilidadAgenciaHandler());
         server.createContext("/api/agencia/reservas", new ReservasAgenciaHandler());
         server.createContext("/api/agencia/login", new LoginAgenciaHandler());
+        server.createContext("/api/agencia/pagos", new PagosAgenciaHandler());
 
         //ADMINISTRADOR
         server.createContext("/api/admin/agencias", new AgenciasAdminHandler());

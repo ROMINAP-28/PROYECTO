@@ -67,6 +67,22 @@ body {
     gap: 15px;
 }
 
+.btn-unirse-agencia {
+    display: inline-block;
+    padding: 8px 14px;
+    background-color: #f5c542;
+    color: #102a43;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.btn-unirse-agencia:hover {
+    background-color: #e5b52e;
+    transform: translateY(-2px);
+}
+
 .search-icon {
     font-size: 18px;
     cursor: pointer;

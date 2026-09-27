@@ -10,6 +10,7 @@ public class ConexionDB {
     private static final String PASSWORD = "AVNS_GohPsfjQ1YmM-IL7AoH";
 
     public static Connection getConnection() {
+<<<<<<< HEAD
         Connection con = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -22,6 +23,31 @@ public class ConexionDB {
             System.err.println("Error de conexion a la base de datos.");
             e.printStackTrace();
         }
+=======
+
+        System.out.println("=== PROBANDO CONEXION A AIVEN ===");
+        System.out.println("URL: " + URL);
+        System.out.println("USER: " + USER);
+
+        Connection con = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            System.out.println("Conexion exitosa a la base de datos.");
+
+        } catch (ClassNotFoundException e) {
+            System.out.println("ERROR: No se encontro el driver MySQL.");
+            e.printStackTrace();
+
+        } catch (SQLException e) {
+            System.out.println("=== ERROR REAL AIVEN ===");
+            e.printStackTrace();
+        }
+
+>>>>>>> daac32cd486230b773d5739284598de3e2ff6164
         return con;
     }
 }

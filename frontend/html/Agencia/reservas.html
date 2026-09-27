@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Reservas</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+    <link rel="stylesheet" href="../../css/reservas.css">
+</head>
+
+<body class="dashboard-page">
+
+<div class="dashboard">
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>Travelink</span>
+            <small>Portal de agencias</small>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="inicio.html">Inicio</a>
+            <a href="servicios.html">Servicios turísticos</a>
+            <a href="disponibilidad.html">Disponibilidad y cupos</a>
+            <a href="paquetes.html">Paquetes turísticos</a>
+            <a href="reservas.html" class="active">Reservas</a>
+            <a href="pagos.html">Pagos y liquidaciones</a>
+            <a href="configuracion.html">Configuración</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="dashboard-content">
+
+        <!-- ENCABEZADO -->
+        <header class="dashboard-header">
+            <div>
+                <h1>Reservas</h1>
+                <p>Visualiza y gestiona todas las reservas de tu agencia.</p>
+            </div>
+
+            <div class="header-actions">
+                <button class="notification-btn" type="button">
+                    Notificaciones
+                </button>
+
+                <div class="agency-user">
+                    <div class="agency-avatar">A</div>
+                    <div>
+                        <strong id="nombreAgencia">Mi agencia</strong>
+                        <small>Agencia turística</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+        <section class="reservas-toolbar">
+            <div class="reservas-search">
+                <label for="buscarReserva">Buscar reserva</label>
+                <input
+                        type="search"
+                        id="buscarReserva"
+                        placeholder="Buscar por cliente, servicio o código..."
+                >
+            </div>
+
+            <button type="button" class="btn-secondary" id="btnMostrarFiltros">
+                Filtrar
+            </button>
+        </section>
+
+        <!-- FILTROS ADICIONALES -->
+        <section class="reservas-filtros" id="panelFiltros">
+            <div class="form-group">
+                <label for="filtroEstadoReserva">Estado</label>
+                <select id="filtroEstadoReserva">
+                    <option value="">Todos los estados</option>
+                    <option value="CONFIRMADA">Confirmada</option>
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="CANCELADA">Cancelada</option>
+                    <option value="COMPLETADA">Completada</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filtroFechaDesde">Desde</label>
+                <input type="date" id="filtroFechaDesde">
+            </div>
+
+            <div class="form-group">
+                <label for="filtroFechaHasta">Hasta</label>
+                <input type="date" id="filtroFechaHasta">
+            </div>
+
+            <div class="reservas-filtro-acciones">
+                <button type="button" class="btn-primary" id="btnAplicarFiltros">
+                    Aplicar filtros
+                </button>
+                <button type="button" class="btn-secondary" id="btnLimpiarFiltros">
+                    Limpiar
+                </button>
+            </div>
+        </section>
+
+        <!-- TABLA DE RESERVAS -->
+        <section class="dashboard-card reservas-card">
+
+            <div class="card-header">
+                <div>
+                    <h3>Listado de reservas</h3>
+                    <p>Consulta las reservas realizadas para tus servicios turísticos.</p>
+                </div>
+
+                <span class="reservas-count" id="cantidadReservas">
+                    0 reservas
+                </span>
+            </div>
+
+            <div class="table-container">
+                <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Tour</th>
+                    <th>Fecha de registro</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de fin</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                </tr>
+                </thead>
+
+                    <tbody id="tablaReservas">
+                    <tr>
+                        <td colspan="9" class="empty-table">
+                            Cargando reservas...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            <div class="reservas-paginacion">
+                <div class="reservas-paginacion-info" id="textoPaginacion">
+                    Mostrando 0 de 0 reservas
+                </div>
+
+                <div class="reservas-paginacion-controles">
+                    <button type="button" id="paginaAnterior" disabled>
+                        Anterior
+                    </button>
+
+                    <span id="paginaActual">1</span>
+
+                    <button type="button" id="paginaSiguiente" disabled>
+                        Siguiente
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL DE DETALLES DE RESERVA -->
+<div class="modal-overlay" id="modalReserva">
+    <div class="modal modal-reserva">
+
+        <div class="modal-header">
+            <div>
+                <h2>Detalle de la reserva</h2>
+                <p>Consulta la información de la solicitud del cliente.</p>
+            </div>
+
+            <button
+                    type="button"
+                    class="modal-close"
+                    id="cerrarModalReserva"
+                    aria-label="Cerrar"
+            >×</button>
+        </div>
+
+        <div class="modal-reserva-contenido">
+            <div class="reserva-detalle-grid">
+
+                <div class="reserva-detalle-item">
+                    <span>Código de reserva</span>
+                    <strong id="detalleCodigo">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Estado</span>
+                    <strong id="detalleEstado">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Nombre del cliente</span>
+                    <strong id="detalleCliente">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Servicio o paquete</span>
+                    <strong id="detalleServicio">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Fecha de reserva</span>
+                    <strong id="detalleFecha">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Número de personas</span>
+                    <strong id="detallePersonas">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Monto total</span>
+                    <strong id="detalleMonto">—</strong>
+                </div>
+
+                <div class="reserva-detalle-item">
+                    <span>Estado del pago</span>
+                    <strong id="detallePago">—</strong>
+                </div>
+
+            </div>
+
+            <div class="reserva-detalle-observaciones">
+                <label>Observaciones</label>
+                <p id="detalleObservaciones">
+                    No hay observaciones registradas.
+                </p>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                    type="button"
+                    class="btn-secondary"
+                    id="btnCerrarDetalleReserva"
+            >
+                Cerrar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../js/agencia.js"></script>
+
+</body>
+</html>

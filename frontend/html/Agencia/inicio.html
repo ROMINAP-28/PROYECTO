@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Panel de Agencia</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+</head>
+
+<body class="dashboard-page">
+
+<div class="dashboard">
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <span>Travelink</span>
+            <small>Portal de agencias</small>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="inicio.html" class="active">Inicio</a>
+            <a href="servicios.html">Servicios turísticos</a>
+            <a href="disponibilidad.html">Disponibilidad y cupos</a>
+            <a href="paquetes.html">Paquetes turísticos</a>
+            <a href="reservas.html">Reservas</a>
+            <a href="pagos.html">Pagos y liquidaciones</a>
+            <a href="configuracion.html">Configuración</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+
+    </aside>
+
+    </aside>
+
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="dashboard-content">
+
+        <!-- CABECERA -->
+        <header class="dashboard-header">
+
+            <div>
+                <h1>Panel de agencia</h1>
+                <p>Resumen general de la actividad de tu agencia.</p>
+            </div>
+
+            <div class="header-actions">
+
+                <button class="notification-btn" title="Notificaciones">
+                    Notificaciones
+                    <span class="notification-dot"></span>
+                </button>
+
+                <div class="agency-user">
+
+                    <div class="agency-avatar">A</div>
+
+                    <div>
+                        <strong id="nombreAgencia">Mi agencia</strong>
+                        <small>Agencia turística</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- BIENVENIDA -->
+        <section class="welcome-section">
+
+            <h2>
+                Bienvenido,
+                <span id="bienvenidaAgencia">tu agencia</span>
+            </h2>
+
+            <p>
+                Administra tus servicios, disponibilidad, reservas y operaciones
+                desde un solo lugar.
+            </p>
+
+        </section>
+
+
+        <!-- INDICADORES PRINCIPALES -->
+        <section class="dashboard-stats">
+
+            <article class="stat-card">
+                <div>
+                    <span>Servicios activos</span>
+                    <strong id="totalServicios">0</strong>
+                    <small>Servicios publicados</small>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div>
+                    <span>Reservas</span>
+                    <strong id="totalReservas">0</strong>
+                    <small>Reservas registradas</small>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div>
+                    <span>Viajeros</span>
+                    <strong id="totalViajeros">0</strong>
+                    <small>Personas registradas</small>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div>
+                    <span>Ingresos</span>
+                    <strong id="totalIngresos">S/ 0.00</strong>
+                    <small>Pagos registrados</small>
+                </div>
+            </article>
+
+        </section>
+
+
+        <!-- RESERVAS Y DISPONIBILIDAD -->
+        <section class="dashboard-grid">
+
+
+            <!-- RESERVAS RECIENTES -->
+            <article class="dashboard-card reservations-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3>Reservas recientes</h3>
+
+                        <p>
+                            Últimas reservas realizadas para tus servicios.
+                        </p>
+                    </div>
+
+                    <a href="reservas.html">
+                        Ver todas
+                    </a>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Servicio</th>
+                            <th>Fecha</th>
+                            <th>Personas</th>
+                            <th>Estado</th>
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="tablaReservas">
+
+                        <tr>
+
+                            <td colspan="5" class="empty-table">
+                                No hay reservas registradas.
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </article>
+
+
+            <!-- PRÓXIMAS SALIDAS -->
+            <article class="dashboard-card availability-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>Próximas salidas</h3>
+
+                        <p>
+                            Disponibilidad de tus próximos servicios.
+                        </p>
+
+                    </div>
+
+                    <a href="disponibilidad.html">
+                        Ver todas
+                    </a>
+
+                </div>
+
+
+                <div
+                        class="upcoming-list"
+                        id="listaDisponibilidad"
+                >
+
+                    <div class="empty-state">
+
+                        <span class="empty-icon">
+                            DC
+                        </span>
+
+                        <p>
+                            No hay próximas salidas registradas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- RESUMEN FINANCIERO -->
+        <section class="dashboard-card financial-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>Resumen financiero</h3>
+
+                    <p>
+                        Información general de pagos y liquidaciones.
+                    </p>
+
+                </div>
+
+                <a href="pagos.html">
+                    Ver pagos y liquidaciones
+                </a>
+
+            </div>
+
+
+            <div class="financial-summary">
+
+
+                <div>
+
+                    <span>Pagos recibidos</span>
+
+                    <strong id="pagosRecibidos">
+                        S/ 0.00
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>Comisiones</span>
+
+                    <strong id="comisiones">
+                        S/ 0.00
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>Liquidaciones pendientes</span>
+
+                    <strong id="liquidacionesPendientes">
+                        S/ 0.00
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>Monto neto</span>
+
+                    <strong id="montoNeto">
+                        S/ 0.00
+                    </strong>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="../../js/agencia.js"></script>
+
+</body>
+</html>

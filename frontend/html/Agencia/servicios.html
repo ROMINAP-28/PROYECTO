@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Servicios turísticos</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+</head>
+
+<body class="dashboard-page">
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>Travelink</span>
+            <small>Portal de agencias</small>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="inicio.html">Inicio</a>
+            <a href="servicios.html" class="active">Servicios turísticos</a>
+            <a href="disponibilidad.html">Disponibilidad y cupos</a>
+            <a href="paquetes.html">Paquetes turísticos</a>
+            <a href="reservas.html">Reservas</a>
+            <a href="pagos.html">Pagos y liquidaciones</a>
+            <a href="configuracion.html">Configuración</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="dashboard-content">
+
+        <header class="dashboard-header">
+            <div>
+                <h1>Servicios turísticos</h1>
+                <p>Administra los servicios y experiencias ofrecidos por tu agencia.</p>
+            </div>
+
+            <div class="header-actions">
+                <button class="notification-btn">Notificaciones</button>
+
+                <div class="agency-user">
+                    <div class="agency-avatar">A</div>
+                    <div>
+                        <strong id="nombreAgencia">Mi agencia</strong>
+                        <small>Agencia turística</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="module-toolbar">
+            <div>
+                <h2>Mis servicios</h2>
+                <p>Consulta, registra y administra los servicios turísticos de tu agencia.</p>
+            </div>
+
+            <button class="btn-primary" id="btnNuevoServicio">
+                Nuevo servicio
+            </button>
+        </section>
+
+        <section class="service-filters">
+            <div class="form-group">
+                <label for="buscarServicio">Buscar servicio</label>
+                <input type="text" id="buscarServicio" placeholder="Nombre del servicio">
+            </div>
+
+            <div class="form-group">
+                <label for="filtroTipo">Tipo de servicio</label>
+                <select id="filtroTipo">
+                    <option value="">Todos</option>
+                    <option value="Tour">Tour</option>
+                    <option value="Experiencia">Experiencia</option>
+                    <option value="Alojamiento">Alojamiento</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filtroEstado">Estado</label>
+                <select id="filtroEstado">
+                    <option value="">Todos</option>
+                    <option value="ACTIVO">Activo</option>
+                    <option value="INACTIVO">Inactivo</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="dashboard-card services-card">
+
+            <div class="card-header">
+                <div>
+                    <h3>Servicios registrados</h3>
+                    <p>Listado de servicios turísticos pertenecientes a tu agencia.</p>
+                </div>
+
+                <span class="service-count" id="cantidadServicios">0 servicios</span>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Tipo</th>
+                        <th>Destino</th>
+                        <th>Precio</th>
+                        <th>Duración</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="tablaServicios">
+                    <tr>
+                        <td colspan="7" class="empty-table">
+                            No hay servicios registrados.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL NUEVO / EDITAR SERVICIO -->
+
+<div class="modal-overlay" id="modalServicio">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <h2 id="tituloModalServicio">Nuevo servicio</h2>
+                <p>Completa la información del servicio turístico.</p>
+            </div>
+
+            <button class="modal-close" id="cerrarModalServicio">×</button>
+        </div>
+
+        <form id="formServicio">
+
+            <input type="hidden" id="idServicio">
+
+            <div class="modal-grid">
+
+                <div class="form-group">
+                    <label for="nombreServicio">Nombre del servicio</label>
+                    <input type="text" id="nombreServicio" placeholder="Ej. City Tour Arequipa" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoServicio">Tipo de servicio</label>
+                    <select id="tipoServicio" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Tour">Tour</option>
+                        <option value="Experiencia">Experiencia</option>
+                        <option value="Alojamiento">Alojamiento</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="destinoServicio">Destino</label>
+                    <select id="destinoServicio" required>
+                        <option value="">Seleccionar destino</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="precioServicio">Precio por persona</label>
+                    <input type="number" id="precioServicio" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="duracionServicio">Duración</label>
+                    <input type="text" id="duracionServicio" placeholder="Ej. 8 horas" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="estadoServicio">Estado</label>
+                    <select id="estadoServicio">
+                        <option value="ACTIVO">Activo</option>
+                        <option value="INACTIVO">Inactivo</option>
+                    </select>
+                </div>
+
+                <div class="form-group form-full">
+                    <label for="descripcionServicio">Descripción</label>
+                    <textarea id="descripcionServicio" rows="3" placeholder="Describe el servicio turístico"></textarea>
+                </div>
+
+                <div class="form-group form-full">
+                    <label for="caracteristicasServicio">Características</label>
+                    <textarea id="caracteristicasServicio" rows="3" placeholder="Incluye las principales características del servicio"></textarea>
+                </div>
+
+                <div class="form-group form-full">
+                    <label for="condicionesServicio">Condiciones</label>
+                    <textarea id="condicionesServicio" rows="3" placeholder="Indica las condiciones del servicio"></textarea>
+                </div>
+
+                <div class="form-full disponibilidad-inicial">
+
+                    <div class="disponibilidad-titulo">
+                        <h3>Disponibilidad</h3>
+                        <p>Define la fecha y los cupos para este servicio.</p>
+                    </div>
+
+                    <div class="modal-grid">
+
+                        <div class="form-group">
+                            <label for="fechaDisponibilidad">Fecha</label>
+                            <input type="date" id="fechaDisponibilidad" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cuposDisponibilidad">Cupos</label>
+                            <input type="number" id="cuposDisponibilidad" min="1" placeholder="Ej. 20" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horaInicioDisponibilidad">Hora de inicio</label>
+                            <input type="time" id="horaInicioDisponibilidad">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horaFinDisponibilidad">Hora de fin</label>
+                            <input type="time" id="horaFinDisponibilidad">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p id="mensajeServicio" class="form-message"></p>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="cancelarServicio">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-primary">
+                    Guardar servicio
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="../../js/agencia.js"></script>
+
+</body>
+</html>

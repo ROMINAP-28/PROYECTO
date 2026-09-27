@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+</head>
+<body>
+<main class="registro-container">
+    <div class="registro-wrapper">
+        <aside class="registro-visual">
+            <div class="registro-visual-content">
+                <div class="registro-logo">Travel<span>ink</span></div>
+                <p class="registro-tagline">Conectando destinos</p>
+            </div>
+            <div class="registro-visual-text">
+                <h2>Validemos tu agencia.</h2>
+                <p>Adjunta la documentación necesaria para solicitar tu incorporación.</p>
+            </div>
+        </aside>
+
+        <section class="registro-form-area">
+            <div class="registro-top">
+                <span class="registro-step">Paso 5 de 6</span>
+                <h1>Documentación</h1>
+                <p>Adjunta los documentos solicitados para la validación.</p>
+            </div>
+
+            <form id="formAgenciaDocumentos">
+                <div class="document-list">
+                    <div class="document-item">
+                        <label for="documentoRuc">Documento relacionado al RUC</label>
+                        <input type="file" id="documentoRuc" name="documentoRuc">
+                    </div>
+
+                    <div class="document-item">
+                        <label for="documentoConstitucion">Documento de constitución de la empresa</label>
+                        <input type="file" id="documentoConstitucion" name="documentoConstitucion">
+                    </div>
+
+                    <div class="document-item">
+                        <label for="documentoAdicional">Documento adicional</label>
+                        <input type="file" id="documentoAdicional" name="documentoAdicional">
+                    </div>
+                </div>
+
+                <p class="form-help">Los documentos serán asociados a la solicitud de incorporación.</p>
+                <p id="mensajeDocumentos" class="form-message"></p>
+
+                <div class="registro-actions">
+                    <button type="button" class="btn-secondary" onclick="history.back()">Atrás</button>
+                    <button type="submit" class="btn-primary">Continuar</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script src="../../js/agencia.js"></script>
+</body>
+</html>

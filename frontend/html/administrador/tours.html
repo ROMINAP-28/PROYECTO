@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Catálogo de Tours</title>
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="../../css/administrador/tours.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="./dashboard.html" class="nav-item">
+                <i class="ti ti-smart-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="./usuarios.html" class="nav-item">
+                <i class="ti ti-users"></i>
+                <span>Usuarios</span>
+            </a>
+            <a href="./tours.html" class="nav-item active">
+                <i class="ti ti-compass"></i>
+                <span>Tours</span>
+            </a>
+            <a href="./agencias.html" class="nav-item">
+                <i class="ti ti-building-store"></i>
+                <span>Agencias</span>
+            </a>
+            <a href="./reservas.html" class="nav-item">
+                <i class="ti ti-calendar-event"></i>
+                <span>Reservas</span>
+            </a>
+            <a href="./calidad.html" class="nav-item">
+                <i class="ti ti-shield-check"></i>
+                <span>Calidad</span>
+            </a>
+            <a href="./comisiones.html" class="nav-item">
+                <i class="ti ti-coins"></i>
+                <span>Comisiones</span>
+            </a>
+            <a href="./catalogo.html" class="nav-item">
+                <i class="ti ti-map-pin"></i>
+                <span>Catálogo</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="nav-item-logout" onclick="logoutAdmin()">
+                <i class="ti ti-logout"></i>
+                <span>Cerrar sesión</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button type="button" class="topbar-menu-toggle" onclick="toggleSidebar()">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+                <div class="topbar-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" placeholder="Buscar en el panel..." onkeyup="handleGlobalSearch(event)">
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <button type="button" class="notification-btn" onclick="toggleNotifications(event)" title="Notificaciones">
+                    <i class="ti ti-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <!-- NOTIFICATIONS FLOATING CARD -->
+                <div class="notifications-dropdown-card" id="notificationsDropdownCard">
+                    <div class="notif-header">
+                        <span class="notif-title">Notificaciones</span>
+                        <a href="javascript:void(0)" class="notif-link-all" onclick="marcarTodasLeidas()">Ver todas</a>
+                    </div>
+                    <div class="notif-list">
+                        <div class="notif-item">
+                            <div class="notif-icon-circle green"><i class="ti ti-compass"></i></div>
+                            <div class="notif-content">
+                                <h5>Nuevo tour publicado</h5>
+                                <p>Andes Tours publicó un nuevo paquete.</p>
+                                <span class="notif-time">Hace 30 minutos</span>
+                            </div>
+                            <span class="notif-unread-dot"></span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-mark-all-read" onclick="marcarTodasLeidas()">
+                        <i class="ti ti-check"></i> Marcar todas como leídas
+                    </button>
+                </div>
+
+                <!-- USER PROFILE -->
+                <div class="user-dropdown-container">
+                    <button type="button" class="user-profile-toggle" onclick="toggleAdminDropdown(event)">
+                        <div class="user-avatar-img" id="adminAvatarLetter">A</div>
+                        <div class="user-info-text">
+                            <span class="user-name" id="adminTopName">Admin</span>
+                            <span class="user-role">Administrador</span>
+                        </div>
+                    </button>
+
+                    <div class="user-dropdown-menu" id="admin-dropdown-menu">
+                        <a href="./dashboard.html" class="dropdown-item-link">
+                            <span><i class="ti ti-smart-home" style="margin-right: 8px; color: #1a73e8;"></i> Dashboard</span>
+                            <i class="ti ti-chevron-right" style="color: #94a3b8; font-size: 12px;"></i>
+                        </a>
+                        <div style="height: 1px; background: #f1f5f9; margin: 6px 0;"></div>
+                        <a href="javascript:void(0)" onclick="logoutAdmin()" class="dropdown-item-link logout">
+                            <span><i class="ti ti-logout" style="margin-right: 8px;"></i> Cerrar sesión</span>
+                            <i class="ti ti-chevron-right" style="font-size: 12px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT SCROLL CONTAINER -->
+        <section class="admin-content">
+            <!-- PAGE TITLE -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Catálogo General de Tours</h1>
+                    <p class="page-subtitle">Visualiza y gestiona la visibilidad de los paquetes turísticos ofrecidos por las agencias.</p>
+                </div>
+            </div>
+
+            <!-- COMPACT FILTER BAR WITH FILTRAR & LIMPIAR -->
+            <div class="filter-bar-compact">
+                <div class="filter-input-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" id="filtroBusqueda" placeholder="Buscar tour, agencia..." onkeyup="if(event.key==='Enter') aplicarFiltros()">
+                </div>
+
+                <!-- 24 DEPARTAMENTOS -->
+                <select class="filter-select" id="filtroDestino">
+                    <option value="todos">Destino: Todos (Perú)</option>
+                    <option value="Amazonas">Amazonas</option>
+                    <option value="Áncash">Áncash</option>
+                    <option value="Apurímac">Apurímac</option>
+                    <option value="Arequipa">Arequipa</option>
+                    <option value="Ayacucho">Ayacucho</option>
+                    <option value="Cajamarca">Cajamarca</option>
+                    <option value="Callao">Callao</option>
+                    <option value="Cusco">Cusco</option>
+                    <option value="Huancavelica">Huancavelica</option>
+                    <option value="Huánuco">Huánuco</option>
+                    <option value="Ica">Ica</option>
+                    <option value="Junín">Junín</option>
+                    <option value="La Libertad">La Libertad</option>
+                    <option value="Lambayeque">Lambayeque</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Loreto">Loreto</option>
+                    <option value="Madre de Dios">Madre de Dios</option>
+                    <option value="Moquegua">Moquegua</option>
+                    <option value="Pasco">Pasco</option>
+                    <option value="Piura">Piura</option>
+                    <option value="Puno">Puno</option>
+                    <option value="San Martín">San Martín</option>
+                    <option value="Tacna">Tacna</option>
+                    <option value="Tumbes">Tumbes</option>
+                    <option value="Ucayali">Ucayali</option>
+                </select>
+
+                <select class="filter-select" id="filtroEstado">
+                    <option value="todos">Estado: Todos</option>
+                    <option value="Activo">Activo</option>
+                    <option value="En revisión">En revisión</option>
+                    <option value="Desactivado">Desactivado</option>
+                </select>
+
+                <button type="button" class="btn-filter-action apply" onclick="aplicarFiltros()">
+                    <i class="ti ti-filter"></i> Filtrar
+                </button>
+                <button type="button" class="btn-filter-action clear" onclick="limpiarFiltros()">
+                    <i class="ti ti-rotate-2"></i> Limpiar
+                </button>
+
+                <div style="margin-left: auto;">
+                    <button type="button" class="btn-outline" onclick="exportarTours()">
+                        <i class="ti ti-download"></i> Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- TOURS TABLE (5 PER PAGE) -->
+            <div class="table-card">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tour</th>
+                            <th>Agencia</th>
+                            <th>Destino</th>
+                            <th>Precio Adulto</th>
+                            <th>Calificación</th>
+                            <th>Estado</th>
+                            <th style="width: 120px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaToursBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+
+                <!-- PAGINATION BAR -->
+                <div class="table-pagination">
+                    <div class="pagination-info" id="paginacionInfo">Mostrando 1 - 5 de 0 registros</div>
+                    <div class="pagination-controls" id="paginacionControles"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JS SCRIPTS -->
+    <script src="../../js/administrador/admin-common.js"></script>
+    <script src="../../js/administrador/tours.js"></script>
+</body>
+</html>

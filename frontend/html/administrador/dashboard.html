@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Dashboard</title>
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="../../css/administrador/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="./dashboard.html" class="nav-item active">
+                <i class="ti ti-smart-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="./usuarios.html" class="nav-item">
+                <i class="ti ti-users"></i>
+                <span>Usuarios</span>
+            </a>
+            <a href="./tours.html" class="nav-item">
+                <i class="ti ti-compass"></i>
+                <span>Tours</span>
+            </a>
+            <a href="./agencias.html" class="nav-item">
+                <i class="ti ti-building-store"></i>
+                <span>Agencias</span>
+            </a>
+            <a href="./reservas.html" class="nav-item">
+                <i class="ti ti-calendar-event"></i>
+                <span>Reservas</span>
+            </a>
+            <a href="./calidad.html" class="nav-item">
+                <i class="ti ti-shield-check"></i>
+                <span>Calidad</span>
+            </a>
+            <a href="./comisiones.html" class="nav-item">
+                <i class="ti ti-coins"></i>
+                <span>Comisiones</span>
+            </a>
+            <a href="./catalogo.html" class="nav-item">
+                <i class="ti ti-map-pin"></i>
+                <span>Catálogo</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="nav-item-logout" onclick="logoutAdmin()">
+                <i class="ti ti-logout"></i>
+                <span>Cerrar sesión</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button type="button" class="topbar-menu-toggle" onclick="toggleSidebar()">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+                <div class="topbar-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" placeholder="Buscar en el panel..." onkeyup="handleGlobalSearch(event)">
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <button type="button" class="notification-btn" onclick="toggleNotifications(event)" title="Notificaciones">
+                    <i class="ti ti-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <!-- NOTIFICATIONS FLOATING CARD -->
+                <div class="notifications-dropdown-card" id="notificationsDropdownCard">
+                    <div class="notif-header">
+                        <span class="notif-title">Notificaciones</span>
+                        <a href="javascript:void(0)" class="notif-link-all" onclick="marcarTodasLeidas()">Ver todas</a>
+                    </div>
+                    <div class="notif-list">
+                        <div class="notif-item">
+                            <div class="notif-icon-circle blue"><i class="ti ti-building-store"></i></div>
+                            <div class="notif-content">
+                                <h5>Nueva solicitud de agencia</h5>
+                                <p>Andes Tours solicitó registrarse en la plataforma.</p>
+                                <span class="notif-time">Hace 10 minutos</span>
+                            </div>
+                            <span class="notif-unread-dot"></span>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon-circle green"><i class="ti ti-calendar-event"></i></div>
+                            <div class="notif-content">
+                                <h5>Nueva reserva</h5>
+                                <p>Se registró una nueva reserva #R-001245.</p>
+                                <span class="notif-time">Hace 25 minutos</span>
+                            </div>
+                            <span class="notif-unread-dot"></span>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon-circle orange"><i class="ti ti-star"></i></div>
+                            <div class="notif-content">
+                                <h5>Calificación reportada</h5>
+                                <p>Una reseña fue marcada para revisión.</p>
+                                <span class="notif-time">Hace 1 hora</span>
+                            </div>
+                            <span class="notif-unread-dot"></span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-mark-all-read" onclick="marcarTodasLeidas()">
+                        <i class="ti ti-check"></i> Marcar todas como leídas
+                    </button>
+                </div>
+
+                <!-- USER PROFILE -->
+                <div class="user-dropdown-container">
+                    <button type="button" class="user-profile-toggle" onclick="toggleAdminDropdown(event)">
+                        <div class="user-avatar-img" id="adminAvatarLetter">A</div>
+                        <div class="user-info-text">
+                            <span class="user-name" id="adminTopName">Admin</span>
+                            <span class="user-role">Administrador</span>
+                        </div>
+                    </button>
+
+                    <div class="user-dropdown-menu" id="admin-dropdown-menu">
+                        <a href="./dashboard.html" class="dropdown-item-link">
+                            <span><i class="ti ti-smart-home" style="margin-right: 8px; color: #1a73e8;"></i> Dashboard</span>
+                            <i class="ti ti-chevron-right" style="color: #94a3b8; font-size: 12px;"></i>
+                        </a>
+                        <div style="height: 1px; background: #f1f5f9; margin: 6px 0;"></div>
+                        <a href="javascript:void(0)" onclick="logoutAdmin()" class="dropdown-item-link logout">
+                            <span><i class="ti ti-logout" style="margin-right: 8px;"></i> Cerrar sesión</span>
+                            <i class="ti ti-chevron-right" style="font-size: 12px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY CONTAINER -->
+        <section class="admin-content">
+            <!-- PAGE TITLE -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Monitorea el rendimiento global de ventas, reservas y agencias.</p>
+                </div>
+            </div>
+
+            <!-- COMPACT FILTER BAR -->
+            <div class="filter-bar-compact">
+                <div class="filter-input-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" id="filtroBusqueda" placeholder="Buscar venta, cliente..." onkeyup="if(event.key==='Enter') aplicarFiltrosDashboard()">
+                </div>
+
+                <!-- PERIODO SELECT (WITH CUSTOM DATE PICKER OPTION) -->
+                <select class="filter-select" id="filtroPeriodo" onchange="onPeriodoChange()">
+                    <option value="7dias" selected>Los últimos 7 días</option>
+                    <option value="28dias">Los últimos 28 días</option>
+                    <option value="60dias">Los últimos 60 días</option>
+                    <option value="365dias">Los últimos 365 días</option>
+                    <option value="personalizado">Personalizado</option>
+                </select>
+
+                <!-- DESTINO SELECT (24 DEPARTAMENTOS DE PERÚ) -->
+                <select class="filter-select" id="filtroDestino" onchange="aplicarFiltrosDashboard()">
+                    <option value="Todos">Destino: Todos (Perú)</option>
+                    <option value="Amazonas">Amazonas</option>
+                    <option value="Áncash">Áncash</option>
+                    <option value="Apurímac">Apurímac</option>
+                    <option value="Arequipa">Arequipa</option>
+                    <option value="Ayacucho">Ayacucho</option>
+                    <option value="Cajamarca">Cajamarca</option>
+                    <option value="Callao">Callao</option>
+                    <option value="Cusco">Cusco</option>
+                    <option value="Huancavelica">Huancavelica</option>
+                    <option value="Huánuco">Huánuco</option>
+                    <option value="Ica">Ica</option>
+                    <option value="Junín">Junín</option>
+                    <option value="La Libertad">La Libertad</option>
+                    <option value="Lambayeque">Lambayeque</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Loreto">Loreto</option>
+                    <option value="Madre de Dios">Madre de Dios</option>
+                    <option value="Moquegua">Moquegua</option>
+                    <option value="Pasco">Pasco</option>
+                    <option value="Piura">Piura</option>
+                    <option value="Puno">Puno</option>
+                    <option value="San Martín">San Martín</option>
+                    <option value="Tacna">Tacna</option>
+                    <option value="Tumbes">Tumbes</option>
+                    <option value="Ucayali">Ucayali</option>
+                </select>
+
+                <button type="button" class="btn-filter-action apply" onclick="aplicarFiltrosDashboard()">
+                    <i class="ti ti-filter"></i> Filtrar
+                </button>
+                <button type="button" class="btn-filter-action clear" onclick="limpiarFiltrosDashboard()">
+                    <i class="ti ti-rotate-2"></i> Limpiar
+                </button>
+
+                <div style="margin-left: auto;">
+                    <button type="button" class="btn-outline" onclick="exportarDashboardPDF()">
+                        <i class="ti ti-download"></i> Descargar reporte
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 METRICS CARDS -->
+            <div class="metrics-grid-4">
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div class="kpi-icon-box green"><i class="ti ti-shopping-cart"></i></div>
+                        <span class="kpi-card-title">Ventas totales</span>
+                    </div>
+                    <div class="kpi-card-number" id="kpiVentasTotales">S/ 0.00</div>
+                    <div class="kpi-card-variation">
+                        <span class="var-val green"><i class="ti ti-arrow-up"></i> 12.5%</span>
+                        <span class="var-label">vs. mes anterior</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div class="kpi-icon-box blue"><i class="ti ti-calendar-event"></i></div>
+                        <span class="kpi-card-title">Reservas realizadas</span>
+                    </div>
+                    <div class="kpi-card-number" id="kpiReservasRealizadas">0</div>
+                    <div class="kpi-card-variation">
+                        <span class="var-val green"><i class="ti ti-arrow-up"></i> 8.3%</span>
+                        <span class="var-label">vs. mes anterior</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div class="kpi-icon-box purple"><i class="ti ti-building-store"></i></div>
+                        <span class="kpi-card-title">Agencias activas</span>
+                    </div>
+                    <div class="kpi-card-number" id="kpiAgenciasActivas">0</div>
+                    <div class="kpi-card-variation">
+                        <span class="var-val green"><i class="ti ti-arrow-up"></i> 5.9%</span>
+                        <span class="var-label">vs. mes anterior</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-card-top">
+                        <div class="kpi-icon-box amber"><i class="ti ti-coins"></i></div>
+                        <span class="kpi-card-title">Comisión generada</span>
+                    </div>
+                    <div class="kpi-card-number" id="kpiComisionGenerada">S/ 0.00</div>
+                    <div class="kpi-card-variation">
+                        <span class="var-val green"><i class="ti ti-arrow-up"></i> 10.2%</span>
+                        <span class="var-label">vs. mes anterior</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 CHARTS -->
+            <div class="charts-grid-equal">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3 class="chart-card-title">Evolución de ventas</h3>
+                        <span style="font-size: 12px; color: #64748b; font-weight: 500;">Ventas mensuales (S/)</span>
+                    </div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chartEvolucionVentas"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3 class="chart-card-title">Ventas por destino</h3>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; height: 220px;">
+                        <div style="position: relative; width: 160px; height: 160px;">
+                            <canvas id="chartVentasDestino"></canvas>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                                <div style="font-size: 13px; font-weight: 700; color: #0f172a; line-height: 1.1;">S/ 48,230</div>
+                                <div style="font-size: 10.5px; color: #64748b;">Total</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 7px; flex: 1; padding-left: 18px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #1a73e8;"></span> Cusco</span>
+                                <span style="font-weight: 600;">32.5%</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Machu Picchu</span>
+                                <span style="font-weight: 600;">18.7%</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span> Arequipa</span>
+                                <span style="font-weight: 600;">12.3%</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span> Ica</span>
+                                <span style="font-weight: 600;">9.8%</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #8b5cf6;"></span> Puno</span>
+                                <span style="font-weight: 600;">7.6%</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8;"></span> Otros</span>
+                                <span style="font-weight: 600;">19.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETALLE DE VENTAS (DYNAMIC PAGINATOR 5 ITEMS/PAGE) -->
+            <div class="table-card">
+                <div style="padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9;">
+                    <h3 style="font-size: 14.5px; font-weight: 700; color: #0f172a;">Detalle de ventas</h3>
+                </div>
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Nº Reserva</th>
+                            <th>Cliente</th>
+                            <th>Destino</th>
+                            <th>Tour</th>
+                            <th>Agencia</th>
+                            <th>Monto</th>
+                            <th>Comisión Travelink</th>
+                            <th>Estado</th>
+                            <th style="text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyReportesDetalle">
+                        <!-- Dynamic items -->
+                    </tbody>
+                </table>
+                <div class="table-pagination">
+                    <span class="pagination-info" id="ventasPaginationInfo">Mostrando 1 - 5 de 0 registros</span>
+                    <div class="pagination-controls" id="ventasPaginationControls"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CUSTOM DATE RANGE PICKER MODAL (EXACT MOCKUP) -->
+    <div class="modal-overlay" id="modalCalendario">
+        <div class="calendar-modal-card">
+            <div class="calendar-header">
+                <button type="button" class="calendar-nav-btn" onclick="cambiarMesCalendario(-1)"><i class="ti ti-chevron-left"></i></button>
+                <span class="calendar-month-title" id="calMonthTitle">septiembre de 2026</span>
+                <button type="button" class="calendar-nav-btn" onclick="cambiarMesCalendario(1)"><i class="ti ti-chevron-right"></i></button>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-day-label">dom</div>
+                <div class="calendar-day-label">lun</div>
+                <div class="calendar-day-label">mar</div>
+                <div class="calendar-day-label">mié</div>
+                <div class="calendar-day-label">jue</div>
+                <div class="calendar-day-label">vie</div>
+                <div class="calendar-day-label">sáb</div>
+            </div>
+
+            <div class="calendar-grid" id="calDaysGrid" style="margin-bottom: 20px;">
+                <!-- Generado dinámicamente -->
+            </div>
+
+            <div class="calendar-footer-actions">
+                <button type="button" class="btn-cal-cancel" onclick="cerrarModalCalendario()">Cancelar</button>
+                <button type="button" class="btn-cal-apply" onclick="aplicarRangoCalendario()">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/administrador/admin-common.js"></script>
+    <script src="../../js/administrador/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Experiencias</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/Experiencias.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar-placeholder"
+                        style="width:44px; height:44px; border-radius:50%; background:#0b1f38; color:#ffc107; display:flex; justify-content:center; align-items:center; font-size:20px; border:2px solid #ffc107; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html" class="active"><i class="fa-regular fa-compass hide-on-desktop"></i>
+                Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="Experiencias-page" style="background-color: #f8fafc; min-height: 100vh;">
+        <!-- Hero Small -->
+        <section class="hero-small"
+            style="height: 220px; background-image: url('../../img/fondo1.png'); background-size: cover; background-position: center; position: relative;">
+            <div
+                style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to right, rgba(11,31,56,0.8), rgba(11,31,56,0.3));">
+            </div>
+            <div class="hero-content"
+                style="position: relative; z-index: 1; padding: 0 50px; max-width: 1400px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h1
+                    style="color: white; font-size: 36px; margin: 0 0 10px 0; display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-mountain" style="font-size:28px;"></i> Experiencias
+                </h1>
+                <p style="color: #e2e8f0; font-size: 16px; margin: 0; max-width: 500px;">Descubre los mejores tours y
+                    vive experiencias únicas<br>en todo el Perú.</p>
+            </div>
+        </section>
+
+        <!-- Contenido principal -->
+        <div class="layout-grid"
+            style="display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 40px 50px; max-width: 1400px; margin: 0 auto;">
+            <!-- Sidebar Filtros -->
+            <aside class="filtros-sidebar"
+                style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; height: fit-content;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; display:flex; align-items:center; gap:8px; font-size: 16px; color: #0b1f38;">
+                        <i class="fas fa-filter"></i> Filtrar por
+                    </h3>
+                </div>
+
+                <div class="filtro-grupo" style="margin-bottom: 20px;">
+                    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Destino</h4>
+                    <select id="destino" onchange="aplicarFiltrosExperiencias()"
+                        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                        <option value="">Todos los destinos</option>
+                        <option value="amazonas">Amazonas</option>
+                        <option value="ancash">Áncash</option>
+                        <option value="apurimac">Apurímac</option>
+                        <option value="arequipa">Arequipa</option>
+                        <option value="ayacucho">Ayacucho</option>
+                        <option value="cajamarca">Cajamarca</option>
+                        <option value="callao">Callao</option>
+                        <option value="cusco">Cusco</option>
+                        <option value="huancavelica">Huancavelica</option>
+                        <option value="huanuco">Huánuco</option>
+                        <option value="ica">Ica</option>
+                        <option value="junin">Junín</option>
+                        <option value="la-libertad">La Libertad</option>
+                        <option value="lambayeque">Lambayeque</option>
+                        <option value="lima">Lima</option>
+                        <option value="loreto">Loreto</option>
+                        <option value="madre-de-dios">Madre de Dios</option>
+                        <option value="moquegua">Moquegua</option>
+                        <option value="pasco">Pasco</option>
+                        <option value="piura">Piura</option>
+                        <option value="puno">Puno</option>
+                        <option value="san-martin">San Martín</option>
+                        <option value="tacna">Tacna</option>
+                        <option value="tumbes">Tumbes</option>
+                        <option value="ucayali">Ucayali</option>
+                    </select>
+                </div>
+
+                <div class="filtro-grupo" style="margin-bottom: 20px;">
+                    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Categoría</h4>
+                    <select id="categoria" onchange="aplicarFiltrosExperiencias()"
+                        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                        <option value="">Todas las categorías</option>
+                        <option value="cultura">Cultura</option>
+                        <option value="historia">Historia</option>
+                        <option value="naturaleza">Naturaleza</option>
+                        <option value="aventura">Aventura</option>
+                        <option value="gastronomia">Gastronomía</option>
+                        <option value="relax">Relax</option>
+                    </select>
+                </div>
+
+                <div class="filtro-grupo" style="margin-bottom: 20px;">
+                    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Calificaciones</h4>
+                    <select id="calificacion" onchange="aplicarFiltrosExperiencias()"
+                        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                        <option value="">Todas las calificaciones</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                        <option value="4">⭐⭐⭐⭐ (4+ estrellas)</option>
+                        <option value="3">⭐⭐⭐ (3+ estrellas)</option>
+                        <option value="2">⭐⭐ (2+ estrellas)</option>
+                        <option value="1">⭐ (1+ estrella)</option>
+                    </select>
+                </div>
+
+                <button id="btn-aplicar-filtros" onclick="aplicarFiltrosExperiencias(event)"
+                    style="width:100%; background:#196f3d; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fas fa-filter"></i> Aplicar filtros
+                </button>
+                <button onclick="limpiarFiltros(event)"
+                    style="width:100%; background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fas fa-sync-alt"></i> Limpiar filtros
+                </button>
+            </aside>
+
+            <!-- Resultados -->
+            <section class="resultados-content">
+                <!-- Barra de búsqueda superior -->
+                <div
+                    style="display:flex; gap:10px; margin-bottom:20px; background:white; padding:10px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+                    <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 15px;">
+                        <i class="fas fa-search" style="color:#64748b;"></i>
+                        <input type="text" id="busqueda-input" placeholder="¿A dónde quieres ir? Busca por destino, categoría o actividad..."
+                            oninput="aplicarFiltrosExperiencias()"
+                            style="width:100%; border:none; outline:none; font-size:15px; color:#334155;">
+                    </div>
+                    <button onclick="aplicarFiltrosExperiencias(event)"
+                        style="background:#0f3f2d; color:white; border:none; padding:10px 30px; border-radius:8px; font-weight:bold; cursor:pointer;">Buscar</button>
+                </div>
+
+                <!-- Contador de resultados -->
+                <div style="margin-bottom: 16px; font-size: 14px; color: #64748b; font-weight: 600;" id="contador-resultados">
+                    Mostrando experiencias
+                </div>
+
+                <!-- Grid de Tarjetas -->
+                <div id="experiencias-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <!-- Tarjeta 1: Machu Picchu -->
+                    <div class="card card-exp"
+                        data-destino="cusco" data-categoria="cultura historia" data-rating="4.8" data-precio="350" data-nombre="Machu Picchu Clásico"
+                        onclick="location.href='detalle.html?tour=machu-picchu&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/colca.jpg" alt="Machu Picchu"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#196f3d; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Más
+                                reservados</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Machu Picchu Clásico</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Cusco</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.8 <span style="color:#64748b; font-weight:normal;">(120
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-tags" style="width:14px;"></i> Cultura / Historia</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 350.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=machu-picchu&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Montaña de Colores -->
+                    <div class="card card-exp"
+                        data-destino="cusco" data-categoria="naturaleza aventura" data-rating="4.7" data-precio="280" data-nombre="Montaña de Colores"
+                        onclick="location.href='detalle.html?tour=7-colores&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/7colores.jpg" alt="7 Colores"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#196f3d; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Más
+                                reservados</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Montaña de Colores</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Cusco</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.7 <span style="color:#64748b; font-weight:normal;">(98
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-leaf" style="width:14px;"></i> Naturaleza / Aventura</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 280.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=7-colores&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Laguna Humantay -->
+                    <div class="card card-exp"
+                        data-destino="cusco" data-categoria="naturaleza aventura" data-rating="4.9" data-precio="150" data-nombre="Laguna Humantay"
+                        onclick="location.href='detalle.html?tour=humantay&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/puno.jpg" alt="Laguna"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#0f766e; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Tendencia</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Laguna Humantay</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Cusco</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.9 <span style="color:#64748b; font-weight:normal;">(78
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-leaf" style="width:14px;"></i> Naturaleza / Aventura</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 150.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=humantay&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4: Huacachina -->
+                    <div class="card card-exp"
+                        data-destino="ica" data-categoria="aventura relax" data-rating="4.6" data-precio="120" data-nombre="Oasis de Huacachina"
+                        onclick="location.href='detalle.html?tour=huacachina&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/ica.jpg" alt="Oasis"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#d97706; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Más
+                                reservados</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Oasis de Huacachina</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Ica</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.6 <span style="color:#64748b; font-weight:normal;">(102
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-fire" style="width:14px;"></i> Aventura / Relax</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 120.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=huacachina&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 5: Amazonia -->
+                    <div class="card card-exp"
+                        data-destino="loreto" data-categoria="naturaleza aventura" data-rating="4.8" data-precio="450" data-nombre="Aventura en la Amazonía"
+                        onclick="location.href='detalle.html?tour=amazonia&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/selva.jpg" alt="Amazonia"
+                                style="width:100%; height:180px; object-fit:cover; background:#e2e8f0;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#16a34a; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Recomendado</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Aventura en la Amazonía</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Iquitos (Loreto)</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.8 <span style="color:#64748b; font-weight:normal;">(64
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 3 días</span>
+                                    <span><i class="fas fa-leaf" style="width:14px;"></i> Naturaleza / Aventura</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 450.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=amazonia&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 6: Colca -->
+                    <div class="card card-exp"
+                        data-destino="arequipa" data-categoria="aventura naturaleza" data-rating="4.7" data-precio="180" data-nombre="Cañón del Colca"
+                        onclick="location.href='detalle.html?tour=colca&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/arequipa.jpg" alt="Colca"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#0f766e; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Tendencia</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Cañón del Colca</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Arequipa</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.7 <span style="color:#64748b; font-weight:normal;">(88
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-fire" style="width:14px;"></i> Aventura / Naturaleza</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 180.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=colca&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 7: Gastronomía Lima -->
+                    <div class="card card-exp"
+                        data-destino="lima" data-categoria="gastronomia cultura" data-rating="4.9" data-precio="190" data-nombre="Ruta Gastronómica Limeña"
+                        onclick="location.href='detalle.html?tour=gastronomia-lima&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/fondo1.png" alt="Gastronomía Lima"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#b45309; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Gourmet</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Ruta Gastronómica Limeña</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Lima</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.9 <span style="color:#64748b; font-weight:normal;">(145
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1/2 día</span>
+                                    <span><i class="fas fa-utensils" style="width:14px;"></i> Gastronomía / Cultura</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 190.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=gastronomia-lima&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 8: Centro Histórico Lima -->
+                    <div class="card card-exp"
+                        data-destino="lima" data-categoria="historia cultura" data-rating="4.7" data-precio="85" data-nombre="Centro Histórico y Catacumbas"
+                        onclick="location.href='detalle.html?tour=centro-historico-lima&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/lima.jpg" alt="Lima Histórica" onerror="this.src='../../img/fondo1.png'"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#0d5c52; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Histórico</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Centro Histórico & Catacumbas</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Lima</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.7 <span style="color:#64748b; font-weight:normal;">(94
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1/2 día</span>
+                                    <span><i class="fas fa-landmark" style="width:14px;"></i> Historia / Cultura</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 85.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=centro-historico-lima&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 9: Uros y Taquile Puno -->
+                    <div class="card card-exp"
+                        data-destino="puno" data-categoria="cultura historia relax" data-rating="4.8" data-precio="160" data-nombre="Islas Flotantes Uros y Taquile"
+                        onclick="location.href='detalle.html?tour=titicaca&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/uros.jpg" alt="Islas Uros" onerror="this.src='../../img/puno.jpg'"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#0284c7; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Tradición</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Islas Uros y Taquile</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Puno</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.8 <span style="color:#64748b; font-weight:normal;">(112
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-water" style="width:14px;"></i> Cultura / Relax</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 160.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=titicaca&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 10: Trekking Laguna 69 -->
+                    <div class="card card-exp"
+                        data-destino="ancash" data-categoria="aventura naturaleza" data-rating="4.9" data-precio="140" data-nombre="Trekking Laguna 69 Huaraz"
+                        onclick="location.href='detalle.html?tour=laguna-69&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/huaraz.jpg" alt="Laguna 69" onerror="this.src='../../img/fondo1.png'"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#059669; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Aventura Top</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Trekking Laguna 69</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Áncash (Huaraz)</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.9 <span style="color:#64748b; font-weight:normal;">(85
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 1 día</span>
+                                    <span><i class="fas fa-hiking" style="width:14px;"></i> Aventura / Naturaleza</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 140.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=laguna-69&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 11: Relax en Churín -->
+                    <div class="card card-exp"
+                        data-destino="lima" data-categoria="relax naturaleza" data-rating="4.5" data-precio="130" data-nombre="Aguas Termales de Churín"
+                        onclick="location.href='detalle.html?tour=churin-relax&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/fondo1.png" alt="Churín"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#0284c7; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Relax & Spa</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Aguas Termales Churín</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Lima Provincias</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.5 <span style="color:#64748b; font-weight:normal;">(52
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 2 días</span>
+                                    <span><i class="fas fa-spa" style="width:14px;"></i> Relax / Bienestar</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 130.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=churin-relax&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 12: Kuélap y Gocta -->
+                    <div class="card card-exp"
+                        data-destino="amazonas" data-categoria="historia cultura aventura" data-rating="4.8" data-precio="320" data-nombre="Fortaleza Kuélap y Catarata Gocta"
+                        onclick="location.href='detalle.html?tour=kuelap-gocta&from=experiencias'"
+                        style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
+                        <div style="position:relative;">
+                            <img src="../../img/cusco.jpg" alt="Kuélap" onerror="this.src='../../img/fondo1.png'"
+                                style="width:100%; height:180px; object-fit:cover;">
+                            <span
+                                style="position:absolute; top:12px; left:12px; background:#7c3aed; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Arqueológico</span>
+                        </div>
+                        <div style="padding:16px;">
+                            <h3 style="color:#0b1f38; font-size:16px; margin:0 0 4px 0;">Kuélap & Catarata Gocta</h3>
+                            <div style="color:#64748b; font-size:13px; margin-bottom:8px;"><i
+                                    class="fas fa-map-marker-alt" style="width:16px;"></i> Amazonas (Chachapoyas)</div>
+                            <div style="color:#f59e0b; font-size:13px; font-weight:bold; margin-bottom:15px;"><i
+                                    class="fas fa-star"></i> 4.8 <span style="color:#64748b; font-weight:normal;">(71
+                                    comentarios)</span></div>
+
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid #f1f5f9; padding-top:12px;">
+                                <div style="display:flex; gap:12px; color:#64748b; font-size:12px;">
+                                    <span><i class="far fa-clock" style="width:14px;"></i> 2 días</span>
+                                    <span><i class="fas fa-landmark" style="width:14px;"></i> Historia / Aventura</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong style="display:block; color:#0b1f38; font-size:16px;">S/ 320.00</strong>
+                                    <span style="color:#64748b; font-size:11px;">por persona</span>
+                                </div>
+                            </div>
+                            <button
+                                onclick="location.href='detalle.html?tour=kuelap-gocta&from=experiencias'; event.stopPropagation();"
+                                style="width:100%; background:#196f3d; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; margin-top:16px; cursor:pointer;">Ver
+                                detalle</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensaje sin resultados -->
+                <div id="no-resultados" style="display: none; text-align: center; padding: 60px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+                    <i class="fas fa-search" style="font-size: 40px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                    <h3 style="color: #0b1f38; font-size: 18px; margin: 0 0 8px 0;">No se encontraron experiencias</h3>
+                    <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">No hay tours que coincidan con tus filtros actuales. Prueba cambiando los criterios o restablece los filtros.</p>
+                    <button onclick="limpiarFiltros(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                        <i class="fas fa-sync-alt"></i> Limpiar filtros
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo" style="height: 38px;">
+                </div>
+                <p style="margin-top: 8px; font-size: 13px; color: #d1e7dd;">Plataforma digital de turismo y
+                    experiencias en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="experiencias.html">Experiencias</a></li>
+                    <li><a href="ofertas.html">Ofertas</a></li>
+                    <li><a href="nosotros.html">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="../../js/navigation.js"></script>
+    <script src="../../js/user_session.js"></script>
+    <script src="../../js/experiencias.js"></script>
+</body>
+
+</html>

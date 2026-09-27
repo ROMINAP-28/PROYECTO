@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Ofertas</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/ofertas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body style="background-color: #f8fafc;">
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:50%; background:#196f3d; color:#fff; display:flex; justify-content:center; align-items:center; font-size:20px; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html" class="active"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="ofertas-container" style="max-width: 1200px; margin: 0 auto; padding: 30px 20px 60px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="ofertas-title" style="margin: 0 0 6px 0; font-size: 28px; color: #0b1f38;">Ofertas Especiales</h1>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Aprovecha descuentos exclusivos y cupos limitados en los mejores tours del Perú.</p>
+            </div>
+            <!-- Barra de búsqueda rápida -->
+            <div style="display: flex; gap: 10px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 14px; align-items: center; width: 100%; max-width: 320px;">
+                <i class="fas fa-search" style="color: #64748b;"></i>
+                <input type="text" id="ofertas-busqueda" placeholder="Buscar oferta..." oninput="filtrarOfertas()"
+                    style="border: none; outline: none; width: 100%; font-size: 14px; color: #334155;">
+            </div>
+        </div>
+
+        <!-- Filtro por Categorías (Pills) -->
+        <div style="display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; align-items: center;">
+            <button class="filtro-pill active" onclick="filtrarCategoriaOfertas('', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #196f3d; background: #196f3d; color: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Todas
+            </button>
+            <button class="filtro-pill" onclick="filtrarCategoriaOfertas('cultura', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Cultura
+            </button>
+            <button class="filtro-pill" onclick="filtrarCategoriaOfertas('historia', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Historia
+            </button>
+            <button class="filtro-pill" onclick="filtrarCategoriaOfertas('naturaleza', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Naturaleza
+            </button>
+            <button class="filtro-pill" onclick="filtrarCategoriaOfertas('aventura', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Aventura
+            </button>
+            <button class="filtro-pill" onclick="filtrarCategoriaOfertas('gastronomia', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Gastronomía
+            </button>
+            <button class="filtro-pill" onclick="filtrarCategoriaOfertas('relax', this)"
+                style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                Relax
+            </button>
+            <button onclick="limpiarFiltrosOfertas()"
+                style="margin-left: auto; padding: 8px 14px; border-radius: 8px; border: 1px dashed #94a3b8; background: transparent; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-sync-alt"></i> Limpiar filtros
+            </button>
+        </div>
+
+        <div class="ofertas-grid" id="ofertas-grid-container">
+            <!-- Oferta 1: Tour Colca -->
+            <div class="oferta-card-item" data-nombre="Tour Colca" data-categoria="aventura naturaleza" data-destino="arequipa"
+                onclick="location.href='detalle.html?tour=colca&from=ofertas'">
+                <img src="../../img/colca.jpg" alt="Tour Colca" class="oferta-card-img"
+                    onerror="this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Tour Colca</h3>
+                            <div class="oferta-card-location">
+                                <span>Arequipa</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 70 de 100 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 160.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 2: Laguna Humantay -->
+            <div class="oferta-card-item" data-nombre="Laguna Humantay" data-categoria="naturaleza aventura" data-destino="cusco"
+                onclick="location.href='detalle.html?tour=humantay&from=ofertas'">
+                <img src="../../img/huaraz.jpg" alt="Laguna Humantay" class="oferta-card-img"
+                    onerror="this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Laguna Humantay</h3>
+                            <div class="oferta-card-location">
+                                <span>Cusco</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 25 de 50 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 150.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 3: Cañón de Cotahuasi -->
+            <div class="oferta-card-item" data-nombre="Cañón de Cotahuasi" data-categoria="aventura naturaleza" data-destino="arequipa"
+                onclick="location.href='detalle.html?tour=cotahuasi&from=ofertas'">
+                <img src="../../img/valle.jpg" alt="Cañón de Cotahuasi" class="oferta-card-img"
+                    onerror="this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Cañón de Cotahuasi</h3>
+                            <div class="oferta-card-location">
+                                <span>Arequipa</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 18 de 40 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 120.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 4: Selva Amazónica -->
+            <div class="oferta-card-item" data-nombre="Selva Amazónica" data-categoria="naturaleza aventura" data-destino="madre de dios"
+                onclick="location.href='detalle.html?tour=amazonia&from=ofertas'">
+                <img src="../../img/uros.jpg" alt="Selva Amazónica" class="oferta-card-img"
+                    onerror="this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Selva Amazónica</h3>
+                            <div class="oferta-card-location">
+                                <span>Puerto Maldonado</span>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 12 de 30 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 250.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 5: Machu Picchu Promocional -->
+            <div class="oferta-card-item" data-nombre="Machu Picchu Promo" data-categoria="cultura historia" data-destino="cusco"
+                onclick="location.href='detalle.html?tour=machu-picchu&from=ofertas'">
+                <img src="../../img/cusco.jpg" alt="Machu Picchu" class="oferta-card-img"
+                    onerror="this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Machu Picchu Clásico</h3>
+                            <div class="oferta-card-location">
+                                <span>Cusco</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Oferta flash</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 8 de 25 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 299.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 6: Huacachina Aventura & Relax -->
+            <div class="oferta-card-item" data-nombre="Huacachina Sandboarding" data-categoria="aventura relax" data-destino="ica"
+                onclick="location.href='detalle.html?tour=huacachina&from=ofertas'">
+                <img src="../../img/ica.jpg" alt="Huacachina" class="oferta-card-img"
+                    onerror="this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Huacachina Oasis</h3>
+                            <div class="oferta-card-location">
+                                <span>Ica</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">2x1 Promo</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 15 de 40 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 99.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje sin resultados ofertas -->
+        <div id="no-ofertas-resultados" style="display: none; text-align: center; padding: 50px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+            <i class="fas fa-tags" style="font-size: 36px; color: #cbd5e1; margin-bottom: 12px;"></i>
+            <h3 style="color: #0b1f38; font-size: 17px; margin: 0 0 6px 0;">No se encontraron ofertas</h3>
+            <p style="color: #64748b; font-size: 13.5px; margin: 0 0 16px 0;">No hay ofertas activas para esta categoría o término de búsqueda.</p>
+            <button onclick="limpiarFiltrosOfertas()" style="background: #196f3d; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                Restablecer ofertas
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo">
+                </div>
+                <p style="margin-top: 15px; font-size: 14px; color: #a0aec0;">Plataforma digital de turismo y
+                    Experiencias<br>en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Destinos</a></li>
+                    <li><a href="Experiencias.html">Experiencias</a></li>
+                    <li><a href="#">Ofertas</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidíad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/navigation.js"></script>
+    <script src="../../js/user_session.js"></script>
+    <script>
+        let categoriaActivaOfertas = '';
+
+        function normalizarTexto(str) {
+            if (!str) return '';
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        }
+
+        function filtrarCategoriaOfertas(cat, btn) {
+            categoriaActivaOfertas = cat;
+            document.querySelectorAll('.filtro-pill').forEach(b => {
+                b.style.background = 'white';
+                b.style.color = '#475569';
+                b.style.borderColor = '#cbd5e1';
+                b.classList.remove('active');
+            });
+
+            if (btn) {
+                btn.style.background = '#196f3d';
+                btn.style.color = 'white';
+                btn.style.borderColor = '#196f3d';
+                btn.classList.add('active');
+            }
+
+            filtrarOfertas();
+        }
+
+        function filtrarOfertas() {
+            const query = normalizarTexto(document.getElementById('ofertas-busqueda')?.value || '');
+            const cat = normalizarTexto(categoriaActivaOfertas);
+            const cards = document.querySelectorAll('.oferta-card-item');
+            const noRes = document.getElementById('no-ofertas-resultados');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const nombre = normalizarTexto(card.getAttribute('data-nombre') || '');
+                const categorias = normalizarTexto(card.getAttribute('data-categoria') || '');
+                const destino = normalizarTexto(card.getAttribute('data-destino') || '');
+                const text = normalizarTexto(card.innerText || '');
+
+                const matchCat = !cat || categorias.includes(cat);
+                const matchQuery = !query || nombre.includes(query) || destino.includes(query) || text.includes(query) || categorias.includes(query);
+
+                if (matchCat && matchQuery) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (noRes) {
+                noRes.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+        }
+
+        function limpiarFiltrosOfertas() {
+            const input = document.getElementById('ofertas-busqueda');
+            if (input) input.value = '';
+            const firstPill = document.querySelector('.filtro-pill');
+            filtrarCategoriaOfertas('', firstPill);
+        }
+    </script>
+</body>
+
+</html>

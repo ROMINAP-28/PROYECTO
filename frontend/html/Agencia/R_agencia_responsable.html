@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsable de la agencia</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+</head>
+<body>
+<main class="registro-container">
+    <div class="registro-wrapper">
+        <aside class="registro-visual">
+            <div class="registro-visual-content">
+                <div class="registro-logo">Travel<span>ink</span></div>
+                <p class="registro-tagline">Conectando destinos</p>
+            </div>
+            <div class="registro-visual-text">
+                <h2>Conoce al responsable.</h2>
+                <p>Registra los datos de la persona responsable de la agencia.</p>
+            </div>
+        </aside>
+
+        <section class="registro-form-area">
+            <div class="registro-top">
+                <span class="registro-step">Paso 3 de 6</span>
+                <h1>Responsable</h1>
+                <p>Ingresa los datos de la persona responsable de la agencia.</p>
+            </div>
+
+            <form id="formResponsable">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombre">Nombres</label>
+                        <input type="text" id="nombre" name="nombre" maxlength="50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nroDocumento">DNI / Documento</label>
+                        <input type="text" id="nroDocumento" name="nroDocumento" maxlength="15" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellidoPaterno">Apellido paterno</label>
+                        <input type="text" id="apellidoPaterno" name="apellidoPaterno" maxlength="50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellidoMaterno">Apellido materno</label>
+                        <input type="text" id="apellidoMaterno" name="apellidoMaterno" maxlength="50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefonoResponsable">Teléfono</label>
+                        <input type="tel" id="telefonoResponsable" name="telefonoResponsable" maxlength="15">
+                    </div>
+                </div>
+
+                <p id="mensajeResponsable" class="form-message"></p>
+
+                <div class="registro-actions">
+                    <button type="button" class="btn-secondary" onclick="history.back()">Atrás</button>
+                    <button type="submit" class="btn-primary">Continuar</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script src="../../js/agencia.js"></script>
+</body>
+</html>

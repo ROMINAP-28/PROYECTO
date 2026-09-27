@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos de la empresa</title>
+    <link rel="stylesheet" href="../../css/agencia.css">
+</head>
+<body>
+<main class="registro-container">
+    <div class="registro-wrapper">
+        <aside class="registro-visual">
+            <div class="registro-visual-content">
+                <div class="registro-logo">Travel<span>ink</span></div>
+                <p class="registro-tagline">Conectando destinos</p>
+            </div>
+            <div class="registro-visual-text">
+                <h2>Conozcamos tu agencia.</h2>
+                <p>Ingresa la información oficial de tu empresa turística.</p>
+            </div>
+        </aside>
+
+        <section class="registro-form-area">
+            <div class="registro-top">
+                <span class="registro-step">Paso 2 de 6</span>
+                <h1>Datos de la empresa</h1>
+                <p>Completa la información de tu agencia turística.</p>
+            </div>
+
+            <form id="formAgenciaEmpresa">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="razonSocial">Razón social</label>
+                        <input type="text" id="razonSocial" name="razonSocial" maxlength="150" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ruc">RUC</label>
+                        <input type="text" id="ruc" name="ruc" maxlength="20" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefonoEmpresa">Teléfono</label>
+                        <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa" maxlength="20">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="direccion">Dirección</label>
+                        <input type="text" id="direccion" name="direccion" maxlength="255">
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="descripcion">Descripción de la agencia</label>
+                        <textarea id="descripcion" name="descripcion"></textarea>
+                    </div>
+                </div>
+
+                <p id="mensajeEmpresa" class="form-message"></p>
+
+                <div class="registro-actions">
+                    <button type="button" class="btn-secondary" onclick="history.back()">Atrás</button>
+                    <button type="submit" class="btn-primary">Continuar</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script src="../../js/agencia.js"></script>
+</body>
+</html>

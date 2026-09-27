@@ -32,6 +32,38 @@ function verificarSesionAdmin() {
     }
 }
 
+function obtenerIdUsuarioAdmin() {
+    const userJson =
+        localStorage.getItem('travelink_user') ||
+        sessionStorage.getItem('travelink_user');
+
+    if (!userJson) {
+        console.error("No se encontró la sesión del administrador.");
+        return null;
+    }
+
+    try {
+        const user = JSON.parse(userJson);
+
+        // Posibles nombres del identificador en el objeto de sesión
+        const idUsuario =
+            user.idUsuario ??
+            user.id ??
+            user.usuario?.idUsuario ??
+            user.usuario?.id;
+
+        if (!idUsuario || !Number.isInteger(Number(idUsuario))) {
+            console.error("No se encontró un ID de usuario válido:", user);
+            return null;
+        }
+
+        return Number(idUsuario);
+    } catch (e) {
+        console.error("Error al leer la sesión:", e);
+        return null;
+    }
+}
+
 function setupDropdowns() {
     document.addEventListener('click', (e) => {
         const userMenu = document.getElementById('admin-dropdown-menu');
@@ -71,17 +103,34 @@ function toggleNotifications(e) {
 
 async function cargarNotificacionesAdmin() {
     try {
-        const res = await fetch(`${API_BASE}/notificaciones?limite=15`);
-        if (!res.ok) return;
+        const idUsuario = obtenerIdUsuarioAdmin();
+
+        if (!idUsuario) {
+            console.error("No se encontró el ID del administrador.");
+            return;
+        }
+
+        const res = await fetch(
+            `${API_BASE}/notificaciones?limite=15&idUsuario=${idUsuario}`
+        );
+
+        if (!res.ok) {
+            console.error("Error de notificaciones:", res.status);
+            return;
+        }
+
         const json = await res.json();
+
         if (json.status === 'success' && json.data) {
-            renderNotificacionesList(json.data.notificaciones || [], json.data.noLeidas || 0);
+            renderNotificacionesList(
+                json.data.notificaciones || [],
+                json.data.noLeidas || 0
+            );
         }
     } catch (e) {
-        console.error("Error cargando notificaciones de BD:", e);
+        console.error("Error cargando notificaciones:", e);
     }
 }
-
 function renderNotificacionesList(notifs, noLeidas) {
     const badge = document.querySelector('.notification-dot');
     if (badge) {
@@ -124,17 +173,60 @@ function renderNotificacionesList(notifs, noLeidas) {
 
 async function abrirNotificacion(idNotificacion, enlace) {
     try {
-        await fetch(`${API_BASE}/notificaciones/marcar-leida`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idNotificacion })
-        });
+        const idUsuario = obtenerIdUsuarioAdmin();
+
+        if (!idUsuario) {
+            console.error("No se pudo identificar al administrador.");
+            return;
+        }
+
+        const res = await fetch(
+            `${API_BASE}/notificaciones/marcar-leida`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    idNotificacion,
+                    idUsuario
+                })
+            }
+        );
+
+        if (!res.ok) {
+            console.error(
+                "Error al marcar notificación:",
+                res.status
+            );
+            return;
+        }
+
+        await cargarNotificacionesAdmin();
+
+        if (enlace && enlace.trim() !== '') {
+            window.location.href = enlace;
+        }
     } catch (e) {
-        console.error("Error marcando notificación leída:", e);
+        console.error(
+            "Error marcando notificación leída:",
+            e
+        );
     }
-    cargarNotificacionesAdmin();
-    if (enlace && enlace.trim() !== '') {
-        window.location.href = enlace;
+}
+function obtenerIdUsuarioAdmin() {
+    const userJson =
+        localStorage.getItem('travelink_user') ||
+        sessionStorage.getItem('travelink_user');
+
+    if (!userJson) return null;
+
+    try {
+        const user = JSON.parse(userJson);
+        return Number(user.idUsuario) || null;
+    } catch (e) {
+        console.error("Error leyendo sesión:", e);
+        return null;
     }
 }
 

@@ -1078,16 +1078,56 @@ if (tablaDisponibilidad) {
 
 //RESERVAS
 
+// =====================================================
+// TRAVELINK - GESTIÓN DE RESERVAS
+// =====================================================
 
-const ID_AGENCIA = 1;
+// Identificador de agencia de prueba, igual que Servicios.
+// Se utiliza únicamente si la sesión no contiene idAgencia.
+const ID_AGENCIA_RESERVAS_PRUEBA = 5;
+
+const sesionAgenciaReservas = (() => {
+    try {
+        return JSON.parse(localStorage.getItem("agenciaSesion")) || {};
+    } catch (error) {
+        console.error("No se pudo leer la sesión de agencia:", error);
+        return {};
+    }
+})();
+
+const ID_AGENCIA_RESERVAS =
+    Number(sesionAgenciaReservas.idAgencia) ||
+    ID_AGENCIA_RESERVAS_PRUEBA;
 
 const API_RESERVAS =
-    `http://localhost:8080/api/agencia/reservas?idAgencia=${ID_AGENCIA}`;
+    `http://localhost:8080/api/agencia/reservas?idAgencia=${ID_AGENCIA_RESERVAS}`;
 
+// Elementos HTML de Reservas
 const tablaReservas = document.getElementById("tablaReservas");
-const cantidadReservas = document.getElementById("cantidadReservas");
+const buscarReserva = document.getElementById("buscarReserva");
+const filtroEstadoReserva = document.getElementById("filtroEstado");
+const fechaDesdeReserva = document.getElementById("fechaDesde");
+const fechaHastaReserva = document.getElementById("fechaHasta");
 
-function escaparHTML(valor) {
+// Tarjetas de resumen
+const totalReservas = document.getElementById("totalReservas");
+const reservasConfirmadas = document.getElementById("reservasConfirmadas");
+const reservasPendientes = document.getElementById("reservasPendientes");
+const reservasCanceladas = document.getElementById("reservasCanceladas");
+
+// Modal
+const modalReserva = document.getElementById("modalReserva");
+const btnCerrarModalReserva = document.getElementById("btnCerrarModal");
+const btnCerrarSesionAgencia = document.getElementById("btnCerrarSesion");
+
+// Datos recibidos del servidor
+let reservasAgencia = [];
+
+// =====================================================
+// UTILIDADES
+// =====================================================
+
+function escaparHTMLReserva(valor) {
     return String(valor ?? "").replace(/[&<>"']/g, caracter => ({
         "&": "&amp;",
         "<": "&lt;",
@@ -1097,79 +1137,387 @@ function escaparHTML(valor) {
     })[caracter]);
 }
 
-function formatoFecha(fecha) {
-    if (!fecha) return "—";
+function formatoFechaReserva(fecha) {
+    if (!fecha) return "-";
 
-    const partes = String(fecha).substring(0, 10).split("-");
-    if (partes.length !== 3) return escaparHTML(fecha);
+    const texto = String(fecha).substring(0, 10);
+    const partes = texto.split("-");
+
+    if (partes.length !== 3) {
+        return escaparHTMLReserva(fecha);
+    }
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-function formatoMonto(monto) {
+function formatoMontoReserva(monto) {
     return Number(monto ?? 0).toLocaleString("es-PE", {
         style: "currency",
         currency: "PEN"
     });
 }
 
+function normalizarEstadoReserva(estado) {
+    return String(estado ?? "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+function claseEstadoReserva(estado) {
+    const estadoNormalizado = normalizarEstadoReserva(estado);
+
+    if (estadoNormalizado === "confirmada") {
+        return "confirmada";
+    }
+
+    if (estadoNormalizado === "pendiente") {
+        return "pendiente";
+    }
+
+    if (estadoNormalizado === "cancelada") {
+        return "cancelada";
+    }
+
+    if (estadoNormalizado === "completada") {
+        return "completada";
+    }
+
+    return "";
+}
+
+function obtenerTextoReserva(valor) {
+    return valor === null || valor === undefined || valor === ""
+        ? "-"
+        : String(valor);
+}
+
+// =====================================================
+// CARGAR RESERVAS DESDE JAVA
+// =====================================================
+
 async function cargarReservas() {
+    if (!tablaReservas) return;
+
     tablaReservas.innerHTML = `
         <tr>
-            <td colspan="8" class="empty-table">
+            <td colspan="8" class="reservas-mensaje">
                 Cargando reservas...
             </td>
-        </tr>`;
+        </tr>
+    `;
 
     try {
         const respuesta = await fetch(API_RESERVAS);
+
         const datos = await respuesta.json();
 
         if (!respuesta.ok || datos.status !== "success") {
-            throw new Error(datos.message || "No se pudieron cargar las reservas.");
+            throw new Error(
+                datos.message ||
+                datos.mensaje ||
+                "No se pudieron obtener las reservas."
+            );
         }
 
-        const reservas = datos.reservas || [];
+        reservasAgencia = Array.isArray(datos.reservas)
+            ? datos.reservas
+            : [];
 
-        cantidadReservas.textContent =
-            `${reservas.length} ${reservas.length === 1 ? "reserva" : "reservas"}`;
-
-        if (reservas.length === 0) {
-            tablaReservas.innerHTML = `
-                <tr>
-                    <td colspan="8" class="empty-table">
-                        No hay reservas registradas.
-                    </td>
-                </tr>`;
-            return;
-        }
-
-        tablaReservas.innerHTML = reservas.map(reserva => `
-            <tr>
-                <td>${escaparHTML(reserva.codigoReserva)}</td>
-                <td>Por identificar</td>
-                <td>${escaparHTML(reserva.nombreTour)}</td>
-                <td>${formatoFecha(reserva.fechaRegistro)}</td>
-                <td>${formatoFecha(reserva.fechaInicio)}</td>
-                <td>${formatoFecha(reserva.fechaFin)}</td>
-                <td>${formatoMonto(reserva.total)}</td>
-                <td>${escaparHTML(reserva.estado)}</td>
-            </tr>
-        `).join("");
+        actualizarResumenReservas(reservasAgencia);
+        filtrarReservas();
 
     } catch (error) {
         console.error("Error al cargar reservas:", error);
 
-        cantidadReservas.textContent = "Error";
+        reservasAgencia = [];
+        actualizarResumenReservas([]);
 
         tablaReservas.innerHTML = `
             <tr>
-                <td colspan="8" class="empty-table">
+                <td colspan="8" class="reservas-mensaje">
                     No se pudieron cargar las reservas.
-                    Revisa la conexión con el servidor.
+                    Verifica que el servidor Java esté iniciado
+                    y que el endpoint esté funcionando.
                 </td>
-            </tr>`;
+            </tr>
+        `;
     }
 }
 
-document.addEventListener("DOMContentLoaded", cargarReservas);
+// =====================================================
+// ACTUALIZAR TARJETAS DE RESUMEN
+// =====================================================
+
+function actualizarResumenReservas(lista) {
+    if (!totalReservas) return;
+
+    const total = lista.length;
+
+    const confirmadas = lista.filter(reserva =>
+        normalizarEstadoReserva(reserva.estado) === "confirmada"
+    ).length;
+
+    const pendientes = lista.filter(reserva =>
+        normalizarEstadoReserva(reserva.estado) === "pendiente"
+    ).length;
+
+    const canceladas = lista.filter(reserva =>
+        normalizarEstadoReserva(reserva.estado) === "cancelada"
+    ).length;
+
+    totalReservas.textContent = total;
+    reservasConfirmadas.textContent = confirmadas;
+    reservasPendientes.textContent = pendientes;
+    reservasCanceladas.textContent = canceladas;
+}
+
+// =====================================================
+// MOSTRAR RESERVAS EN LA TABLA
+// =====================================================
+
+function mostrarReservas(lista) {
+    if (!tablaReservas) return;
+
+    if (lista.length === 0) {
+        tablaReservas.innerHTML = `
+            <tr>
+                <td colspan="8" class="reservas-mensaje">
+                    No se encontraron reservas con los filtros seleccionados.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tablaReservas.innerHTML = lista.map(reserva => {
+        const estado = obtenerTextoReserva(reserva.estado);
+        const claseEstado = claseEstadoReserva(estado);
+
+        return `
+            <tr>
+                <td>
+                    ${escaparHTMLReserva(reserva.codigoReserva)}
+                </td>
+
+                <td>
+                    ${escaparHTMLReserva(reserva.nombreCliente)}
+                </td>
+
+                <td>
+                    ${escaparHTMLReserva(reserva.nombreTour)}
+                </td>
+
+                <td>
+                    ${formatoFechaReserva(reserva.fechaRegistro)}
+                </td>
+
+                <td>
+                    ${formatoFechaReserva(reserva.fechaInicio)}
+                </td>
+
+                <td>
+                    ${formatoMontoReserva(reserva.total)}
+                </td>
+
+                <td>
+                    <span class="reserva-estado ${claseEstado}">
+                        ${escaparHTMLReserva(estado)}
+                    </span>
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="reserva-accion"
+                        data-reserva-id="${Number(reserva.idReserva)}">
+                        Ver detalles
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join("");
+
+    // Asignar evento a los botones generados
+    tablaReservas.querySelectorAll("[data-reserva-id]").forEach(boton => {
+        boton.addEventListener("click", () => {
+            abrirDetalleReserva(boton.dataset.reservaId);
+        });
+    });
+}
+
+// =====================================================
+// BUSCAR Y FILTRAR RESERVAS
+// =====================================================
+
+function filtrarReservas() {
+    if (!tablaReservas) return;
+
+    const texto = buscarReserva
+        ? buscarReserva.value.trim().toLowerCase()
+        : "";
+
+    const estadoSeleccionado = filtroEstadoReserva
+        ? filtroEstadoReserva.value
+        : "";
+
+    const desde = fechaDesdeReserva
+        ? fechaDesdeReserva.value
+        : "";
+
+    const hasta = fechaHastaReserva
+        ? fechaHastaReserva.value
+        : "";
+
+    const resultado = reservasAgencia.filter(reserva => {
+        const codigo = String(reserva.codigoReserva ?? "").toLowerCase();
+        const cliente = String(reserva.nombreCliente ?? "").toLowerCase();
+        const tour = String(reserva.nombreTour ?? "").toLowerCase();
+
+        const coincideTexto =
+            !texto ||
+            codigo.includes(texto) ||
+            cliente.includes(texto) ||
+            tour.includes(texto);
+
+        const coincideEstado =
+            !estadoSeleccionado ||
+            normalizarEstadoReserva(reserva.estado) ===
+            normalizarEstadoReserva(estadoSeleccionado);
+
+        const fechaRegistro = String(reserva.fechaRegistro ?? "")
+            .substring(0, 10);
+
+        const coincideDesde =
+            !desde || (fechaRegistro && fechaRegistro >= desde);
+
+        const coincideHasta =
+            !hasta || (fechaRegistro && fechaRegistro <= hasta);
+
+        return coincideTexto &&
+            coincideEstado &&
+            coincideDesde &&
+            coincideHasta;
+    });
+
+    mostrarReservas(resultado);
+}
+
+// =====================================================
+// DETALLE DE UNA RESERVA
+// =====================================================
+
+function abrirDetalleReserva(idReserva) {
+    if (!modalReserva) return;
+
+    const reserva = reservasAgencia.find(
+        item => Number(item.idReserva) === Number(idReserva)
+    );
+
+    if (!reserva) {
+        alert("No se encontró la reserva seleccionada.");
+        return;
+    }
+
+    document.getElementById("detalleCodigo").textContent =
+        obtenerTextoReserva(reserva.codigoReserva);
+
+    document.getElementById("detalleCliente").textContent =
+        obtenerTextoReserva(reserva.nombreCliente);
+
+    document.getElementById("detalleTour").textContent =
+        obtenerTextoReserva(reserva.nombreTour);
+
+    document.getElementById("detalleRegistro").textContent =
+        formatoFechaReserva(reserva.fechaRegistro);
+
+    document.getElementById("detalleInicio").textContent =
+        formatoFechaReserva(reserva.fechaInicio);
+
+    document.getElementById("detalleFin").textContent =
+        formatoFechaReserva(reserva.fechaFin);
+
+    document.getElementById("detalleTotal").textContent =
+        formatoMontoReserva(reserva.total);
+
+    document.getElementById("detallePagado").textContent =
+        formatoMontoReserva(reserva.totalPagado);
+
+    document.getElementById("detalleEstado").textContent =
+        obtenerTextoReserva(reserva.estado);
+
+    document.getElementById("detalleEstadoPago").textContent =
+        obtenerTextoReserva(reserva.estadoPago);
+
+    document.getElementById("detalleMotivo").textContent =
+        obtenerTextoReserva(reserva.motivoCancelacion);
+
+    modalReserva.classList.add("abierto");
+}
+
+function cerrarDetalleReserva() {
+    if (modalReserva) {
+        modalReserva.classList.remove("abierto");
+    }
+}
+
+// =====================================================
+// EVENTOS DE LA PÁGINA
+// =====================================================
+
+if (buscarReserva) {
+    buscarReserva.addEventListener("input", filtrarReservas);
+}
+
+if (filtroEstadoReserva) {
+    filtroEstadoReserva.addEventListener("change", filtrarReservas);
+}
+
+if (fechaDesdeReserva) {
+    fechaDesdeReserva.addEventListener("change", filtrarReservas);
+}
+
+if (fechaHastaReserva) {
+    fechaHastaReserva.addEventListener("change", filtrarReservas);
+}
+
+if (btnCerrarModalReserva) {
+    btnCerrarModalReserva.addEventListener(
+        "click",
+        cerrarDetalleReserva
+    );
+}
+
+if (modalReserva) {
+    modalReserva.addEventListener("click", event => {
+        if (event.target === modalReserva) {
+            cerrarDetalleReserva();
+        }
+    });
+}
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        cerrarDetalleReserva();
+    }
+});
+
+// =====================================================
+// CERRAR SESIÓN DE AGENCIA
+// =====================================================
+
+if (btnCerrarSesionAgencia) {
+    btnCerrarSesionAgencia.addEventListener("click", () => {
+        localStorage.removeItem("agenciaSesion");
+        window.location.href = "R_agencia_login.html";
+    });
+}
+
+// =====================================================
+// INICIALIZAR SOLO SI ESTAMOS EN RESERVAS.HTML
+// =====================================================
+
+if (tablaReservas) {
+    cargarReservas();
+}

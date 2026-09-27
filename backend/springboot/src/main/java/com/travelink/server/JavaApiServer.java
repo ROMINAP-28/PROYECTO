@@ -3,21 +3,17 @@ package com.travelink.server;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-<<<<<<< HEAD
-=======
 import com.travelink.config.ConexionDB;
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+
 import com.travelink.controlador.CalificacionControlador;
 import com.travelink.controlador.UsuarioControlador;
 import com.travelink.entidades.Usuario;
 import com.travelink.repositorio.ReservaRepositorio;
-<<<<<<< HEAD
-=======
+
 import com.travelink.config.ConexionDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -33,43 +29,36 @@ public class JavaApiServer {
     private static final UsuarioControlador usuarioControlador = new UsuarioControlador();
     private static final ReservaRepositorio reservaRepositorio = new ReservaRepositorio();
     private static final CalificacionControlador calificacionControlador = new CalificacionControlador();
-<<<<<<< HEAD
-    private static final String FRONTEND_DIR = "d:/ProyectosU/PresentaciónTravelink/frontend";
+    private static final String FRONTEND_DIR = "frontend";
 
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
-        // API Endpoints
-        server.createContext("/api/login", new LoginHandler());
-        server.createContext("/api/registro", new RegistroHandler());
-=======
-    private static final String FRONTEND_DIR =
-            "C:/Users/romin/OneDrive/Documentos/Travelink/DESCARGA NUEVA/DESCARGA NUEVO/frontend";
-
-    public static void main(String[] args) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        System.out.println("========== VERSION AGENCIA 001 ==========");
-        System.out.println("ENDPOINT AGENCIA REGISTRADO");
-
+        System.out.println("========== TRAVELINK ==========");
+        System.out.println("Servidor iniciado");
         System.out.println("FRONTEND_DIR = " + FRONTEND_DIR);
 
-        // aquí continúa el resto de tu código...
-        // API Endpoints
+        // API Endpoints - TURISTA
         server.createContext("/api/login", new LoginHandler());
-        server.createContext("/api/registro", new RegistroAgenciaHandler());
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+        server.createContext("/api/registro", new RegistroHandler());
+
+
+        // Aquí conserva los demás endpoints existentes
         server.createContext("/api/guardar_reserva", new GuardarReservaHandler());
         server.createContext("/api/obtener_reservas", new ObtenerReservasHandler());
         server.createContext("/api/cancelar_reserva", new CancelarReservaHandler());
         server.createContext("/api/calificar", new CalificarHandler());
-<<<<<<< HEAD
-=======
+        // API Endpoints - AGENCIA
         server.createContext("/api/agencia/destinos", new DestinosAgenciaHandler());
         server.createContext("/api/agencia/servicios", new ServiciosAgenciaHandler());
         server.createContext("/api/agencia/registro", new RegistroAgenciaHandler());
         server.createContext("/api/agencia/disponibilidad", new DisponibilidadAgenciaHandler());
         server.createContext("/api/agencia/reservas", new ReservasAgenciaHandler());
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+        server.createContext("/api/agencia/login", new LoginAgenciaHandler());
+
+        //ADMINISTRADOR
+        server.createContext("/api/admin/agencias", new AgenciasAdminHandler());
+        server.createContext("/api/admin/notificaciones", new NotificacionesAdminHandler());
 
         // Static Files Handler (Serves frontend UI)
         server.createContext("/", new StaticFileHandler());
@@ -173,17 +162,6 @@ public class JavaApiServer {
                 if ("success".equals(res.get("status"))) {
                     Usuario u = (Usuario) res.get("user");
                     json.append("{\"status\":\"success\",\"message\":\"Login exitoso\",\"user\":{")
-<<<<<<< HEAD
-                        .append("\"idUsuario\":").append(u.getIdUsuario()).append(",")
-                        .append("\"nombre\":\"").append(u.getNombre()).append("\",")
-                        .append("\"nombreUsuario\":\"").append(u.getNombreUsuario()).append("\",")
-                        .append("\"apellidoPaterno\":\"").append(u.getApellidoPaterno()).append("\",")
-                        .append("\"apellidoMaterno\":\"").append(u.getApellidoMaterno()).append("\",")
-                        .append("\"correo\":\"").append(u.getCorreo()).append("\",")
-                        .append("\"telefono\":\"").append(u.getTelefono()).append("\",")
-                        .append("\"idRol\":").append(u.getIdRol())
-                        .append("}}");
-=======
                             .append("\"idUsuario\":").append(u.getIdUsuario()).append(",")
                             .append("\"nombre\":\"").append(u.getNombre()).append("\",")
                             .append("\"nombreUsuario\":\"").append(u.getNombreUsuario()).append("\",")
@@ -193,7 +171,6 @@ public class JavaApiServer {
                             .append("\"telefono\":\"").append(u.getTelefono()).append("\",")
                             .append("\"idRol\":").append(u.getIdRol())
                             .append("}}");
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
                 } else {
                     json.append("{\"status\":\"error\",\"message\":\"").append(res.get("message")).append("\"}");
                 }
@@ -205,23 +182,16 @@ public class JavaApiServer {
     }
 
     // 2. REGISTRO HANDLER
-<<<<<<< HEAD
+    // 2. REGISTRO HANDLER - TURISTA
     static class RegistroHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-=======
-    static class RegistroAgenciaHandler implements HttpHandler {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 enableCORS(exchange);
                 exchange.sendResponseHeaders(200, -1);
                 return;
             }
-<<<<<<< HEAD
+
             if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
                 String body = readRequestBody(exchange);
                 Map<String, Object> params = parseJsonOrFormParams(body);
@@ -230,40 +200,182 @@ public class JavaApiServer {
                 u.setNombre(String.valueOf(params.getOrDefault("nombre", "")));
                 u.setApellidoPaterno(String.valueOf(params.getOrDefault("apellidoPaterno", "")));
                 u.setApellidoMaterno(String.valueOf(params.getOrDefault("apellidoMaterno", "")));
-                u.setNombreUsuario(String.valueOf(params.getOrDefault("usuario", params.getOrDefault("nombreUsuario", ""))));
-                u.setCorreo(String.valueOf(params.getOrDefault("correo", params.getOrDefault("email", ""))));
-                u.setContrasena(String.valueOf(params.getOrDefault("password", params.getOrDefault("contrasena", ""))));
+                u.setNombreUsuario(String.valueOf(
+                        params.getOrDefault("usuario",
+                                params.getOrDefault("nombreUsuario", ""))));
+                u.setCorreo(String.valueOf(
+                        params.getOrDefault("correo",
+                                params.getOrDefault("email", ""))));
+                u.setContrasena(String.valueOf(
+                        params.getOrDefault("password",
+                                params.getOrDefault("contrasena", ""))));
                 u.setTelefono(String.valueOf(params.getOrDefault("telefono", "")));
-                u.setIdRol(2);
+
+                // Rol 1 = Turista
+                u.setIdRol(1);
 
                 Map<String, Object> res = usuarioControlador.registrar(u);
                 StringBuilder json = new StringBuilder();
+
                 if ("success".equals(res.get("status"))) {
                     Usuario guardado = (Usuario) res.get("user");
+
                     json.append("{\"status\":\"success\",\"message\":\"Registro exitoso\",\"user\":{")
-                        .append("\"idUsuario\":").append(guardado.getIdUsuario()).append(",")
-                        .append("\"nombre\":\"").append(guardado.getNombre()).append("\",")
-                        .append("\"nombreUsuario\":\"").append(guardado.getNombreUsuario()).append("\",")
-                        .append("\"apellidoPaterno\":\"").append(guardado.getApellidoPaterno()).append("\",")
-                        .append("\"apellidoMaterno\":\"").append(guardado.getApellidoMaterno()).append("\",")
-                        .append("\"correo\":\"").append(guardado.getCorreo()).append("\",")
-                        .append("\"telefono\":\"").append(guardado.getTelefono()).append("\",")
-                        .append("\"idRol\":").append(guardado.getIdRol())
-                        .append("}}");
+                            .append("\"idUsuario\":").append(guardado.getIdUsuario()).append(",")
+                            .append("\"nombre\":\"").append(guardado.getNombre()).append("\",")
+                            .append("\"nombreUsuario\":\"").append(guardado.getNombreUsuario()).append("\",")
+                            .append("\"apellidoPaterno\":\"").append(guardado.getApellidoPaterno()).append("\",")
+                            .append("\"apellidoMaterno\":\"").append(guardado.getApellidoMaterno()).append("\",")
+                            .append("\"correo\":\"").append(guardado.getCorreo()).append("\",")
+                            .append("\"telefono\":\"").append(guardado.getTelefono()).append("\",")
+                            .append("\"idRol\":").append(guardado.getIdRol())
+                            .append("}}");
                 } else {
-                    json.append("{\"status\":\"error\",\"message\":\"").append(res.get("message")).append("\"}");
+                    json.append("{\"status\":\"error\",\"message\":\"")
+                            .append(res.get("message"))
+                            .append("\"}");
                 }
+
                 sendJsonResponse(exchange, 200, json.toString());
             } else {
-                sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
-=======
+                sendJsonResponse(exchange, 405,
+                        "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+            }
+        }
+    }
+    // LOGIN - AGENCIA
+
+    static class LoginAgenciaHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                enableCORS(exchange);
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
 
             if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-                sendJsonResponse(
-                        exchange,
-                        405,
-                        "{\"status\":\"error\",\"message\":\"Método no permitido\"}"
-                );
+                sendJsonResponse(exchange, 405,
+                        "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+                return;
+            }
+
+            Map<String, Object> params =
+                    parseJsonOrFormParams(readRequestBody(exchange));
+
+            String usuario = String.valueOf(
+                    params.getOrDefault("usuario", "")
+            ).trim();
+
+            String contrasena = String.valueOf(
+                    params.getOrDefault("contrasena", "")
+            );
+
+            if (usuario.isEmpty() || contrasena.isEmpty()) {
+                sendJsonResponse(exchange, 400,
+                        "{\"status\":\"error\",\"message\":\"Completa el usuario y la contraseña.\"}");
+                return;
+            }
+
+            String sql =
+                    "SELECT u.idUsuario, u.nombreUsuario, u.contrasena, " +
+                            "u.estado AS estadoUsuario, u.idRol, " +
+                            "a.idAgencia, a.nombreComercial, a.estado AS estadoAgencia " +
+                            "FROM Usuario u " +
+                            "INNER JOIN Agencia a ON a.idUsuario = u.idUsuario " +
+                            "WHERE (u.nombreUsuario = ? OR u.idPersona IN " +
+                            "(SELECT p.idPersona FROM Persona p WHERE p.email = ?)) " +
+                            "AND u.idRol = 2 LIMIT 1";
+
+            try (Connection con = ConexionDB.getConnection()) {
+
+                if (con == null) {
+                    sendJsonResponse(exchange, 500,
+                            "{\"status\":\"error\",\"message\":\"No se pudo conectar a la base de datos.\"}");
+                    return;
+                }
+
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+                    ps.setString(1, usuario);
+                    ps.setString(2, usuario);
+
+                    try (ResultSet rs = ps.executeQuery()) {
+
+                        if (!rs.next()) {
+                            sendJsonResponse(exchange, 401,
+                                    "{\"status\":\"error\",\"message\":\"Usuario o contraseña incorrectos.\"}");
+                            return;
+                        }
+
+                        String passwordBD = rs.getString("contrasena");
+
+                        // Compatible con el registro actual, que guarda
+                        // la contraseña directamente. Migrar a hash seguro.
+                        if (passwordBD == null || !passwordBD.equals(contrasena)) {
+                            sendJsonResponse(exchange, 401,
+                                    "{\"status\":\"error\",\"message\":\"Usuario o contraseña incorrectos.\"}");
+                            return;
+                        }
+
+                        String estadoUsuario = rs.getString("estadoUsuario");
+                        String estadoAgencia = rs.getString("estadoAgencia");
+
+                        if (!"ACTIVO".equalsIgnoreCase(estadoUsuario)) {
+                            sendJsonResponse(exchange, 403,
+                                    "{\"status\":\"error\",\"message\":\"La cuenta no está activa.\"}");
+                            return;
+                        }
+
+                        if (!"ACTIVO".equalsIgnoreCase(estadoAgencia)) {
+                            sendJsonResponse(exchange, 403,
+                                    "{\"status\":\"error\",\"message\":\"La agencia aún está pendiente de aprobación.\"}");
+                            return;
+                        }
+
+                        String nombreComercial = rs.getString("nombreComercial")
+                                .replace("\\", "\\\\")
+                                .replace("\"", "\\\"");
+
+                        String json =
+                                "{\"status\":\"success\"," +
+                                        "\"message\":\"Inicio de sesión correcto.\"," +
+                                        "\"agencia\":{" +
+                                        "\"idUsuario\":" + rs.getInt("idUsuario") + "," +
+                                        "\"idAgencia\":" + rs.getInt("idAgencia") + "," +
+                                        "\"nombreUsuario\":\"" +
+                                        rs.getString("nombreUsuario").replace("\"", "\\\"") + "\"," +
+                                        "\"nombreComercial\":\"" + nombreComercial + "\"," +
+                                        "\"idRol\":" + rs.getInt("idRol") +
+                                        "}}";
+
+                        sendJsonResponse(exchange, 200, json);
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendJsonResponse(exchange, 500,
+                        "{\"status\":\"error\",\"message\":\"Error interno al iniciar sesión.\"}");
+            }
+        }
+    }
+    // 3. REGISTRO HANDLER - AGENCIA
+    static class RegistroAgenciaHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                enableCORS(exchange);
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendJsonResponse(exchange, 405,
+                        "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
                 return;
             }
 
@@ -277,13 +389,8 @@ public class JavaApiServer {
             String nombreUsuario = String.valueOf(params.getOrDefault("nombreUsuario", ""));
             String correo = String.valueOf(params.getOrDefault("correo", ""));
             String contrasena = String.valueOf(params.getOrDefault("contrasena", ""));
-
-            String telefonoResponsable =
-                    String.valueOf(params.getOrDefault("telefonoResponsable", ""));
-
-            String telefonoEmpresa =
-                    String.valueOf(params.getOrDefault("telefonoEmpresa", ""));
-
+            String telefonoResponsable = String.valueOf(params.getOrDefault("telefonoResponsable", ""));
+            String telefonoEmpresa = String.valueOf(params.getOrDefault("telefonoEmpresa", ""));
             String razonSocial = String.valueOf(params.getOrDefault("razonSocial", ""));
             String nombreComercial = String.valueOf(params.getOrDefault("nombreComercial", ""));
             String ruc = String.valueOf(params.getOrDefault("ruc", ""));
@@ -301,41 +408,30 @@ public class JavaApiServer {
                     || nombreComercial.isEmpty()
                     || ruc.isEmpty()) {
 
-                sendJsonResponse(
-                        exchange,
-                        400,
-                        "{\"status\":\"error\",\"message\":\"Completa los campos obligatorios.\"}"
-                );
+                sendJsonResponse(exchange, 400,
+                        "{\"status\":\"error\",\"message\":\"Completa los campos obligatorios.\"}");
                 return;
             }
 
             try (java.sql.Connection con = ConexionDB.getConnection()) {
-
                 if (con == null) {
-                    sendJsonResponse(
-                            exchange,
-                            500,
-                            "{\"status\":\"error\",\"message\":\"No se pudo conectar a la base de datos.\"}"
-                    );
+                    sendJsonResponse(exchange, 500,
+                            "{\"status\":\"error\",\"message\":\"No se pudo conectar a la base de datos.\"}");
                     return;
                 }
 
                 con.setAutoCommit(false);
 
                 try {
-
                     // 1. PERSONA
-                    String sqlPersona =
-                            "INSERT INTO Persona " +
-                                    "(nombre, apellidoPaterno, apellidoMaterno, nroDocumento, telefono, email) " +
-                                    "VALUES (?, ?, ?, ?, ?, ?)";
+                    String sqlPersona = "INSERT INTO Persona "
+                            + "(nombre, apellidoPaterno, apellidoMaterno, nroDocumento, telefono, email) "
+                            + "VALUES (?, ?, ?, ?, ?, ?)";
 
                     int idPersona;
 
-                    try (java.sql.PreparedStatement ps =
-                                 con.prepareStatement(
-                                         sqlPersona,
-                                         java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                    try (java.sql.PreparedStatement ps = con.prepareStatement(
+                            sqlPersona, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
                         ps.setString(1, nombre);
                         ps.setString(2, apellidoPaterno);
@@ -343,63 +439,51 @@ public class JavaApiServer {
                         ps.setString(4, nroDocumento);
                         ps.setString(5, telefonoResponsable);
                         ps.setString(6, correo);
-
                         ps.executeUpdate();
 
                         try (java.sql.ResultSet rs = ps.getGeneratedKeys()) {
                             if (!rs.next()) {
                                 throw new java.sql.SQLException(
-                                        "No se pudo obtener el ID de la persona."
-                                );
+                                        "No se pudo obtener el ID de la persona.");
                             }
-
                             idPersona = rs.getInt(1);
                         }
                     }
 
-                    // 2. USUARIO - Agencia = ID ROL 2
-                    String sqlUsuario =
-                            "INSERT INTO Usuario " +
-                                    "(idPersona, idRol, nombreUsuario, contrasena, estado, fechaRegistro) " +
-                                    "VALUES (?, 2, ?, ?, 'ACTIVO', NOW())";
+                    // 2. USUARIO - Rol 2 = Agencia
+                    String sqlUsuario = "INSERT INTO Usuario "
+                            + "(idPersona, idRol, nombreUsuario, contrasena, estado, fechaRegistro) "
+                            + "VALUES (?, 2, ?, ?, 'ACTIVO', NOW())";
 
                     int idUsuario;
 
-                    try (java.sql.PreparedStatement ps =
-                                 con.prepareStatement(
-                                         sqlUsuario,
-                                         java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                    try (java.sql.PreparedStatement ps = con.prepareStatement(
+                            sqlUsuario, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
                         ps.setInt(1, idPersona);
                         ps.setString(2, nombreUsuario);
                         ps.setString(3, contrasena);
-
                         ps.executeUpdate();
 
                         try (java.sql.ResultSet rs = ps.getGeneratedKeys()) {
                             if (!rs.next()) {
                                 throw new java.sql.SQLException(
-                                        "No se pudo obtener el ID del usuario."
-                                );
+                                        "No se pudo obtener el ID del usuario.");
                             }
-
                             idUsuario = rs.getInt(1);
                         }
                     }
 
                     // 3. AGENCIA
-                    String sqlAgencia =
-                            "INSERT INTO Agencia " +
-                                    "(idUsuario, razonSocial, nombreComercial, ruc, telefono, email, " +
-                                    "direccion, descripcion, estado) " +
-                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')";
+                    String sqlAgencia = "INSERT INTO Agencia "
+                            + "(idUsuario, razonSocial, nombreComercial, ruc, telefono, email, "
+                            + "direccion, descripcion, estado) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')";
 
                     int idAgencia;
 
-                    try (java.sql.PreparedStatement ps =
-                                 con.prepareStatement(
-                                         sqlAgencia,
-                                         java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                    try (java.sql.PreparedStatement ps = con.prepareStatement(
+                            sqlAgencia, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
                         ps.setInt(1, idUsuario);
                         ps.setString(2, razonSocial);
@@ -409,71 +493,75 @@ public class JavaApiServer {
                         ps.setString(6, correo);
                         ps.setString(7, direccion);
                         ps.setString(8, descripcion);
-
                         ps.executeUpdate();
 
                         try (java.sql.ResultSet rs = ps.getGeneratedKeys()) {
                             if (!rs.next()) {
                                 throw new java.sql.SQLException(
-                                        "No se pudo obtener el ID de la agencia."
-                                );
+                                        "No se pudo obtener el ID de la agencia.");
                             }
-
                             idAgencia = rs.getInt(1);
                         }
                     }
 
                     // 4. SOLICITUD DE INCORPORACIÓN
-                    String sqlSolicitud =
-                            "INSERT INTO SolicitudIncorporacion " +
-                                    "(fechaSolicitud, estado, observaciones, fechaRespuesta, idAgencia) " +
-                                    "VALUES (NOW(), 'PENDIENTE', ?, NULL, ?)";
+                    // 4. SOLICITUD DE AGENCIA PARA REVISION DEL ADMINISTRADOR
+                    String documentoRuc = String.valueOf(
+                            params.getOrDefault("documentoRuc", "")
+                    );
+                    String sqlSolicitud = "INSERT INTO SolicitudAgencia "
+                            + "(idUsuario, razonSocial, ruc, representanteLegal, "
+                            + "telefonoContacto, correoContacto, documentoRuc, estado) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendiente')";
 
                     int idSolicitud;
 
-                    try (java.sql.PreparedStatement ps =
-                                 con.prepareStatement(
-                                         sqlSolicitud,
-                                         java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                    try (java.sql.PreparedStatement ps = con.prepareStatement(
+                            sqlSolicitud, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
-                        ps.setString(
-                                1,
-                                "Solicitud de incorporación enviada por la agencia."
-                        );
+                        ps.setInt(1, idUsuario);
+                        ps.setString(2, razonSocial);
+                        ps.setString(3, ruc);
 
-                        ps.setInt(2, idAgencia);
+                        String representanteLegal = nombre + " "
+                                + apellidoPaterno + " " + apellidoMaterno;
+                        ps.setString(4, representanteLegal);
+
+                        ps.setString(5, telefonoEmpresa);
+                        ps.setString(6, correo);
+
+                        if (documentoRuc == null || documentoRuc.isBlank()) {
+                            ps.setNull(7, java.sql.Types.VARCHAR);
+                        } else {
+                            ps.setString(7, documentoRuc);
+                        }
 
                         ps.executeUpdate();
 
                         try (java.sql.ResultSet rs = ps.getGeneratedKeys()) {
                             if (!rs.next()) {
                                 throw new java.sql.SQLException(
-                                        "No se pudo obtener el ID de la solicitud."
-                                );
+                                        "No se pudo obtener el ID de la solicitud.");
                             }
-
                             idSolicitud = rs.getInt(1);
                         }
                     }
 
                     con.commit();
 
-                    String json =
-                            "{"
-                                    + "\"status\":\"success\","
-                                    + "\"message\":\"Solicitud de agencia registrada correctamente.\","
-                                    + "\"idPersona\":" + idPersona + ","
-                                    + "\"idUsuario\":" + idUsuario + ","
-                                    + "\"idAgencia\":" + idAgencia + ","
-                                    + "\"idSolicitud\":" + idSolicitud
-                                    + "}";
+                    String json = "{"
+                            + "\"status\":\"success\","
+                            + "\"message\":\"Solicitud de agencia registrada correctamente.\","
+                            + "\"idPersona\":" + idPersona + ","
+                            + "\"idUsuario\":" + idUsuario + ","
+                            + "\"idAgencia\":" + idAgencia + ","
+                            + "\"idSolicitud\":" + idSolicitud
+                            + "}";
 
                     sendJsonResponse(exchange, 200, json);
 
                 } catch (Exception e) {
-
                     con.rollback();
-
                     e.printStackTrace();
 
                     String mensaje = e.getMessage() == null
@@ -485,17 +573,12 @@ public class JavaApiServer {
                             .replace("\n", "\\n")
                             .replace("\t", "\\t");
 
-                    sendJsonResponse(
-                            exchange,
-                            500,
+                    sendJsonResponse(exchange, 500,
                             "{\"status\":\"error\",\"message\":\""
-                                    + mensaje
-                                    + "\"}"
-                    );
+                                    + mensaje + "\"}");
                 }
 
             } catch (Exception e) {
-
                 e.printStackTrace();
 
                 String mensaje = e.getMessage() == null
@@ -507,17 +590,16 @@ public class JavaApiServer {
                         .replace("\n", "\\n")
                         .replace("\t", "\\t");
 
-                sendJsonResponse(
-                        exchange,
-                        500,
+                sendJsonResponse(exchange, 500,
                         "{\"status\":\"error\",\"message\":\""
-                                + mensaje
-                                + "\"}"
-                );
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+                                + mensaje + "\"}");
             }
         }
     }
+
+
+
+
 
     // 3. GUARDAR RESERVA HANDLER
     static class GuardarReservaHandler implements HttpHandler {
@@ -538,15 +620,7 @@ public class JavaApiServer {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> d = (Map<String, Object>) res.get("data");
                     json.append("{\"status\":\"success\",\"message\":\"Reserva guardada exitosamente\",\"data\":{")
-<<<<<<< HEAD
-                        .append("\"idReserva\":").append(d.get("idReserva")).append(",")
-                        .append("\"idPago\":").append(d.get("idPago")).append(",")
-                        .append("\"codigo\":\"").append(d.get("codigo")).append("\",")
-                        .append("\"estado\":\"").append(d.get("estado")).append("\",")
-                        .append("\"precioTotal\":").append(d.get("precioTotal")).append(",")
-                        .append("\"metodoPago\":\"").append(d.get("metodoPago")).append("\"")
-                        .append("}}");
-=======
+
                             .append("\"idReserva\":").append(d.get("idReserva")).append(",")
                             .append("\"idPago\":").append(d.get("idPago")).append(",")
                             .append("\"codigo\":\"").append(d.get("codigo")).append("\",")
@@ -554,7 +628,7 @@ public class JavaApiServer {
                             .append("\"precioTotal\":").append(d.get("precioTotal")).append(",")
                             .append("\"metodoPago\":\"").append(d.get("metodoPago")).append("\"")
                             .append("}}");
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+
                 } else {
                     json.append("{\"status\":\"error\",\"message\":\"").append(res.get("message")).append("\"}");
                 }
@@ -589,21 +663,7 @@ public class JavaApiServer {
                 for (int i = 0; i < lista.size(); i++) {
                     Map<String, Object> r = lista.get(i);
                     json.append("{")
-<<<<<<< HEAD
-                        .append("\"id\":").append(r.get("id")).append(",")
-                        .append("\"codigo\":\"").append(r.get("codigo")).append("\",")
-                        .append("\"titulo\":\"").append(r.get("titulo")).append("\",")
-                        .append("\"ubicacion\":\"").append(r.get("ubicacion")).append("\",")
-                        .append("\"fechas\":\"").append(r.get("fechas")).append("\",")
-                        .append("\"personas\":\"").append(r.get("personas")).append("\",")
-                        .append("\"agencia\":\"").append(r.get("agencia")).append("\",")
-                        .append("\"estado\":\"").append(r.get("estado")).append("\",")
-                        .append("\"total\":").append(r.get("total")).append(",")
-                        .append("\"metodoPago\":\"").append(r.get("metodoPago")).append("\",")
-                        .append("\"imagen\":\"").append(r.get("imagen")).append("\",")
-                        .append("\"fechaRegistro\":\"").append(r.get("fechaRegistro")).append("\"")
-                        .append("}");
-=======
+
                             .append("\"id\":").append(r.get("id")).append(",")
                             .append("\"codigo\":\"").append(r.get("codigo")).append("\",")
                             .append("\"titulo\":\"").append(r.get("titulo")).append("\",")
@@ -617,7 +677,7 @@ public class JavaApiServer {
                             .append("\"imagen\":\"").append(r.get("imagen")).append("\",")
                             .append("\"fechaRegistro\":\"").append(r.get("fechaRegistro")).append("\"")
                             .append("}");
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+
                     if (i < lista.size() - 1) json.append(",");
                 }
             }
@@ -687,8 +747,7 @@ public class JavaApiServer {
         }
     }
 
-<<<<<<< HEAD
-=======
+
     private static String jsonEscape(String value) {
 
         if (value == null) {
@@ -738,7 +797,7 @@ public class JavaApiServer {
 
                     json.append("{")
                             .append("\"idDestino\":").append(rs.getInt("idDestino")).append(",")
-                            .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombreTour"))).append("\",")
+                            .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombre"))).append("\",")
                             .append("\"ubicacion\":\"")
                             .append(jsonEscape(rs.getString("ubicacion")))
                             .append("\"")
@@ -934,9 +993,6 @@ public class JavaApiServer {
             int idServicio = 0;
 
 
-// Conserva aquí la declaración original de idServicio
-// si ya existe en otra parte del método.
-
             Object idServicioObj = params.get("idServicio");
 
             if (idServicioObj != null) {
@@ -1085,8 +1141,6 @@ public class JavaApiServer {
                 return;
             }
 
-            enableCORS(exchange);
-
             if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
                 sendJsonResponse(exchange, 405,
                         "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
@@ -1097,103 +1151,137 @@ public class JavaApiServer {
                     parseQueryParams(exchange.getRequestURI().getQuery());
 
             int idAgencia;
-
             try {
                 idAgencia = Integer.parseInt(
-                        params.getOrDefault("idAgencia", "0")
-                );
+                        params.getOrDefault("idAgencia", "0"));
             } catch (NumberFormatException e) {
                 idAgencia = 0;
             }
 
             if (idAgencia <= 0) {
                 sendJsonResponse(exchange, 400,
-                        "{\"status\":\"error\",\"message\":\"Agencia no especificada\"}");
+                        "{\"status\":\"error\",\"message\":\"ID de agencia inválido\"}");
                 return;
             }
 
             String sql = """
-                    SELECT
-                        idReserva,
-                        idUsuario,
-                        idAgencia,
-                        nombreTour,
-                        codigoReserva,
-                        fechaRegistro,
-                        fechaInicio,
-                        fechaFin,
-                        estado,
-                        motivoCancelacion,
-                        total
-                    FROM Reserva
-                    WHERE idAgencia = ?
-                    ORDER BY fechaRegistro DESC
-                    """;
+            SELECT
+                r.idReserva,
+                r.codigoReserva,
+                r.idUsuario,
+                r.idAgencia,
+                r.nombreTour,
+                r.fechaRegistro,
+                r.fechaInicio,
+                r.fechaFin,
+                r.estado,
+                r.motivoCancelacion,
+                r.total,
+                u.nombreUsuario,
+                (
+                    SELECT COALESCE(SUM(p.monto), 0)
+                    FROM Pago p
+                    WHERE p.idReserva = r.idReserva
+                ) AS totalPagado,
+                (
+                    SELECT p.estado
+                    FROM Pago p
+                    WHERE p.idReserva = r.idReserva
+                    ORDER BY p.fechaPago DESC, p.idPago DESC
+                    LIMIT 1
+                ) AS estadoPago
+            FROM Reserva r
+            LEFT JOIN Usuario u
+                ON u.idUsuario = r.idUsuario
+            WHERE r.idAgencia = ?
+            ORDER BY r.fechaRegistro DESC
+            """;
 
             StringBuilder json = new StringBuilder();
             json.append("{\"status\":\"success\",\"reservas\":[");
 
-            try (Connection con = ConexionDB.getConnection();
-                 PreparedStatement ps = con.prepareStatement(sql)) {
+            try (Connection con = ConexionDB.getConnection()) {
 
-                ps.setInt(1, idAgencia);
+                if (con == null) {
+                    sendJsonResponse(exchange, 500,
+                            "{\"status\":\"error\",\"message\":\"No se pudo conectar a la base de datos\"}");
+                    return;
+                }
 
-                try (ResultSet rs = ps.executeQuery()) {
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                    ps.setInt(1, idAgencia);
 
-                    boolean primero = true;
+                    try (ResultSet rs = ps.executeQuery()) {
+                        boolean primero = true;
 
-                    while (rs.next()) {
+                        while (rs.next()) {
+                            if (!primero) {
+                                json.append(",");
+                            }
+                            primero = false;
 
-                        if (!primero) {
-                            json.append(",");
+                            String estadoPago = rs.getString("estadoPago");
+                            java.math.BigDecimal total =
+                                    rs.getBigDecimal("total");
+                            java.math.BigDecimal totalPagado =
+                                    rs.getBigDecimal("totalPagado");
+
+                            json.append("{")
+                                    .append("\"idReserva\":")
+                                    .append(rs.getInt("idReserva")).append(",")
+
+                                    .append("\"codigoReserva\":\"")
+                                    .append(jsonEscape(rs.getString("codigoReserva")))
+                                    .append("\",")
+
+                                    .append("\"idUsuario\":")
+                                    .append(rs.getInt("idUsuario")).append(",")
+
+                                    .append("\"idAgencia\":")
+                                    .append(rs.getInt("idAgencia")).append(",")
+
+                                    .append("\"nombreCliente\":\"")
+                                    .append(jsonEscape(rs.getString("nombreUsuario")))
+                                    .append("\",")
+
+                                    .append("\"nombreTour\":\"")
+                                    .append(jsonEscape(rs.getString("nombreTour")))
+                                    .append("\",")
+
+                                    .append("\"fechaRegistro\":\"")
+                                    .append(jsonEscape(rs.getString("fechaRegistro")))
+                                    .append("\",")
+
+                                    .append("\"fechaInicio\":\"")
+                                    .append(jsonEscape(rs.getString("fechaInicio")))
+                                    .append("\",")
+
+                                    .append("\"fechaFin\":\"")
+                                    .append(jsonEscape(rs.getString("fechaFin")))
+                                    .append("\",")
+
+                                    .append("\"estado\":\"")
+                                    .append(jsonEscape(rs.getString("estado")))
+                                    .append("\",")
+
+                                    .append("\"motivoCancelacion\":\"")
+                                    .append(jsonEscape(rs.getString("motivoCancelacion")))
+                                    .append("\",")
+
+                                    .append("\"total\":")
+                                    .append(total == null ? "0.00" : total.toPlainString())
+                                    .append(",")
+
+                                    .append("\"totalPagado\":")
+                                    .append(totalPagado == null
+                                            ? "0.00" : totalPagado.toPlainString())
+                                    .append(",")
+
+                                    .append("\"estadoPago\":\"")
+                                    .append(jsonEscape(estadoPago))
+                                    .append("\"")
+                                    .append("}");
                         }
-                        primero = false;
-
-                        String nombreCliente =
-                                rs.getString("nombreTour");
-
-
-                        json.append("{")
-                                .append("\"idReserva\":")
-                                .append(rs.getInt("idReserva")).append(",")
-
-                                .append("\"idUsuario\":")
-                                .append(rs.getInt("idUsuario")).append(",")
-
-                                .append("\"idAgencia\":")
-                                .append(rs.getInt("idAgencia")).append(",")
-
-                                .append("\"nombreTour\":\"")
-                                .append(jsonEscape(rs.getString("nombreTour")))
-                                .append("\",")
-
-                                .append("\"codigoReserva\":\"")
-                                .append(jsonEscape(rs.getString("codigoReserva")))
-                                .append("\",")
-
-                                .append("\"fechaRegistro\":\"")
-                                .append(jsonEscape(rs.getString("fechaRegistro")))
-                                .append("\",")
-
-                                .append("\"fechaInicio\":\"")
-                                .append(jsonEscape(rs.getString("fechaInicio")))
-                                .append("\",")
-
-                                .append("\"fechaFin\":\"")
-                                .append(jsonEscape(rs.getString("fechaFin")))
-                                .append("\",")
-
-                                .append("\"estado\":\"")
-                                .append(jsonEscape(rs.getString("estado")))
-                                .append("\",")
-
-                                .append("\"motivoCancelacion\":\"")
-                                .append(jsonEscape(rs.getString("motivoCancelacion")))
-                                .append("\",")
-
-                                .append("\"total\":")
-                                .append(rs.getBigDecimal("total"))
-                                .append("}");
                     }
                 }
 
@@ -1202,19 +1290,12 @@ public class JavaApiServer {
 
             } catch (Exception e) {
                 e.printStackTrace();
-
-                sendJsonResponse(
-                        exchange,
-                        500,
-                        "{\"status\":\"error\",\"message\":\""
-                                + jsonEscape(e.getMessage())
-                                + "\"}"
-                );
+                sendJsonResponse(exchange, 500,
+                        "{\"status\":\"error\",\"message\":\"Error al consultar las reservas\"}");
             }
         }
     }
 
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
     // 7. STATIC FILES HANDLER (Serves HTML, CSS, JS, Images)
     static class StaticFileHandler implements HttpHandler {
         @Override
@@ -1256,8 +1337,7 @@ public class JavaApiServer {
             return "application/octet-stream";
         }
     }
-<<<<<<< HEAD
-=======
+
 
     static class DisponibilidadAgenciaHandler implements HttpHandler {
 
@@ -1658,5 +1738,5 @@ public class JavaApiServer {
         // Si viene como formulario
         return obtenerParametroFormulario(body, parametro);
     }
->>>>>>> daac32cd486230b773d5739284598de3e2ff6164
+
 }

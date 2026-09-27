@@ -14,37 +14,49 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarAgencias();
 });
 
+
+
 async function cargarAgencias() {
     try {
         const res = await fetch(`${API_BASE}/agencias`);
-        if (res.ok) {
-            const data = await res.json();
-            agenciasList = Array.isArray(data) ? data : (data.data || data.agencias || []);
-        } else {
-            throw new Error('Error al conectar a API');
-        }
-    } catch (e) {
-        console.warn('Cargando fallback para agencias...', e);
-        agenciasList = [
-            // Solicitudes pendientes
-            { id: 101, nombre: 'Andes Expeditions EIRL', ruc: '20789123456', representante: 'Marco Aurelio', email: 'marco@andesexpeditions.pe', telefono: '+51 984 555 123', ciudad: 'Cusco', comision: 10, estado: 'Solicitud', fechaSolicitud: '2026-09-24' },
-            { id: 102, nombre: 'Amazon Eco Lodge & Tours', ruc: '20654987321', representante: 'Luciana Silva', email: 'info@amazonecotours.pe', telefono: '+51 965 221 443', ciudad: 'Iquitos', comision: 12, estado: 'Solicitud', fechaSolicitud: '2026-09-25' },
-            { id: 103, nombre: 'Colca Canyon Trekkers', ruc: '20556677889', representante: 'Gustavo Flores', email: 'ventas@colcatrekkers.pe', telefono: '+51 954 112 334', ciudad: 'Arequipa', comision: 10, estado: 'Solicitud', fechaSolicitud: '2026-09-26' },
-            // Activas
-            { id: 1, nombre: 'Andes Tours S.A.C.', ruc: '20456789012', representante: 'Carlos Mendoza', email: 'contacto@andestours.pe', telefono: '+51 984 123 456', ciudad: 'Cusco', comision: 10, estado: 'Activo' },
-            { id: 2, nombre: 'Inka Travel Peru EIRL', ruc: '20123456789', representante: 'Jorge Ramírez', email: 'reservas@inkatravel.pe', telefono: '+51 984 765 432', ciudad: 'Cusco', comision: 12, estado: 'Activo' },
-            { id: 3, nombre: 'Selva Viva Expeditions', ruc: '20567890123', representante: 'Elena Castillo', email: 'info@selvaviva.com', telefono: '+51 965 332 110', ciudad: 'Iquitos', comision: 10, estado: 'Activo' },
-            { id: 4, nombre: 'Ica Travel Sand & Sun', ruc: '20198765432', representante: 'Fernando Morales', email: 'contacto@icatravel.pe', telefono: '+51 956 443 221', ciudad: 'Ica', comision: 10, estado: 'Activo' },
-            { id: 5, nombre: 'Chanchamayo Expeditions', ruc: '20445566778', representante: 'Rosa Paucar', email: 'contacto@chanchamayoexp.pe', telefono: '+51 964 121 343', ciudad: 'Junín', comision: 10, estado: 'Activo' },
-            { id: 6, nombre: 'Puno Lake Adventures', ruc: '20334455667', representante: 'Raúl Mamani', email: 'info@punolake.pe', telefono: '+51 951 889 001', ciudad: 'Puno', comision: 10, estado: 'Activo' },
-            // Suspendidas
-            { id: 7, nombre: 'Machupicchu Wonder Tours', ruc: '20678901235', representante: 'Manuel Quispe', email: 'reservas@mpwondertours.com', telefono: '+51 984 990 112', ciudad: 'Cusco', comision: 15, estado: 'Suspendido', motivo: 'Múltiples cancelaciones sin aviso' },
-            { id: 8, nombre: 'Arequipa Tours Express', ruc: '20678901299', representante: 'Valeria Díaz', email: 'ventas@arequipaexp.pe', telefono: '+51 954 887 665', ciudad: 'Arequipa', comision: 10, estado: 'Suspendido', motivo: 'Incumplimiento de póliza de seguro' }
-        ];
-    }
-    aplicarFiltros();
-}
 
+        if (!res.ok) {
+            throw new Error(`Error HTTP ${res.status}`);
+        }
+
+        const respuesta = await res.json();
+
+        console.log("Respuesta de la API:", respuesta);
+
+        const lista = respuesta?.data?.agencias;
+
+        if (!Array.isArray(lista)) {
+            throw new Error("La API no devolvió un arreglo de agencias.");
+        }
+
+        agenciasList = lista.map(a => ({
+            ...a,
+            id: Number(a.id),
+            estado: String(a.estado || "").trim()
+        }));
+
+        console.log("Agencias cargadas:", agenciasList);
+        console.log("Cantidad recibida:", agenciasList.length);
+
+        console.log("Antes de aplicar filtros");
+        aplicarFiltros();
+        console.log("Después de aplicar filtros");
+
+    } catch (error) {
+        console.error("Error al cargar agencias:", error);
+
+        Swal.fire(
+            "Error al cargar",
+            "No se pudieron mostrar las agencias. Revisa la consola.",
+            "error"
+        );
+    }
+}
 function cambiarTabAgencias(tab, btn) {
     subTabAgencias = tab;
     document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
@@ -195,38 +207,90 @@ function verDetalleAgencia(id) {
     });
 }
 
-function procesarSolicitud(id, decision) {
-    const a = agenciasList.find(item => item.id === id);
+
+async function procesarSolicitud(id, decision) {
+    const a = agenciasList.find(item => Number(item.id) === Number(id));
     if (!a) return;
 
     const esAceptar = decision === 'Aceptar';
-    Swal.fire({
+
+    const confirmacion = await Swal.fire({
         title: `¿${decision} solicitud?`,
-        text: `Se va a ${esAceptar ? 'aprobar y habilitar' : 'rechazar la solicitud de'} ${a.nombre}.`,
+        text: `Se va a ${esAceptar ? 'aprobar' : 'rechazar'} la solicitud de ${a.nombre}.`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: esAceptar ? '#16a34a' : '#ef4444',
         cancelButtonColor: '#94a3b8',
         confirmButtonText: `Sí, ${decision.toLowerCase()}`,
         cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            if (esAceptar) {
-                a.estado = 'Activo';
-            } else {
-                agenciasList = agenciasList.filter(item => item.id !== id);
-            }
-            try {
-                await fetch(`${API_BASE}/agencias`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(a)
-                });
-            } catch (e) {}
-            aplicarFiltros();
-            Swal.fire(esAceptar ? 'Aprobada' : 'Rechazada', `La solicitud ha sido procesada con éxito.`, 'success');
-        }
     });
+
+    if (!confirmacion.isConfirmed) return;
+
+    // Obtener el administrador de la sesión iniciada.
+    const usuarioJson =
+        localStorage.getItem('travelink_user') ||
+        sessionStorage.getItem('travelink_user');
+
+    if (!usuarioJson) {
+        Swal.fire('Sesión no encontrada',
+            'Inicia sesión nuevamente como administrador.',
+            'warning');
+        return;
+    }
+
+    let usuario;
+    try {
+        usuario = JSON.parse(usuarioJson);
+    } catch (e) {
+        Swal.fire('Error', 'La sesión del administrador no es válida.', 'error');
+        return;
+    }
+
+    const idAdministrador = Number(usuario.idUsuario);
+
+    if (!Number.isInteger(idAdministrador) || idAdministrador <= 0) {
+        Swal.fire('Error', 'No se pudo identificar al administrador.', 'error');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/agencias`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                idSolicitud: Number(a.id),
+                decision: decision,
+                idAdministrador: idAdministrador
+            })
+        });
+
+        const resultado = await res.json();
+
+        if (!res.ok || resultado.status !== 'success') {
+            throw new Error(
+                resultado.message || `Error del servidor: ${res.status}`
+            );
+        }
+
+        // Solo modificar la interfaz después de confirmar el éxito del backend.
+        await cargarAgencias();
+
+        Swal.fire(
+            esAceptar ? 'Aprobada' : 'Rechazada',
+            resultado.message || 'La solicitud se procesó correctamente.',
+            'success'
+        );
+
+    } catch (error) {
+        console.error('Error al procesar solicitud:', error);
+
+        Swal.fire(
+            'No se pudo procesar',
+            error.message || 'Ocurrió un error al comunicarse con el servidor.',
+            'error'
+        );
+    }
 }
 
 function suspenderAgencia(id) {

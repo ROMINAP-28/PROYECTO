@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Agencias de turismo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/agencias.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body style="background-color: #f8fafc;">
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:50%; background:#196f3d; color:#fff; display:flex; justify-content:center; align-items:center; font-size:20px; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html" class="active"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="agencias-layout">
+        <!-- Sidebar Filtros -->
+        <aside class="agencias-sidebar" style="height: fit-content;">
+            <h2 class="sidebar-title">Agencias de turismo</h2>
+
+            <div class="filter-group">
+                <label>Buscar agencia</label>
+                <div class="search-box-agency">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="agencia-busqueda" placeholder="Nombre de la agencia..." oninput="aplicarFiltrosAgencias()">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Ubicación</label>
+                <select class="filter-select" id="agencia-ubicacion" onchange="aplicarFiltrosAgencias()">
+                    <option value="">Todas las ubicaciones</option>
+                    <option value="amazonas">Amazonas</option>
+                    <option value="ancash">Áncash</option>
+                    <option value="apurimac">Apurímac</option>
+                    <option value="arequipa">Arequipa</option>
+                    <option value="ayacucho">Ayacucho</option>
+                    <option value="cajamarca">Cajamarca</option>
+                    <option value="callao">Callao</option>
+                    <option value="cusco">Cusco</option>
+                    <option value="huancavelica">Huancavelica</option>
+                    <option value="huanuco">Huánuco</option>
+                    <option value="ica">Ica</option>
+                    <option value="junin">Junín</option>
+                    <option value="la-libertad">La Libertad</option>
+                    <option value="lambayeque">Lambayeque</option>
+                    <option value="lima">Lima</option>
+                    <option value="loreto">Loreto</option>
+                    <option value="madre-de-dios">Madre de Dios</option>
+                    <option value="moquegua">Moquegua</option>
+                    <option value="pasco">Pasco</option>
+                    <option value="piura">Piura</option>
+                    <option value="puno">Puno</option>
+                    <option value="san-martin">San Martín</option>
+                    <option value="tacna">Tacna</option>
+                    <option value="tumbes">Tumbes</option>
+                    <option value="ucayali">Ucayali</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Calificación</label>
+                <select id="agencia-calificacion" onchange="aplicarFiltrosAgencias()"
+                    style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                    <option value="">Todas las calificaciones</option>
+                    <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                    <option value="4">⭐⭐⭐⭐ (4+ estrellas)</option>
+                    <option value="3">⭐⭐⭐ (3+ estrellas)</option>
+                    <option value="2">⭐⭐ (2+ estrellas)</option>
+                    <option value="1">⭐ (1+ estrella)</option>
+                </select>
+            </div>
+
+            <button onclick="aplicarFiltrosAgencias(event)"
+                style="width:100%; background:#196f3d; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-filter"></i> Aplicar filtros
+            </button>
+            <button onclick="limpiarFiltrosAgencias(event)"
+                style="width:100%; background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-sync-alt"></i> Limpiar filtros
+            </button>
+        </aside>
+
+        <!-- Content Lista de Agencias -->
+        <section class="agencias-content">
+            <div style="margin-bottom: 16px; font-size: 14px; color: #64748b; font-weight: 600;" id="contador-agencias">
+                Mostrando agencias
+            </div>
+
+            <div class="agencias-list" id="agencias-container">
+                <!-- Agencia 1: Andes Tours -->
+                <div class="agencia-item-card" data-nombre="Andes Tours" data-ubicacion="cusco" data-rating="4.8">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #111827; color: #f59e0b;">
+                            <i class="fa-solid fa-mountain"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Andes Tours</h3>
+                            <p class="agencia-item-desc">Especialistas en turismo cultural y de aventura en la región del Cusco.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Cusco</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.8 (300)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Andes+Tours" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 2: Inka Travel -->
+                <div class="agencia-item-card" data-nombre="Inka Travel" data-ubicacion="cusco" data-rating="4.7">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #1e293b; color: #fbbf24;">
+                            <i class="fa-solid fa-sun"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Inka Travel</h3>
+                            <p class="agencia-item-desc">Tours personalizados, senderismo y experiencias arqueológicas únicas.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Cusco</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.7 (280)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Inka+Travel" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 3: Aventura Perú -->
+                <div class="agencia-item-card" data-nombre="Aventura Perú" data-ubicacion="arequipa" data-rating="4.6">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #0f172a; color: #38bdf8;">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Aventura Perú</h3>
+                            <p class="agencia-item-desc">Naturaleza, rafting y expediciones en el Cañón del Colca.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Arequipa</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.6 (210)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Aventura+Per%C3%BA" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 4: Selva Viva -->
+                <div class="agencia-item-card" data-nombre="Selva Viva" data-ubicacion="madre de dios" data-rating="4.5">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #064e3b; color: #34d399;">
+                            <i class="fa-solid fa-tree"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Selva Viva</h3>
+                            <p class="agencia-item-desc">Explora la Amazonía peruana, flora y fauna silvestre en Tambopata.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Madre de Dios (Puerto Maldonado)</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.5 (150)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Selva+Viva" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 5: Lima Tours & Gourmet -->
+                <div class="agencia-item-card" data-nombre="Lima Tours & Gourmet" data-ubicacion="lima" data-rating="4.9">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #831843; color: #f472b6;">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Lima Tours & Gourmet</h3>
+                            <p class="agencia-item-desc">Rutas gastronómicas, centro histórico colonial y city tours por la capital.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Lima</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.9 (420)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Lima+Tours+%26+Gourmet" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 6: Huascarán Expeditions -->
+                <div class="agencia-item-card" data-nombre="Huascarán Expeditions" data-ubicacion="ancash" data-rating="4.8">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #1e3a8a; color: #60a5fa;">
+                            <i class="fa-solid fa-person-hiking"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Huascarán Expeditions</h3>
+                            <p class="agencia-item-desc">Trekking y montañismo en la Cordillera Blanca, Laguna 69 y Pastoruri.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Áncash (Huaraz)</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.8 (190)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Huascar%C3%A1n+Expeditions" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 7: Titicaca Explorer -->
+                <div class="agencia-item-card" data-nombre="Titicaca Explorer" data-ubicacion="puno" data-rating="4.7">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #0369a1; color: #7dd3fc;">
+                            <i class="fa-solid fa-ship"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Titicaca Explorer</h3>
+                            <p class="agencia-item-desc">Navegación en el Lago Titicaca, turismo vivencial en Uros, Taquile y Amantaní.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Puno</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.7 (165)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Titicaca+Explorer" class="btn-ver-tours">Ver tours</a>
+                </div>
+
+                <!-- Agencia 8: Oasis Aventura Ica -->
+                <div class="agencia-item-card" data-nombre="Oasis Aventura Ica" data-ubicacion="ica" data-rating="4.6">
+                    <div class="agencia-item-left">
+                        <div class="agencia-logo-circle" style="background: #c2410c; color: #fdba74;">
+                            <i class="fa-solid fa-car"></i>
+                        </div>
+                        <div class="agencia-item-details">
+                            <h3>Oasis Aventura Ica</h3>
+                            <p class="agencia-item-desc">Tubulares, sandboarding en Huacachina y sobrevuelo a las Líneas de Nazca.</p>
+                            <div class="agencia-item-meta">
+                                <span class="location"><i class="fa-solid fa-location-dot"></i> Ica</span>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.6 (140)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="detalle-agencia.html?agencia=Oasis+Aventura+Ica" class="btn-ver-tours">Ver tours</a>
+                </div>
+            </div>
+
+            <!-- Mensaje sin resultados -->
+            <div id="no-agencias-resultados" style="display: none; text-align: center; padding: 60px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+                <i class="fas fa-building" style="font-size: 40px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                <h3 style="color: #0b1f38; font-size: 18px; margin: 0 0 8px 0;">No se encontraron agencias</h3>
+                <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">No encontramos agencias que coincidan con tu búsqueda. Intenta con otros filtros o restablece los criterios.</p>
+                <button onclick="limpiarFiltrosAgencias(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    <i class="fas fa-sync-alt"></i> Limpiar filtros
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo">
+                </div>
+                <p style="margin-top: 15px; font-size: 14px; color: #a0aec0;">Plataforma digital de turismo y
+                    Experiencias<br>en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="experiencias.html">Experiencias</a></li>
+                    <li><a href="agencias.html">Agencias</a></li>
+                    <li><a href="ofertas.html">Ofertas</a></li>
+                    <li><a href="nosotros.html">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/navigation.js"></script>
+    <script src="../../js/user_session.js"></script>
+    <script src="../../js/agencias.js"></script>
+</body>
+
+</html>

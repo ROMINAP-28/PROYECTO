@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Configuración de Agencia</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+</head>
+
+<body class="dashboard-page admin-body" style="margin:0; padding:0; height:100vh; overflow:hidden; background:#f8fafc;">
+
+    <div class="dashboard" style="display:flex; width:100vw; height:100vh; overflow:hidden;">
+
+        <!-- SIDEBAR ESTILO ADMIN -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header" style="padding: 20px; text-align: center;">
+                <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"
+                    style="max-width: 150px; height: auto;">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="inicio.html" class="nav-item">
+                    <i class="ti ti-smart-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="servicios.html" class="nav-item">
+                    <i class="ti ti-compass"></i>
+                    <span>Servicios turísticos</span>
+                </a>
+                <a href="disponibilidad.html" class="nav-item">
+                    <i class="ti ti-calendar-time"></i>
+                    <span>Disponibilidad y cupos</span>
+                </a>
+                <a href="paquetes.html" class="nav-item">
+                    <i class="ti ti-package"></i>
+                    <span>Paquetes turísticos</span>
+                </a>
+                <a href="reservas.html" class="nav-item">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="pagos.html" class="nav-item">
+                    <i class="ti ti-coins"></i>
+                    <span>Pagos y liquidaciones</span>
+                </a>
+                <a href="configuracion.html" class="nav-item active">
+                    <i class="ti ti-settings"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <header class="admin-topbar" style="height: 64px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: flex-end; padding: 0 28px; position: sticky; top: 0; z-index: 1000; width: 100%;">
+                <div style="display:flex; align-items:center; gap:16px; position:relative; margin-left:auto;">
+                    <button type="button" class="notification-btn" title="Notificaciones" id="btnNotifAgencia">
+                        <i class="ti ti-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="notifications-dropdown-card" id="notifDropdownAgencia"
+                        style="display:none; position:absolute; top:56px; right:120px; background:white; border:1px solid #e2e8f0; border-radius:10px; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000;">
+                        <div style="padding:15px; border-bottom:1px solid #e2e8f0;">
+                            <span style="font-weight:600; font-size:14px; color:#0f172a;">Notificaciones</span>
+                        </div>
+                        <div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                            <i class="ti ti-bell-off" style="font-size:24px; color:#94a3b8; display:block; margin-bottom:6px;"></i>
+                            No hay notificaciones nuevas.
+                        </div>
+                    </div>
+
+                    <div class="user-dropdown-container" style="position:relative;">
+                        <button type="button" class="user-profile-toggle" id="btnPerfilToggle">
+                            <div class="user-avatar-img" id="agencyAvatarLetter" style="background:#2563eb; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">A</div>
+                            <div class="user-info-text">
+                                <span class="user-name" id="nombreAgenciaTop" style="font-weight:600; color:#0f172a; font-size:14px;">ANDES TOURS</span>
+                                <span class="user-role" style="font-size:12px; color:#64748b;">Agencia turística</span>
+                            </div>
+                        </button>
+
+                        <div id="perfilDropdownAgencia"
+                            style="display:none; position:absolute; top:56px; right:0; background:white; border:1px solid #e2e8f0; border-radius:10px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:9999; padding:8px 0;">
+                            <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;" id="dropdownNombreAgencia">ANDES TOURS</p>
+                                <p style="margin:0; font-size:12px; color:#64748b;">Agencia Turística</p>
+                            </div>
+                            <a href="#" onclick="document.getElementById('inputFotoPerfil').click(); return false;" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#334155; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-photo" style="font-size:17px; color:#64748b;"></i> Cambiar foto de perfil
+                            </a>
+                            <input type="file" id="inputFotoPerfil" accept="image/*" style="display:none;">
+                            <a href="configuracion.html" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#334155; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-settings" style="font-size:17px; color:#64748b;"></i> Configuración
+                            </a>
+                            <div style="height:1px; background:#f1f5f9; margin:6px 0;"></div>
+                            <a href="#" id="btnCerrarSesionDropdown" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#ef4444; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-logout" style="font-size:17px;"></i> Cerrar sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENIDO CONFIGURACION -->
+            <div class="content-container">
+
+                <section class="module-toolbar">
+                    <div>
+                        <h2>Configuración</h2>
+                        <p>Administra la información comercial, contacto y seguridad de tu agencia.</p>
+                    </div>
+                </section>
+
+                <div class="config-card">
+                    <h3>Datos de la Agencia</h3>
+                    <p>Información corporativa y comercial registrada ante la plataforma.</p>
+
+                    <form id="formConfigAgencia" onsubmit="event.preventDefault(); alert('Configuración guardada exitosamente.');">
+                        <div class="form-grid-2">
+                            <div class="form-group-custom">
+                                <label>Nombre Comercial</label>
+                                <input type="text" id="cfgNombreComercial" value="ANDES TOURS" required>
+                            </div>
+                            <div class="form-group-custom">
+                                <label>RUC</label>
+                                <input type="text" id="cfgRuc" value="20601234567" readonly style="background:#f8fafc;">
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group-custom">
+                                <label>Razón Social</label>
+                                <input type="text" id="cfgRazonSocial" value="ANDES TOURS S.A.C." required>
+                            </div>
+                            <div class="form-group-custom">
+                                <label>Correo de contacto</label>
+                                <input type="email" id="cfgCorreo" value="contacto@andestours.pe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group-custom">
+                                <label>Teléfono</label>
+                                <input type="tel" id="cfgTelefono" value="+51 984 123 456">
+                            </div>
+                            <div class="form-group-custom">
+                                <label>Dirección principal</label>
+                                <input type="text" id="cfgDireccion" value="Av. Sol 450, Oficina 201">
+                            </div>
+                        </div>
+
+                        <div style="margin-top:15px; text-align:right;">
+                            <button type="submit" class="btn-guardar-config">
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../../js/agencia/agencia.js?v=4"></script>
+    <script>
+    (function() {
+        var sesion = null;
+        try { sesion = JSON.parse(localStorage.getItem("agenciaSesion")); } catch(e){}
+        var nombre = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "ANDES TOURS";
+        var el = document.getElementById("nombreAgenciaTop");
+        var el2 = document.getElementById("dropdownNombreAgencia");
+        var av = document.getElementById("agencyAvatarLetter");
+        var cfgNom = document.getElementById("cfgNombreComercial");
+        if (el) el.textContent = nombre;
+        if (el2) el2.textContent = nombre;
+        if (av) av.textContent = nombre.charAt(0).toUpperCase();
+        if (cfgNom) cfgNom.value = nombre;
+
+        var btnBell = document.getElementById("btnNotifAgencia");
+        var dropNotif = document.getElementById("notifDropdownAgencia");
+        var btnPerfil = document.getElementById("btnPerfilToggle");
+        var dropPerfil = document.getElementById("perfilDropdownAgencia");
+
+        if (btnBell && dropNotif) {
+            btnBell.onclick = function(e) {
+                e.stopPropagation();
+                if (dropPerfil) dropPerfil.style.display = "none";
+                dropNotif.style.display = dropNotif.style.display === "block" ? "none" : "block";
+            };
+        }
+        if (btnPerfil && dropPerfil) {
+            btnPerfil.onclick = function(e) {
+                e.stopPropagation();
+                if (dropNotif) dropNotif.style.display = "none";
+                dropPerfil.style.display = dropPerfil.style.display === "block" ? "none" : "block";
+            };
+        }
+        document.addEventListener("click", function() {
+            if (dropNotif) dropNotif.style.display = "none";
+            if (dropPerfil) dropPerfil.style.display = "none";
+        });
+        var btnLogout = document.getElementById("btnCerrarSesionDropdown");
+        if (btnLogout) {
+            btnLogout.onclick = function(e) {
+                e.preventDefault();
+                localStorage.removeItem("agenciaSesion");
+                window.location.href = "http://localhost:8080/html/Agencia/R_agencia_login.html";
+            };
+        }
+    })();
+    </script>
+</body>
+</html>

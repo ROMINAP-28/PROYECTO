@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class Tour {
     private int idTour;
     private int idAgencia; // FK → Agencia
+    private int idDestino; // FK → Destino
     private String slug;
     private String nombre;
     private String descripcion;
@@ -12,13 +13,13 @@ public class Tour {
     private BigDecimal precioNino;
     private BigDecimal precioBebe;
     private String duracion;
-    private String ubicacion;
     private String categoria;
     private double calificacionPromedio;
     private String estado;
 
-    // Relación
+    // Relaciones
     private Agencia agencia;
+    private Destino destinoObj;
 
     public Tour() {}
 
@@ -27,6 +28,9 @@ public class Tour {
 
     public int getIdAgencia() { return idAgencia; }
     public void setIdAgencia(int idAgencia) { this.idAgencia = idAgencia; }
+
+    public int getIdDestino() { return idDestino; }
+    public void setIdDestino(int idDestino) { this.idDestino = idDestino; }
 
     public String getSlug() { return slug; }
     public void setSlug(String slug) { this.slug = slug; }
@@ -49,9 +53,6 @@ public class Tour {
     public String getDuracion() { return duracion; }
     public void setDuracion(String duracion) { this.duracion = duracion; }
 
-    public String getUbicacion() { return ubicacion; }
-    public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
-
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
 
@@ -65,5 +66,11 @@ public class Tour {
     public void setAgencia(Agencia agencia) { 
         this.agencia = agencia; 
         if (agencia != null) this.idAgencia = agencia.getIdAgencia();
+    }
+
+    public Destino getDestinoObj() { return destinoObj; }
+    public void setDestinoObj(Destino destinoObj) {
+        this.destinoObj = destinoObj;
+        if (destinoObj != null) this.idDestino = destinoObj.getIdDestino();
     }
 }

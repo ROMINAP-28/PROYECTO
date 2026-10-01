@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Paquetes Turísticos</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+</head>
+
+<body class="dashboard-page admin-body" style="margin:0; padding:0; height:100vh; overflow:hidden; background:#f8fafc;">
+
+    <div class="dashboard" style="display:flex; width:100vw; height:100vh; overflow:hidden;">
+
+        <!-- SIDEBAR ESTILO ADMIN -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header" style="padding: 20px; text-align: center;">
+                <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"
+                    style="max-width: 150px; height: auto;">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="inicio.html" class="nav-item">
+                    <i class="ti ti-smart-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="servicios.html" class="nav-item">
+                    <i class="ti ti-compass"></i>
+                    <span>Servicios turísticos</span>
+                </a>
+                <a href="disponibilidad.html" class="nav-item">
+                    <i class="ti ti-calendar-time"></i>
+                    <span>Disponibilidad y cupos</span>
+                </a>
+                <a href="paquetes.html" class="nav-item active">
+                    <i class="ti ti-package"></i>
+                    <span>Paquetes turísticos</span>
+                </a>
+                <a href="reservas.html" class="nav-item">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="pagos.html" class="nav-item">
+                    <i class="ti ti-coins"></i>
+                    <span>Pagos y liquidaciones</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <header class="admin-topbar" style="height: 64px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: flex-end; padding: 0 28px; position: sticky; top: 0; z-index: 1000; width: 100%;">
+                <div style="display:flex; align-items:center; gap:16px; position:relative; margin-left:auto;">
+                    <button type="button" class="notification-btn" title="Notificaciones" id="btnNotifAgencia">
+                        <i class="ti ti-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="notifications-dropdown-card" id="notifDropdownAgencia"
+                        style="display:none; position:absolute; top:56px; right:120px; background:white; border:1px solid #e2e8f0; border-radius:10px; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000;">
+                        <div style="padding:15px; border-bottom:1px solid #e2e8f0;">
+                            <span style="font-weight:600; font-size:14px; color:#0f172a;">Notificaciones</span>
+                        </div>
+                        <div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                            <i class="ti ti-bell-off" style="font-size:24px; color:#94a3b8; display:block; margin-bottom:6px;"></i>
+                            No hay notificaciones nuevas.
+                        </div>
+                    </div>
+
+                    <div class="user-dropdown-container" style="position:relative;">
+                        <button type="button" class="user-profile-toggle" id="btnPerfilToggle">
+                            <div class="user-avatar-img" id="agencyAvatarLetter" style="background:#2563eb; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">A</div>
+                            <div class="user-info-text">
+                                <span class="user-name" id="nombreAgenciaTop" style="font-weight:600; color:#0f172a; font-size:14px;">ANDES TOURS</span>
+                                <span class="user-role" style="font-size:12px; color:#64748b;">Agencia turística</span>
+                            </div>
+                        </button>
+
+                        <div id="perfilDropdownAgencia"
+                            style="display:none; position:absolute; top:56px; right:0; background:white; border:1px solid #e2e8f0; border-radius:10px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:9999; padding:8px 0;">
+                            <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;" id="dropdownNombreAgencia">ANDES TOURS</p>
+                                <p style="margin:0; font-size:12px; color:#64748b;">Agencia Turística</p>
+                            </div>
+                            <a href="#" onclick="document.getElementById('inputFotoPerfil').click(); return false;" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#334155; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-photo" style="font-size:17px; color:#64748b;"></i> Cambiar foto de perfil
+                            </a>
+                            <input type="file" id="inputFotoPerfil" accept="image/*" style="display:none;">
+                            <div style="height:1px; background:#f1f5f9; margin:6px 0;"></div>
+                            <a href="#" id="btnCerrarSesionDropdown" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#ef4444; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-logout" style="font-size:17px;"></i> Cerrar sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENIDO PAQUETES -->
+            <div class="content-container">
+
+                <section class="module-toolbar">
+                    <div>
+                        <h2>Paquetes turísticos</h2>
+                        <p>Combina 2 o más servicios de tu agencia con descuentos atractivos para viajeros.</p>
+                    </div>
+
+                    <button class="btn-nuevo-paquete" id="btnNuevoPaquete">
+                        <i class="ti ti-plus"></i> Agregar paquete
+                    </button>
+                </section>
+
+                <section class="service-filters">
+                    <div class="form-group">
+                        <label for="buscarPaquete">Buscar paquete</label>
+                        <input type="text" id="buscarPaquete" placeholder="Nombre del paquete...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroEstadoPaquete">Estado</label>
+                        <select id="filtroEstadoPaquete">
+                            <option value="">Todos los estados</option>
+                            <option value="PUBLICADO">Publicado</option>
+                            <option value="BORRADOR">Borrador</option>
+                            <option value="PAUSADO">Pausado</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- GRID DE TARJETAS DE PAQUETES -->
+                <div class="paquetes-grid" id="gridPaquetes">
+                    <!-- Tarjetas inyectadas por JS -->
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL AGREGAR / EDITAR PAQUETE -->
+    <div class="modal-overlay" id="modalPaquete">
+        <div class="modal-box" style="max-width: 680px; width: 94%; max-height: 88vh; overflow-y: auto; padding: 26px; border-radius: 16px; background: #ffffff;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:14px;">
+                <div>
+                    <h3 id="tituloModalPaquete" style="margin:0 0 4px 0; font-size:20px; font-weight:700; color:#0f172a;">Nuevo paquete turístico</h3>
+                    <p style="margin:0; font-size:13px; color:#64748b;">Configura el nombre, precio, imágenes de galería y condiciones del paquete.</p>
+                </div>
+                <button type="button" id="cerrarModalPaquete" style="background:none; border:none; font-size:26px; cursor:pointer; color:#64748b; padding:0; line-height:1;">&times;</button>
+            </div>
+
+            <form id="formPaquete">
+                <input type="hidden" id="idPaqueteInput">
+
+                <div class="form-group-custom" style="margin-bottom: 16px;">
+                    <label for="nombrePaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Nombre del paquete *</label>
+                    <input type="text" id="nombrePaqueteInput" placeholder="Ej. Costa y Valles del Sur (Tacna + Moquegua)" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 16px;">
+                    <label for="descPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Descripción *</label>
+                    <textarea id="descPaqueteInput" rows="3" placeholder="Breve resumen de la experiencia..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group-custom">
+                        <label for="precioPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Precio regular (S/) *</label>
+                        <input type="number" step="0.01" id="precioPaqueteInput" placeholder="890.00" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="descuentoPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Descuento (%)</label>
+                        <input type="number" id="descuentoPaqueteInput" placeholder="15" min="0" max="90" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group-custom">
+                        <label for="duracionPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Duración *</label>
+                        <input type="text" id="duracionPaqueteInput" placeholder="Ej. 3 días / 2 noches" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="estadoPaqueteSelect" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Estado inicial</label>
+                        <select id="estadoPaqueteSelect" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white;">
+                            <option value="PUBLICADO">Publicado</option>
+                            <option value="BORRADOR">Borrador</option>
+                            <option value="PAUSADO">Pausado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN GALERÍA DE IMÁGENES (3 IMÁGENES ALINEADAS EN LA MISMA RECTA) -->
+                <div style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                    <label style="font-weight: 700; font-size: 13px; color: #0f172a; display: block; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.4px;">
+                        <i class="ti ti-photo-star" style="color: #2563eb;"></i> Fotografías del Paquete (Portada + 2 Galería)
+                    </label>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                        
+                        <!-- Slot 1: Portada (Principal) -->
+                        <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                            <span style="font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                                1. Portada *
+                            </span>
+                            <div style="width: 100%; height: 95px; border-radius: 8px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; border: 1px solid #e2e8f0;">
+                                <img id="imgPreviewPortada" src="../../img/lima.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='../../img/lima.jpg';">
+                            </div>
+                            <button type="button" onclick="document.getElementById('inputPortFile').click()" style="width: 100%; padding: 8px; border: 1px solid #2563eb; background: #eff6ff; color: #1d4ed8; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i class="ti ti-upload"></i> Subir Portada
+                            </button>
+                            <input type="file" id="inputPortFile" accept="image/*" style="display: none;" onchange="window.cargarImagenSlot(this, 'imagenPaqueteInput', 'imgPreviewPortada')">
+                            <input type="hidden" id="imagenPaqueteInput">
+                        </div>
+
+                        <!-- Slot 2: Galería 1 -->
+                        <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                            <span style="font-size: 11px; font-weight: 700; color: #475569; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                                2. Galería 1
+                            </span>
+                            <div style="width: 100%; height: 95px; border-radius: 8px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; border: 1px solid #e2e8f0;">
+                                <img id="imgPreviewGaleria1" src="../../img/valle.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='../../img/valle.jpg';">
+                            </div>
+                            <button type="button" onclick="document.getElementById('inputGal1File').click()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 6px; font-size: 12px; cursor: pointer; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i class="ti ti-upload"></i> Subir Galería 1
+                            </button>
+                            <input type="file" id="inputGal1File" accept="image/*" style="display: none;" onchange="window.cargarImagenSlot(this, 'imgGaleria1', 'imgPreviewGaleria1')">
+                            <input type="hidden" id="imgGaleria1">
+                        </div>
+
+                        <!-- Slot 3: Galería 2 -->
+                        <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                            <span style="font-size: 11px; font-weight: 700; color: #475569; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                                3. Galería 2
+                            </span>
+                            <div style="width: 100%; height: 95px; border-radius: 8px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; border: 1px solid #e2e8f0;">
+                                <img id="imgPreviewGaleria2" src="../../img/cusco.jpg" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='../../img/cusco.jpg';">
+                            </div>
+                            <button type="button" onclick="document.getElementById('inputGal2File').click()" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 6px; font-size: 12px; cursor: pointer; color: #334155; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <i class="ti ti-upload"></i> Subir Galería 2
+                            </button>
+                            <input type="file" id="inputGal2File" accept="image/*" style="display: none;" onchange="window.cargarImagenSlot(this, 'imgGaleria2', 'imgPreviewGaleria2')">
+                            <input type="hidden" id="imgGaleria2">
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- COMENTARIOS / CONDICIONES Y TRASLADOS (DISEÑO TEXTAREA DE LA PRIMERA IMAGEN) -->
+                <div class="form-group-custom" style="margin-bottom: 20px;">
+                    <label for="condicionesPaqueteInput" style="font-weight: 600; font-size: 15px; color: #0f172a; display: block; margin-bottom: 8px;">Comentarios / Condiciones y Traslados</label>
+                    <textarea id="condicionesPaqueteInput" rows="4" placeholder="Escribe aquí los comentarios, condiciones del paquete, traslados e itinerario..." style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; transition: border-color 0.2s;"></textarea>
+                </div>
+
+                <div id="mensajePaquete" style="padding:10px; border-radius:6px; font-size:13px; margin-bottom:12px; display:none;"></div>
+
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+                    <button type="button" id="btnCancelarPaquete" style="background:#f1f5f9; color:#475569; border:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button type="submit" style="background:#2563eb; color:white; border:none; padding:10px 24px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+                        Guardar paquete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLES DEL PAQUETE -->
+    <div class="modal-overlay" id="modalDetallesPaquete">
+        <div class="modal-box" style="max-width:550px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                <div>
+                    <h3 id="detNombrePaquete" style="margin:0 0 4px 0; font-size:18px; font-weight:700; color:#0f172a;">Detalles del paquete</h3>
+                    <span id="detEstadoPaquete" class="paquete-status-badge publicado" style="position:static; margin-top:4px;">PUBLICADO</span>
+                </div>
+                <button type="button" id="cerrarModalDetallesX" onclick="window.cerrarModalDetalles()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; font-size:14px; color:#334155;">
+                <div>
+                    <strong style="color:#0f172a; display:block; margin-bottom:2px;">Descripción:</strong>
+                    <p id="detDescPaquete" style="margin:0; color:#64748b; line-height:1.5;"></p>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div>
+                        <strong style="color:#64748b; font-size:12px; text-transform:uppercase;">Precio Regular:</strong>
+                        <div id="detPrecioPaquete" style="font-size:18px; font-weight:800; color:#0f172a;"></div>
+                    </div>
+                    <div>
+                        <strong style="color:#64748b; font-size:12px; text-transform:uppercase;">Descuento Aplicado:</strong>
+                        <div id="detDescuentoPaquete" style="font-weight:700; color:#15803d;"></div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <strong style="color:#0f172a;">Duración:</strong>
+                        <span id="detDuracionPaquete"></span>
+                    </div>
+                    <div>
+                        <strong style="color:#0f172a;">Disponibilidad / Cupos:</strong>
+                        <span id="detCuposPaquete" style="color:#2563eb; font-weight:600;">30 cupos disponibles</span>
+                    </div>
+                </div>
+
+                <div>
+                    <strong style="color:#0f172a; display:block; margin-bottom:2px;">Condiciones y Traslados:</strong>
+                    <p id="detCondicionesPaquete" style="margin:0; color:#64748b;"></p>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:14px;">
+                <button type="button" id="btnCerrarModalDetalles" onclick="window.cerrarModalDetalles()" style="background:#2563eb; color:white; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/agencia/user_session.js"></script>
+    <script src="../../js/agencia/agencia_paquetes.js?v=2"></script>
+</body>
+</html>

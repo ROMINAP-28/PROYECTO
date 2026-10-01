@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datos de la empresa</title>
-    <link rel="stylesheet" href="../../css/agencia.css">
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
 </head>
 <body>
 <main class="registro-container">
@@ -31,12 +31,12 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="razonSocial">Razón social</label>
-                        <input type="text" id="razonSocial" name="razonSocial" maxlength="150" required>
+                        <input type="text" id="razonSocial" name="razonSocial" maxlength="150" pattern="^[A-Za-zÁ-ÿ0-9\s.,-]+$" title="Ingresa una razón social válida" required>
                     </div>
 
                     <div class="form-group">
                         <label for="ruc">RUC</label>
-                        <input type="text" id="ruc" name="ruc" maxlength="20" required>
+                        <input type="text" id="ruc" name="ruc" minlength="11" maxlength="11" pattern="^[0-9]{11}$" title="El RUC debe tener exactamente 11 dígitos" required>
                     </div>
 
                     <div class="form-group">
@@ -66,6 +66,6 @@
     </div>
 </main>
 
-<script src="../../js/agencia.js"></script>
+<script src="../../js/agencia/agencia.js"></script>
 </body>
 </html>

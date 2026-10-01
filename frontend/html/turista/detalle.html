@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Travelink - Detalle del Tour</title>
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="../../css/experiencias.css">
+    <link rel="stylesheet" href="../../css/turista/experiencias.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -15,7 +15,7 @@
     <header class="navbar navbar-home-clean"
         style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
         <div class="logo">
-            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+            <a href="../index.html" style="display:flex; align-items:center; text-decoration:none;">
                 <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
                     onerror="this.onerror=null; this.src='../../img/logo.png';">
             </a>
@@ -37,7 +37,7 @@
                 </div>
                 <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
             </div>
-            <a href="index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="../index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
             <a href="experiencias.html" id="nav-exp-link"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
             <a href="agencias.html" id="nav-agencies-link"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
             <a href="ofertas.html" id="nav-offers-link"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
@@ -47,7 +47,8 @@
         </nav>
 
         <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
             <a href="registro.html" class="btn-auth-register">Registrarse</a>
         </div>
     </header>
@@ -216,7 +217,7 @@
             <div>
                 <h4 style="font-size: 15px; margin-bottom: 14px;">Enlaces</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-                    <li><a href="index.html" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
+                    <li><a href="../index.html" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
                     <li><a href="experiencias.html" style="color: #94a3b8; text-decoration: none;">Experiencias</a></li>
                     <li><a href="agencias.html" style="color: #94a3b8; text-decoration: none;">Agencias</a></li>
                     <li><a href="ofertas.html" style="color: #94a3b8; text-decoration: none;">Ofertas</a></li>
@@ -244,131 +245,181 @@
         </div>
     </footer>
 
-    <script src="../../js/user_session.js"></script>
-    <script src="../../js/navigation.js"></script>
+    <script src="../../js/agencia/user_session.js"></script>
+    <script src="../../js/turista/navigation.js"></script>
     <script>
-        // Catálogo de Tours y Detalles
+    <script src="../../js/agencia/user_session.js"></script>
+    <script src="../../js/turista/navigation.js"></script>
+    <script>
+        let currentTourId = 1;
+        let currentAgencyName = 'ANDES TOURS PERU S.A.C.';
+
+        // CatÃ¡logo de Tours y Detalles
         const TOURS_DATA = {
-            'machu-picchu': {
-                title: 'Machu Picchu Clásico',
+            '1': {
+                id: 1,
+                title: 'Machu Picchu ClÃ¡sico y Valle Sagrado',
                 price: 350,
                 priceAdulto: 350,
                 priceNino: 250,
                 priceBebe: 100,
                 categoria: 'Cultura',
                 catIcon: 'fa-landmark',
-                duracion: '1 día',
+                duracion: '1 dÃ­a',
                 ubicacion: 'Cusco',
-                agencia: 'Andes Tours',
+                agencia: 'ANDES TOURS PERU S.A.C.',
                 rating: 4.8,
-                reviews: '(300 reseñas)',
-                desc: 'Vive la experiencia de conocer una de las 7 maravillas del mundo moderno, Machu Picchu. Un recorrido guiado exclusivo por los templos, andenerías y miradores sagrados del santuario inca.',
-                imgMain: '../../img/cusco.jpg',
-                thumbs: ['../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
+                reviews: '(300 reseÃ±as)',
+                desc: 'Vive la experiencia de conocer una de las 7 maravillas del mundo moderno, Machu Picchu. Un recorrido guiado exclusivo por los templos, andenerÃ­as y miradores sagrados del santuario inca.',
+                imgMain: '../../img/colca.jpg',
+                thumbs: ['../../img/colca.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
             },
-            '7-colores': {
-                title: 'Montaña de 7 Colores',
+            '2': {
+                id: 2,
+                title: 'MontaÃ±a de 7 Colores (Vinicunca)',
                 price: 280,
                 priceAdulto: 280,
                 priceNino: 190,
                 priceBebe: 80,
                 categoria: 'Naturaleza',
                 catIcon: 'fa-leaf',
-                duracion: '1 día',
+                duracion: '1 dÃ­a',
                 ubicacion: 'Cusco',
-                agencia: 'Andes Tours',
+                agencia: 'INKA TRAVEL EXPERIENCES S.A.C.',
                 rating: 4.7,
-                reviews: '(198 reseñas)',
-                desc: 'La belleza natural de los Andes en todo su esplendor. Camina hacia el mirador de la cumbre de Vinicunca a más de 5,000 m.s.n.m. y maravíllate con sus franjas geológicas multicolores.',
+                reviews: '(198 reseÃ±as)',
+                desc: 'La belleza natural de los Andes en todo su esplendor. Camina hacia el mirador de la cumbre de Vinicunca a mÃ¡s de 5,000 m.s.n.m. y maravÃ­llate con sus franjas geolÃ³gicas multicolores.',
                 imgMain: '../../img/7colores.jpg',
                 thumbs: ['../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/huaraz.jpg', '../../img/uros.jpg']
             },
-            'valle-sagrado': {
-                title: 'Valle Sagrado de los Incas',
-                price: 320,
-                priceAdulto: 320,
-                priceNino: 220,
-                priceBebe: 90,
-                categoria: 'Cultura',
-                catIcon: 'fa-landmark',
-                duracion: '1 día',
-                ubicacion: 'Cusco',
-                agencia: 'Inka Travel',
-                rating: 4.6,
-                reviews: '(176 reseñas)',
-                desc: 'Historia, cultura y paisajes en un solo lugar. Conoce las fortalezas incas de Pisac y Ollantaytambo, el pueblo tradicional de Chinchero y los andenes circulares de Moray.',
-                imgMain: '../../img/colca.jpg',
-                thumbs: ['../../img/colca.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/arequipa.jpg', '../../img/uros.jpg']
-            },
-            'titicaca': {
-                title: 'Lago Titicaca e Islas Flotantes',
-                price: 310,
-                priceAdulto: 310,
-                priceNino: 210,
-                priceBebe: 80,
-                categoria: 'Aventura',
-                catIcon: 'fa-person-hiking',
-                duracion: '1 día',
-                ubicacion: 'Puno',
-                agencia: 'Andes Tours',
-                rating: 4.5,
-                reviews: '(142 reseñas)',
-                desc: 'Conoce la cultura viva milenaria de las comunidades Uros y Taquile navegando en lancha por las aguas azules del Lago Titicaca, el lago navegable más alto del mundo.',
-                imgMain: '../../img/uros.jpg',
-                thumbs: ['../../img/uros.jpg', '../../img/puno.jpg', '../../img/colca.jpg', '../../img/cusco.jpg', '../../img/arequipa.jpg']
-            },
-            'city-tour-cusco': {
-                title: 'City Tour Cusco & Templos Incas',
-                price: 120,
-                priceAdulto: 120,
-                priceNino: 80,
-                priceBebe: 40,
-                categoria: 'Cultura',
-                catIcon: 'fa-landmark',
-                duracion: '1/2 día',
-                ubicacion: 'Cusco',
-                agencia: 'Andes Tours',
-                rating: 4.4,
-                reviews: '(120 reseñas)',
-                desc: 'Recorre la historia y el encanto de la antigua capital del Tahuantinsuyo. Incluye visita a la Catedral, el templo del Sol Qorikancha y el complejo arqueológico de Sacsayhuamán.',
-                imgMain: '../../img/arequipa.jpg',
-                thumbs: ['../../img/arequipa.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/fondo1.png']
-            },
-            'amazonia': {
-                title: 'Aventura en la Amazonía',
-                price: 450,
-                priceAdulto: 450,
-                priceNino: 300,
-                priceBebe: 120,
+            '3': {
+                id: 3,
+                title: 'Laguna Humantay Trek & Aventura',
+                price: 150,
+                priceAdulto: 150,
+                priceNino: 100,
+                priceBebe: 50,
                 categoria: 'Naturaleza',
                 catIcon: 'fa-leaf',
-                duracion: '3 días',
-                ubicacion: 'Puerto Maldonado / Iquitos',
-                agencia: 'Selva Viva',
-                rating: 4.8,
-                reviews: '(95 reseñas)',
-                desc: 'Vive la magia de la selva peruana. Expedición con caminatas nocturnas, avistamiento de delfines rosados, pesca de pirañas y estadía en un ecolodge inmerso en la naturaleza.',
-                imgMain: '../../img/huaraz.jpg',
-                thumbs: ['../../img/huaraz.jpg', '../../img/uros.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg']
+                duracion: '1 dÃ­a',
+                ubicacion: 'Cusco',
+                agencia: 'AGENCIA ALEGRIA S.A',
+                rating: 4.9,
+                reviews: '(178 reseÃ±as)',
+                desc: 'Caminata inolvidable hacia una impresionante laguna de aguas color esmeralda y turquesa alimentada por el glaciar del nevado Humantay en la cordillera de Vilcabamba.',
+                imgMain: '../../img/puno.jpg',
+                thumbs: ['../../img/puno.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/uros.jpg']
             },
-            'colca': {
-                title: 'Tour Cañón del Colca',
-                price: 160,
-                priceAdulto: 160,
-                priceNino: 110,
+            '4': {
+                id: 4,
+                title: 'AmazonÃ­a Profunda Tambopata',
+                price: 1450,
+                priceAdulto: 1450,
+                priceNino: 980,
+                priceBebe: 350,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '4 dÃ­as / 3 noches',
+                ubicacion: 'Madre de Dios',
+                agencia: 'AGENCIA SELVA S.A',
+                rating: 4.8,
+                reviews: '(95 reseÃ±as)',
+                desc: 'InmersiÃ³n completa en la selva virgen con observaciÃ³n de fauna silvestre, caminatas nocturnas, canopy, kayak y alojamiento de primera en ecolodge.',
+                imgMain: '../../img/selva.jpg',
+                thumbs: ['../../img/selva.jpg', '../../img/uros.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg']
+            },
+            '5': {
+                id: 5,
+                title: 'CaÃ±Ã³n del Colca & Mirador del CÃ³ndor',
+                price: 180,
+                priceAdulto: 180,
+                priceNino: 120,
+                priceBebe: 60,
+                categoria: 'Aventura',
+                catIcon: 'fa-person-hiking',
+                duracion: '2 dÃ­as / 1 noche',
+                ubicacion: 'Arequipa',
+                agencia: 'TOUR AREQUIPA S.A.S',
+                rating: 4.9,
+                reviews: '(188 reseÃ±as)',
+                desc: 'Descubre uno de los caÃ±ones mÃ¡s profundos de la Tierra, visita pueblos andinos tradicionales de Yanque y Chivay, y sÃ© testigo del imponente vuelo del cÃ³ndor andino.',
+                imgMain: '../../img/arequipa.jpg',
+                thumbs: ['../../img/arequipa.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/huaraz.jpg']
+            },
+            '6': {
+                id: 6,
+                title: 'Oasis de Huacachina & Tubulares Ica',
+                price: 190,
+                priceAdulto: 190,
+                priceNino: 130,
                 priceBebe: 50,
                 categoria: 'Aventura',
                 catIcon: 'fa-person-hiking',
-                duracion: '1 día',
-                ubicacion: 'Arequipa',
-                agencia: 'Aventura Perú',
-                rating: 4.7,
-                reviews: '(88 reseñas)',
-                desc: 'Descubre uno de los cañones más profundos de la Tierra, visita pueblos andinos tradicionales de Yanque y Chivay, y sé testigo del vuelo del cóndor en la Cruz del Cóndor.',
+                duracion: '1 dÃ­a',
+                ubicacion: 'Ica',
+                agencia: 'TOUR LIMA S.A',
+                rating: 4.8,
+                reviews: '(210 reseÃ±as)',
+                desc: 'Recorre el desierto en buggies tubulares a toda velocidad y deslÃ­zate en sandboard por las dunas gigantes que rodean el oasis natural de Huacachina.',
+                imgMain: '../../img/ica.jpg',
+                thumbs: ['../../img/ica.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/arequipa.jpg', '../../img/cusco.jpg']
+            },
+            'machu-picchu': {
+                id: 1,
+                title: 'Machu Picchu ClÃ¡sico',
+                price: 350,
+                priceAdulto: 350,
+                priceNino: 250,
+                priceBebe: 100,
+                categoria: 'Cultura',
+                catIcon: 'fa-landmark',
+                duracion: '1 dÃ­a',
+                ubicacion: 'Cusco',
+                agencia: 'ANDES TOURS PERU S.A.C.',
+                rating: 4.8,
+                reviews: '(300 reseÃ±as)',
+                desc: 'Vive la experiencia de conocer una de las 7 maravillas del mundo moderno, Machu Picchu. Un recorrido guiado exclusivo por los templos, andenerÃ­as y miradores sagrados del santuario inca.',
                 imgMain: '../../img/colca.jpg',
-                thumbs: ['../../img/colca.jpg', '../../img/arequipa.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/huaraz.jpg']
+                thumbs: ['../../img/colca.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
+            },
+            '7-colores': {
+                id: 2,
+                title: 'MontaÃ±a de 7 Colores',
+                price: 280,
+                priceAdulto: 280,
+                priceNino: 190,
+                priceBebe: 80,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '1 dÃ­a',
+                ubicacion: 'Cusco',
+                agencia: 'INKA TRAVEL EXPERIENCES S.A.C.',
+                rating: 4.7,
+                reviews: '(198 reseÃ±as)',
+                desc: 'La belleza natural de los Andes en todo su esplendor. Camina hacia el mirador de la cumbre de Vinicunca a mÃ¡s de 5,000 m.s.n.m. y maravÃ­llate con sus franjas geolÃ³gicas multicolores.',
+                imgMain: '../../img/7colores.jpg',
+                thumbs: ['../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/huaraz.jpg', '../../img/uros.jpg']
+            },
+            'colca': {
+                id: 5,
+                title: 'Tour CaÃ±Ã³n del Colca',
+                price: 180,
+                priceAdulto: 180,
+                priceNino: 120,
+                priceBebe: 60,
+                categoria: 'Aventura',
+                catIcon: 'fa-person-hiking',
+                duracion: '2 dÃ­as / 1 noche',
+                ubicacion: 'Arequipa',
+                agencia: 'TOUR AREQUIPA S.A.S',
+                rating: 4.9,
+                reviews: '(188 reseÃ±as)',
+                desc: 'Descubre uno de los caÃ±ones mÃ¡s profundos de la Tierra, visita pueblos andinos tradicionales de Yanque y Chivay, y sÃ© testigo del imponente vuelo del cÃ³ndor andino.',
+                imgMain: '../../img/arequipa.jpg',
+                thumbs: ['../../img/arequipa.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/huaraz.jpg']
             },
             'humantay': {
+                id: 3,
                 title: 'Trek Laguna Humantay',
                 price: 150,
                 priceAdulto: 150,
@@ -376,133 +427,50 @@
                 priceBebe: 50,
                 categoria: 'Naturaleza',
                 catIcon: 'fa-leaf',
-                duracion: '1 día',
+                duracion: '1 dÃ­a',
                 ubicacion: 'Cusco',
-                agencia: 'Inka Travel',
+                agencia: 'AGENCIA ALEGRIA S.A',
                 rating: 4.9,
-                reviews: '(78 reseñas)',
+                reviews: '(178 reseÃ±as)',
                 desc: 'Caminata inolvidable hacia una impresionante laguna de aguas color esmeralda y turquesa alimentada por el glaciar del nevado Humantay en la cordillera de Vilcabamba.',
-                imgMain: '../../img/huaraz.jpg',
-                thumbs: ['../../img/huaraz.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/uros.jpg']
+                imgMain: '../../img/puno.jpg',
+                thumbs: ['../../img/puno.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/uros.jpg']
             },
-            'cotahuasi': {
-                title: 'Cañón de Cotahuasi',
-                price: 120,
-                priceAdulto: 120,
-                priceNino: 80,
-                priceBebe: 40,
-                categoria: 'Aventura',
-                catIcon: 'fa-person-hiking',
-                duracion: '2 días',
-                ubicacion: 'Arequipa',
-                agencia: 'Aventura Perú',
-                rating: 4.6,
-                reviews: '(50 reseñas)',
-                desc: 'Conoce los paisajes más imponentes y profundos del planeta, cataratas de Sipia, bosques de cactus gigantes y aguas termales relajantes.',
-                imgMain: '../../img/arequipa.jpg',
-                thumbs: ['../../img/arequipa.jpg', '../../img/colca.jpg', '../../img/huaraz.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg']
+            'amazonia': {
+                id: 4,
+                title: 'Aventura en la AmazonÃ­a',
+                price: 1450,
+                priceAdulto: 1450,
+                priceNino: 980,
+                priceBebe: 350,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '4 dÃ­as / 3 noches',
+                ubicacion: 'Madre de Dios',
+                agencia: 'AGENCIA SELVA S.A',
+                rating: 4.8,
+                reviews: '(95 reseÃ±as)',
+                desc: 'InmersiÃ³n completa en la selva virgen con observaciÃ³n de fauna silvestre, caminatas nocturnas, canopy, kayak y alojamiento de primera en ecolodge.',
+                imgMain: '../../img/selva.jpg',
+                thumbs: ['../../img/selva.jpg', '../../img/uros.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg']
             },
             'huacachina': {
+                id: 6,
                 title: 'Oasis de Huacachina & Sandboarding',
-                price: 120,
-                priceAdulto: 120,
-                priceNino: 80,
-                priceBebe: 40,
-                categoria: 'Aventura',
-                catIcon: 'fa-person-hiking',
-                duracion: '1 día',
-                ubicacion: 'Ica',
-                agencia: 'Andes Tours',
-                rating: 4.6,
-                reviews: '(102 reseñas)',
-                desc: 'Recorre el desierto en buggies tubulares a toda velocidad y deslízate en sandboard por las dunas gigantes que rodean la laguna de Huacachina.',
-                imgMain: '../../img/ica.jpg',
-                thumbs: ['../../img/ica.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/arequipa.jpg', '../../img/cusco.jpg']
-            },
-            'gastronomia-lima': {
-                title: 'Ruta Gastronómica Limeña',
                 price: 190,
                 priceAdulto: 190,
                 priceNino: 130,
                 priceBebe: 50,
-                categoria: 'Gastronomía',
-                catIcon: 'fa-utensils',
-                duracion: '1/2 día',
-                ubicacion: 'Lima',
-                agencia: 'Lima Tours & Gourmet',
-                rating: 4.9,
-                reviews: '(145 reseñas)',
-                desc: 'Degustación de ceviche tradicional, lomo saltado, causas peruanas, postres típicos como suspiro a la limeña y cata de Pisco Sour guiada por sommeliers expertos.',
-                imgMain: '../../img/fondo1.png',
-                thumbs: ['../../img/fondo1.png', '../../img/lima.jpg', '../../img/colca.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg']
-            },
-            'centro-historico-lima': {
-                title: 'Centro Histórico y Catacumbas de San Francisco',
-                price: 85,
-                priceAdulto: 85,
-                priceNino: 50,
-                priceBebe: 25,
-                categoria: 'Historia',
-                catIcon: 'fa-landmark',
-                duracion: '1/2 día',
-                ubicacion: 'Lima',
-                agencia: 'Lima Tours & Gourmet',
-                rating: 4.7,
-                reviews: '(94 reseñas)',
-                desc: 'Explora la Plaza Mayor, la Catedral de Lima, el Palacio de Gobierno y las misteriosas criptas subterráneas del Convento de San Francisco.',
-                imgMain: '../../img/lima.jpg',
-                thumbs: ['../../img/lima.jpg', '../../img/fondo1.png', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/arequipa.jpg']
-            },
-            'laguna-69': {
-                title: 'Trekking Laguna 69 en Huaraz',
-                price: 140,
-                priceAdulto: 140,
-                priceNino: 95,
-                priceBebe: 40,
                 categoria: 'Aventura',
                 catIcon: 'fa-person-hiking',
-                duracion: '1 día',
-                ubicacion: 'Áncash (Huaraz)',
-                agencia: 'Huascarán Expeditions',
-                rating: 4.9,
-                reviews: '(85 reseñas)',
-                desc: 'Caminata de alta montaña en el Parque Nacional Huascarán. Admira las aguas turquesa más cristalinas de los Andes y las cascadas glaciares.',
-                imgMain: '../../img/huaraz.jpg',
-                thumbs: ['../../img/huaraz.jpg', '../../img/7colores.jpg', '../../img/puno.jpg', '../../img/colca.jpg', '../../img/cusco.jpg']
-            },
-            'churin-relax': {
-                title: 'Aguas Termales & Relax en Churín',
-                price: 130,
-                priceAdulto: 130,
-                priceNino: 85,
-                priceBebe: 35,
-                categoria: 'Relax',
-                catIcon: 'fa-spa',
-                duracion: '2 días',
-                ubicacion: 'Lima Provincias',
-                agencia: 'Lima Tours & Gourmet',
-                rating: 4.5,
-                reviews: '(52 reseñas)',
-                desc: 'Desconéctate en los famosos complejos termales de La Juventud y Mamahuarmi, con pozas naturales medicinales, saunas de eucalipto y masajes relajantes.',
-                imgMain: '../../img/fondo1.png',
-                thumbs: ['../../img/fondo1.png', '../../img/colca.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg', '../../img/huaraz.jpg']
-            },
-            'kuelap-gocta': {
-                title: 'Fortaleza Kuélap & Catarata Gocta',
-                price: 320,
-                priceAdulto: 320,
-                priceNino: 220,
-                priceBebe: 90,
-                categoria: 'Historia',
-                catIcon: 'fa-landmark',
-                duracion: '2 días',
-                ubicacion: 'Amazonas (Chachapoyas)',
-                agencia: 'Andes Tours',
+                duracion: '1 dÃ­a',
+                ubicacion: 'Ica',
+                agencia: 'TOUR LIMA S.A',
                 rating: 4.8,
-                reviews: '(71 reseñas)',
-                desc: 'Descubre la imponente ciudadela amurallada de la cultura Chachapoyas en teleférico y realiza senderismo hacia una de las cataratas más altas del planeta.',
-                imgMain: '../../img/cusco.jpg',
-                thumbs: ['../../img/cusco.jpg', '../../img/huaraz.jpg', '../../img/selva.jpg', '../../img/colca.jpg', '../../img/fondo1.png']
+                reviews: '(210 reseÃ±as)',
+                desc: 'Recorre el desierto en buggies tubulares a toda velocidad y deslÃ­zate en sandboard por las dunas gigantes que rodean el oasis natural de Huacachina.',
+                imgMain: '../../img/ica.jpg',
+                thumbs: ['../../img/ica.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/arequipa.jpg', '../../img/cusco.jpg']
             }
         };
 
@@ -518,23 +486,23 @@
         }
 
         function irAReserva() {
-            window.location.href = 'form_reserva.html';
+            window.location.href = orm_reserva.html?idPaquete=&agencia=;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const from = urlParams.get('from') || 'experiencias';
-            const tourKey = (urlParams.get('tour') || 'machu-picchu').toLowerCase();
+            const paramId = urlParams.get('idPaquete') || urlParams.get('tour') || '1';
+            const tourKey = String(paramId).toLowerCase();
             const agenciaParam = urlParams.get('agencia');
 
             const btnBack = document.getElementById('btn-back-dynamic');
             const btnBackText = document.getElementById('btn-back-text');
 
-            // 1. Configurar botón de regreso y enlace activo según el origen
             if (from === 'agencias') {
                 btnBackText.textContent = 'Volver a agencias';
                 if (agenciaParam) {
-                    btnBack.href = `detalle-agencia.html?agencia=${encodeURIComponent(agenciaParam)}`;
+                    btnBack.href = detalle-agencia.html?agencia=;
                 } else {
                     btnBack.href = 'agencias.html';
                 }
@@ -551,36 +519,69 @@
                 document.getElementById('nav-exp-link')?.classList.add('active');
             }
 
-            // 2. Cargar datos específicos del tour
-            const tour = TOURS_DATA[tourKey] || TOURS_DATA['machu-picchu'];
+            let tour = TOURS_DATA[tourKey] || TOURS_DATA['1'] || TOURS_DATA['machu-picchu'];
 
-            document.getElementById('page-title').textContent = `Travelink - ${tour.title}`;
+            // Intentar fetch dinÃ¡mico desde el servidor para sincronizar con BD
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1200);
+                const resp = await fetch(http://localhost:8080/api/agencia/paquetes?idAgencia=0, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+                if (data && data.status === 'success' && Array.isArray(data.paquetes)) {
+                    const matchPaq = data.paquetes.find(p => String(p.idPaquete || p.id) === String(paramId) || (p.nombre && p.nombre.toLowerCase().includes(tourKey)));
+                    if (matchPaq) {
+                        const pVal = parseFloat(matchPaq.precio || tour.price);
+                        tour = {
+                            id: matchPaq.idPaquete || matchPaq.id,
+                            title: matchPaq.nombre,
+                            price: pVal,
+                            priceAdulto: pVal,
+                            priceNino: Math.round(pVal * 0.7),
+                            priceBebe: Math.round(pVal * 0.3),
+                            categoria: 'Cultura / Aventura',
+                            catIcon: 'fa-landmark',
+                            duracion: matchPaq.duracion || '1 dÃ­a',
+                            ubicacion: matchPaq.ubicacion || 'PerÃº',
+                            agencia: matchPaq.agencia || agenciaParam || 'Agencia Autorizada',
+                            rating: 4.8,
+                            reviews: '(ReseÃ±as en vivo)',
+                            desc: matchPaq.descripcion || tour.desc,
+                            imgMain: matchPaq.imagen || matchPaq.imagenUrl || tour.imgMain,
+                            thumbs: [matchPaq.imagen || tour.imgMain, '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
+                        };
+                    }
+                }
+            } catch (e) {
+                console.warn('Cargando detalle sincronizado desde el catÃ¡logo local:', e);
+            }
+
+            currentTourId = tour.id || 1;
+            currentAgencyName = agenciaParam || tour.agencia || 'Agencia Autorizada';
+
+            document.getElementById('page-title').textContent = Travelink - ;
             document.getElementById('tour-title').textContent = tour.title;
-            document.getElementById('tour-price-main').textContent = `S/ ${tour.price.toFixed(2)}`;
-            document.getElementById('tour-agency-name').textContent = agenciaParam || tour.agencia;
+            document.getElementById('tour-price-main').textContent = S/ ;
+            document.getElementById('tour-agency-name').textContent = currentAgencyName;
             document.getElementById('tour-rating-val').textContent = tour.rating;
             document.getElementById('tour-reviews-count').textContent = tour.reviews;
             document.getElementById('tour-desc').textContent = tour.desc;
 
-            // Pills
-            document.getElementById('tour-pill-cat').innerHTML = `<i class="fa-solid ${tour.catIcon}"></i> ${tour.categoria}`;
-            document.getElementById('tour-pill-duration').innerHTML = `<i class="fa-regular fa-clock"></i> ${tour.duracion}`;
-            document.getElementById('tour-pill-location').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${tour.ubicacion}`;
+            document.getElementById('tour-pill-cat').innerHTML = <i class="fa-solid "></i> ;
+            document.getElementById('tour-pill-duration').innerHTML = <i class="fa-regular fa-clock"></i> ;
+            document.getElementById('tour-pill-location').innerHTML = <i class="fa-solid fa-location-dot"></i> ;
 
-            // Precios tabla
-            document.getElementById('price-adulto').textContent = `S/ ${tour.priceAdulto.toFixed(2)}`;
-            document.getElementById('price-nino').textContent = `S/ ${tour.priceNino.toFixed(2)}`;
-            document.getElementById('price-bebe').textContent = `S/ ${tour.priceBebe.toFixed(2)}`;
+            document.getElementById('price-adulto').textContent = S/ ;
+            document.getElementById('price-nino').textContent = S/ ;
+            document.getElementById('price-bebe').textContent = S/ ;
 
-            // Reseñas inferiores
             document.getElementById('reviews-summary-score').textContent = tour.rating;
-            document.getElementById('reviews-summary-count').textContent = `${tour.reviews} verificados`;
+            document.getElementById('reviews-summary-count').textContent = ${tour.reviews} verificados;
 
-            // Imágenes y miniaturas
             document.getElementById('mainDetailImg').src = tour.imgMain;
             if (tour.thumbs && tour.thumbs.length >= 5) {
                 for (let i = 0; i < 5; i++) {
-                    const thumbEl = document.getElementById(`thumb${i + 1}`);
+                    const thumbEl = document.getElementById(	humb);
                     if (thumbEl && tour.thumbs[i]) {
                         thumbEl.src = tour.thumbs[i];
                     }

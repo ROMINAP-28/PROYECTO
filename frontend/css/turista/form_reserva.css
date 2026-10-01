@@ -627,3 +627,179 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* Estilos auxiliares para el Paso 3 (Método de pago existente) */
+.card-preview {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-chip {
+    color: #f59e0b;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.card-number-preview {
+    font-size: 20px;
+    letter-spacing: 2px;
+    font-family: monospace;
+    text-align: left;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-label {
+    font-size: 9px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.card-holder-preview,
+.card-exp-preview {
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.card-brand {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.upload-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.upload-dropzone:hover {
+    border-color: #196f3d;
+    background: #f8fafc;
+}
+
+.upload-dropzone span {
+    color: #196f3d;
+    font-weight: 600;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.upload-dropzone i {
+    font-size: 20px;
+    color: #196f3d;
+}
+
+.upload-input {
+    display: none;
+}
+
+.upload-preview {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    margin-top: 10px;
+}
+
+.upload-preview span {
+    font-size: 14px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.upload-preview .upload-remove {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.opciones-pago {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.tarjeta-pago {
+    text-align: center;
+    padding: 18px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #ffffff;
+}
+
+.tarjeta-pago.activa {
+    border-color: #196f3d;
+    background: #f0fdf4;
+}
+
+.tarjeta-pago input {
+    display: none;
+}
+
+.icono-pago {
+    font-size: 28px;
+    color: #196f3d;
+    margin-bottom: 8px;
+}
+
+.tarjeta-pago h3 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: #0f2942;
+}
+
+.tarjeta-pago p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.detalle-pago {
+    display: none;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.detalle-pago.visible {
+    display: block;
+}
+
+.qr-panel {
+    text-align: center;
+}
+

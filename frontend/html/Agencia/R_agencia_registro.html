@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de agencia</title>
-    <link rel="stylesheet" href="../../css/agencia.css">
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
 </head>
 <body>
 <main class="registro-container">
@@ -30,23 +30,23 @@
             <form id="formRegistroAgencia">
                 <div class="form-group">
                     <label for="nombreComercial">Nombre comercial</label>
-                    <input type="text" id="nombreComercial" name="nombreComercial" maxlength="150" required>
+                    <input type="text" id="nombreComercial" name="nombreComercial" maxlength="150" pattern="^[A-Za-zÁ-ÿ0-9\s.,-]+$" title="Solo letras, números y signos básicos" required>
                 </div>
 
                 <div class="form-group">
                     <label for="correo">Correo electrónico</label>
-                    <input type="email" id="correo" name="correo" maxlength="150" required>
+                    <input type="email" id="correo" name="correo" maxlength="150" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Ingrese un correo válido" required>
                 </div>
 
                 <div class="form-group">
                     <label for="nombreUsuario">Nombre de usuario</label>
-                    <input type="text" id="nombreUsuario" name="nombreUsuario" maxlength="50" required>
+                    <input type="text" id="nombreUsuario" name="nombreUsuario" maxlength="50" pattern="^[A-Za-z0-9_-]+$" title="Solo letras, números, guiones y sin espacios" required>
                 </div>
 
                 <div class="form-group">
                     <label for="contrasena">Contraseña</label>
                     <div class="password-field">
-                        <input type="password" id="contrasena" name="contrasena" maxlength="255" required>
+                        <input type="password" id="contrasena" name="contrasena" minlength="8" maxlength="255" title="Mínimo 8 caracteres" required>
                         <button type="button" class="password-toggle" data-target="contrasena">◉</button>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                 <div class="form-group">
                     <label for="confirmarContrasena">Confirmar contraseña</label>
                     <div class="password-field">
-                        <input type="password" id="confirmarContrasena" name="confirmarContrasena" maxlength="255" required>
+                        <input type="password" id="confirmarContrasena" name="confirmarContrasena" minlength="8" maxlength="255" title="Mínimo 8 caracteres" required>
                         <button type="button" class="password-toggle" data-target="confirmarContrasena">◉</button>
                     </div>
                 </div>
@@ -71,6 +71,6 @@
     </div>
 </main>
 
-<script src="../../js/agencia.js"></script>
+<script src="../../js/agencia/agencia.js"></script>
 </body>
 </html>

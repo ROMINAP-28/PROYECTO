@@ -13,7 +13,7 @@ public class PasajeroPersistencia implements PasajeroRepositorio {
 
     @Override
     public Pasajero guardar(Pasajero pasajero) {
-        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, edad, tipoSeguro, esTitular) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, esTitular) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -21,9 +21,7 @@ public class PasajeroPersistencia implements PasajeroRepositorio {
             ps.setString(2, pasajero.getNroDocumento());
             ps.setString(3, pasajero.getNombre());
             ps.setString(4, pasajero.getApellidos());
-            ps.setInt(5, pasajero.getEdad());
-            ps.setString(6, pasajero.getTipoSeguro());
-            ps.setBoolean(7, pasajero.isEsTitular());
+            ps.setBoolean(5, pasajero.isEsTitular());
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -43,7 +41,7 @@ public class PasajeroPersistencia implements PasajeroRepositorio {
         List<Pasajero> guardados = new ArrayList<>();
         if (pasajeros == null || pasajeros.isEmpty()) return guardados;
 
-        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, edad, tipoSeguro, esTitular) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, esTitular) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -52,9 +50,7 @@ public class PasajeroPersistencia implements PasajeroRepositorio {
                 ps.setString(2, p.getNroDocumento());
                 ps.setString(3, p.getNombre());
                 ps.setString(4, p.getApellidos());
-                ps.setInt(5, p.getEdad());
-                ps.setString(6, p.getTipoSeguro());
-                ps.setBoolean(7, p.isEsTitular());
+                ps.setBoolean(5, p.isEsTitular());
                 ps.addBatch();
             }
 
@@ -128,8 +124,6 @@ public class PasajeroPersistencia implements PasajeroRepositorio {
         p.setNroDocumento(rs.getString("nroDocumento"));
         p.setNombre(rs.getString("nombre"));
         p.setApellidos(rs.getString("apellidos"));
-        p.setEdad(rs.getInt("edad"));
-        p.setTipoSeguro(rs.getString("tipoSeguro"));
         p.setEsTitular(rs.getBoolean("esTitular"));
         return p;
     }

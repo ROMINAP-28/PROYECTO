@@ -13,20 +13,20 @@ public class TourPersistencia implements TourRepositorio {
 
     @Override
     public Tour guardar(Tour tour) {
-        String sql = "INSERT INTO Tour (idAgencia, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, ubicacion, categoria, calificacionPromedio, estado) " +
+        String sql = "INSERT INTO Tour (idAgencia, idDestino, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, categoria, calificacionPromedio, estado) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, tour.getIdAgencia());
-            ps.setString(2, tour.getSlug());
-            ps.setString(3, tour.getNombre());
-            ps.setString(4, tour.getDescripcion());
-            ps.setBigDecimal(5, tour.getPrecioAdulto());
-            ps.setBigDecimal(6, tour.getPrecioNino());
-            ps.setBigDecimal(7, tour.getPrecioBebe());
-            ps.setString(8, tour.getDuracion());
-            ps.setString(9, tour.getUbicacion());
+            ps.setInt(2, tour.getIdDestino());
+            ps.setString(3, tour.getSlug());
+            ps.setString(4, tour.getNombre());
+            ps.setString(5, tour.getDescripcion());
+            ps.setBigDecimal(6, tour.getPrecioAdulto());
+            ps.setBigDecimal(7, tour.getPrecioNino());
+            ps.setBigDecimal(8, tour.getPrecioBebe());
+            ps.setString(9, tour.getDuracion());
             ps.setString(10, tour.getCategoria());
             ps.setDouble(11, tour.getCalificacionPromedio());
             ps.setString(12, tour.getEstado() != null ? tour.getEstado() : "ACTIVO");
@@ -132,18 +132,18 @@ public class TourPersistencia implements TourRepositorio {
 
     @Override
     public boolean actualizar(Tour tour) {
-        String sql = "UPDATE Tour SET idAgencia = ?, slug = ?, nombre = ?, descripcion = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, ubicacion = ?, categoria = ?, estado = ? WHERE idTour = ?";
+        String sql = "UPDATE Tour SET idAgencia = ?, idDestino = ?, slug = ?, nombre = ?, descripcion = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, categoria = ?, estado = ? WHERE idTour = ?";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, tour.getIdAgencia());
-            ps.setString(2, tour.getSlug());
-            ps.setString(3, tour.getNombre());
-            ps.setString(4, tour.getDescripcion());
-            ps.setBigDecimal(5, tour.getPrecioAdulto());
-            ps.setBigDecimal(6, tour.getPrecioNino());
-            ps.setBigDecimal(7, tour.getPrecioBebe());
-            ps.setString(8, tour.getDuracion());
-            ps.setString(9, tour.getUbicacion());
+            ps.setInt(2, tour.getIdDestino());
+            ps.setString(3, tour.getSlug());
+            ps.setString(4, tour.getNombre());
+            ps.setString(5, tour.getDescripcion());
+            ps.setBigDecimal(6, tour.getPrecioAdulto());
+            ps.setBigDecimal(7, tour.getPrecioNino());
+            ps.setBigDecimal(8, tour.getPrecioBebe());
+            ps.setString(9, tour.getDuracion());
             ps.setString(10, tour.getCategoria());
             ps.setString(11, tour.getEstado());
             ps.setInt(12, tour.getIdTour());
@@ -178,7 +178,7 @@ public class TourPersistencia implements TourRepositorio {
         t.setPrecioNino(rs.getBigDecimal("precioNino"));
         t.setPrecioBebe(rs.getBigDecimal("precioBebe"));
         t.setDuracion(rs.getString("duracion"));
-        t.setUbicacion(rs.getString("ubicacion"));
+        t.setIdDestino(rs.getInt("idDestino"));
         t.setCategoria(rs.getString("categoria"));
         t.setCalificacionPromedio(rs.getDouble("calificacionPromedio"));
         t.setEstado(rs.getString("estado"));

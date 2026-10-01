@@ -68,14 +68,51 @@ public class ReservaPersistencia {
                 }
             }
 
-            // 3. Insertar DetalleReserva
-            int idTourFecha = 1; // default primer cupo disponible
+            // 3. Insertar DetalleReserva & Validar/Deducir Disponibilidad
+            int idTourFecha = 1; 
+            try { idTourFecha = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTourFecha", reqData.getOrDefault("idPaquete", "1")))); } catch (Exception ignored) {}
             int cantAdultos = 2;
-            int cantNinos = 1;
+            int cantNinos = 0;
             int cantBebes = 0;
             try { cantAdultos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantAdultos", reqData.getOrDefault("adultos", "2")))); } catch (Exception ignored) {}
-            try { cantNinos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantNinos", reqData.getOrDefault("ninos", "1")))); } catch (Exception ignored) {}
+            try { cantNinos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantNinos", reqData.getOrDefault("ninos", "0")))); } catch (Exception ignored) {}
             try { cantBebes = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantBebes", reqData.getOrDefault("bebes", "0")))); } catch (Exception ignored) {}
+            int totalPasajeros = cantAdultos + cantNinos;
+            if (totalPasajeros <= 0) totalPasajeros = 1;
+
+            // Validar cupos en TourFecha o PaqueteTuristico
+            int disponActual = 30;
+            boolean existeFecha = false;
+            String sqlCheckFecha = "SELECT cupoDisponible FROM TourFecha WHERE idTourFecha = ?";
+            try (PreparedStatement psCF = con.prepareStatement(sqlCheckFecha)) {
+                psCF.setInt(1, idTourFecha);
+                try (ResultSet rsCF = psCF.executeQuery()) {
+                    if (rsCF.next()) {
+                        disponActual = rsCF.getInt("cupoDisponible");
+                        existeFecha = true;
+                    }
+                }
+            }
+
+            if (existeFecha && disponActual < totalPasajeros) {
+                con.rollback();
+                response.put("status", "error");
+                response.put("message", disponActual == 0 ? "El paquete seleccionado está AGOTADO." : "Solo quedan " + disponActual + " espacios disponibles.");
+                return response;
+            }
+
+            // Deducir disponibilidad
+            if (existeFecha) {
+                int nuevoCupo = Math.max(0, disponActual - totalPasajeros);
+                String nuevoEstado = nuevoCupo == 0 ? "AGOTADO" : "DISPONIBLE";
+                String sqlUpF = "UPDATE TourFecha SET cupoDisponible = ?, estado = ? WHERE idTourFecha = ?";
+                try (PreparedStatement psUF = con.prepareStatement(sqlUpF)) {
+                    psUF.setInt(1, nuevoCupo);
+                    psUF.setString(2, nuevoEstado);
+                    psUF.setInt(3, idTourFecha);
+                    psUF.executeUpdate();
+                }
+            }
 
             String sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idTourFecha, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement psD = con.prepareStatement(sqlDetalle)) {
@@ -89,22 +126,17 @@ public class ReservaPersistencia {
             }
 
             // 4. Insertar Pasajero Titular
-            String sqlPasajero = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, edad, tipoSeguro, esTitular) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sqlPasajero = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, esTitular) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement psP = con.prepareStatement(sqlPasajero)) {
                 String nroDoc = String.valueOf(reqData.getOrDefault("dni", reqData.getOrDefault("nroDocumento", "74829103")));
                 String nombreP = String.valueOf(reqData.getOrDefault("nombre", "Ana"));
                 String apellidosP = String.valueOf(reqData.getOrDefault("apellidos", "Garcia"));
-                int edad = 25;
-                try { edad = Integer.parseInt(String.valueOf(reqData.getOrDefault("edad", "25"))); } catch (Exception ignored) {}
-                String seguro = String.valueOf(reqData.getOrDefault("seguro", reqData.getOrDefault("tipoSeguro", "SIS")));
 
                 psP.setInt(1, idReservaGenerada);
                 psP.setString(2, nroDoc);
                 psP.setString(3, nombreP);
                 psP.setString(4, apellidosP);
-                psP.setInt(5, edad);
-                psP.setString(6, seguro);
-                psP.setBoolean(7, true);
+                psP.setBoolean(5, true);
                 psP.executeUpdate();
             }
 
@@ -127,6 +159,27 @@ public class ReservaPersistencia {
                     if (rsM.next()) idPagoGenerado = rsM.getInt(1);
                 }
             }
+
+            // 6. Notificaciones Dinámicas (Turista + Agencia)
+            try {
+                String sqlNotif = "INSERT INTO Notificacion (idUsuario, titulo, mensaje, tipo) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement psN = con.prepareStatement(sqlNotif)) {
+                    // Notificación para Turista
+                    psN.setInt(1, idUsuario);
+                    psN.setString(2, "Reserva Realizada");
+                    psN.setString(3, "Tu reserva " + codigoReserva + " ha sido procesada correctamente.");
+                    psN.setString(4, "EXITO");
+                    psN.executeUpdate();
+
+                    // Notificación para Agencia
+                    psN.setInt(1, 2); // ID de usuario de agencia por defecto
+                    psN.setString(2, "Nueva Reserva Recibida");
+                    psN.setString(3, "Reserva " + codigoReserva + " recibida por S/ " + total + " (" + totalPasajeros + " espacios).");
+                    psN.setString(4, "INFO");
+                    psN.executeUpdate();
+                }
+            } catch (Exception ignored) {}
+
 
             con.commit();
 

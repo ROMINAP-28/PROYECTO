@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -6,347 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travelink - Tours de Agencia</title>
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="../../css/agencias.css">
+    <link rel="stylesheet" href="../../css/turista/agencias.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .tours-agency-page {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 30px 40px 60px 40px;
-            box-sizing: border-box;
-        }
-
-        .btn-back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #0d5c52;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            transition: color 0.2s ease;
-        }
-
-        .btn-back-link:hover {
-            color: #196f3d;
-        }
-
-        .agency-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .agency-title-info h1 {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0b2b3b;
-            margin: 0 0 6px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .agency-title-info p {
-            font-size: 14.5px;
-            color: #64748b;
-            margin: 0;
-        }
-
-        .agency-controls {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .sort-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #475569;
-            font-weight: 500;
-        }
-
-        .sort-select {
-            padding: 8px 32px 8px 14px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            color: #1e293b;
-            font-size: 13.5px;
-            font-weight: 600;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 16px;
-        }
-
-        .view-btn-group {
-            display: flex;
-            gap: 6px;
-        }
-
-        .view-toggle-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            color: #64748b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .view-toggle-btn.active {
-            background: #0d5c52;
-            color: #ffffff;
-            border-color: #0d5c52;
-        }
-
-        /* Tours Grid */
-        .agency-tours-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        .tour-card {
-            background: #ffffff;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .tour-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07);
-        }
-
-        .tour-card-image {
-            position: relative;
-            width: 100%;
-            height: 190px;
-            background-color: #e2e8f0;
-            overflow: hidden;
-        }
-
-        .tour-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .tour-card:hover .tour-card-image img {
-            transform: scale(1.04);
-        }
-
-        .tour-badge-pill {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(13, 92, 82, 0.9);
-            backdrop-filter: blur(4px);
-            color: #ffffff;
-            font-size: 11.5px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            z-index: 2;
-        }
-
-        .tour-badge-pill.cultura {
-            background: rgba(13, 92, 82, 0.9);
-        }
-
-        .tour-badge-pill.naturaleza {
-            background: rgba(22, 101, 52, 0.9);
-        }
-
-        .tour-badge-pill.aventura {
-            background: rgba(180, 83, 9, 0.9);
-        }
-
-        .btn-card-heart {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(4px);
-            border: none;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.2s ease;
-            z-index: 2;
-        }
-
-        .btn-card-heart:hover {
-            background: rgba(0, 0, 0, 0.6);
-            transform: scale(1.1);
-        }
-
-        .btn-card-heart.liked {
-            color: #ef4444;
-            background: #ffffff;
-        }
-
-        .tour-card-body {
-            padding: 18px 20px 20px 20px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .tour-card-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: #0b2b3b;
-            margin: 0 0 6px 0;
-            line-height: 1.3;
-        }
-
-        .tour-card-desc {
-            font-size: 13px;
-            color: #64748b;
-            margin: 0 0 16px 0;
-            line-height: 1.45;
-            min-height: 38px;
-        }
-
-        .tour-meta-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 12.5px;
-            color: #64748b;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .tour-meta-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .tour-meta-item i {
-            color: #0d5c52;
-            font-size: 13px;
-        }
-
-        .tour-pricing-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: auto;
-            margin-bottom: 16px;
-        }
-
-        .tour-rating-box {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .tour-rating-box i {
-            color: #f59e0b;
-        }
-
-        .tour-rating-box span {
-            color: #64748b;
-            font-weight: 400;
-            font-size: 12px;
-        }
-
-        .tour-price-box {
-            text-align: right;
-        }
-
-        .tour-price-val {
-            font-size: 19px;
-            font-weight: 800;
-            color: #0d5c52;
-            line-height: 1;
-        }
-
-        .tour-price-sub {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 3px;
-        }
-
-        .btn-select-tour {
-            width: 100%;
-            background: #ffffff;
-            color: #0d5c52;
-            border: 1.5px solid #0d5c52;
-            padding: 10px 0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            text-align: center;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-select-tour:hover {
-            background: #0d5c52;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(13, 92, 82, 0.25);
-        }
-
-        @media (max-width: 1024px) {
-            .agency-tours-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 680px) {
-            .tours-agency-page {
-                padding: 20px;
-            }
-            .agency-tours-grid {
-                grid-template-columns: 1fr;
-            }
-            .agency-header-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    </style>
 </head>
 
 <body style="background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
@@ -354,7 +15,7 @@
     <header class="navbar navbar-home-clean"
         style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
         <div class="logo">
-            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+            <a href="../index.html" style="display:flex; align-items:center; text-decoration:none;">
                 <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
                     onerror="this.onerror=null; this.src='../../img/logo.png';">
             </a>
@@ -376,7 +37,7 @@
                 </div>
                 <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
             </div>
-            <a href="index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="../index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
             <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
             <a href="agencias.html" class="active"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
             <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
@@ -386,7 +47,8 @@
         </nav>
 
         <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
             <a href="registro.html" class="btn-auth-register">Registrarse</a>
         </div>
     </header>
@@ -438,7 +100,7 @@
                     <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <img src="../../img/cusco.jpg" alt="Machu Picchu Clásico" onerror="this.src='../../img/fondo1.png'">
+                    <img src="../../img/cusco.jpg" alt="Machu Picchu Clásico" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 </div>
                 <div class="tour-card-body">
                     <h3 class="tour-card-title">Machu Picchu Clásico</h3>
@@ -472,7 +134,7 @@
                     <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <img src="../../img/7colores.jpg" alt="Montaña de 7 Colores" onerror="this.src='../../img/fondo1.png'">
+                    <img src="../../img/7colores.jpg" alt="Montaña de 7 Colores" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 </div>
                 <div class="tour-card-body">
                     <h3 class="tour-card-title">Montaña de 7 Colores</h3>
@@ -506,7 +168,7 @@
                     <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <img src="../../img/colca.jpg" alt="Valle Sagrado" onerror="this.src='../../img/fondo1.png'">
+                    <img src="../../img/colca.jpg" alt="Valle Sagrado" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 </div>
                 <div class="tour-card-body">
                     <h3 class="tour-card-title">Valle Sagrado</h3>
@@ -540,7 +202,7 @@
                     <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <img src="../../img/uros.jpg" alt="Lago Titicaca" onerror="this.src='../../img/fondo1.png'">
+                    <img src="../../img/uros.jpg" alt="Lago Titicaca" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 </div>
                 <div class="tour-card-body">
                     <h3 class="tour-card-title">Lago Titicaca</h3>
@@ -574,7 +236,7 @@
                     <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <img src="../../img/arequipa.jpg" alt="City Tour Cusco" onerror="this.src='../../img/fondo1.png'">
+                    <img src="../../img/arequipa.jpg" alt="City Tour Cusco" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 </div>
                 <div class="tour-card-body">
                     <h3 class="tour-card-title">City Tour Cusco</h3>
@@ -608,7 +270,7 @@
                     <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <img src="../../img/huaraz.jpg" alt="Aventura en la Amazonía" onerror="this.src='../../img/fondo1.png'">
+                    <img src="../../img/huaraz.jpg" alt="Aventura en la Amazonía" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 </div>
                 <div class="tour-card-body">
                     <h3 class="tour-card-title">Aventura en la Amazonía</h3>
@@ -647,7 +309,7 @@
             <div>
                 <h4 style="font-size: 15px; margin-bottom: 14px; color: #ffffff;">Enlaces</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-                    <li><a href="index.html" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
+                    <li><a href="../index.html" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
                     <li><a href="experiencias.html" style="color: #94a3b8; text-decoration: none;">Experiencias</a></li>
                     <li><a href="agencias.html" style="color: #94a3b8; text-decoration: none;">Agencias</a></li>
                     <li><a href="ofertas.html" style="color: #94a3b8; text-decoration: none;">Ofertas</a></li>
@@ -675,8 +337,8 @@
         </div>
     </footer>
 
-    <script src="../../js/navigation.js"></script>
-    <script src="../../js/user_session.js"></script>
+    <script src="../../js/turista/navigation.js"></script>
+    <script src="../../js/agencia/user_session.js"></script>
     <script>
         function toggleHeart(btn) {
             btn.classList.toggle('liked');
@@ -722,20 +384,119 @@
             }
         }
 
-        // Leer parámetro de nombre de agencia si viene por URL (ej: ?agencia=Inka+Travel)
-        document.addEventListener('DOMContentLoaded', () => {
+        // Carga dinÃ¡mica de tours por Agencia
+        async function cargarToursDeAgencia() {
             const params = new URLSearchParams(window.location.search);
-            const agencia = params.get('agencia');
-            if (agencia) {
-                const titleEl = document.getElementById('agency-name-title');
-                const subEl = document.getElementById('agency-desc-subtitle');
-                if (titleEl) titleEl.textContent = `Tours de ${agencia}`;
-                if (subEl) subEl.textContent = `Descubre los mejores tours y vive experiencias únicas con ${agencia}.`;
+            const nombreAgencia = params.get('agencia') || 'ANDES TOURS PERU S.A.C.';
+            const idAgencia = parseInt(params.get('idAgencia') || '1');
+
+            const titleEl = document.getElementById('agency-name-title');
+            const subEl = document.getElementById('agency-desc-subtitle');
+            if (titleEl) titleEl.textContent = 'Tours de ' + nombreAgencia;
+            if (subEl) subEl.textContent = 'Descubre los mejores tours y vive experiencias Ãºnicas con ' + nombreAgencia + '.';
+
+            const container = document.getElementById('agency-tours-container');
+            if (!container) return;
+
+            const toursPorAgencia = {
+                1: [
+                    { id: 1, nombre: 'Machu Picchu ClÃ¡sico y Valle Sagrado', desc: 'ExcursiÃ³n completa al santuario histÃ³rico con guÃ­a profesional y tren panorÃ¡mico.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 350.00, rating: 4.8, img: '../../img/colca.jpg', cat: 'cultura' },
+                    { id: 2, nombre: 'MontaÃ±a de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaÃ±a de colores con desayuno y almuerzo buffet.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
+                    { id: 3, nombre: 'Valle Sagrado de los Incas Privado', desc: 'Historia, cultura y paisajes increÃ­bles en Pisac, Ollantaytambo y Chinchero.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 320.00, rating: 4.6, img: '../../img/cusco.jpg', cat: 'cultura' }
+                ],
+                2: [
+                    { id: 2, nombre: 'MontaÃ±a de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaÃ±a de colores con desayuno y almuerzo buffet.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
+                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisajÃ­stica hacia la turquesa Laguna Humantay con asistencia mÃ©dica.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 150.00, rating: 4.9, img: '../../img/puno.jpg', cat: 'aventura' },
+                    { id: 5, nombre: 'Camino Inca Express 2D/1N', desc: 'Recorrido por la legendaria ruta incaica finalizando en la Puerta del Sol Intipunku.', duracion: '2 dÃ­as', ubicacion: 'Cusco', precio: 480.00, rating: 4.9, img: '../../img/colca.jpg', cat: 'aventura' }
+                ],
+                3: [
+                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisajÃ­stica hacia la turquesa Laguna Humantay con equipo de oxÃ­geno.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 150.00, rating: 4.8, img: '../../img/puno.jpg', cat: 'aventura' },
+                    { id: 6, nombre: 'Cuatrimotos Maras & Moray', desc: 'Experiencia llena de adrenalina visitando las salineras de Maras y el laboratorio inca.', duracion: '1/2 dÃ­a', ubicacion: 'Cusco', precio: 160.00, rating: 4.7, img: '../../img/cusco.jpg', cat: 'aventura' },
+                    { id: 7, nombre: 'SacsayhuamÃ¡n & Qenqo City Tour', desc: 'ExcursiÃ³n guiada por los complejos arqueolÃ³gicos mÃ¡s impresionantes alrededor del Cusco.', duracion: '1/2 dÃ­a', ubicacion: 'Cusco', precio: 110.00, rating: 4.5, img: '../../img/7colores.jpg', cat: 'cultura' }
+                ],
+                5: [
+                    { id: 4, nombre: 'AmazonÃ­a Profunda Tambopata', desc: 'InmersiÃ³n completa en la selva virgen con observaciÃ³n de fauna silvestre y canopy.', duracion: '4 dÃ­as / 3 noches', ubicacion: 'Madre de Dios', precio: 1450.00, rating: 4.8, img: '../../img/selva.jpg', cat: 'naturaleza' },
+                    { id: 8, nombre: 'Reserva Nacional Lago Sandoval', desc: 'Paseo en bote por la reserva natural, avistamiento de nutrias gigantes y caminata nocturna.', duracion: '2 dÃ­as', ubicacion: 'Madre de Dios', precio: 520.00, rating: 4.9, img: '../../img/huayllay-package.jpg', cat: 'naturaleza' }
+                ],
+                6: [
+                    { id: 5, nombre: 'CaÃ±Ã³n del Colca & Mirador del CÃ³ndor', desc: 'Recorrido por el CaÃ±Ã³n del Colca, baÃ±os termales de La Calera y CÃ³ndor andino.', duracion: '2 dÃ­as / 1 noche', ubicacion: 'Arequipa', precio: 180.00, rating: 4.9, img: '../../img/arequipa.jpg', cat: 'aventura' },
+                    { id: 9, nombre: 'Ruta del Sillar & Monasterio Santa Catalina', desc: 'Tour histÃ³rico por la Ciudad Blanca con visita a las canteras vivas de sillar.', duracion: '1 dÃ­a', ubicacion: 'Arequipa', precio: 95.00, rating: 4.7, img: '../../img/fondo1.png', cat: 'cultura' }
+                ],
+                7: [
+                    { id: 6, nombre: 'Oasis de Huacachina & Tubulares Ica', desc: 'Aventura en los tubulares del desierto de Ica, sandboarding y visita a bodegas.', duracion: '1 dÃ­a', ubicacion: 'Ica', precio: 190.00, rating: 4.8, img: '../../img/ica.jpg', cat: 'aventura' },
+                    { id: 10, nombre: 'City Tour Lima Colonial & Catacumbas', desc: 'Recorrido colonial por el centro histÃ³rico, Convento de San Francisco y Larcomar.', duracion: '1/2 dÃ­a', ubicacion: 'Lima', precio: 85.00, rating: 4.7, img: '../../img/lima-package.jpg', cat: 'cultura' }
+                ]
+            };
+
+            let tours = toursPorAgencia[idAgencia] || toursPorAgencia[1];
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1200);
+                const resp = await fetch('http://localhost:8080/api/agencia/paquetes?idAgencia=' + idAgencia, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+                if (data && data.status === 'success' && Array.isArray(data.paquetes) && data.paquetes.length > 0) {
+                    tours = data.paquetes.map(function(p) {
+                        return {
+                            id: p.idPaquete || p.id,
+                            nombre: p.nombre,
+                            desc: p.descripcion,
+                            duracion: p.duracion || '1 dÃ­a',
+                            ubicacion: p.ubicacion || 'PerÃº',
+                            precio: p.precio || 200,
+                            rating: 4.8,
+                            img: p.imagen || p.imagenUrl || '../../img/colca.jpg',
+                            cat: 'cultura'
+                        };
+                    });
+                }
+            } catch (e) {
+                console.warn('Usando tours locales de agencia:', e);
             }
 
-            const btns = document.querySelectorAll('.view-toggle-btn');
-            if (btns[0]) btns[0].addEventListener('click', () => setView('grid', btns[0]));
-            if (btns[1]) btns[1].addEventListener('click', () => setView('list', btns[1]));
+            container.innerHTML = tours.map(function(t) {
+                return '<div class="tour-card" data-precio="' + t.precio + '" data-rating="' + t.rating + '">' +
+                    '<div class="tour-card-image">' +
+                        '<span class="tour-badge-pill ' + t.cat + '">' +
+                            '<i class="fa-solid fa-fire"></i> ' + t.cat.toUpperCase() +
+                        '</span>' +
+                        '<button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">' +
+                            '<i class="fa-regular fa-heart"></i>' +
+                        '</button>' +
+                        '<img src="' + t.img + '" alt="' + t.nombre + '" onerror="this.onerror=null; this.src=\'../../img/fondo1.png\'">' +
+                    '</div>' +
+                    '<div class="tour-card-body">' +
+                        '<h3 class="tour-card-title">' + t.nombre + '</h3>' +
+                        '<p class="tour-card-desc">' + t.desc + '</p>' +
+                        '<div class="tour-meta-row">' +
+                            '<span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> ' + t.duracion + '</span>' +
+                            '<span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> ' + t.ubicacion + '</span>' +
+                            '<span class="tour-meta-item"><i class="fa-solid fa-users"></i> Tour verificado</span>' +
+                        '</div>' +
+                        '<div class="tour-pricing-row">' +
+                            '<div class="tour-rating-box">' +
+                                '<i class="fa-solid fa-star"></i> ' + t.rating + ' <span>(ReseÃ±as activas)</span>' +
+                            '</div>' +
+                            '<div class="tour-price-box">' +
+                                '<div class="tour-price-val">S/ ' + parseFloat(t.precio).toFixed(2) + '</div>' +
+                                '<div class="tour-price-sub">por persona</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<a href="form_reserva.html?idPaquete=' + t.id + '&agencia=' + encodeURIComponent(nombreAgencia) + '" class="btn-select-tour">' +
+                            'Reservar / Ver Detalle <i class="fa-solid fa-arrow-right"></i>' +
+                        '</a>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarToursDeAgencia();
+
+            var btns = document.querySelectorAll('.view-toggle-btn');
+            if (btns[0]) btns[0].addEventListener('click', function() { setView('grid', btns[0]); });
+            if (btns[1]) btns[1].addEventListener('click', function() { setView('list', btns[1]); });
         });
     </script>
 </body>

@@ -1,128 +1,256 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travelink - Disponibilidad y cupos</title>
-    <link rel="stylesheet" href="../../css/agencia.css">
+    <title>Travelink - Disponibilidad y Cupos</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 </head>
 
-<body class="dashboard-page">
+<body class="dashboard-page admin-body" style="margin:0; padding:0; height:100vh; overflow:hidden; background:#f8fafc;">
 
-<div class="dashboard">
+    <div class="dashboard" style="display:flex; width:100vw; height:100vh; overflow:hidden;">
 
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <h1>Travelink</h1>
-            <span>Portal de agencias</span>
-        </div>
-
-        <nav class="sidebar-menu">
-            <a href="inicio.html">Inicio</a>
-            <a href="servicios.html">Servicios turísticos</a>
-            <a href="disponibilidad.html" class="active">Disponibilidad y cupos</a>
-            <a href="paquetes.html">Paquetes turísticos</a>
-            <a href="reservas.html">Reservas</a>
-            <a href="pagos.html">Pagos y liquidaciones</a>
-            <a href="configuracion.html">Configuración</a>
-        </nav>
-
-        <div class="sidebar-bottom">
-            <button id="btnCerrarSesion">Cerrar sesión</button>
-        </div>
-    </aside>
-
-    <main class="dashboard-content">
-
-        <header class="dashboard-header">
-            <div>
-                <h1>Disponibilidad y cupos</h1>
-                <p>Consulta las fechas, horarios y cupos programados para tus servicios.</p>
+        <!-- SIDEBAR ESTILO ADMIN UNIFICADO -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header" style="padding: 20px; text-align: center;">
+                <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"
+                    style="max-width: 150px; height: auto;">
             </div>
 
-            <div class="header-actions">
-                <button class="notification-btn">Notificaciones</button>
+            <nav class="sidebar-nav">
+                <a href="inicio.html" class="nav-item">
+                    <i class="ti ti-smart-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="servicios.html" class="nav-item">
+                    <i class="ti ti-compass"></i>
+                    <span>Servicios turísticos</span>
+                </a>
+                <a href="disponibilidad.html" class="nav-item active">
+                    <i class="ti ti-calendar-time"></i>
+                    <span>Disponibilidad y cupos</span>
+                </a>
+                <a href="paquetes.html" class="nav-item">
+                    <i class="ti ti-package"></i>
+                    <span>Paquetes turísticos</span>
+                </a>
+                <a href="reservas.html" class="nav-item">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="pagos.html" class="nav-item">
+                    <i class="ti ti-coins"></i>
+                    <span>Pagos y liquidaciones</span>
+                </a>
+            </nav>
+        </aside>
 
-                <div class="agency-user">
-                    <div class="agency-avatar">A</div>
-                    <div>
-                        <strong>Mi agencia</strong>
-                        <small>Agencia turística</small>
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <!-- TOPBAR ESTILO ADMIN UNIFICADO -->
+            <header class="admin-topbar" style="height: 64px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: flex-end; padding: 0 28px; position: sticky; top: 0; z-index: 1000; width: 100%;">
+                <div style="display:flex; align-items:center; gap:16px; position:relative; margin-left:auto;">
+                    <button type="button" class="notification-btn" title="Notificaciones" id="btnNotifAgencia">
+                        <i class="ti ti-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="notifications-dropdown-card" id="notifDropdownAgencia"
+                        style="display:none; position:absolute; top:56px; right:120px; background:white; border:1px solid #e2e8f0; border-radius:10px; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000;">
+                        <div style="padding:15px; border-bottom:1px solid #e2e8f0;">
+                            <span style="font-weight:600; font-size:14px; color:#0f172a;">Notificaciones</span>
+                        </div>
+                        <div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                            <i class="ti ti-bell-off" style="font-size:24px; color:#94a3b8; display:block; margin-bottom:6px;"></i>
+                            No hay notificaciones nuevas.
+                        </div>
+                    </div>
+
+                    <div class="user-dropdown-container" style="position:relative;">
+                        <button type="button" class="user-profile-toggle" id="btnPerfilToggle">
+                            <div class="user-avatar-img" id="agencyAvatarLetter" style="background:#2563eb; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">A</div>
+                            <div class="user-info-text">
+                                <span class="user-name" id="nombreAgenciaTop" style="font-weight:600; color:#0f172a; font-size:14px;">ANDES TOURS</span>
+                                <span class="user-role" style="font-size:12px; color:#64748b;">Agencia turística</span>
+                            </div>
+                        </button>
+
+                        <div id="perfilDropdownAgencia"
+                            style="display:none; position:absolute; top:56px; right:0; background:white; border:1px solid #e2e8f0; border-radius:10px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:9999; padding:8px 0;">
+                            <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;" id="dropdownNombreAgencia">ANDES TOURS</p>
+                                <p style="margin:0; font-size:12px; color:#64748b;">Agencia Turística</p>
+                            </div>
+                            <a href="#" onclick="document.getElementById('inputFotoPerfil').click(); return false;" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#334155; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-photo" style="font-size:17px; color:#64748b;"></i> Cambiar foto de perfil
+                            </a>
+                            <input type="file" id="inputFotoPerfil" accept="image/*" style="display:none;">
+                            <div style="height:1px; background:#f1f5f9; margin:6px 0;"></div>
+                            <a href="#" id="btnCerrarSesionDropdown" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#ef4444; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-logout" style="font-size:17px;"></i> Cerrar sesión
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <section class="module-toolbar">
-            <div>
-                <h2>Disponibilidades registradas</h2>
-                <p>Consulta las fechas, horarios y cupos disponibles de tus servicios turísticos.</p>
-            </div>
-        </section>
+            <!-- CONTENIDO DISPONIBILIDAD -->
+            <div class="content-container">
 
-        <section class="service-filters">
-            <div class="form-group">
-                <label for="buscarDisponibilidad">Buscar servicio</label>
-                <input type="text" id="buscarDisponibilidad" placeholder="Nombre del servicio">
-            </div>
+                <section class="module-toolbar">
+                    <div>
+                        <h2>Disponibilidad y cupos</h2>
+                        <p>Programa las fechas, horarios y cupos disponibles de cada servicio de tu agencia.</p>
+                    </div>
 
-            <div class="form-group">
-                <label for="filtroEstadoDisponibilidad">Estado</label>
-                <select id="filtroEstadoDisponibilidad">
-                    <option value="">Todos</option>
-                    <option value="DISPONIBLE">Disponible</option>
-                    <option value="AGOTADO">Agotado</option>
-                </select>
-            </div>
+                    <button class="btn-nueva-disp" id="btnNuevaDisponibilidad">
+                        <i class="ti ti-plus"></i> Nueva disponibilidad
+                    </button>
+                </section>
 
-            <div class="form-group">
-                <label for="filtroFechaDisponibilidad">Fecha</label>
-                <input type="date" id="filtroFechaDisponibilidad">
-            </div>
-        </section>
+                <section class="service-filters">
+                    <div class="form-group">
+                        <label for="buscarDisponibilidad">Buscar servicio</label>
+                        <input type="text" id="buscarDisponibilidad" placeholder="Nombre del servicio...">
+                    </div>
 
-        <section class="dashboard-card services-card">
-            <div class="card-header">
-                <div>
-                    <h3>Fechas y cupos</h3>
-                    <p>Consulta la disponibilidad programada para tus servicios.</p>
+                    <div class="form-group">
+                        <label for="filtroEstadoDisponibilidad">Estado</label>
+                        <select id="filtroEstadoDisponibilidad">
+                            <option value="">Todos los estados</option>
+                            <option value="DISPONIBLE">Disponible</option>
+                            <option value="AGOTADO">Agotado</option>
+                            <option value="CERRADO">Cerrado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroFechaDisponibilidad">Fecha</label>
+                        <input type="date" id="filtroFechaDisponibilidad">
+                    </div>
+                </section>
+
+                <!-- TABLA DE DISPONIBILIDAD -->
+                <div class="table-card">
+                    <div class="card-header-flex">
+                        <div>
+                            <h3>Programación de salidas y cupos</h3>
+                            <p>Desglose de cupos ocupados y libres por fecha de salida.</p>
+                        </div>
+                        <span style="background:#eff6ff; color:#2563eb; font-weight:700; font-size:13px; padding:4px 12px; border-radius:999px;" id="cantidadDisponibilidades">
+                            0 disponibilidades
+                        </span>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="disp-table">
+                            <thead>
+                                <tr>
+                                    <th>Servicio / Tour</th>
+                                    <th>Fecha de Salida</th>
+                                    <th>Horario</th>
+                                    <th>Cupo Total</th>
+                                    <th>Cupo Disponible</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaDisponibilidad">
+                                <tr>
+                                    <td colspan="7" style="text-align:center; padding:35px; color:#94a3b8;">
+                                        Cargando disponibilidades...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <span class="service-count" id="cantidadDisponibilidades">
-                    0 disponibilidades
-                </span>
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Servicio</th>
-                        <th>Fecha</th>
-                        <th>Horario</th>
-                        <th>Cupo total</th>
-                        <th>Cupo disponible</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
+        </main>
+    </div>
 
-                    <tbody id="tablaDisponibilidad">
-                    <tr>
-                        <td colspan="7" class="empty-table">
-                            Cargando disponibilidades...
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+    <!-- MODAL AGREGAR / EDITAR DISPONIBILIDAD -->
+    <div class="modal-overlay" id="modalDisponibilidad">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                <div>
+                    <h3 id="tituloModalDisponibilidad" style="margin:0 0 4px 0; font-size:18px; font-weight:700; color:#0f172a;">Nueva disponibilidad</h3>
+                    <p style="margin:0; font-size:13px; color:#64748b;">Asigna fecha de salida y cantidad de cupos para tu servicio.</p>
+                </div>
+                <button type="button" id="cerrarModalDisponibilidad" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
             </div>
-        </section>
 
-    </main>
+            <form id="formDisponibilidad">
+                <input type="hidden" id="idDispInput">
 
-</div>
+                <div class="form-group-custom">
+                    <label for="selectServicioDisp">Servicio Turístico *</label>
+                    <select id="selectServicioDisp" required>
+                        <option value="">Seleccionar servicio...</option>
+                    </select>
+                </div>
 
-<script src="../../js/agencia.js"></script>
+                <div class="form-grid-2">
+                    <div class="form-group-custom">
+                        <label for="fechaDispInput">Fecha de salida *</label>
+                        <input type="date" id="fechaDispInput" required>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="cupoTotalDisp">Cupo total de personas *</label>
+                        <input type="number" id="cupoTotalDisp" placeholder="Ej. 20" min="1" required>
+                    </div>
+                </div>
 
+                <div class="form-grid-2">
+                    <div class="form-group-custom">
+                        <label for="horaInicioDisp">Hora inicio *</label>
+                        <input type="time" id="horaInicioDisp" value="08:00" required>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="horaFinDisp">Hora fin (aprox.)</label>
+                        <input type="time" id="horaFinDisp" value="13:00">
+                    </div>
+                </div>
+
+                <div id="mensajeDisponibilidad" style="padding:10px; border-radius:6px; font-size:13px; margin-bottom:12px; display:none;"></div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                    <button type="button" id="btnCancelarDisponibilidad" style="background:#f1f5f9; border:none; padding:10px 18px; border-radius:8px; font-size:13px; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button type="submit" style="background:#2563eb; color:white; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                        Guardar disponibilidad
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL VER DETALLES DISPONIBILIDAD -->
+    <div class="modal-overlay" id="modalVerDisponibilidad">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                <h3 style="margin:0; font-size:18px; font-weight:700; color:#0f172a;">Detalles de la fecha programada</h3>
+                <button type="button" id="cerrarModalVer" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b;">&times;</button>
+            </div>
+
+            <div id="detalleVerContent" style="padding:10px 0;"></div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:16px; border-top:1px solid #e2e8f0; padding-top:14px;">
+                <button type="button" onclick="document.getElementById('modalVerDisponibilidad').style.display='none'" style="background:#2563eb; color:white; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/agencia/agencia_disponibilidad.js?v=2"></script>
 </body>
 </html>

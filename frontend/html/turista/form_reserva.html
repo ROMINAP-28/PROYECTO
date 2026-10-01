@@ -7,194 +7,17 @@
     <title>Travelink - Formulario de Reserva</title>
 
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="../../css/form_reserva.css">
+    <link rel="stylesheet" href="../../css/turista/form_reserva.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css" rel="stylesheet">
-
-    <style>
-        /* Estilos auxiliares para el Paso 3 (Método de pago existente) */
-        .card-preview {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            position: relative;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-            height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card-chip {
-            color: #f59e0b;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .card-number-preview {
-            font-size: 20px;
-            letter-spacing: 2px;
-            font-family: monospace;
-            text-align: left;
-        }
-
-        .card-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .card-label {
-            font-size: 9px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .card-holder-preview,
-        .card-exp-preview {
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .card-brand {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .upload-dropzone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            border: 2px dashed #cbd5e1;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        .upload-dropzone:hover {
-            border-color: #196f3d;
-            background: #f8fafc;
-        }
-
-        .upload-dropzone span {
-            color: #196f3d;
-            font-weight: 600;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-
-        .upload-dropzone i {
-            font-size: 20px;
-            color: #196f3d;
-        }
-
-        .upload-input {
-            display: none;
-        }
-
-        .upload-preview {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            background: #f8fafc;
-            margin-top: 10px;
-        }
-
-        .upload-preview span {
-            font-size: 14px;
-            color: #475569;
-            font-weight: 600;
-        }
-
-        .upload-preview .upload-remove {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .opciones-pago {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .tarjeta-pago {
-            text-align: center;
-            padding: 18px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            background: #ffffff;
-        }
-
-        .tarjeta-pago.activa {
-            border-color: #196f3d;
-            background: #f0fdf4;
-        }
-
-        .tarjeta-pago input {
-            display: none;
-        }
-
-        .icono-pago {
-            font-size: 28px;
-            color: #196f3d;
-            margin-bottom: 8px;
-        }
-
-        .tarjeta-pago h3 {
-            margin: 0 0 4px 0;
-            font-size: 15px;
-            color: #0f2942;
-        }
-
-        .tarjeta-pago p {
-            margin: 0;
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .detalle-pago {
-            display: none;
-            padding: 20px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .detalle-pago.visible {
-            display: block;
-        }
-
-        .qr-panel {
-            text-align: center;
-        }
-    </style>
 </head>
 
 <body style="background-color: #f8fafc;">
     <!-- NAVBAR LIMPIA HOGAR -->
     <header class="navbar navbar-home-clean" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
         <div class="logo">
-            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+            <a href="../index.html" style="display:flex; align-items:center; text-decoration:none;">
                 <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;" onerror="this.onerror=null; this.src='../../img/logo.png';">
             </a>
         </div>
@@ -214,7 +37,7 @@
                 </div>
                 <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
             </div>
-            <a href="index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="../index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
             <a href="experiencias.html" class="active"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
             <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
             <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
@@ -224,7 +47,8 @@
         </nav>
 
         <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
             <a href="registro.html" class="btn-auth-register">Registrarse</a>
         </div>
     </header>
@@ -289,7 +113,7 @@
                     </div>
                     <div class="tour-table-body">
                         <div class="tour-info-cell">
-                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" class="tour-cell-img" onerror="this.src='../../img/7colores.jpg'">
+                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" class="tour-cell-img" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
                             <div class="tour-cell-text">
                                 <h4>Machu Picchu Clásico</h4>
                                 <p>Andes Tours</p>
@@ -383,18 +207,7 @@
                             <label>Teléfono</label>
                             <input type="tel" id="inputTelefono" value="987654321" maxlength="9">
                         </div>
-                        <div class="input-field-block">
-                            <label>Edad</label>
-                            <input type="number" id="inputEdad" value="25">
-                        </div>
-                        <div class="input-field-block full-col">
-                            <label>Tipo de seguro</label>
-                            <select id="selectSeguro" class="custom-select-field">
-                                <option value="SIS" selected>SIS</option>
-                                <option value="Particular">Particular</option>
-                                <option value="Ninguno">Ninguno</option>
-                            </select>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -440,7 +253,7 @@
                 <div id="pagoYape" class="detalle-pago">
                     <div class="qr-panel">
                         <h3 style="margin-top:0;"><i class="fa-solid fa-border-all"></i> Escanea el QR con Yape</h3>
-                        <img src="../../img/qr-yape.png" alt="QR Yape" style="width:180px; height:180px; object-fit:contain;" onerror="this.src='https://via.placeholder.com/180x180?text=QR+Yape'">
+                        <img src="../../img/qr-yape.png" alt="QR Yape" style="width:180px; height:180px; object-fit:contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x180?text=QR+Yape'">
                         <p style="font-size:13px; color:#64748b; margin-bottom: 10px;">Una vez realizado el pago, sube tu comprobante.</p>
 
                         <p style="font-size:13px; font-weight:bold; text-align:left; margin-bottom:5px;">Adjuntar evidencia:</p>
@@ -463,7 +276,7 @@
                 <div id="pagoPlin" class="detalle-pago">
                     <div class="qr-panel">
                         <h3 style="margin-top:0;"><i class="fa-solid fa-border-all"></i> Escanea el QR con Plin</h3>
-                        <img src="../../img/qr-plin.png" alt="QR Plin" style="width:180px; height:180px; object-fit:contain;" onerror="this.src='https://via.placeholder.com/180x180?text=QR+Plin'">
+                        <img src="../../img/qr-plin.png" alt="QR Plin" style="width:180px; height:180px; object-fit:contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x180?text=QR+Plin'">
                         <p style="font-size:13px; color:#64748b; margin-bottom: 10px;">Una vez realizado el pago, sube tu comprobante.</p>
 
                         <p style="font-size:13px; font-weight:bold; text-align:left; margin-bottom:5px;">Adjuntar evidencia:</p>
@@ -543,7 +356,7 @@
                     <div class="summary-box-card">
                         <h3>Resumen del tour</h3>
                         <div class="summary-tour-header">
-                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" onerror="this.src='../../img/7colores.jpg'">
+                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
                             <div>
                                 <h4>Machu Picchu Clásico</h4>
                                 <p>Andes Tours</p>
@@ -653,8 +466,8 @@
             preview.style.display = 'none';
         }
     </script>
-    <script src="../../js/navigation.js"></script>
-    <script src="../../js/user_session.js"></script>
+    <script src="../../js/turista/navigation.js"></script>
+    <script src="../../js/agencia/user_session.js"></script>
     <script src="../../js/validador.js"></script>
     <script src="../../js/form_reserva.js"></script>
 </body>

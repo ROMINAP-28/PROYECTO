@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travelink - Login Agencia</title>
-    <link rel="stylesheet" href="../../css/agencia.css">
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
 </head>
 <body class="agencia-page">
 
@@ -32,18 +32,16 @@
                 <label for="loginUsuario">Correo o usuario</label>
                 <input
                         type="text"
-                        id="loginUsuario"
-                        placeholder="Correo o nombre de usuario"
-                        required>
+                        id="loginUsuario" placeholder="Correo o nombre de usuario" pattern="^[A-Za-z0-9@\._-]+$" title="Ingresa un usuario o correo válido (sin espacios)" required>
             </div>
 
             <div class="form-group">
-                <label for="loginPassword">Contraseña</label>
+                <label for="loginPassword">contraseña</label>
                 <div class="password-field">
                     <input
                             type="password"
                             id="loginPassword"
-                            placeholder="Contraseña"
+                            placeholder="contraseña"
                             required>
 
                     <button
@@ -76,6 +74,6 @@
 
 </main>
 
-<script src="../../js/agencia.js"></script>
+<script src="../../js/agencia/agencia.js"></script>
 </body>
 </html>

@@ -10,10 +10,10 @@ import com.travelink.controlador.UsuarioControlador;
 import com.travelink.entidades.Usuario;
 import com.travelink.repositorio.ReservaRepositorio;
 
-import com.travelink.config.ConexionDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -48,18 +48,24 @@ public class JavaApiServer {
         server.createContext("/api/obtener_reservas", new ObtenerReservasHandler());
         server.createContext("/api/cancelar_reserva", new CancelarReservaHandler());
         server.createContext("/api/calificar", new CalificarHandler());
-        // API Endpoints - AGENCIA
         server.createContext("/api/agencia/destinos", new DestinosAgenciaHandler());
+        server.createContext("/api/agencia/tipos", new TiposAgenciaHandler());
         server.createContext("/api/agencia/servicios", new ServiciosAgenciaHandler());
         server.createContext("/api/agencia/registro", new RegistroAgenciaHandler());
         server.createContext("/api/agencia/disponibilidad", new DisponibilidadAgenciaHandler());
+        server.createContext("/api/agencia/paquetes", new PaquetesAgenciaHandler());
         server.createContext("/api/agencia/reservas", new ReservasAgenciaHandler());
         server.createContext("/api/agencia/login", new LoginAgenciaHandler());
         server.createContext("/api/agencia/pagos", new PagosAgenciaHandler());
+        server.createContext("/api/agencia/dashboard", new DashboardAgenciaHandler());
 
         //ADMINISTRADOR
         server.createContext("/api/admin/agencias", new AgenciasAdminHandler());
         server.createContext("/api/admin/notificaciones", new NotificacionesAdminHandler());
+        server.createContext("/api/tours", new ToursAdminHandler());
+        server.createContext("/api/usuarios", new UsuariosAdminHandler());
+        server.createContext("/api/reservas", new ReservasAdminHandler());
+        server.createContext("/api/comisiones", new ComisionesAdminHandler());
 
         // Static Files Handler (Serves frontend UI)
         server.createContext("/", new StaticFileHandler());
@@ -68,7 +74,7 @@ public class JavaApiServer {
         System.out.println("==================================================");
         System.out.println("Servidor Java iniciado exitosamente!");
         System.out.println("Servidor Backend API: http://localhost:" + PORT + "/api/");
-        System.out.println("Aplicacion Web Frontend: http://localhost:" + PORT + "/html/turista/index.html");
+        System.out.println("Aplicacion Web Frontend: http://localhost:" + PORT + "/html/index.html");
         System.out.println("==================================================");
         server.start();
     }
@@ -271,7 +277,9 @@ public class JavaApiServer {
             ).trim();
 
             String contrasena = String.valueOf(
-                    params.getOrDefault("contrasena", "")
+                    params.getOrDefault("contrasena",
+                            params.getOrDefault("contraseña",
+                                    params.getOrDefault("password", "")))
             );
 
             if (usuario.isEmpty() || contrasena.isEmpty()) {
@@ -389,7 +397,11 @@ public class JavaApiServer {
             String nroDocumento = String.valueOf(params.getOrDefault("nroDocumento", ""));
             String nombreUsuario = String.valueOf(params.getOrDefault("nombreUsuario", ""));
             String correo = String.valueOf(params.getOrDefault("correo", ""));
-            String contrasena = String.valueOf(params.getOrDefault("contrasena", ""));
+            String contrasena = String.valueOf(
+                    params.getOrDefault("contrasena",
+                            params.getOrDefault("contraseña",
+                                    params.getOrDefault("password", "")))
+            );
             String telefonoResponsable = String.valueOf(params.getOrDefault("telefonoResponsable", ""));
             String telefonoEmpresa = String.valueOf(params.getOrDefault("telefonoEmpresa", ""));
             String razonSocial = String.valueOf(params.getOrDefault("razonSocial", ""));
@@ -784,37 +796,24 @@ public class JavaApiServer {
 
             try (Connection con = ConexionDB.getConnection();
                  PreparedStatement ps = con.prepareStatement(
-                         "SELECT idDestino, nombre, ubicacion " +
-                                 "FROM Destino ORDER BY nombre");
+                         "SELECT idDestino, nombre FROM Destino WHERE estado = 'ACTIVO' AND nombre IN ('Lima', 'Pasco', 'Tacna', 'Moquegua', 'Ilo', 'Madre de Dios') ORDER BY idDestino");
                  ResultSet rs = ps.executeQuery()) {
 
                 boolean primero = true;
-
                 while (rs.next()) {
-
-                    if (!primero) {
-                        json.append(",");
-                    }
-
+                    if (!primero) json.append(",");
                     json.append("{")
                             .append("\"idDestino\":").append(rs.getInt("idDestino")).append(",")
-                            .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombre"))).append("\",")
-                            .append("\"ubicacion\":\"")
-                            .append(jsonEscape(rs.getString("ubicacion")))
-                            .append("\"")
+                            .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombre"))).append("\"")
                             .append("}");
-
                     primero = false;
                 }
 
                 json.append("]}");
-
                 sendJsonResponse(exchange, 200, json.toString());
 
             } catch (Exception e) {
-
                 e.printStackTrace();
-
                 sendJsonResponse(exchange, 500,
                         "{\"status\":\"error\",\"message\":\"Error al obtener los destinos\"}");
             }
@@ -841,7 +840,7 @@ public class JavaApiServer {
             }
 
             if ("POST".equalsIgnoreCase(metodo)) {
-                guardarServicio(exchange);
+                procesarPostServicio(exchange);
                 return;
             }
 
@@ -850,282 +849,480 @@ public class JavaApiServer {
         }
 
         private void obtenerServicios(HttpExchange exchange) throws IOException {
-
-            Map<String, String> params =
-                    parseQueryParams(exchange.getRequestURI().getQuery());
-
-            int idAgencia;
-
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            int idAgencia = 0;
             try {
-                idAgencia = Integer.parseInt(
-                        params.getOrDefault("idAgencia", "0")
-                );
+                idAgencia = Integer.parseInt(params.getOrDefault("idAgencia", "1"));
             } catch (Exception e) {
-                idAgencia = 0;
+                idAgencia = 1;
             }
 
-            if (idAgencia <= 0) {
-                sendJsonResponse(exchange, 400,
-                        "{\"status\":\"error\",\"message\":\"Agencia no especificada\"}");
-                return;
-            }
+            String buscar = params.getOrDefault("buscar", "").trim().toLowerCase();
+            String tipoFiltro = params.getOrDefault("tipo", "").trim();
+            String estadoFiltro = params.getOrDefault("estado", "").trim();
 
             StringBuilder json = new StringBuilder();
-
             json.append("{\"status\":\"success\",\"servicios\":[");
 
-            try (Connection con = ConexionDB.getConnection();
-                 PreparedStatement ps = con.prepareStatement(
-                         "SELECT s.idServicio, s.nombre, s.descripcion, " +
-                                 "s.tipoServicio, s.precio, s.duracion, " +
-                                 "s.condiciones, s.estado, s.fechaRegistro, " +
-                                 "s.idAgencia, s.idDestino, d.nombre AS destino " +
-                                 "FROM ServicioTuristico s " +
-                                 "INNER JOIN Destino d ON s.idDestino = d.idDestino " +
-                                 "WHERE s.idAgencia = ? " +
-                                 "ORDER BY s.idServicio DESC")) {
+            try (Connection con = ConexionDB.getConnection()) {
+                StringBuilder sql = new StringBuilder(
+                        "SELECT t.idTour, t.nombre, t.descripcion, t.categoria, t.precioAdulto, t.precioNino, t.precioBebe, " +
+                        "t.duracion, t.estado, t.idAgencia, t.idDestino, d.nombre AS destino " +
+                        "FROM Tour t " +
+                        "INNER JOIN Destino d ON t.idDestino = d.idDestino " +
+                        "WHERE t.idAgencia = ? "
+                );
 
-                ps.setInt(1, idAgencia);
+                if (!buscar.isEmpty()) {
+                    sql.append("AND LOWER(t.nombre) LIKE ? ");
+                }
+                if (!tipoFiltro.isEmpty() && !"Todos".equalsIgnoreCase(tipoFiltro)) {
+                    sql.append("AND t.categoria = ? ");
+                }
+                if (!estadoFiltro.isEmpty() && !"Todos".equalsIgnoreCase(estadoFiltro)) {
+                    sql.append("AND t.estado = ? ");
+                }
+                sql.append("ORDER BY t.idTour DESC");
 
-                try (ResultSet rs = ps.executeQuery()) {
+                try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
+                    int paramIdx = 1;
+                    ps.setInt(paramIdx++, idAgencia);
+                    if (!buscar.isEmpty()) {
+                        ps.setString(paramIdx++, "%" + buscar + "%");
+                    }
+                    if (!tipoFiltro.isEmpty() && !"Todos".equalsIgnoreCase(tipoFiltro)) {
+                        ps.setString(paramIdx++, tipoFiltro);
+                    }
+                    if (!estadoFiltro.isEmpty() && !"Todos".equalsIgnoreCase(estadoFiltro)) {
+                        ps.setString(paramIdx++, estadoFiltro);
+                    }
 
-                    boolean primero = true;
+                    try (ResultSet rs = ps.executeQuery()) {
+                        boolean primero = true;
+                        while (rs.next()) {
+                            int idTour = rs.getInt("idTour");
+                            String nombre = rs.getString("nombre");
+                            String desc = rs.getString("descripcion");
+                            String cat = rs.getString("categoria");
+                            double pAdulto = rs.getDouble("precioAdulto");
+                            double pNino = rs.getDouble("precioNino");
+                            double pBebe = rs.getDouble("precioBebe");
+                            String duracion = rs.getString("duracion");
+                            String estado = rs.getString("estado");
+                            int idDestino = rs.getInt("idDestino");
+                            String destino = rs.getString("destino");
 
-                    while (rs.next()) {
+                            // Imágenes del tour
+                            StringBuilder imagenesJson = new StringBuilder("[");
+                            String mainImgUrl = "";
+                            try (PreparedStatement psImg = con.prepareStatement(
+                                    "SELECT idImagen, url, esPrincipal, orden FROM TourImagen WHERE idTour = ? ORDER BY esPrincipal DESC, orden ASC")) {
+                                psImg.setInt(1, idTour);
+                                try (ResultSet rsImg = psImg.executeQuery()) {
+                                    boolean primeroImg = true;
+                                    while (rsImg.next()) {
+                                        if (!primeroImg) imagenesJson.append(",");
+                                        String url = rsImg.getString("url");
+                                        boolean esPrinc = rsImg.getBoolean("esPrincipal");
+                                        if (esPrinc && mainImgUrl.isEmpty()) mainImgUrl = url;
+                                        if (mainImgUrl.isEmpty()) mainImgUrl = url;
 
-                        if (!primero) {
-                            json.append(",");
+                                        imagenesJson.append("{")
+                                                .append("\"idImagen\":").append(rsImg.getInt("idImagen")).append(",")
+                                                .append("\"url\":\"").append(jsonEscape(url)).append("\",")
+                                                .append("\"esPrincipal\":").append(esPrinc).append(",")
+                                                .append("\"orden\":").append(rsImg.getInt("orden"))
+                                                .append("}");
+                                        primeroImg = false;
+                                    }
+                                }
+                            }
+                            imagenesJson.append("]");
+
+                            // Verificar reservas activas futuras
+                            boolean tieneReservasActivas = false;
+                            try (PreparedStatement psCheck = con.prepareStatement(
+                                    "SELECT COUNT(*) FROM DetalleReserva dr " +
+                                    "INNER JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha " +
+                                    "INNER JOIN Reserva r ON dr.idReserva = r.idReserva " +
+                                    "WHERE tf.idTour = ? AND r.estado IN ('CONFIRMADA', 'PENDIENTE') AND tf.fecha >= CURRENT_DATE")) {
+                                psCheck.setInt(1, idTour);
+                                try (ResultSet rsC = psCheck.executeQuery()) {
+                                    if (rsC.next() && rsC.getInt(1) > 0) tieneReservasActivas = true;
+                                }
+                            }
+
+                            // Total de reservas históricas
+                            int reservasHistoricas = 0;
+                            try (PreparedStatement psHist = con.prepareStatement(
+                                    "SELECT COUNT(*) FROM DetalleReserva dr " +
+                                    "INNER JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha " +
+                                    "WHERE tf.idTour = ?")) {
+                                psHist.setInt(1, idTour);
+                                try (ResultSet rsH = psHist.executeQuery()) {
+                                    if (rsH.next()) reservasHistoricas = rsH.getInt(1);
+                                }
+                            }
+
+                            double comision = pAdulto * 0.15;
+                            double neto = pAdulto * 0.85;
+
+                            if (!primero) json.append(",");
+                            json.append("{")
+                                    .append("\"idServicio\":").append(idTour).append(",")
+                                    .append("\"idTour\":").append(idTour).append(",")
+                                    .append("\"nombre\":\"").append(jsonEscape(nombre)).append("\",")
+                                    .append("\"descripcion\":\"").append(jsonEscape(desc)).append("\",")
+                                    .append("\"tipoServicio\":\"").append(jsonEscape(cat)).append("\",")
+                                    .append("\"categoria\":\"").append(jsonEscape(cat)).append("\",")
+                                    .append("\"idDestino\":").append(idDestino).append(",")
+                                    .append("\"destino\":\"").append(jsonEscape(destino)).append("\",")
+                                    .append("\"precio\":").append(pAdulto).append(",")
+                                    .append("\"precioAdulto\":").append(pAdulto).append(",")
+                                    .append("\"precioNino\":").append(pNino).append(",")
+                                    .append("\"precioBebe\":").append(pBebe).append(",")
+                                    .append("\"comision15\":").append(String.format(Locale.US, "%.2f", comision)).append(",")
+                                    .append("\"neto85\":").append(String.format(Locale.US, "%.2f", neto)).append(",")
+                                    .append("\"duracion\":\"").append(jsonEscape(duracion)).append("\",")
+                                    .append("\"estado\":\"").append(jsonEscape(estado)).append("\",")
+                                    .append("\"imagenPrincipal\":\"").append(jsonEscape(mainImgUrl)).append("\",")
+                                    .append("\"imagenes\":").append(imagenesJson.toString()).append(",")
+                                    .append("\"tieneReservasActivas\":").append(tieneReservasActivas).append(",")
+                                    .append("\"reservasHistoricas\":").append(reservasHistoricas)
+                                    .append("}");
+                            primero = false;
                         }
-
-                        json.append("{")
-                                .append("\"idServicio\":")
-                                .append(rs.getInt("idServicio")).append(",")
-
-                                .append("\"nombre\":\"")
-                                .append(jsonEscape(rs.getString("nombre")))
-                                .append("\",")
-
-                                .append("\"descripcion\":\"")
-                                .append(jsonEscape(rs.getString("descripcion")))
-                                .append("\",")
-
-                                .append("\"tipoServicio\":\"")
-                                .append(jsonEscape(rs.getString("tipoServicio")))
-                                .append("\",")
-
-                                .append("\"precio\":")
-                                .append(rs.getBigDecimal("precio")).append(",")
-
-                                .append("\"duracion\":\"")
-                                .append(jsonEscape(rs.getString("duracion")))
-                                .append("\",")
-
-                                .append("\"condiciones\":\"")
-                                .append(jsonEscape(rs.getString("condiciones")))
-                                .append("\",")
-
-                                .append("\"estado\":\"")
-                                .append(jsonEscape(rs.getString("estado")))
-                                .append("\",")
-
-                                .append("\"idDestino\":")
-                                .append(rs.getInt("idDestino")).append(",")
-
-                                .append("\"destino\":\"")
-                                .append(jsonEscape(rs.getString("destino")))
-                                .append("\"")
-
-                                .append("}");
-
-                        primero = false;
                     }
                 }
 
                 json.append("]}");
-
                 sendJsonResponse(exchange, 200, json.toString());
 
             } catch (Exception e) {
-
                 e.printStackTrace();
-
-                sendJsonResponse(exchange, 500,
-                        "{\"status\":\"error\",\"message\":\"Error al obtener los servicios\"}");
+                sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al obtener los servicios\"}");
             }
         }
 
-        private void guardarServicio(HttpExchange exchange) throws IOException {
-
+        private void procesarPostServicio(HttpExchange exchange) throws IOException {
             String body = readRequestBody(exchange);
+            Map<String, Object> params = parseJsonOrFormParams(body);
 
-            Map<String, Object> params =
-                    parseJsonOrFormParams(body);
+            String action = String.valueOf(params.getOrDefault("action", "")).trim();
 
-            String nombre = String.valueOf(
-                    params.getOrDefault("nombre", "")
-            );
+            if ("cambiar_estado".equalsIgnoreCase(action) || "pausar".equalsIgnoreCase(action) || "activar".equalsIgnoreCase(action)) {
+                cambiarEstadoServicio(exchange, params);
+                return;
+            }
 
-            String descripcion = String.valueOf(
-                    params.getOrDefault("descripcion", "")
-            );
+            if ("eliminar".equalsIgnoreCase(action)) {
+                eliminarServicio(exchange, params);
+                return;
+            }
 
-            String tipoServicio = String.valueOf(
-                    params.getOrDefault("tipoServicio", "")
-            );
+            guardarServicio(exchange, params);
+        }
 
-            String precioTexto = String.valueOf(
-                    params.getOrDefault("precio", "0")
-            );
-
-            String duracion = String.valueOf(
-                    params.getOrDefault("duracion", "")
-            );
-
-            String condiciones = String.valueOf(
-                    params.getOrDefault("condiciones", "")
-            );
-
-            String estado = String.valueOf(
-                    params.getOrDefault("estado", "ACTIVO")
-            );
+        private void cambiarEstadoServicio(HttpExchange exchange, Map<String, Object> params) throws IOException {
+            int idTour = 0;
+            try {
+                idTour = Integer.parseInt(String.valueOf(params.getOrDefault("idServicio", params.getOrDefault("idTour", "0"))));
+            } catch (Exception e) {}
 
             int idAgencia = 0;
-            int idDestino = 0;
-            int idServicio = 0;
-
-
-            Object idServicioObj = params.get("idServicio");
-
-            if (idServicioObj != null) {
-                String idServicioTexto =
-                        String.valueOf(idServicioObj).trim();
-
-                if (!idServicioTexto.isEmpty()) {
-                    idServicio = Integer.parseInt(idServicioTexto);
-                }
-            }
             try {
-                idAgencia = Integer.parseInt(
-                        String.valueOf(params.getOrDefault("idAgencia", "0"))
-                );
+                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
+            } catch (Exception e) { idAgencia = 1; }
 
-                idDestino = Integer.parseInt(
-                        String.valueOf(params.getOrDefault("idDestino", "0"))
-                );
+            String nuevoEstado = String.valueOf(params.getOrDefault("nuevoEstado", "")).trim().toUpperCase();
+            if (nuevoEstado.isEmpty()) {
+                String act = String.valueOf(params.getOrDefault("action", "")).trim();
+                if ("pausar".equalsIgnoreCase(act)) nuevoEstado = "PAUSADO";
+                else if ("activar".equalsIgnoreCase(act)) nuevoEstado = "ACTIVO";
+            }
+
+            if (idTour <= 0) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de servicio no válido\"}");
+                return;
+            }
+
+            try (Connection con = ConexionDB.getConnection()) {
+                // Verificar estado actual
+                String estadoActual = "";
+                try (PreparedStatement ps = con.prepareStatement("SELECT estado FROM Tour WHERE idTour = ? AND idAgencia = ?")) {
+                    ps.setInt(1, idTour);
+                    ps.setInt(2, idAgencia);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            estadoActual = rs.getString("estado");
+                        } else {
+                            sendJsonResponse(exchange, 404, "{\"status\":\"error\",\"message\":\"Servicio no encontrado\"}");
+                            return;
+                        }
+                    }
+                }
+
+                // Si fue desactivado por el administrador, la agencia NO puede modificarlo
+                if ("DESACTIVADO_POR_ADMIN".equalsIgnoreCase(estadoActual)) {
+                    sendJsonResponse(exchange, 403, "{\"status\":\"error\",\"message\":\"Este servicio fue desactivado por el administrador y no puede ser reactivado por la agencia.\"}");
+                    return;
+                }
+
+                // Si intenta pausar, validar reservas activas futuras
+                if ("PAUSADO".equalsIgnoreCase(nuevoEstado)) {
+                    try (PreparedStatement psCheck = con.prepareStatement(
+                            "SELECT COUNT(*) FROM DetalleReserva dr " +
+                            "INNER JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha " +
+                            "INNER JOIN Reserva r ON dr.idReserva = r.idReserva " +
+                            "WHERE tf.idTour = ? AND r.estado IN ('CONFIRMADA', 'PENDIENTE') AND tf.fecha >= CURRENT_DATE")) {
+                        psCheck.setInt(1, idTour);
+                        try (ResultSet rsC = psCheck.executeQuery()) {
+                            if (rsC.next() && rsC.getInt(1) > 0) {
+                                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"No se puede pausar un servicio con reservas activas futuras (" + rsC.getInt(1) + " reserva(s) pendiente(s)).\"}");
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                try (PreparedStatement psUpd = con.prepareStatement("UPDATE Tour SET estado = ? WHERE idTour = ? AND idAgencia = ?")) {
+                    psUpd.setString(1, nuevoEstado);
+                    psUpd.setInt(2, idTour);
+                    psUpd.setInt(3, idAgencia);
+                    psUpd.executeUpdate();
+                }
+
+                sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Estado del servicio actualizado a " + nuevoEstado + "\"}");
 
             } catch (Exception e) {
+                e.printStackTrace();
+                sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al cambiar el estado del servicio: " + e.getMessage() + "\"}");
+            }
+        }
 
-                sendJsonResponse(exchange, 400,
-                        "{\"status\":\"error\",\"message\":\"Agencia o destino inválido\"}");
+        private void eliminarServicio(HttpExchange exchange, Map<String, Object> params) throws IOException {
+            int idTour = 0;
+            try {
+                idTour = Integer.parseInt(String.valueOf(params.getOrDefault("idServicio", params.getOrDefault("idTour", "0"))));
+            } catch (Exception e) {}
+
+            int idAgencia = 0;
+            try {
+                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
+            } catch (Exception e) { idAgencia = 1; }
+
+            if (idTour <= 0) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de servicio no válido\"}");
                 return;
             }
 
-            if (nombre.trim().isEmpty() ||
-                    tipoServicio.trim().isEmpty() ||
-                    duracion.trim().isEmpty() ||
-                    idAgencia <= 0 ||
-                    idDestino <= 0) {
+            try (Connection con = ConexionDB.getConnection()) {
+                // Verificar reservas históricas
+                int reservasHistoricas = 0;
+                try (PreparedStatement psHist = con.prepareStatement(
+                        "SELECT COUNT(*) FROM DetalleReserva dr " +
+                        "INNER JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha " +
+                        "WHERE tf.idTour = ?")) {
+                    psHist.setInt(1, idTour);
+                    try (ResultSet rsH = psHist.executeQuery()) {
+                        if (rsH.next()) reservasHistoricas = rsH.getInt(1);
+                    }
+                }
 
-                sendJsonResponse(exchange, 400,
-                        "{\"status\":\"error\",\"message\":\"Completa los campos obligatorios\"}");
-                return;
+                // Si tuvo reservas, NO se elimina: se pausa automáticamente
+                if (reservasHistoricas > 0) {
+                    try (PreparedStatement psPausar = con.prepareStatement("UPDATE Tour SET estado = 'PAUSADO' WHERE idTour = ? AND idAgencia = ?")) {
+                        psPausar.setInt(1, idTour);
+                        psPausar.setInt(2, idAgencia);
+                        psPausar.executeUpdate();
+                    }
+                    sendJsonResponse(exchange, 400, "{\"status\":\"warning\",\"canPause\":true,\"message\":\"El servicio no se puede eliminar porque tiene historial de reservas registradas. Ha sido pausado automáticamente.\"}");
+                    return;
+                }
+
+                // Si no tuvo reservas, se elimina completamente
+                try (PreparedStatement psDelImg = con.prepareStatement("DELETE FROM TourImagen WHERE idTour = ?")) {
+                    psDelImg.setInt(1, idTour);
+                    psDelImg.executeUpdate();
+                }
+                try (PreparedStatement psDelFechas = con.prepareStatement("DELETE FROM TourFecha WHERE idTour = ?")) {
+                    psDelFechas.setInt(1, idTour);
+                    psDelFechas.executeUpdate();
+                }
+                try (PreparedStatement psDelTour = con.prepareStatement("DELETE FROM Tour WHERE idTour = ? AND idAgencia = ?")) {
+                    psDelTour.setInt(1, idTour);
+                    psDelTour.setInt(2, idAgencia);
+                    psDelTour.executeUpdate();
+                }
+
+                sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Servicio eliminado exitosamente.\"}");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al eliminar el servicio: " + e.getMessage() + "\"}");
             }
+        }
+
+        private void guardarServicio(HttpExchange exchange, Map<String, Object> params) throws IOException {
+            String nombre = String.valueOf(params.getOrDefault("nombre", "")).trim();
+            String descripcion = String.valueOf(params.getOrDefault("descripcion", "")).trim();
+            String tipoServicio = String.valueOf(params.getOrDefault("tipoServicio", params.getOrDefault("categoria", ""))).trim();
+            String duracion = String.valueOf(params.getOrDefault("duracion", "")).trim();
+            String estado = String.valueOf(params.getOrDefault("estado", "ACTIVO")).trim();
+
+            int idAgencia = 1;
+            int idDestino = 0;
+            int idTour = 0;
 
             try {
+                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
+            } catch (Exception ignored) {}
 
-                double precio = Double.parseDouble(precioTexto);
+            try {
+                idDestino = Integer.parseInt(String.valueOf(params.getOrDefault("idDestino", "2")));
+            } catch (Exception ignored) {}
 
-                if (idServicio > 0) {
-                    String sqlUpdate =
-                            "UPDATE ServicioTuristico SET " +
-                                    "nombre = ?, descripcion = ?, tipoServicio = ?, precio = ?, " +
-                                    "duracion = ?, condiciones = ?, estado = ?, idDestino = ? " +
-                                    "WHERE idServicio = ? AND idAgencia = ?";
+            try {
+                idTour = Integer.parseInt(String.valueOf(params.getOrDefault("idServicio", params.getOrDefault("idTour", "0"))));
+            } catch (Exception ignored) {}
 
-                    try (Connection con = ConexionDB.getConnection();
-                         PreparedStatement ps = con.prepareStatement(sqlUpdate)) {
+            double pAdulto = 0.0;
+            double pNino = 0.0;
+            double pBebe = 0.0;
 
+            try {
+                pAdulto = Double.parseDouble(String.valueOf(params.getOrDefault("precioAdulto", params.getOrDefault("precio", "0"))));
+                pNino = Double.parseDouble(String.valueOf(params.getOrDefault("precioNino", "0")));
+                pBebe = Double.parseDouble(String.valueOf(params.getOrDefault("precioBebe", "0")));
+            } catch (Exception e) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Los valores de precios no son números válidos\"}");
+                return;
+            }
+
+            // Validaciones
+            if (nombre.isEmpty() || tipoServicio.isEmpty() || duracion.isEmpty() || idDestino <= 0) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Completa todos los campos obligatorios: Nombre, Tipo, Destino y Duración.\"}");
+                return;
+            }
+
+            // Validación de precios: Adulto > 0 y Adulto >= Niño >= Bebé
+            if (pAdulto <= 0) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El precio de adulto debe ser mayor a 0.\"}");
+                return;
+            }
+
+            if (pAdulto < pNino || pNino < pBebe || pBebe < 0) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Los precios deben cumplir la regla de jerarquía: Adulto ≥ Niño ≥ Bebé.\"}");
+                return;
+            }
+
+            try (Connection con = ConexionDB.getConnection()) {
+                // Validación: Nombre único dentro de la misma agencia
+                try (PreparedStatement psCheckName = con.prepareStatement(
+                        "SELECT idTour FROM Tour WHERE idAgencia = ? AND LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND idTour != ?")) {
+                    psCheckName.setInt(1, idAgencia);
+                    psCheckName.setString(2, nombre);
+                    psCheckName.setInt(3, idTour);
+                    try (ResultSet rsN = psCheckName.executeQuery()) {
+                        if (rsN.next()) {
+                            sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Ya existe un servicio con el nombre '" + nombre + "' registrado en tu agencia.\"}");
+                            return;
+                        }
+                    }
+                }
+
+                if (idTour > 0) {
+                    // Actualizar
+                    // Verificar que no esté desactivado por admin
+                    try (PreparedStatement psCheckAdmin = con.prepareStatement("SELECT estado FROM Tour WHERE idTour = ? AND idAgencia = ?")) {
+                        psCheckAdmin.setInt(1, idTour);
+                        psCheckAdmin.setInt(2, idAgencia);
+                        try (ResultSet rsA = psCheckAdmin.executeQuery()) {
+                            if (rsA.next() && "DESACTIVADO_POR_ADMIN".equalsIgnoreCase(rsA.getString("estado"))) {
+                                sendJsonResponse(exchange, 403, "{\"status\":\"error\",\"message\":\"No se puede editar un servicio desactivado por el administrador.\"}");
+                                return;
+                            }
+                        }
+                    }
+
+                    String sqlUpd = "UPDATE Tour SET nombre = ?, descripcion = ?, categoria = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, estado = ?, idDestino = ? WHERE idTour = ? AND idAgencia = ?";
+                    try (PreparedStatement ps = con.prepareStatement(sqlUpd)) {
                         ps.setString(1, nombre);
                         ps.setString(2, descripcion);
                         ps.setString(3, tipoServicio);
-                        ps.setDouble(4, precio);
-                        ps.setString(5, duracion);
-                        ps.setString(6, condiciones);
-                        ps.setString(7, estado);
-                        ps.setInt(8, idDestino);
-                        ps.setInt(9, idServicio);
-                        ps.setInt(10, idAgencia);
-
-                        int filas = ps.executeUpdate();
-
-                        if (filas == 0) {
-                            sendJsonResponse(exchange, 404,
-                                    "{\"status\":\"error\","
-                                            + "\"message\":\"No se encontró el servicio "
-                                            + "o no pertenece a esta agencia\"}");
-                            return;
+                        ps.setDouble(4, pAdulto);
+                        ps.setDouble(5, pNino);
+                        ps.setDouble(6, pBebe);
+                        ps.setString(7, duracion);
+                        ps.setString(8, estado);
+                        ps.setInt(9, idDestino);
+                        ps.setInt(10, idTour);
+                        ps.setInt(11, idAgencia);
+                        ps.executeUpdate();
+                    }
+                } else {
+                    // Crear nuevo
+                    String slug = nombre.toLowerCase().replaceAll("[^a-z0-9]+", "-") + "-" + (System.currentTimeMillis() % 100000);
+                    String sqlIns = "INSERT INTO Tour (idAgencia, idDestino, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, categoria, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    try (PreparedStatement ps = con.prepareStatement(sqlIns, Statement.RETURN_GENERATED_KEYS)) {
+                        ps.setInt(1, idAgencia);
+                        ps.setInt(2, idDestino);
+                        ps.setString(3, slug);
+                        ps.setString(4, nombre);
+                        ps.setString(5, descripcion);
+                        ps.setDouble(6, pAdulto);
+                        ps.setDouble(7, pNino);
+                        ps.setDouble(8, pBebe);
+                        ps.setString(9, duracion);
+                        ps.setString(10, tipoServicio);
+                        ps.setString(11, estado);
+                        ps.executeUpdate();
+                        try (ResultSet rk = ps.getGeneratedKeys()) {
+                            if (rk.next()) idTour = rk.getInt(1);
                         }
-
-                        sendJsonResponse(exchange, 200,
-                                "{\"status\":\"success\","
-                                        + "\"message\":\"Servicio actualizado correctamente\","
-                                        + "\"idServicio\":" + idServicio + "}");
-                        return;
                     }
                 }
 
-                try (Connection con = ConexionDB.getConnection();
-                     PreparedStatement ps = con.prepareStatement(
-                             "INSERT INTO ServicioTuristico " +
-                                     "(nombre, descripcion, tipoServicio, precio, " +
-                                     "duracion, condiciones, estado, idAgencia, idDestino) " +
-                                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                             PreparedStatement.RETURN_GENERATED_KEYS)) {
+                // Procesar imágenes si se enviaron (hasta 5)
+                String imagenesStr = String.valueOf(params.getOrDefault("imagenes", "")).trim();
+                String imagenPrincipal = String.valueOf(params.getOrDefault("imagenPrincipal", "")).trim();
 
-                    ps.setString(1, nombre);
-                    ps.setString(2, descripcion);
-                    ps.setString(3, tipoServicio);
-                    ps.setDouble(4, precio);
-                    ps.setString(5, duracion);
-                    ps.setString(6, condiciones);
-                    ps.setString(7, estado);
-                    ps.setInt(8, idAgencia);
-                    ps.setInt(9, idDestino);
+                if (!imagenesStr.isEmpty() || !imagenPrincipal.isEmpty()) {
+                    List<String> urls = new ArrayList<>();
+                    if (!imagenPrincipal.isEmpty()) urls.add(imagenPrincipal);
 
-                    int filas = ps.executeUpdate();
-
-                    if (filas == 0) {
-                        sendJsonResponse(exchange, 500,
-                                "{\"status\":\"error\",\"message\":\"No se pudo registrar el servicio\"}");
-                        return;
+                    if (!imagenesStr.isEmpty()) {
+                        String[] parts = imagenesStr.split(",");
+                        for (String p : parts) {
+                            String clean = p.trim().replaceAll("[\"\\[\\]]", "");
+                            if (!clean.isEmpty() && !urls.contains(clean) && urls.size() < 5) {
+                                urls.add(clean);
+                            }
+                        }
                     }
 
-                    try (ResultSet keys = ps.getGeneratedKeys()) {
-
-
-                        if (keys.next()) {
-                            idServicio = keys.getInt(1);
+                    if (!urls.isEmpty()) {
+                        try (PreparedStatement psDelImg = con.prepareStatement("DELETE FROM TourImagen WHERE idTour = ?")) {
+                            psDelImg.setInt(1, idTour);
+                            psDelImg.executeUpdate();
                         }
-
-                        sendJsonResponse(exchange, 200,
-                                "{\"status\":\"success\"," +
-                                        "\"message\":\"Servicio registrado correctamente\"," +
-                                        "\"idServicio\":" + idServicio +
-                                        "}");
+                        for (int i = 0; i < urls.size(); i++) {
+                            try (PreparedStatement psInsImg = con.prepareStatement("INSERT INTO TourImagen (idTour, url, esPrincipal, orden) VALUES (?, ?, ?, ?)")) {
+                                psInsImg.setInt(1, idTour);
+                                psInsImg.setString(2, urls.get(i));
+                                psInsImg.setBoolean(3, i == 0);
+                                psInsImg.setInt(4, i + 1);
+                                psInsImg.executeUpdate();
+                            }
+                        }
                     }
                 }
 
-            } catch (NumberFormatException e) {
-
-                sendJsonResponse(exchange, 400,
-                        "{\"status\":\"error\",\"message\":\"El precio no es válido\"}");
+                sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Servicio guardado exitosamente\",\"idServicio\":" + idTour + "}");
 
             } catch (Exception e) {
-
                 e.printStackTrace();
-
-                sendJsonResponse(exchange, 500,
-                        "{\"status\":\"error\",\"message\":\"Error al guardar el servicio\"}");
+                sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al procesar el servicio: " + e.getMessage() + "\"}");
             }
         }
     }
@@ -1139,6 +1336,11 @@ public class JavaApiServer {
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 enableCORS(exchange);
                 exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                procesarPostReserva(exchange);
                 return;
             }
 
@@ -1179,6 +1381,7 @@ public class JavaApiServer {
                 r.motivoCancelacion,
                 r.total,
                 u.nombreUsuario,
+                COALESCE(NULLIF((SELECT COUNT(*) FROM Pasajero p WHERE p.idReserva = r.idReserva), 0), 2) AS cantidadPersonas,
                 (
                     SELECT COALESCE(SUM(p.monto), 0)
                     FROM Pago p
@@ -1261,6 +1464,9 @@ public class JavaApiServer {
                                     .append(jsonEscape(rs.getString("fechaFin")))
                                     .append("\",")
 
+                                    .append("\"cantidadPersonas\":")
+                                    .append(rs.getInt("cantidadPersonas")).append(",")
+
                                     .append("\"estado\":\"")
                                     .append(jsonEscape(rs.getString("estado")))
                                     .append("\",")
@@ -1295,6 +1501,216 @@ public class JavaApiServer {
                         "{\"status\":\"error\",\"message\":\"Error al consultar las reservas\"}");
             }
         }
+
+        private void procesarPostReserva(HttpExchange exchange) throws IOException {
+            String body = readRequestBody(exchange);
+            Map<String, Object> params = parseJsonOrFormParams(body);
+            String action = String.valueOf(params.getOrDefault("action", "")).trim().toLowerCase();
+            int idReserva = 0;
+            try {
+                idReserva = Integer.parseInt(String.valueOf(params.getOrDefault("idReserva", "0")));
+            } catch (Exception ignored) {}
+            int idAgencia = 1;
+            try {
+                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
+            } catch (Exception ignored) {}
+
+            if (idReserva <= 0) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de reserva inválido\"}");
+                return;
+            }
+
+            try (Connection con = ConexionDB.getConnection()) {
+                if ("confirmar".equals(action)) {
+                    String sqlCheck = "SELECT estado FROM Reserva WHERE idReserva = ? AND idAgencia = ?";
+                    try (PreparedStatement psC = con.prepareStatement(sqlCheck)) {
+                        psC.setInt(1, idReserva);
+                        psC.setInt(2, idAgencia);
+                        try (ResultSet rs = psC.executeQuery()) {
+                            if (!rs.next()) {
+                                sendJsonResponse(exchange, 404, "{\"status\":\"error\",\"message\":\"Reserva no encontrada\"}");
+                                return;
+                            }
+                            String estado = rs.getString("estado");
+                            if (!"PENDIENTE".equalsIgnoreCase(estado)) {
+                                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Solo se pueden confirmar reservas pendientes (estado actual: " + estado + ")\"}");
+                                return;
+                            }
+                        }
+                    }
+                    try (PreparedStatement psUp = con.prepareStatement("UPDATE Reserva SET estado = 'CONFIRMADA' WHERE idReserva = ? AND idAgencia = ?")) {
+                        psUp.setInt(1, idReserva);
+                        psUp.setInt(2, idAgencia);
+                        psUp.executeUpdate();
+                    }
+                    try (PreparedStatement psP = con.prepareStatement("UPDATE Pago SET estado = 'COMPLETADO' WHERE idReserva = ?")) {
+                        psP.setInt(1, idReserva);
+                        psP.executeUpdate();
+                    }
+                    sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Reserva confirmada exitosamente\"}");
+                    return;
+                } else if ("cancelar".equals(action)) {
+                    try (PreparedStatement psUp = con.prepareStatement("UPDATE Reserva SET estado = 'CANCELADA' WHERE idReserva = ? AND idAgencia = ?")) {
+                        psUp.setInt(1, idReserva);
+                        psUp.setInt(2, idAgencia);
+                        psUp.executeUpdate();
+                    }
+                    try (PreparedStatement psP = con.prepareStatement("UPDATE Pago SET estado = 'RECHAZADO' WHERE idReserva = ?")) {
+                        psP.setInt(1, idReserva);
+                        psP.executeUpdate();
+                    }
+                    sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Reserva cancelada exitosamente\"}");
+                    return;
+                }
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Acción no válida\"}");
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al procesar reserva: " + jsonEscape(e.getMessage()) + "\"}");
+            }
+        }
+    }
+
+    static class ToursAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            boolean primero = true;
+            String sql = "SELECT t.idTour AS id, t.nombre, a.razonSocial AS agencia, d.nombre AS destino, t.duracion, t.precioAdulto AS precio, t.calificacionPromedio AS calificacion, t.estado, COALESCE(ti.url, '../../img/lima.jpg') AS imagen FROM Tour t JOIN Agencia a ON t.idAgencia = a.idAgencia JOIN Destino d ON t.idDestino = d.idDestino LEFT JOIN TourImagen ti ON t.idTour = ti.idTour AND ti.esPrincipal = 1 ORDER BY t.idTour DESC";
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primero) json.append(",");
+                    primero = false;
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombre"))).append("\",")
+                        .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
+                        .append("\"destino\":\"").append(jsonEscape(rs.getString("destino"))).append("\",")
+                        .append("\"duracion\":\"").append(jsonEscape(rs.getString("duracion"))).append("\",")
+                        .append("\"precio\":").append(rs.getBigDecimal("precio")).append(",")
+                        .append("\"calificacion\":").append(rs.getBigDecimal("calificacion")).append(",")
+                        .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\",")
+                        .append("\"imagen\":\"").append(jsonEscape(rs.getString("imagen"))).append("\"")
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
+    static class UsuariosAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            boolean primero = true;
+            String sql = "SELECT u.idUsuario AS id, CONCAT(p.nombre, ' ', p.apellidoPaterno) AS nombre, p.email, r.nombreRol AS tipo, u.estado, DATE(u.fechaRegistro) AS fechaRegistro FROM Usuario u JOIN Persona p ON u.idPersona = p.idPersona JOIN Rol r ON u.idRol = r.idRol ORDER BY u.idUsuario DESC";
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primero) json.append(",");
+                    primero = false;
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombre"))).append("\",")
+                        .append("\"email\":\"").append(jsonEscape(rs.getString("email"))).append("\",")
+                        .append("\"tipo\":\"").append(jsonEscape(rs.getString("tipo"))).append("\",")
+                        .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\",")
+                        .append("\"fechaRegistro\":\"").append(rs.getString("fechaRegistro")).append("\"")
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
+    static class ReservasAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            boolean primero = true;
+            String sql = "SELECT r.idReserva AS id, r.codigoReserva AS codigo, CONCAT(p.nombre, ' ', p.apellidoPaterno) AS turista, p.email, COALESCE(r.nombreTour, 'Tour Turístico') AS tour, a.razonSocial AS agencia, r.fechaInicio AS fechaTour, (COALESCE(dr.cantAdultos, 1) + COALESCE(dr.cantNinos, 0)) AS cupos, r.total, r.estado, DATE(r.fechaRegistro) AS fechaReserva FROM Reserva r JOIN Usuario u ON r.idUsuario = u.idUsuario JOIN Persona p ON u.idPersona = p.idPersona JOIN Agencia a ON r.idAgencia = a.idAgencia LEFT JOIN DetalleReserva dr ON r.idReserva = dr.idReserva ORDER BY r.idReserva DESC";
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primero) json.append(",");
+                    primero = false;
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"codigo\":\"").append(jsonEscape(rs.getString("codigo"))).append("\",")
+                        .append("\"turista\":\"").append(jsonEscape(rs.getString("turista"))).append("\",")
+                        .append("\"email\":\"").append(jsonEscape(rs.getString("email"))).append("\",")
+                        .append("\"tour\":\"").append(jsonEscape(rs.getString("tour"))).append("\",")
+                        .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
+                        .append("\"fechaTour\":\"").append(rs.getString("fechaTour")).append("\",")
+                        .append("\"cupos\":").append(rs.getInt("cupos")).append(",")
+                        .append("\"total\":").append(rs.getBigDecimal("total")).append(",")
+                        .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\",")
+                        .append("\"fechaReserva\":\"").append(rs.getString("fechaReserva")).append("\"")
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
+    static class ComisionesAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            boolean primero = true;
+            String sql = "SELECT a.idAgencia AS id, a.razonSocial AS agencia, COUNT(r.idReserva) AS totalVentas, COALESCE(SUM(r.total), 0) AS montoTotal, COALESCE(SUM(r.total * 0.10), 0) AS comisionTravelink FROM Agencia a LEFT JOIN Reserva r ON a.idAgencia = r.idAgencia AND r.estado = 'Confirmada' GROUP BY a.idAgencia, a.razonSocial ORDER BY a.idAgencia ASC";
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primero) json.append(",");
+                    primero = false;
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
+                        .append("\"totalVentas\":").append(rs.getInt("totalVentas")).append(",")
+                        .append("\"montoTotal\":").append(rs.getBigDecimal("montoTotal")).append(",")
+                        .append("\"comisionTravelink\":").append(rs.getBigDecimal("comisionTravelink"))
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
     }
 
     // 7. STATIC FILES HANDLER (Serves HTML, CSS, JS, Images)
@@ -1303,7 +1719,7 @@ public class JavaApiServer {
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
             if (path.equals("/") || path.equals("/index.html")) {
-                path = "/html/turista/index.html";
+                path = "/html/index.html";
             }
 
             Path filePath = Paths.get(FRONTEND_DIR, path);
@@ -1362,68 +1778,84 @@ public class JavaApiServer {
             try {
                 if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
 
-                    String query = exchange.getRequestURI().getQuery();
-                    String idAgencia = null;
+                    Map<String, String> qParams = parseQueryParams(exchange.getRequestURI().getQuery());
+                    int idAgencia = 1;
+                    try {
+                        idAgencia = Integer.parseInt(qParams.getOrDefault("idAgencia", "1"));
+                    } catch (Exception ignored) {}
 
-                    if (query != null && query.startsWith("idAgencia=")) {
-                        idAgencia = query.substring("idAgencia=".length());
-                    }
+                    StringBuilder json = new StringBuilder("{\"status\":\"success\",\"disponibilidades\":[");
+                    boolean primero = true;
 
-                    if (idAgencia == null || idAgencia.isEmpty()) {
-                        enviar(exchange, 400, "{\"error\":\"Falta idAgencia\"}");
-                        return;
-                    }
+                    try (Connection con = ConexionDB.getConnection()) {
+                        String sql = """
+                        SELECT tf.idTourFecha AS idDisponibilidad,
+                               tf.fecha,
+                               '08:00:00' AS horaInicio,
+                               '18:00:00' AS horaFin,
+                               tf.cupoTotal,
+                               tf.cupoDisponible,
+                               tf.estado,
+                               tf.idTour AS idServicio,
+                               t.nombre AS servicio
+                        FROM TourFecha tf
+                        INNER JOIN Tour t ON tf.idTour = t.idTour
+                        WHERE t.idAgencia = ?
+                        ORDER BY tf.fecha ASC
+                        """;
 
-                    String sql = """
-                    SELECT d.idDisponibilidad,
-                           d.fecha,
-                           d.horaInicio,
-                           d.horaFin,
-                           d.cupoTotal,
-                           d.cupoDisponible,
-                           d.estado,
-                           d.idServicio,
-                           s.nombre AS servicio
-                    FROM Disponibilidad d
-                    INNER JOIN ServicioTuristico s
-                        ON d.idServicio = s.idServicio
-                    WHERE s.idAgencia = ?
-                    ORDER BY d.fecha ASC, d.horaInicio ASC
-                    """;
-
-                    try (Connection con = ConexionDB.getConnection();
-                         PreparedStatement ps = con.prepareStatement(sql)) {
-
-                        ps.setInt(1, Integer.parseInt(idAgencia));
-
-                        ResultSet rs = ps.executeQuery();
-
-                        StringBuilder json = new StringBuilder("[");
-                        boolean primero = true;
-
-                        while (rs.next()) {
-
-                            if (!primero) json.append(",");
-                            primero = false;
-
-                            json.append("{")
-                                    .append("\"idDisponibilidad\":").append(rs.getInt("idDisponibilidad")).append(",")
-                                    .append("\"fecha\":\"").append(jsonEscape(rs.getString("fecha"))).append("\",")
-                                    .append("\"horaInicio\":\"").append(jsonEscape(rs.getString("horaInicio"))).append("\",")
-                                    .append("\"horaFin\":\"").append(jsonEscape(rs.getString("horaFin"))).append("\",")
-                                    .append("\"cupoTotal\":").append(rs.getInt("cupoTotal")).append(",")
-                                    .append("\"cupoDisponible\":").append(rs.getInt("cupoDisponible")).append(",")
-                                    .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\",")
-                                    .append("\"idServicio\":").append(rs.getInt("idServicio")).append(",")
-                                    .append("\"servicio\":\"").append(jsonEscape(rs.getString("servicio"))).append("\"")
-                                    .append("}");
+                        try (PreparedStatement ps = con.prepareStatement(sql)) {
+                            ps.setInt(1, idAgencia);
+                            try (ResultSet rs = ps.executeQuery()) {
+                                while (rs.next()) {
+                                    if (!primero) json.append(",");
+                                    json.append("{")
+                                            .append("\"idDisponibilidad\":").append(rs.getInt("idDisponibilidad")).append(",")
+                                            .append("\"fecha\":\"").append(jsonEscape(rs.getString("fecha"))).append("\",")
+                                            .append("\"horaInicio\":\"").append(jsonEscape(rs.getString("horaInicio"))).append("\",")
+                                            .append("\"horaFin\":\"").append(jsonEscape(rs.getString("horaFin"))).append("\",")
+                                            .append("\"cupoTotal\":").append(rs.getInt("cupoTotal")).append(",")
+                                            .append("\"cupoDisponible\":").append(rs.getInt("cupoDisponible")).append(",")
+                                            .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\",")
+                                            .append("\"idServicio\":").append(rs.getInt("idServicio")).append(",")
+                                            .append("\"servicio\":\"").append(jsonEscape(rs.getString("servicio"))).append("\"")
+                                            .append("}");
+                                    primero = false;
+                                }
+                            }
                         }
 
-                        json.append("]");
-
-                        enviar(exchange, 200, json.toString());
+                        if (primero) {
+                            // Fallback using Tour table with 30 default cupos
+                            String sqlF = "SELECT idTour AS idServicio, nombre AS servicio FROM Tour WHERE idAgencia = ? AND estado = 'ACTIVO'";
+                            try (PreparedStatement psF = con.prepareStatement(sqlF)) {
+                                psF.setInt(1, idAgencia);
+                                try (ResultSet rsF = psF.executeQuery()) {
+                                    int count = 1;
+                                    while (rsF.next()) {
+                                        if (!primero) json.append(",");
+                                        json.append("{")
+                                                .append("\"idDisponibilidad\":").append(count++).append(",")
+                                                .append("\"fecha\":\"2026-10-15\",")
+                                                .append("\"horaInicio\":\"08:00:00\",")
+                                                .append("\"horaFin\":\"18:00:00\",")
+                                                .append("\"cupoTotal\":30,")
+                                                .append("\"cupoDisponible\":28,")
+                                                .append("\"estado\":\"DISPONIBLE\",")
+                                                .append("\"idServicio\":").append(rsF.getInt("idServicio")).append(",")
+                                                .append("\"servicio\":\"").append(jsonEscape(rsF.getString("servicio"))).append("\"")
+                                                .append("}");
+                                        primero = false;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
+                    json.append("]}");
+                    sendJsonResponse(exchange, 200, json.toString());
                     return;
                 }
 
@@ -1438,6 +1870,45 @@ public class JavaApiServer {
                     );
 
                     System.out.println("BODY: " + body);
+
+                    String action = obtenerParametro(body, "action").toLowerCase();
+                    if ("cerrar_ventas".equals(action) || "cerrar".equals(action)) {
+                        int idDisp = 0;
+                        try { idDisp = Integer.parseInt(obtenerParametro(body, "idDisponibilidad")); } catch (Exception ignored) {}
+                        if (idDisp > 0) {
+                            try (Connection con = ConexionDB.getConnection();
+                                 PreparedStatement ps = con.prepareStatement("UPDATE Disponibilidad SET estado = 'CERRADO', cupoDisponible = 0 WHERE idDisponibilidad = ?")) {
+                                ps.setInt(1, idDisp);
+                                ps.executeUpdate();
+                                enviar(exchange, 200, "{\"mensaje\":\"Ventas cerradas exitosamente.\"}");
+                                return;
+                            }
+                        }
+                    } else if ("reabrir".equals(action)) {
+                        int idDisp = 0;
+                        try { idDisp = Integer.parseInt(obtenerParametro(body, "idDisponibilidad")); } catch (Exception ignored) {}
+                        if (idDisp > 0) {
+                            try (Connection con = ConexionDB.getConnection();
+                                 PreparedStatement ps = con.prepareStatement("UPDATE Disponibilidad SET estado = 'DISPONIBLE', cupoDisponible = cupoTotal WHERE idDisponibilidad = ?")) {
+                                ps.setInt(1, idDisp);
+                                ps.executeUpdate();
+                                enviar(exchange, 200, "{\"mensaje\":\"Ventas reabiertas exitosamente.\"}");
+                                return;
+                            }
+                        }
+                    } else if ("eliminar".equals(action)) {
+                        int idDisp = 0;
+                        try { idDisp = Integer.parseInt(obtenerParametro(body, "idDisponibilidad")); } catch (Exception ignored) {}
+                        if (idDisp > 0) {
+                            try (Connection con = ConexionDB.getConnection();
+                                 PreparedStatement ps = con.prepareStatement("DELETE FROM Disponibilidad WHERE idDisponibilidad = ?")) {
+                                ps.setInt(1, idDisp);
+                                ps.executeUpdate();
+                                enviar(exchange, 200, "{\"mensaje\":\"Disponibilidad eliminada exitosamente.\"}");
+                                return;
+                            }
+                        }
+                    }
 
                     String fecha = obtenerParametro(body, "fecha");
                     String horaInicio = obtenerParametro(body, "horaInicio");

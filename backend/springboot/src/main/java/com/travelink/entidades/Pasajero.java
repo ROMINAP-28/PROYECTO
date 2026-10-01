@@ -5,24 +5,22 @@ public class Pasajero {
     private int idReserva; // FK → Reserva
     private String nroDocumento;
     private String nombre;
+    private String apellidoPaterno;
+    private String apellidoMaterno;
     private String apellidos;
-    private int edad;
-    private String tipoSeguro; // SIS / Particular / Ninguno
+    private String telefono;
     private boolean esTitular;
 
     public Pasajero() {
-        this.tipoSeguro = "Particular";
         this.esTitular = false;
     }
 
-    public Pasajero(int idPasajero, int idReserva, String nroDocumento, String nombre, String apellidos, int edad, String tipoSeguro, boolean esTitular) {
+    public Pasajero(int idPasajero, int idReserva, String nroDocumento, String nombre, String apellidos, boolean esTitular) {
         this.idPasajero = idPasajero;
         this.idReserva = idReserva;
         this.nroDocumento = nroDocumento;
         this.nombre = nombre;
         this.apellidos = apellidos;
-        this.edad = edad;
-        this.tipoSeguro = tipoSeguro;
         this.esTitular = esTitular;
     }
 
@@ -38,14 +36,17 @@ public class Pasajero {
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
+    public String getApellidoPaterno() { return apellidoPaterno; }
+    public void setApellidoPaterno(String apellidoPaterno) { this.apellidoPaterno = apellidoPaterno; }
+
+    public String getApellidoMaterno() { return apellidoMaterno; }
+    public void setApellidoMaterno(String apellidoMaterno) { this.apellidoMaterno = apellidoMaterno; }
+
     public String getApellidos() { return apellidos; }
     public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
-    public int getEdad() { return edad; }
-    public void setEdad(int edad) { this.edad = edad; }
-
-    public String getTipoSeguro() { return tipoSeguro; }
-    public void setTipoSeguro(String tipoSeguro) { this.tipoSeguro = tipoSeguro; }
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
 
     public boolean isEsTitular() { return esTitular; }
     public void setEsTitular(boolean esTitular) { this.esTitular = esTitular; }

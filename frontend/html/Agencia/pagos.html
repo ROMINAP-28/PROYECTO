@@ -1,215 +1,229 @@
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travelink - Pagos y liquidaciones</title>
-    <link rel="stylesheet" href="../../css/agencia.css">
+    <title>Travelink - Pagos y Liquidaciones</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 </head>
 
-<body class="dashboard-page">
+<body class="dashboard-page admin-body" style="margin:0; padding:0; height:100vh; overflow:hidden; background:#f8fafc;">
 
-<div class="dashboard">
+    <div class="dashboard" style="display:flex; width:100vw; height:100vh; overflow:hidden;">
 
-    <!-- BARRA LATERAL -->
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <h1>Travelink</h1>
-            <span>Portal de agencias</span>
-        </div>
-
-        <nav class="sidebar-menu">
-            <a href="inicio.html">Inicio</a>
-            <a href="servicios.html">Servicios turísticos</a>
-            <a href="disponibilidad.html">Disponibilidad y cupos</a>
-            <a href="paquetes.html">Paquetes turísticos</a>
-            <a href="reservas.html">Reservas</a>
-            <a href="pagos.html" class="active">Pagos y liquidaciones</a>
-            <a href="configuracion.html">Configuración</a>
-        </nav>
-
-        <div class="sidebar-bottom">
-            <button id="btnCerrarSesion">Cerrar sesión</button>
-        </div>
-    </aside>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="dashboard-content">
-
-        <!-- ENCABEZADO -->
-        <header class="dashboard-header">
-            <div class="header-title">
-                <h1>Pagos y liquidaciones</h1>
-                <p>Consulta tus pagos, comisiones y liquidaciones.</p>
+        <!-- SIDEBAR ESTILO ADMIN UNIFICADO -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header" style="padding: 20px; text-align: center;">
+                <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"
+                    style="max-width: 150px; height: auto;">
             </div>
 
-            <div class="header-actions">
-                <div class="agency-user">
-                    <div class="agency-avatar">A</div>
-                    <div>
-                        <strong>Mi agencia</strong>
-                        <span>Agencia turística</span>
+            <nav class="sidebar-nav">
+                <a href="inicio.html" class="nav-item">
+                    <i class="ti ti-smart-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="servicios.html" class="nav-item">
+                    <i class="ti ti-compass"></i>
+                    <span>Servicios turísticos</span>
+                </a>
+                <a href="disponibilidad.html" class="nav-item">
+                    <i class="ti ti-calendar-time"></i>
+                    <span>Disponibilidad y cupos</span>
+                </a>
+                <a href="paquetes.html" class="nav-item">
+                    <i class="ti ti-package"></i>
+                    <span>Paquetes turísticos</span>
+                </a>
+                <a href="reservas.html" class="nav-item">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="pagos.html" class="nav-item active">
+                    <i class="ti ti-coins"></i>
+                    <span>Pagos y liquidaciones</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="ti ti-settings"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <!-- TOPBAR ESTILO ADMIN UNIFICADO -->
+            <header class="admin-topbar" style="height: 64px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: flex-end; padding: 0 28px; position: sticky; top: 0; z-index: 1000; width: 100%;">
+                <div style="display:flex; align-items:center; gap:16px; position:relative; margin-left:auto;">
+                    <button type="button" class="notification-btn" title="Notificaciones" id="btnNotifAgencia">
+                        <i class="ti ti-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="notifications-dropdown-card" id="notifDropdownAgencia"
+                        style="display:none; position:absolute; top:56px; right:120px; background:white; border:1px solid #e2e8f0; border-radius:10px; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000;">
+                        <div style="padding:15px; border-bottom:1px solid #e2e8f0;">
+                            <span style="font-weight:600; font-size:14px; color:#0f172a;">Notificaciones</span>
+                        </div>
+                        <div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                            <i class="ti ti-bell-off" style="font-size:24px; color:#94a3b8; display:block; margin-bottom:6px;"></i>
+                            No hay notificaciones nuevas.
+                        </div>
+                    </div>
+
+                    <div class="user-dropdown-container" style="position:relative;">
+                        <button type="button" class="user-profile-toggle" id="btnPerfilToggle">
+                            <div class="user-avatar-img" id="agencyAvatarLetter" style="background:#2563eb; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">A</div>
+                            <div class="user-info-text">
+                                <span class="user-name" id="nombreAgenciaTop" style="font-weight:600; color:#0f172a; font-size:14px;">ANDES TOURS</span>
+                                <span class="user-role" style="font-size:12px; color:#64748b;">Agencia turística</span>
+                            </div>
+                        </button>
+
+                        <div id="perfilDropdownAgencia"
+                            style="display:none; position:absolute; top:56px; right:0; background:white; border:1px solid #e2e8f0; border-radius:10px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:9999; padding:8px 0;">
+                            <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;" id="dropdownNombreAgencia">ANDES TOURS</p>
+                                <p style="margin:0; font-size:12px; color:#64748b;">Agencia Turística</p>
+                            </div>
+                            <a href="#" onclick="document.getElementById('inputFotoPerfil').click(); return false;" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#334155; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-photo" style="font-size:17px; color:#64748b;"></i> Cambiar foto de perfil
+                            </a>
+                            <input type="file" id="inputFotoPerfil" accept="image/*" style="display:none;">
+                            <div style="height:1px; background:#f1f5f9; margin:6px 0;"></div>
+                            <a href="#" id="btnCerrarSesionDropdown" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#ef4444; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-logout" style="font-size:17px;"></i> Cerrar sesión
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <!-- RESUMEN FINANCIERO -->
-        <section>
+            <!-- CONTENIDO PAGOS -->
+            <div class="content-container">
 
-            <div class="module-toolbar">
-                <div>
-                    <h2>Resumen financiero</h2>
-                    <p>Visualiza el estado financiero de tu agencia.</p>
-                </div>
-            </div>
+                <section class="module-toolbar">
+                    <div>
+                        <h2>Pagos y liquidaciones</h2>
+                        <p>Consulta tus transacciones recibidas, comisiones descontadas y estado de liquidaciones.</p>
+                    </div>
+                </section>
 
-            <div class="dashboard-stats">
+                <section class="stats-grid-4">
+                    <article class="stat-card-custom">
+                        <span>Total de pagos recibidos</span>
+                        <strong id="totalPagos">S/ 0.00</strong>
+                    </article>
+                    <article class="stat-card-custom">
+                        <span>Comisiones Travelink (15%)</span>
+                        <strong id="totalComisiones" style="color:#2563eb;">S/ 0.00</strong>
+                    </article>
+                    <article class="stat-card-custom">
+                        <span>Neto por recibir (85%)</span>
+                        <strong id="netoPorRecibir" style="color:#16a34a;">S/ 0.00</strong>
+                    </article>
+                    <article class="stat-card-custom">
+                        <span>Liquidaciones pendientes</span>
+                        <strong id="liquidacionesPendientes" style="color:#c2410c;">0</strong>
+                    </article>
+                </section>
 
-                <article class="stat-card">
-                    <span>Total de pagos</span>
-                    <strong id="totalPagos">S/ 0.00</strong>
-                </article>
+                <!-- TABLA HISTORIAL DE PAGOS -->
+                <div class="service-filters">
+                    <div class="form-group">
+                        <label for="buscarPago">Buscar pago</label>
+                        <input type="text" id="buscarPago" placeholder="Nº operación o código reserva...">
+                    </div>
 
-                <article class="stat-card">
-                    <span>Comisiones Travelink</span>
-                    <strong id="totalComisiones">S/ 0.00</strong>
-                </article>
-
-                <article class="stat-card">
-                    <span>Neto por recibir</span>
-                    <strong id="netoPorRecibir">S/ 0.00</strong>
-                </article>
-
-                <article class="stat-card">
-                    <span>Liquidaciones pendientes</span>
-                    <strong id="liquidacionesPendientes">0</strong>
-                </article>
-
-            </div>
-        </section>
-
-        <!-- HISTORIAL DE PAGOS -->
-        <section>
-
-            <div class="module-toolbar">
-                <div>
-                    <h2>Historial de pagos</h2>
-                    <p>Consulta los pagos asociados a tus reservas.</p>
-                </div>
-            </div>
-
-            <!-- FILTROS DE PAGOS -->
-            <div class="service-filters">
-
-                <div class="form-group">
-                    <label for="buscarPago">Buscar pago</label>
-                    <input
-                            type="text"
-                            id="buscarPago"
-                            placeholder="Código de pago o reserva">
+                    <div class="form-group">
+                        <label for="filtroEstadoPago">Estado del pago</label>
+                        <select id="filtroEstadoPago">
+                            <option value="todos">Todos los estados</option>
+                            <option value="COMPLETADO">Completado</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="RECHAZADO">Rechazado</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="filtroEstadoPago">Estado</label>
-                    <select id="filtroEstadoPago">
-                        <option value="todos">Todos los estados</option>
-                        <option value="COMPLETADO">Completado</option>
-                        <option value="PENDIENTE">Pendiente</option>
-                        <option value="RECHAZADO">Rechazado</option>
-                    </select>
+                <div class="table-card">
+                    <div class="card-header-flex">
+                        <h3>Transacciones y pagos registrados</h3>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>N.º</th>
+                                    <th>N.º Operación</th>
+                                    <th>Código Reserva</th>
+                                    <th>Fecha de Pago</th>
+                                    <th>Método Pago</th>
+                                    <th>Monto Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPagos">
+                                <tr>
+                                    <td colspan="7" style="text-align:center; padding:35px; color:#94a3b8;">
+                                        Cargando pagos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-            </div>
-
-            <!-- TABLA DE PAGOS -->
-            <div class="table-container">
-                <h3>Pagos registrados</h3>
-
-                <table>
-                    <thead>
-                    <tr>
-                        <th>N.º</th>
-                        <th>Operación</th>
-                        <th>Reserva</th>
-                        <th>Fecha</th>
-                        <th>Método</th>
-                        <th>Monto</th>
-                        <th>Estado</th>
-                    </tr>
-                    </thead>
-
-                    <tbody id="tablaPagos">
-                    <tr>
-                        <td colspan="7">Cargando pagos...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </section>
-
-        <!-- HISTORIAL DE LIQUIDACIONES -->
-        <section>
-
-            <div class="module-toolbar">
-                <div>
-                    <h2>Historial de liquidaciones</h2>
-                    <p>
-                        Consulta los montos, comisiones y estados
-                        de tus liquidaciones.
-                    </p>
+                <!-- TABLA HISTORIAL DE LIQUIDACIONES -->
+                <div class="service-filters" style="grid-template-columns: 1fr;">
+                    <div class="form-group">
+                        <label for="filtroEstadoLiquidacion">Filtrar estado de liquidación</label>
+                        <select id="filtroEstadoLiquidacion">
+                            <option value="todos">Todos los estados</option>
+                            <option value="PENDIENTE">Pendientes de abono</option>
+                            <option value="LIQUIDADO">Liquidados y abonados</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <!-- FILTRO DE LIQUIDACIONES -->
-            <div class="service-filters">
+                <div class="table-card">
+                    <div class="card-header-flex">
+                        <h3>Historial de liquidaciones bancarias</h3>
+                    </div>
 
-                <div class="form-group">
-                    <label for="filtroEstadoLiquidacion">
-                        Estado de liquidación
-                    </label>
-
-                    <select id="filtroEstadoLiquidacion">
-                        <option value="todos">Todos los estados</option>
-                        <option value="PENDIENTE">Pendiente</option>
-                        <option value="LIQUIDADO">Liquidado</option>
-                    </select>
+                    <div style="overflow-x:auto;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>N.º</th>
+                                    <th>Fecha Generación</th>
+                                    <th>Monto Bruto</th>
+                                    <th>Comisión 15%</th>
+                                    <th>Monto Neto Abonado</th>
+                                    <th>Estado Liquidación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaLiquidaciones">
+                                <tr>
+                                    <td colspan="6" style="text-align:center; padding:35px; color:#94a3b8;">
+                                        Cargando liquidaciones...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
 
-            <!-- TABLA DE LIQUIDACIONES -->
-            <div class="table-container">
-                <h3>Liquidaciones registradas</h3>
+        </main>
+    </div>
 
-                <table>
-                    <thead>
-                    <tr>
-                        <th>N.º</th>
-                        <th>Fecha de generación</th>
-                        <th>Monto bruto</th>
-                        <th>Comisión</th>
-                        <th>Monto neto</th>
-                        <th>Estado</th>
-                    </tr>
-                    </thead>
-
-                    <tbody id="tablaLiquidaciones">
-                    <tr>
-                        <td colspan="6">Cargando liquidaciones...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
-
-<script src="../../js/agencia.js"></script>
+    <script src="../../js/agencia/agencia_pagos.js?v=2"></script>
 </body>
 </html>

@@ -101,7 +101,7 @@ function renderizarTabla() {
                 <td><span class="table-id-code">#TR-${String(t.id).padStart(3, '0')}</span></td>
                 <td>
                     <div class="tour-cell-meta">
-                        <img src="${t.imagen || fallbackImg}" alt="${t.nombre}" class="tour-thumb-img" onerror="this.src='${fallbackImg}'">
+                        <img src="${t.imagen || fallbackImg}" alt="${t.nombre}" class="tour-thumb-img" onerror="this.onerror=null; this.src='${fallbackImg}';">
                         <div class="tour-text-wrap">
                             <h6>${t.nombre}</h6>
                             <span>${t.duracion || '1 día'}</span>

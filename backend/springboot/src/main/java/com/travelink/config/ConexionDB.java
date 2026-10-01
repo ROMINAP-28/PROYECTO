@@ -1,4 +1,3 @@
-
 package com.travelink.config;
 
 import java.sql.Connection;
@@ -7,39 +6,39 @@ import java.sql.SQLException;
 
 public class ConexionDB {
 
-    private static final String URL =
+    // Credenciales leídas desde variables de entorno con fallbacks configurados
+    private static final String DEFAULT_URL =
             "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String DEFAULT_USER = "avnadmin";
+    private static final String DEFAULT_PASS = "AVNS_GohPsfjQ1YmM-IL7AoH";
 
-    private static final String USER = "avnadmin";
-    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+    public static String getUrl() {
+        String env = System.getenv("DB_URL");
+        return (env != null && !env.isBlank()) ? env : DEFAULT_URL;
+    }
+
+    public static String getUser() {
+        String env = System.getenv("DB_USER");
+        return (env != null && !env.isBlank()) ? env : DEFAULT_USER;
+    }
+
+    public static String getPassword() {
+        String env = System.getenv("DB_PASSWORD");
+        return (env != null && !env.isBlank()) ? env : DEFAULT_PASS;
+    }
 
     public static Connection getConnection() {
-        System.out.println("=== PROBANDO CONEXION A AIVEN ===");
-
-        if (PASSWORD == null || PASSWORD.isBlank()) {
-            System.err.println("ERROR: No se ha configurado DB_PASSWORD.");
-            return null;
-        }
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-
-            Connection con = DriverManager.getConnection(
-                    URL, USER, PASSWORD
-            );
-
-            System.out.println("Conexion exitosa a la base de datos.");
+            Connection con = DriverManager.getConnection(getUrl(), getUser(), getPassword());
             return con;
-
         } catch (ClassNotFoundException e) {
-            System.err.println("ERROR: No se encontro el driver MySQL.");
+            System.err.println("ERROR: No se encontró el driver JDBC de MySQL.");
             e.printStackTrace();
-
         } catch (SQLException e) {
-            System.err.println("ERROR DE CONEXION A AIVEN:");
+            System.err.println("ERROR DE CONEXION A LA BASE DE DATOS:");
             e.printStackTrace();
         }
-
         return null;
     }
 }

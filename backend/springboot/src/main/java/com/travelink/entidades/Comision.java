@@ -1,26 +1,41 @@
 package com.travelink.entidades;
+
+import java.math.BigDecimal;
 import java.util.Date;
+
 public class Comision {
     private int idComision;
-    private double porcentaje;
-    private double montoComision;
-    private double montoNeto;
-    private Date fechaCalculo;
+    private int idAgencia;
+    private String periodo;
+    private int toursVendidos;
+    private BigDecimal montoComision;
+    private BigDecimal montoNeto;
     private String estado;
-    private int idReserva;
+    private Date fechaPago;
+
     public Comision() {}
+
     public int getIdComision() { return idComision; }
     public void setIdComision(int idComision) { this.idComision = idComision; }
-    public double getPorcentaje() { return porcentaje; }
-    public void setPorcentaje(double porcentaje) { this.porcentaje = porcentaje; }
-    public double getMontoComision() { return montoComision; }
-    public void setMontoComision(double montoComision) { this.montoComision = montoComision; }
-    public double getMontoNeto() { return montoNeto; }
-    public void setMontoNeto(double montoNeto) { this.montoNeto = montoNeto; }
-    public Date getFechaCalculo() { return fechaCalculo; }
-    public void setFechaCalculo(Date fechaCalculo) { this.fechaCalculo = fechaCalculo; }
+
+    public int getIdAgencia() { return idAgencia; }
+    public void setIdAgencia(int idAgencia) { this.idAgencia = idAgencia; }
+
+    public String getPeriodo() { return periodo; }
+    public void setPeriodo(String periodo) { this.periodo = periodo; }
+
+    public int getToursVendidos() { return toursVendidos; }
+    public void setToursVendidos(int toursVendidos) { this.toursVendidos = toursVendidos; }
+
+    public BigDecimal getMontoComision() { return montoComision; }
+    public void setMontoComision(BigDecimal montoComision) { this.montoComision = montoComision; }
+
+    public BigDecimal getMontoNeto() { return montoNeto; }
+    public void setMontoNeto(BigDecimal montoNeto) { this.montoNeto = montoNeto; }
+
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
-    public int getIdReserva() { return idReserva; }
-    public void setIdReserva(int idReserva) { this.idReserva = idReserva; }
+
+    public Date getFechaPago() { return fechaPago; }
+    public void setFechaPago(Date fechaPago) { this.fechaPago = fechaPago; }
 }

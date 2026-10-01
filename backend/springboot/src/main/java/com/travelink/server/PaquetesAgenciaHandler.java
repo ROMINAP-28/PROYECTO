@@ -98,14 +98,55 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         }
 
         if (!exitoBD || primero) {
-            // Sample packages for the 6 real agencies in database
             json = new StringBuilder("{\"status\":\"success\",\"paquetes\":[");
-            json.append("{\"idPaquete\":1,\"idAgencia\":1,\"agencia\":\"ANDES TOURS PERU S.A.C.\",\"nombre\":\"Machu Picchu Clásico y Valle Sagrado\",\"descripcion\":\"Excursión completa al santuario histórico con guía profesional y tren panorámico.\",\"precio\":350.00,\"duracion\":\"1 día / 1 noche\",\"condiciones\":\"Incluye traslados y boletos de ingreso.\",\"estado\":\"PUBLICADO\",\"descuento\":10,\"imagen\":\"../../img/colca.jpg\",\"cuposDisponibles\":20,\"cupoTotal\":25},");
-            json.append("{\"idPaquete\":2,\"idAgencia\":2,\"agencia\":\"INKA TRAVEL EXPERIENCES S.A.C.\",\"nombre\":\"Montaña de 7 Colores (Vinicunca)\",\"descripcion\":\"Trek guiado a la impresionante montaña de colores con desayuno y almuerzo buffet.\",\"precio\":280.00,\"duracion\":\"1 día\",\"condiciones\":\"Incluye bastones de trekking y transporte ida y vuelta.\",\"estado\":\"PUBLICADO\",\"descuento\":15,\"imagen\":\"../../img/7colores.jpg\",\"cuposDisponibles\":15,\"cupoTotal\":20},");
-            json.append("{\"idPaquete\":3,\"idAgencia\":3,\"agencia\":\"AGENCIA ALEGRIA S.A\",\"nombre\":\"Laguna Humantay Trek & Aventura\",\"descripcion\":\"Caminata paisajística hacia la turquesa Laguna Humantay con paramédico y equipo de oxígeno.\",\"precio\":150.00,\"duracion\":\"1 día\",\"condiciones\":\"Recomendado para mayores de 12 años.\",\"estado\":\"PUBLICADO\",\"descuento\":5,\"imagen\":\"../../img/puno.jpg\",\"cuposDisponibles\":18,\"cupoTotal\":25},");
-            json.append("{\"idPaquete\":4,\"idAgencia\":5,\"agencia\":\"AGENCIA SELVA S.A\",\"nombre\":\"Amazonía Profunda Tambopata\",\"descripcion\":\"Inmersión completa en la selva virgen con observación de fauna silvestre, canopy y navegación fluvial.\",\"precio\":1450.00,\"duracion\":\"4 días / 3 noches\",\"condiciones\":\"Alimentación completa y hospedaje ecolodge.\",\"estado\":\"PUBLICADO\",\"descuento\":25,\"imagen\":\"../../img/selva.jpg\",\"cuposDisponibles\":10,\"cupoTotal\":15},");
-            json.append("{\"idPaquete\":5,\"idAgencia\":6,\"agencia\":\"TOUR AREQUIPA S.A.S\",\"nombre\":\"Cañón del Colca & Mirador del Cóndor\",\"descripcion\":\"Recorrido por el Cañón del Colca, baños termales de La Calera y avistamiento del Cóndor andino.\",\"precio\":180.00,\"duracion\":\"2 días / 1 noche\",\"condiciones\":\"Incluye hospedaje en Chivay y guiado.\",\"estado\":\"PUBLICADO\",\"descuento\":10,\"imagen\":\"../../img/arequipa.jpg\",\"cuposDisponibles\":12,\"cupoTotal\":20},");
-            json.append("{\"idPaquete\":6,\"idAgencia\":7,\"agencia\":\"TOUR LIMA S.A\",\"nombre\":\"Oasis de Huacachina & Tubulares Ica\",\"descripcion\":\"Aventura en los tubulares del desierto de Ica, sandboarding y visita a bodegas vitivinícolas.\",\"precio\":190.00,\"duracion\":\"1 día\",\"condiciones\":\"Salidas diarias desde Lima e Ica.\",\"estado\":\"PUBLICADO\",\"descuento\":10,\"imagen\":\"../../img/ica.jpg\",\"cuposDisponibles\":22,\"cupoTotal\":30}");
+            String[][] allP = {
+                {"101", "1", "ANDES TOURS PERU S.A.C.", "Machu Picchu Clásico y Valle Sagrado", "Excursión completa al santuario histórico con guía profesional y tren panorámico.", "350.00", "1 día / 1 noche", "Incluye traslados y boletos.", "PUBLICADO", "10", "../../img/colca.jpg", "20", "25"},
+                {"102", "1", "ANDES TOURS PERU S.A.C.", "City Tour Cusco Imperial & Sacsayhuamán", "Recorrido por Qorikancha, Sacsayhuamán, Qenqo y Tambomachay.", "120.00", "1 día", "Guiado oficial en español/inglés.", "PUBLICADO", "0", "../../img/cusco.jpg", "22", "30"},
+                {"103", "1", "ANDES TOURS PERU S.A.C.", "Valle Sagrado de los Incas & Ollantaytambo", "Pisaq, Urubamba y fortaleza de Ollantaytambo con almuerzo buffet criollo.", "220.00", "1 día", "Incluye almuerzo buffet.", "PUBLICADO", "5", "../../img/uros.jpg", "18", "25"},
+
+                {"201", "2", "INKA TRAVEL EXPERIENCES S.A.C.", "Montaña de 7 Colores (Vinicunca)", "Trek guiado a la impresionante montaña de colores con desayuno y almuerzo buffet.", "280.00", "1 día", "Incluye bastones de trekking.", "PUBLICADO", "15", "../../img/7colores.jpg", "15", "20"},
+                {"202", "2", "INKA TRAVEL EXPERIENCES S.A.C.", "Super Valle Sagrado + Maras Moray Salineras", "Circuito arqueológico completo combinando Maras, Moray y terrazas incas.", "210.00", "1 día", "Entradas incluidas.", "PUBLICADO", "10", "../../img/colca.jpg", "19", "25"},
+                {"203", "2", "INKA TRAVEL EXPERIENCES S.A.C.", "Ruta Inca Jungle Trek & Aventura", "Combinación de caminata, bicicletas de montaña y tirolesa hacia Machu Picchu.", "680.00", "3 días / 2 noches", "Equipo completo de aventura.", "PUBLICADO", "20", "../../img/huaraz.jpg", "12", "15"},
+                {"204", "2", "INKA TRAVEL EXPERIENCES S.A.C.", "Tour Exclusivo Machu Picchu en Tren Vistadome", "Experiencia premium VIP con show folclórico a bordo y guía personalizado.", "520.00", "1 día", "Servicio VIP.", "PUBLICADO", "10", "../../img/cusco.jpg", "8", "10"},
+
+                {"301", "3", "AGENCIA ALEGRIA S.A", "Laguna Humantay Trek & Aventura", "Caminata paisajística hacia la turquesa Laguna Humantay con paramédico y equipo de oxígeno.", "150.00", "1 día", "Recomendado para mayores de 12 años.", "PUBLICADO", "5", "../../img/puno.jpg", "18", "25"},
+                {"302", "3", "AGENCIA ALEGRIA S.A", "Tour Maras, Moray & Salineras Ancestrales", "Visita guiada a las pozas naturales de sal y los laboratorios agrícolas incas.", "130.00", "1 día", "Transporte turístico cómodo.", "PUBLICADO", "0", "../../img/ica.jpg", "25", "30"},
+                {"303", "3", "AGENCIA ALEGRIA S.A", "Excursión Valle Sur: Tipón, Pikillacta & Andahuaylillas", "Arquitectura prehispánica Wari e Inka con visita a la Capilla Sixtina de América.", "110.00", "1 día", "Guía profesional.", "PUBLICADO", "0", "../../img/uros.jpg", "22", "25"},
+
+                {"501", "5", "AGENCIA SELVA S.A", "Amazonía Profunda Tambopata Lodge", "Inmersión completa en la selva virgen con observación de fauna silvestre, canopy y navegación fluvial.", "1450.00", "4 días / 3 noches", "Alimentación completa y hospedaje ecolodge.", "PUBLICADO", "25", "../../img/selva.jpg", "10", "15"},
+                {"502", "5", "AGENCIA SELVA S.A", "Expedición Parque Nacional Manu & Biosfera", "Aventura ecológica avistando guacamayos, nutrias gigantes y la biodiversidad amazónica.", "1850.00", "5 días / 4 noches", "Todo incluido.", "PUBLICADO", "15", "../../img/selva.jpg", "8", "12"},
+                {"503", "5", "AGENCIA SELVA S.A", "Trek de Selva & Lago Sandoval Ecología", "Navegación en canoa a remo en el Lago Sandoval observando caimanes y lobos de río.", "580.00", "2 días / 1 noche", "Botes ecoturisticos.", "PUBLICADO", "10", "../../img/uros.jpg", "14", "20"},
+
+                {"601", "6", "TOUR AREQUIPA S.A.S", "Cañón del Colca & Mirador del Cóndor", "Recorrido por el Cañón del Colca, baños termales de La Calera y avistamiento del Cóndor andino.", "180.00", "2 días / 1 noche", "Incluye hospedaje en Chivay y guiado.", "PUBLICADO", "10", "../../img/arequipa.jpg", "12", "20"},
+                {"602", "6", "TOUR AREQUIPA S.A.S", "Ruta del Sillar & Monasterio de Santa Catalina", "Paseo arquitectónico por las canteras de volcán sillar y el convento histórico.", "120.00", "1 día", "Ingresos incluidos.", "PUBLICADO", "0", "../../img/arequipa.jpg", "20", "25"},
+                {"603", "6", "TOUR AREQUIPA S.A.S", "Ascenso al Volcán Misti & Ciclismo de Montaña", "Trek extremo de alta montaña para aventureros experimentados.", "320.00", "2 días / 1 noche", "Guía certificado de montaña.", "PUBLICADO", "10", "../../img/huaraz.jpg", "9", "12"},
+
+                {"701", "7", "TOUR LIMA S.A", "Oasis de Huacachina & Tubulares Ica", "Aventura en los tubulares del desierto de Ica, sandboarding y visita a bodegas vitivinícolas.", "190.00", "1 día", "Salidas diarias.", "PUBLICADO", "10", "../../img/ica.jpg", "22", "30"},
+                {"702", "7", "TOUR LIMA S.A", "City Tour Lima Colonial y Catacumbas Virreinales", "Recorrido histórico por la Plaza Mayor, Basílica de San Francisco y Museo Larco.", "80.00", "1 día", "Guía oficial.", "PUBLICADO", "0", "../../img/lima-package.jpg", "28", "35"},
+                {"703", "7", "TOUR LIMA S.A", "Sobrevuelo a las Líneas de Nazca & Paracas", "Excursión completa observando los geoglifos de Nazca y las Islas Ballestas.", "690.00", "1 día", "Incluye avioneta con piloto.", "PUBLICADO", "15", "../../img/ica.jpg", "15", "20"}
+            };
+
+            boolean firstP = true;
+            for (String[] p : allP) {
+                int pAg = Integer.parseInt(p[1]);
+                if (idAgencia > 0 && pAg != idAgencia) continue;
+                if (!firstP) json.append(",");
+                firstP = false;
+                json.append("{\"idPaquete\":").append(p[0])
+                    .append(",\"idAgencia\":").append(p[1])
+                    .append(",\"agencia\":\"").append(jsonEscape(p[2])).append("\"")
+                    .append(",\"nombre\":\"").append(jsonEscape(p[3])).append("\"")
+                    .append(",\"descripcion\":\"").append(jsonEscape(p[4])).append("\"")
+                    .append(",\"precio\":").append(p[5])
+                    .append(",\"duracion\":\"").append(jsonEscape(p[6])).append("\"")
+                    .append(",\"condiciones\":\"").append(jsonEscape(p[7])).append("\"")
+                    .append(",\"estado\":\"").append(jsonEscape(p[8])).append("\"")
+                    .append(",\"descuento\":").append(p[9])
+                    .append(",\"imagen\":\"").append(jsonEscape(p[10])).append("\"")
+                    .append(",\"cuposDisponibles\":").append(p[11])
+                    .append(",\"cupoTotal\":").append(p[12])
+                    .append("}");
+            }
         }
 
         json.append("]}");

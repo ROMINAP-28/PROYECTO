@@ -2,15 +2,14 @@
  * Travelink - Módulo Disponibilidad y Cupos
  */
 (function () {
-    const ID_AGENCIA_DEFAULT = 1;
     let sesion = null;
     try {
-        const sesionRaw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión");
+        const sesionRaw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión") || localStorage.getItem("travelink_user");
         sesion = JSON.parse(sesionRaw || "{}");
     } catch (e) { }
 
-    const idAgenciaActual = (sesion && sesion.idAgencia) ? sesion.idAgencia : ID_AGENCIA_DEFAULT;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "ANDES TOURS";
+    const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 2;
+    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "INKA TRAVEL";
 
     let todasDisponibilidades = [];
     let filtradas = [];

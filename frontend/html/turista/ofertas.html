@@ -331,10 +331,10 @@
             }
 
             const fallbackOfertas = [
-                { idPaquete: 1, nombre: 'Tour CaÃ±Ã³n del Colca', destino: 'Arequipa', categoria: 'aventura naturaleza', precio: 160.00, cuposDisponibles: 7, cupoTotal: 20, imagen: '../../img/colca.jpg' },
+                { idPaquete: 1, nombre: 'Tour Cañón del Colca', destino: 'Arequipa', categoria: 'aventura naturaleza', precio: 160.00, cuposDisponibles: 7, cupoTotal: 20, imagen: '../../img/colca.jpg' },
                 { idPaquete: 2, nombre: 'Laguna Humantay Expreso', destino: 'Cusco', categoria: 'naturaleza aventura', precio: 150.00, cuposDisponibles: 5, cupoTotal: 25, imagen: '../../img/huaraz.jpg' },
                 { idPaquete: 3, nombre: 'Oasis Huacachina Sandboarding', destino: 'Ica', categoria: 'aventura relax', precio: 99.00, cuposDisponibles: 4, cupoTotal: 30, imagen: '../../img/ica.jpg' },
-                { idPaquete: 4, nombre: 'AmazonÃ­a Profunda Tambopata', destino: 'Madre de Dios', categoria: 'naturaleza aventura', precio: 1450.00, cuposDisponibles: 10, cupoTotal: 15, imagen: '../../img/selva.jpg' }
+                { idPaquete: 4, nombre: 'Amazonía Profunda Tambopata', destino: 'Madre de Dios', categoria: 'naturaleza aventura', precio: 1450.00, cuposDisponibles: 10, cupoTotal: 15, imagen: '../../img/selva.jpg' }
             ];
             renderizarOfertasCards(fallbackOfertas);
         }
@@ -347,7 +347,7 @@
                 const img = p.imagen || p.imagenUrl || '../../img/lima.jpg';
                 const cupos = p.cuposDisponibles !== undefined ? p.cuposDisponibles : (p.cupoDisponible !== undefined ? p.cupoDisponible : 7);
                 const total = p.cupoTotal || 30;
-                const destino = p.destino || p.ubicacion || 'PerÃº';
+                const destino = p.destino || p.ubicacion || 'Perú';
                 const cat = p.categoria || 'naturaleza aventura';
 
                 return 

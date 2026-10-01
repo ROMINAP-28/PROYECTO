@@ -114,7 +114,9 @@ function logoutAdmin() {
     }).then((result) => {
         if (result.isConfirmed) {
             localStorage.removeItem('travelink_user');
-            sessionStorage.removeItem('travelink_user');
+            localStorage.removeItem('admin_user');
+            localStorage.removeItem('travelink_current_user');
+            sessionStorage.clear();
             window.location.href = './login.html';
         }
     });

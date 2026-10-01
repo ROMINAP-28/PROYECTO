@@ -2,7 +2,7 @@
  * Travelink - Módulo Reservas Agencia
  */
 (function () {
-    const ID_AGENCIA_DEFAULT = 1;
+    const ID_AGENCIA_DEFAULT = 2;
     let sesion = null;
     try {
         const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión");
@@ -10,7 +10,7 @@
     } catch (e) { }
 
     const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : ID_AGENCIA_DEFAULT;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "ANDES TOURS";
+    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "INKA TRAVEL";
 
     let todasLasReservas = [];
     let reservasFiltradas = [];
@@ -30,21 +30,33 @@
     const modalReserva = document.getElementById("modalReserva");
     const btnCerrarModal = document.getElementById("btnCerrarModal");
 
-    document.addEventListener("DOMContentLoaded", () => {
+    const init = () => {
         setupTopBar();
         cargarReservas();
         setupFiltros();
         setupModal();
-    });
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
 
     function setupTopBar() {
-        const topNombre = document.getElementById("nombreAgenciaTop");
-        const dropNombre = document.getElementById("dropdownNombreAgencia");
-        const avatarLetter = document.getElementById("agencyAvatarLetter");
+        try {
+            const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión");
+            const s = JSON.parse(raw || "{}");
+            const nombre = (s && (s.nombreComercial || s.nombreUsuario)) ? (s.nombreComercial || s.nombreUsuario) : nombreAgenciaActual;
 
-        if (topNombre) topNombre.textContent = nombreAgenciaActual;
-        if (dropNombre) dropNombre.textContent = nombreAgenciaActual;
-        if (avatarLetter) avatarLetter.textContent = nombreAgenciaActual.charAt(0).toUpperCase();
+            const topNombre = document.getElementById("nombreAgenciaTop");
+            const dropNombre = document.getElementById("dropdownNombreAgencia");
+            const avatarLetter = document.getElementById("agencyAvatarLetter");
+
+            if (topNombre) topNombre.textContent = nombre;
+            if (dropNombre) dropNombre.textContent = nombre;
+            if (avatarLetter) avatarLetter.textContent = nombre.charAt(0).toUpperCase();
+        } catch (e) {}
 
         const btnNotif = document.getElementById("btnNotifAgencia");
         const dropNotif = document.getElementById("notifDropdownAgencia");
@@ -83,14 +95,8 @@
     async function cargarReservas() {
         if (!tablaReservas) return;
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/reservas?idAgencia=${idAgenciaActual}`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+            const res = await fetch(`http://localhost:8080/api/agencia/reservas?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
             if (data.status === "success" && Array.isArray(data.reservas)) {
                 todasLasReservas = data.reservas;
@@ -282,17 +288,12 @@
             aplicarFiltros();
         }
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-
         try {
             const res = await fetch("http://localhost:8080/api/agencia/reservas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "confirmar", idReserva: id, idAgencia: idAgenciaActual }),
-                signal: controller.signal
+                body: JSON.stringify({ action: "confirmar", idReserva: id, idAgencia: idAgenciaActual })
             });
-            clearTimeout(timeoutId);
             const data = await res.json();
             if (data.status === "success") cargarReservas();
         } catch (e) {
@@ -311,17 +312,12 @@
             aplicarFiltros();
         }
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-
         try {
             const res = await fetch("http://localhost:8080/api/agencia/reservas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "cancelar", idReserva: id, idAgencia: idAgenciaActual }),
-                signal: controller.signal
+                body: JSON.stringify({ action: "cancelar", idReserva: id, idAgencia: idAgenciaActual })
             });
-            clearTimeout(timeoutId);
             const data = await res.json();
             if (data.status === "success") cargarReservas();
         } catch (e) {
@@ -336,24 +332,17 @@
         actualizarEstadisticas();
         aplicarFiltros();
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-
         try {
             const res = await fetch("http://localhost:8080/api/agencia/reservas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "eliminar", idReserva: id, idAgencia: idAgenciaActual }),
-                signal: controller.signal
+                body: JSON.stringify({ action: "eliminar", idReserva: id, idAgencia: idAgenciaActual })
             });
-            clearTimeout(timeoutId);
             const data = await res.json();
             if (data.status === "success") cargarReservas();
         } catch (e) {
             console.warn("Backend offline o lento al eliminar reserva, eliminada localmente:", e);
         }
     };
-
-})();
 
 })();

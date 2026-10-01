@@ -32,14 +32,26 @@
 
     window.cerrarSesion = function (e) {
         if (e) e.preventDefault();
-        localStorage.setItem('travelink_current_user', 'logout');
+        localStorage.removeItem('travelink_current_user');
+        localStorage.removeItem('travelink_user');
+        localStorage.removeItem('admin_user');
+        localStorage.removeItem('agencia_user');
+        localStorage.removeItem('agenciasesión');
+        localStorage.removeItem('agenciaSesion');
         sessionStorage.clear();
-        window.location.href = 'index.html';
+        window.location.reload();
     };
 
     // Render user details & profile picture across the page
     window.renderUserProfile = function () {
         const user = window.getCurrentUser();
+        const isTuristaFolder = window.location.pathname.includes('/turista/');
+
+        const pathLogin = isTuristaFolder ? 'login.html' : 'turista/login.html';
+        const pathRegistro = isTuristaFolder ? 'registro.html' : 'turista/registro.html';
+        const pathAgencia = isTuristaFolder ? '../Agencia/R_agencia_login.html' : 'Agencia/R_agencia_login.html';
+        const pathReservas = isTuristaFolder ? 'reservas.html' : 'turista/reservas.html';
+        const pathNosotros = isTuristaFolder ? 'nosotros.html' : 'turista/nosotros.html';
 
         // 1. Dynamic 5th Nav link: "Nosotros" when logged out, "Mis Reservas" when logged in
         document.querySelectorAll('nav.nav-links').forEach(nav => {
@@ -53,10 +65,10 @@
 
             if (dynamicLink) {
                 if (user) {
-                    dynamicLink.href = 'reservas.html';
+                    dynamicLink.href = pathReservas;
                     dynamicLink.innerHTML = '<i class="fa-regular fa-calendar-check hide-on-desktop"></i> Mis Reservas';
                 } else {
-                    dynamicLink.href = 'nosotros.html';
+                    dynamicLink.href = pathNosotros;
                     dynamicLink.innerHTML = '<i class="fa-solid fa-users hide-on-desktop"></i> Nosotros';
                 }
             }
@@ -72,9 +84,9 @@
             document.querySelectorAll('.nav-actions').forEach(actions => {
                 if (actions.querySelector('.user-dropdown')) {
                     actions.innerHTML = `
-                        <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia" style="color: #0b1f38; font-weight: 600; text-decoration: none; font-size: 14px; transition: color 0.2s;">Únete como agencia</a>
-                        <a href="login.html" class="btn-auth-login" style="color: #0b1f38; font-weight: 600; text-decoration: none; padding: 8px 16px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; background: white; transition: 0.2s;">Iniciar sesión</a>
-                        <a href="registro.html" class="btn-auth-register" style="background: #196f3d; color: #ffffff; font-weight: 700; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; transition: 0.2s;">Registrarse</a>
+                        <a href="${pathAgencia}" class="btn-unirse-agencia">Únete como agencia</a>
+                        <a href="${pathLogin}" class="btn-auth-login">Iniciar sesión</a>
+                        <a href="${pathRegistro}" class="btn-auth-register">Registrarse</a>
                     `;
                 }
             });
@@ -86,8 +98,8 @@
                     btnContainer.className = 'auth-buttons';
                     btnContainer.style.cssText = 'display: flex; align-items: center; gap: 10px;';
                     btnContainer.innerHTML = `
-                        <a href="login.html" style="color: #0b1f38; font-weight: 600; text-decoration: none; padding: 6px 14px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; background: white; transition: 0.2s;">Iniciar sesión</a>
-                        <a href="registro.html" style="background: #196f3d; color: #ffffff; font-weight: 700; text-decoration: none; padding: 6px 16px; border-radius: 6px; font-size: 14px; transition: 0.2s;">Registrarse</a>`;
+                        <a href="${pathLogin}" style="color: #0b1f38; font-weight: 600; text-decoration: none; padding: 6px 14px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; background: white; transition: 0.2s;">Iniciar sesión</a>
+                        <a href="${pathRegistro}" style="background: #196f3d; color: #ffffff; font-weight: 700; text-decoration: none; padding: 6px 16px; border-radius: 6px; font-size: 14px; transition: 0.2s;">Registrarse</a>`;
                     dropdown.parentNode.replaceChild(btnContainer, dropdown);
                 }
             });
@@ -96,8 +108,8 @@
             document.querySelectorAll('.mobile-menu-user').forEach(userDiv => {
                 userDiv.innerHTML = `
                     <div style="display:flex; gap:10px; margin-top:5px;">
-                        <a href="login.html" style="color: white; font-weight: 600; text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px;">Iniciar sesión</a>
-                        <a href="registro.html" style="background: #196f3d; color: #ffffff; font-weight: 700; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 13px;">Registrarse</a>
+                        <a href="${pathLogin}" style="color: white; font-weight: 600; text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px;">Iniciar sesión</a>
+                        <a href="${pathRegistro}" style="background: #196f3d; color: #ffffff; font-weight: 700; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 13px;">Registrarse</a>
                     </div>`;
             });
             return;

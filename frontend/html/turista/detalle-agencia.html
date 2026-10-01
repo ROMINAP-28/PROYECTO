@@ -91,208 +91,9 @@
 
         <!-- Grid de Tarjetas (6 tarjetas exactas) -->
         <div class="agency-tours-grid" id="agency-tours-container">
-            <!-- Tarjeta 1: Machu Picchu Clásico -->
-            <div class="tour-card" data-precio="350" data-rating="4.8">
-                <div class="tour-card-image">
-                    <span class="tour-badge-pill cultura">
-                        <i class="fa-solid fa-fire"></i> Cultura
-                    </span>
-                    <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <img src="../../img/cusco.jpg" alt="Machu Picchu Clásico" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
-                </div>
-                <div class="tour-card-body">
-                    <h3 class="tour-card-title">Machu Picchu Clásico</h3>
-                    <p class="tour-card-desc">Descubre la maravilla del mundo en una experiencia inolvidable.</p>
-                    <div class="tour-meta-row">
-                        <span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> 1 día</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> Cusco</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-users"></i> Tour grupal</span>
-                    </div>
-                    <div class="tour-pricing-row">
-                        <div class="tour-rating-box">
-                            <i class="fa-solid fa-star"></i> 4.8 <span>(300 reseñas)</span>
-                        </div>
-                        <div class="tour-price-box">
-                            <div class="tour-price-val">S/ 350.00</div>
-                            <div class="tour-price-sub">por persona</div>
-                        </div>
-                    </div>
-                    <a href="detalle.html?tour=machu-picchu&from=agencias&agencia=Andes+Tours" class="btn-select-tour">
-                        Seleccionar <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tarjeta 2: Montaña de 7 Colores -->
-            <div class="tour-card" data-precio="280" data-rating="4.7">
-                <div class="tour-card-image">
-                    <span class="tour-badge-pill naturaleza">
-                        <i class="fa-solid fa-leaf"></i> Naturaleza
-                    </span>
-                    <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <img src="../../img/7colores.jpg" alt="Montaña de 7 Colores" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
-                </div>
-                <div class="tour-card-body">
-                    <h3 class="tour-card-title">Montaña de 7 Colores</h3>
-                    <p class="tour-card-desc">La belleza natural de los Andes en todo su esplendor.</p>
-                    <div class="tour-meta-row">
-                        <span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> 1 día</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> Cusco</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-users"></i> Tour grupal</span>
-                    </div>
-                    <div class="tour-pricing-row">
-                        <div class="tour-rating-box">
-                            <i class="fa-solid fa-star"></i> 4.7 <span>(198 reseñas)</span>
-                        </div>
-                        <div class="tour-price-box">
-                            <div class="tour-price-val">S/ 280.00</div>
-                            <div class="tour-price-sub">por persona</div>
-                        </div>
-                    </div>
-                    <a href="detalle.html?tour=7-colores&from=agencias&agencia=Andes+Tours" class="btn-select-tour">
-                        Seleccionar <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tarjeta 3: Valle Sagrado -->
-            <div class="tour-card" data-precio="320" data-rating="4.6">
-                <div class="tour-card-image">
-                    <span class="tour-badge-pill cultura">
-                        <i class="fa-solid fa-fire"></i> Cultura
-                    </span>
-                    <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <img src="../../img/colca.jpg" alt="Valle Sagrado" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
-                </div>
-                <div class="tour-card-body">
-                    <h3 class="tour-card-title">Valle Sagrado</h3>
-                    <p class="tour-card-desc">Historia, cultura y paisajes en un solo lugar.</p>
-                    <div class="tour-meta-row">
-                        <span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> 1 día</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> Cusco</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-user-group"></i> Tour privado</span>
-                    </div>
-                    <div class="tour-pricing-row">
-                        <div class="tour-rating-box">
-                            <i class="fa-solid fa-star"></i> 4.6 <span>(176 reseñas)</span>
-                        </div>
-                        <div class="tour-price-box">
-                            <div class="tour-price-val">S/ 320.00</div>
-                            <div class="tour-price-sub">por persona</div>
-                        </div>
-                    </div>
-                    <a href="detalle.html?tour=valle-sagrado&from=agencias&agencia=Andes+Tours" class="btn-select-tour">
-                        Seleccionar <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tarjeta 4: Lago Titicaca -->
-            <div class="tour-card" data-precio="310" data-rating="4.5">
-                <div class="tour-card-image">
-                    <span class="tour-badge-pill aventura">
-                        <i class="fa-solid fa-person-hiking"></i> Aventura
-                    </span>
-                    <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <img src="../../img/uros.jpg" alt="Lago Titicaca" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
-                </div>
-                <div class="tour-card-body">
-                    <h3 class="tour-card-title">Lago Titicaca</h3>
-                    <p class="tour-card-desc">Conoce la cultura viva de las comunidades Uros.</p>
-                    <div class="tour-meta-row">
-                        <span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> 1 día</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> Puno</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-users"></i> Tour grupal</span>
-                    </div>
-                    <div class="tour-pricing-row">
-                        <div class="tour-rating-box">
-                            <i class="fa-solid fa-star"></i> 4.5 <span>(142 reseñas)</span>
-                        </div>
-                        <div class="tour-price-box">
-                            <div class="tour-price-val">S/ 310.00</div>
-                            <div class="tour-price-sub">por persona</div>
-                        </div>
-                    </div>
-                    <a href="detalle.html?tour=titicaca&from=agencias&agencia=Andes+Tours" class="btn-select-tour">
-                        Seleccionar <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tarjeta 5: City Tour Cusco -->
-            <div class="tour-card" data-precio="120" data-rating="4.4">
-                <div class="tour-card-image">
-                    <span class="tour-badge-pill cultura">
-                        <i class="fa-solid fa-fire"></i> Cultura
-                    </span>
-                    <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <img src="../../img/arequipa.jpg" alt="City Tour Cusco" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
-                </div>
-                <div class="tour-card-body">
-                    <h3 class="tour-card-title">City Tour Cusco</h3>
-                    <p class="tour-card-desc">Recorre la historia y el encanto de la antigua capital.</p>
-                    <div class="tour-meta-row">
-                        <span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> 1/2 día</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> Cusco</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-users"></i> Tour grupal</span>
-                    </div>
-                    <div class="tour-pricing-row">
-                        <div class="tour-rating-box">
-                            <i class="fa-solid fa-star"></i> 4.4 <span>(120 reseñas)</span>
-                        </div>
-                        <div class="tour-price-box">
-                            <div class="tour-price-val">S/ 120.00</div>
-                            <div class="tour-price-sub">por persona</div>
-                        </div>
-                    </div>
-                    <a href="detalle.html?tour=city-tour-cusco&from=agencias&agencia=Andes+Tours" class="btn-select-tour">
-                        Seleccionar <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tarjeta 6: Aventura en la Amazonía -->
-            <div class="tour-card" data-precio="450" data-rating="4.8">
-                <div class="tour-card-image">
-                    <span class="tour-badge-pill naturaleza">
-                        <i class="fa-solid fa-leaf"></i> Naturaleza
-                    </span>
-                    <button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <img src="../../img/huaraz.jpg" alt="Aventura en la Amazonía" onerror="this.onerror=null; this.src='../../img/fondo1.png'">
-                </div>
-                <div class="tour-card-body">
-                    <h3 class="tour-card-title">Aventura en la Amazonía</h3>
-                    <p class="tour-card-desc">Vive la magia de la selva peruana.</p>
-                    <div class="tour-meta-row">
-                        <span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> 3 días</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> Iquitos</span>
-                        <span class="tour-meta-item"><i class="fa-solid fa-user-group"></i> Tour privado</span>
-                    </div>
-                    <div class="tour-pricing-row">
-                        <div class="tour-rating-box">
-                            <i class="fa-solid fa-star"></i> 4.8 <span>(95 reseñas)</span>
-                        </div>
-                        <div class="tour-price-box">
-                            <div class="tour-price-val">S/ 450.00</div>
-                            <div class="tour-price-sub">por persona</div>
-                        </div>
-                    </div>
-                    <a href="detalle.html?tour=amazonia&from=agencias&agencia=Andes+Tours" class="btn-select-tour">
-                        Seleccionar <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: #64748b;">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #196f3d;"></i>
+                <p style="margin-top: 12px; font-weight: 600;">Cargando tours de la agencia...</p>
             </div>
         </div>
     </main>
@@ -384,7 +185,7 @@
             }
         }
 
-        // Carga dinÃ¡mica de tours por Agencia
+        // Carga dinámica de tours por Agencia
         async function cargarToursDeAgencia() {
             const params = new URLSearchParams(window.location.search);
             const nombreAgencia = params.get('agencia') || 'ANDES TOURS PERU S.A.C.';
@@ -393,38 +194,38 @@
             const titleEl = document.getElementById('agency-name-title');
             const subEl = document.getElementById('agency-desc-subtitle');
             if (titleEl) titleEl.textContent = 'Tours de ' + nombreAgencia;
-            if (subEl) subEl.textContent = 'Descubre los mejores tours y vive experiencias Ãºnicas con ' + nombreAgencia + '.';
+            if (subEl) subEl.textContent = 'Descubre los mejores tours y vive experiencias únicas con ' + nombreAgencia + '.';
 
             const container = document.getElementById('agency-tours-container');
             if (!container) return;
 
             const toursPorAgencia = {
                 1: [
-                    { id: 1, nombre: 'Machu Picchu ClÃ¡sico y Valle Sagrado', desc: 'ExcursiÃ³n completa al santuario histÃ³rico con guÃ­a profesional y tren panorÃ¡mico.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 350.00, rating: 4.8, img: '../../img/colca.jpg', cat: 'cultura' },
-                    { id: 2, nombre: 'MontaÃ±a de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaÃ±a de colores con desayuno y almuerzo buffet.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
-                    { id: 3, nombre: 'Valle Sagrado de los Incas Privado', desc: 'Historia, cultura y paisajes increÃ­bles en Pisac, Ollantaytambo y Chinchero.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 320.00, rating: 4.6, img: '../../img/cusco.jpg', cat: 'cultura' }
+                    { id: 1, nombre: 'Machu Picchu Clásico y Valle Sagrado', desc: 'Excursión completa al santuario histórico con guía profesional y tren panorámico.', duracion: '1 día', ubicacion: 'Cusco', precio: 350.00, rating: 4.8, img: '../../img/colca.jpg', cat: 'cultura' },
+                    { id: 2, nombre: 'Montaña de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaña de colores con desayuno y almuerzo buffet.', duracion: '1 día', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
+                    { id: 3, nombre: 'Valle Sagrado de los Incas Privado', desc: 'Historia, cultura y paisajes increíbles en Pisac, Ollantaytambo y Chinchero.', duracion: '1 día', ubicacion: 'Cusco', precio: 320.00, rating: 4.6, img: '../../img/cusco.jpg', cat: 'cultura' }
                 ],
                 2: [
-                    { id: 2, nombre: 'MontaÃ±a de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaÃ±a de colores con desayuno y almuerzo buffet.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
-                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisajÃ­stica hacia la turquesa Laguna Humantay con asistencia mÃ©dica.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 150.00, rating: 4.9, img: '../../img/puno.jpg', cat: 'aventura' },
-                    { id: 5, nombre: 'Camino Inca Express 2D/1N', desc: 'Recorrido por la legendaria ruta incaica finalizando en la Puerta del Sol Intipunku.', duracion: '2 dÃ­as', ubicacion: 'Cusco', precio: 480.00, rating: 4.9, img: '../../img/colca.jpg', cat: 'aventura' }
+                    { id: 2, nombre: 'Montaña de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaña de colores con desayuno y almuerzo buffet.', duracion: '1 día', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
+                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisajística hacia la turquesa Laguna Humantay con asistencia médica.', duracion: '1 día', ubicacion: 'Cusco', precio: 150.00, rating: 4.9, img: '../../img/puno.jpg', cat: 'aventura' },
+                    { id: 5, nombre: 'Camino Inca Express 2D/1N', desc: 'Recorrido por la legendaria ruta incaica finalizando en la Puerta del Sol Intipunku.', duracion: '2 días', ubicacion: 'Cusco', precio: 480.00, rating: 4.9, img: '../../img/colca.jpg', cat: 'aventura' }
                 ],
                 3: [
-                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisajÃ­stica hacia la turquesa Laguna Humantay con equipo de oxÃ­geno.', duracion: '1 dÃ­a', ubicacion: 'Cusco', precio: 150.00, rating: 4.8, img: '../../img/puno.jpg', cat: 'aventura' },
-                    { id: 6, nombre: 'Cuatrimotos Maras & Moray', desc: 'Experiencia llena de adrenalina visitando las salineras de Maras y el laboratorio inca.', duracion: '1/2 dÃ­a', ubicacion: 'Cusco', precio: 160.00, rating: 4.7, img: '../../img/cusco.jpg', cat: 'aventura' },
-                    { id: 7, nombre: 'SacsayhuamÃ¡n & Qenqo City Tour', desc: 'ExcursiÃ³n guiada por los complejos arqueolÃ³gicos mÃ¡s impresionantes alrededor del Cusco.', duracion: '1/2 dÃ­a', ubicacion: 'Cusco', precio: 110.00, rating: 4.5, img: '../../img/7colores.jpg', cat: 'cultura' }
+                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisajística hacia la turquesa Laguna Humantay con equipo de oxígeno.', duracion: '1 día', ubicacion: 'Cusco', precio: 150.00, rating: 4.8, img: '../../img/puno.jpg', cat: 'aventura' },
+                    { id: 6, nombre: 'Cuatrimotos Maras & Moray', desc: 'Experiencia llena de adrenalina visitando las salineras de Maras y el laboratorio inca.', duracion: '1/2 día', ubicacion: 'Cusco', precio: 160.00, rating: 4.7, img: '../../img/cusco.jpg', cat: 'aventura' },
+                    { id: 7, nombre: 'Sacsayhuamán & Qenqo City Tour', desc: 'Excursión guiada por los complejos arqueológicos más impresionantes alrededor del Cusco.', duracion: '1/2 día', ubicacion: 'Cusco', precio: 110.00, rating: 4.5, img: '../../img/7colores.jpg', cat: 'cultura' }
                 ],
                 5: [
-                    { id: 4, nombre: 'AmazonÃ­a Profunda Tambopata', desc: 'InmersiÃ³n completa en la selva virgen con observaciÃ³n de fauna silvestre y canopy.', duracion: '4 dÃ­as / 3 noches', ubicacion: 'Madre de Dios', precio: 1450.00, rating: 4.8, img: '../../img/selva.jpg', cat: 'naturaleza' },
-                    { id: 8, nombre: 'Reserva Nacional Lago Sandoval', desc: 'Paseo en bote por la reserva natural, avistamiento de nutrias gigantes y caminata nocturna.', duracion: '2 dÃ­as', ubicacion: 'Madre de Dios', precio: 520.00, rating: 4.9, img: '../../img/huayllay-package.jpg', cat: 'naturaleza' }
+                    { id: 4, nombre: 'Amazonía Profunda Tambopata', desc: 'Inmersión completa en la selva virgen con observación de fauna silvestre y canopy.', duracion: '4 días / 3 noches', ubicacion: 'Madre de Dios', precio: 1450.00, rating: 4.8, img: '../../img/selva.jpg', cat: 'naturaleza' },
+                    { id: 8, nombre: 'Reserva Nacional Lago Sandoval', desc: 'Paseo en bote por la reserva natural, avistamiento de nutrias gigantes y caminata nocturna.', duracion: '2 días', ubicacion: 'Madre de Dios', precio: 520.00, rating: 4.9, img: '../../img/huayllay-package.jpg', cat: 'naturaleza' }
                 ],
                 6: [
-                    { id: 5, nombre: 'CaÃ±Ã³n del Colca & Mirador del CÃ³ndor', desc: 'Recorrido por el CaÃ±Ã³n del Colca, baÃ±os termales de La Calera y CÃ³ndor andino.', duracion: '2 dÃ­as / 1 noche', ubicacion: 'Arequipa', precio: 180.00, rating: 4.9, img: '../../img/arequipa.jpg', cat: 'aventura' },
-                    { id: 9, nombre: 'Ruta del Sillar & Monasterio Santa Catalina', desc: 'Tour histÃ³rico por la Ciudad Blanca con visita a las canteras vivas de sillar.', duracion: '1 dÃ­a', ubicacion: 'Arequipa', precio: 95.00, rating: 4.7, img: '../../img/fondo1.png', cat: 'cultura' }
+                    { id: 5, nombre: 'Cañón del Colca & Mirador del Cóndor', desc: 'Recorrido por el Cañón del Colca, baños termales de La Calera y Cóndor andino.', duracion: '2 días / 1 noche', ubicacion: 'Arequipa', precio: 180.00, rating: 4.9, img: '../../img/arequipa.jpg', cat: 'aventura' },
+                    { id: 9, nombre: 'Ruta del Sillar & Monasterio Santa Catalina', desc: 'Tour histórico por la Ciudad Blanca con visita a las canteras vivas de sillar.', duracion: '1 día', ubicacion: 'Arequipa', precio: 95.00, rating: 4.7, img: '../../img/fondo1.png', cat: 'cultura' }
                 ],
                 7: [
-                    { id: 6, nombre: 'Oasis de Huacachina & Tubulares Ica', desc: 'Aventura en los tubulares del desierto de Ica, sandboarding y visita a bodegas.', duracion: '1 dÃ­a', ubicacion: 'Ica', precio: 190.00, rating: 4.8, img: '../../img/ica.jpg', cat: 'aventura' },
-                    { id: 10, nombre: 'City Tour Lima Colonial & Catacumbas', desc: 'Recorrido colonial por el centro histÃ³rico, Convento de San Francisco y Larcomar.', duracion: '1/2 dÃ­a', ubicacion: 'Lima', precio: 85.00, rating: 4.7, img: '../../img/lima-package.jpg', cat: 'cultura' }
+                    { id: 6, nombre: 'Oasis de Huacachina & Tubulares Ica', desc: 'Aventura en los tubulares del desierto de Ica, sandboarding y visita a bodegas.', duracion: '1 día', ubicacion: 'Ica', precio: 190.00, rating: 4.8, img: '../../img/ica.jpg', cat: 'aventura' },
+                    { id: 10, nombre: 'City Tour Lima Colonial & Catacumbas', desc: 'Recorrido colonial por el centro histórico, Convento de San Francisco y Larcomar.', duracion: '1/2 día', ubicacion: 'Lima', precio: 85.00, rating: 4.7, img: '../../img/lima-package.jpg', cat: 'cultura' }
                 ]
             };
 
@@ -442,8 +243,8 @@
                             id: p.idPaquete || p.id,
                             nombre: p.nombre,
                             desc: p.descripcion,
-                            duracion: p.duracion || '1 dÃ­a',
-                            ubicacion: p.ubicacion || 'PerÃº',
+                            duracion: p.duracion || '1 día',
+                            ubicacion: p.ubicacion || 'Perú',
                             precio: p.precio || 200,
                             rating: 4.8,
                             img: p.imagen || p.imagenUrl || '../../img/colca.jpg',
@@ -476,7 +277,7 @@
                         '</div>' +
                         '<div class="tour-pricing-row">' +
                             '<div class="tour-rating-box">' +
-                                '<i class="fa-solid fa-star"></i> ' + t.rating + ' <span>(ReseÃ±as activas)</span>' +
+                                '<i class="fa-solid fa-star"></i> ' + t.rating + ' <span>(Reseñas activas)</span>' +
                             '</div>' +
                             '<div class="tour-price-box">' +
                                 '<div class="tour-price-val">S/ ' + parseFloat(t.precio).toFixed(2) + '</div>' +

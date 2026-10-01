@@ -168,7 +168,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const admin = localStorage.getItem('admin_user');
-            if (admin) {
+            const travelink = localStorage.getItem('travelink_user');
+            if (admin && travelink) {
                 try {
                     const u = JSON.parse(admin);
                     if (u.idRol === 3 || u.idRol === '3') {

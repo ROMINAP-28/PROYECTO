@@ -3,16 +3,14 @@
  */
 
 (function () {
-    // Configuración y Estado
-    const ID_AGENCIA_DEFAULT = 1;
     let sesion = null;
     try {
-        const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión");
+        const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión") || localStorage.getItem("travelink_user");
         sesion = JSON.parse(raw || "{}");
     } catch (e) { }
 
-    const idAgenciaActual = (sesion && sesion.idAgencia) ? sesion.idAgencia : ID_AGENCIA_DEFAULT;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "ANDES TOURS";
+    const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 2;
+    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "INKA TRAVEL";
 
     let todosLosServicios = [];
     let serviciosFiltrados = [];
@@ -150,24 +148,18 @@
     // ==========================================
     async function cargarServicios() {
         if (!tablaServicios) return;
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/servicios?idAgencia=${idAgenciaActual}`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+            const res = await fetch(`http://localhost:8080/api/agencia/servicios?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
 
-            if (data.status === "success" && Array.isArray(data.servicios) && data.servicios.length > 0) {
+            if (data.status === "success" && Array.isArray(data.servicios)) {
                 todosLosServicios = data.servicios;
                 aplicarFiltros();
                 return;
             }
         } catch (e) {
-            console.warn("Fallo o timeout al conectar con API de servicios, usando datos locales:", e);
+            console.warn("Fallo al conectar con API de servicios:", e);
         }
 
         // Fallback optimizado

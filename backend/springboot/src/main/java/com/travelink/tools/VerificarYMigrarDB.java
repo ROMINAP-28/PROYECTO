@@ -69,11 +69,20 @@ public class VerificarYMigrarDB {
                 System.out.println("[INFO] Pasajero.telefono: " + e.getMessage());
             }
 
-            // 4. Mostrar estructura actual de las tablas
+            // 4. Tabla TourImagen: url a MEDIUMTEXT para permitir base64 y URLs largas
+            try {
+                st.executeUpdate("ALTER TABLE TourImagen MODIFY COLUMN url MEDIUMTEXT");
+                System.out.println("[OK] TourImagen.url modificada a MEDIUMTEXT");
+            } catch (SQLException e) {
+                System.out.println("[INFO] TourImagen.url: " + e.getMessage());
+            }
+
+            // 5. Mostrar estructura actual de las tablas
             mostrarEstructura(con, "Reserva");
             mostrarEstructura(con, "Pasajero");
             mostrarEstructura(con, "MetodoPago");
             mostrarEstructura(con, "Calificacion");
+            mostrarEstructura(con, "TourImagen");
 
         } catch (Exception e) {
             e.printStackTrace();

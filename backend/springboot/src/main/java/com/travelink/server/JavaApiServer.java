@@ -2228,6 +2228,7 @@ public class JavaApiServer {
             int reservasRealizadas = 0;
             int agenciasActivas = 0;
             double comisionGenerada = 0.0;
+            StringBuilder detalleVentasJson = new StringBuilder();
 
             try (Connection con = ConexionDB.getConnection()) {
                 if (con != null) {
@@ -2243,6 +2244,45 @@ public class JavaApiServer {
                          ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM Agencia WHERE estado = 'ACTIVO'")) {
                         if (rs.next()) {
                             agenciasActivas = rs.getInt(1);
+                        }
+                    }
+
+                    // Detalle de ventas completo
+                    String sqlDetalle = """
+                        SELECT r.idReserva, r.codigoReserva, DATE(r.fechaRegistro) AS fecha,
+                               COALESCE(CONCAT(p.nombre, ' ', p.apellidoPaterno), u.nombreUsuario, 'Turista') AS cliente,
+                               COALESCE(d.nombre, 'Cusco') AS destino,
+                               COALESCE(r.nombreTour, 'Tour Turístico') AS tour,
+                               COALESCE(a.razonSocial, a.nombreComercial, 'Agencia Travelink') AS agencia,
+                               r.total, (r.total * 0.15) AS comision, r.estado
+                        FROM Reserva r
+                        JOIN Usuario u ON r.idUsuario = u.idUsuario
+                        JOIN Persona p ON u.idPersona = p.idPersona
+                        LEFT JOIN Agencia a ON r.idAgencia = a.idAgencia
+                        LEFT JOIN DetalleReserva dr ON r.idReserva = dr.idReserva
+                        LEFT JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha
+                        LEFT JOIN Tour t ON tf.idTour = t.idTour
+                        LEFT JOIN Destino d ON t.idDestino = d.idDestino
+                        ORDER BY r.idReserva DESC
+                        """;
+                    try (Statement stmt = con.createStatement();
+                         ResultSet rsV = stmt.executeQuery(sqlDetalle)) {
+                        boolean primero = true;
+                        while (rsV.next()) {
+                            if (!primero) detalleVentasJson.append(",");
+                            primero = false;
+                            detalleVentasJson.append("{")
+                                .append("\"id\":").append(rsV.getInt("idReserva")).append(",")
+                                .append("\"fecha\":\"").append(rsV.getString("fecha")).append("\",")
+                                .append("\"nroReserva\":\"").append(jsonEscape(rsV.getString("codigoReserva"))).append("\",")
+                                .append("\"cliente\":\"").append(jsonEscape(rsV.getString("cliente"))).append("\",")
+                                .append("\"destino\":\"").append(jsonEscape(rsV.getString("destino"))).append("\",")
+                                .append("\"tour\":\"").append(jsonEscape(rsV.getString("tour"))).append("\",")
+                                .append("\"agencia\":\"").append(jsonEscape(rsV.getString("agencia"))).append("\",")
+                                .append("\"monto\":").append(rsV.getDouble("total")).append(",")
+                                .append("\"comision\":").append(rsV.getDouble("comision")).append(",")
+                                .append("\"estado\":\"").append(jsonEscape(rsV.getString("estado"))).append("\"")
+                                .append("}");
                         }
                     }
                 }
@@ -2261,7 +2301,8 @@ public class JavaApiServer {
                 .append("\"chartEvolucionLabels\":[\"Ene\",\"Feb\",\"Mar\",\"Abr\",\"May\",\"Jun\",\"Jul\",\"Ago\",\"Set\",\"Oct\"],")
                 .append("\"chartEvolucionValues\":[1200,1800,2400,3100,4200,5100,6300,7800,8900,").append(ventasTotales).append("],")
                 .append("\"destinosLabels\":[\"Cusco\",\"Lima\",\"Ilo\",\"Tacna\",\"Moquegua\",\"Pasco\"],")
-                .append("\"destinosPercentages\":[35,20,15,12,10,8]")
+                .append("\"destinosPercentages\":[35,20,15,12,10,8],")
+                .append("\"detalleVentas\":[").append(detalleVentasJson.toString()).append("]")
                 .append("}}");
 
             sendJsonResponse(exchange, 200, json.toString());

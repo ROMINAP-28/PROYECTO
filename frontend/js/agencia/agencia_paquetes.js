@@ -2,15 +2,14 @@
  * Travelink - Módulo Paquetes Turísticos
  */
 (function () {
-    const ID_AGENCIA_DEFAULT = 1;
     let sesion = null;
     try {
-        const sesionRaw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión");
+        const sesionRaw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión") || localStorage.getItem("travelink_user");
         sesion = JSON.parse(sesionRaw || "{}");
     } catch (e) { }
 
-    const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : ID_AGENCIA_DEFAULT;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "ANDES TOURS";
+    const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 2;
+    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "INKA TRAVEL";
 
     let todosLosPaquetes = [];
     let paquetesFiltrados = [];
@@ -92,24 +91,17 @@
 
     async function cargarPaquetes() {
         if (!gridPaquetes) return;
-        
-        // Timeout de 1.5s para no bloquear al usuario si el servidor no responde
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/paquetes?idAgencia=${idAgenciaActual}`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+            const res = await fetch(`http://localhost:8080/api/agencia/paquetes?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
-            if (data.status === "success" && Array.isArray(data.paquetes) && data.paquetes.length > 0) {
+            if (data.status === "success" && Array.isArray(data.paquetes)) {
                 todosLosPaquetes = data.paquetes;
                 aplicarFiltros();
                 return;
             }
         } catch (e) {
-            console.warn("Fallo o timeout al conectar con API de paquetes, usando datos optimizados locales:", e);
+            console.warn("Error al cargar paquetes desde backend:", e);
         }
 
         // Fallback inmediato con datos de la base de datos para carga ultrarrápida
@@ -492,17 +484,12 @@
                 aplicarFiltros();
                 cerrarModal(modalPaquete);
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 1500);
-
                 try {
                     const res = await fetch("http://localhost:8080/api/agencia/paquetes", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
+                        body: JSON.stringify(payload)
                     });
-                    clearTimeout(timeoutId);
                     const data = await res.json();
                     if (data.status === "success") {
                         cargarPaquetes();
@@ -633,9 +620,6 @@
             aplicarFiltros();
         }
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-
         try {
             const res = await fetch("http://localhost:8080/api/agencia/paquetes", {
                 method: "POST",
@@ -644,10 +628,8 @@
                     action: accion,
                     idPaquete: id,
                     idAgencia: idAgenciaActual
-                }),
-                signal: controller.signal
+                })
             });
-            clearTimeout(timeoutId);
             const data = await res.json();
             if (data.status === "success") {
                 cargarPaquetes();
@@ -664,9 +646,6 @@
         todosLosPaquetes = todosLosPaquetes.filter(x => String(x.idPaquete) !== String(id));
         aplicarFiltros();
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-
         try {
             const res = await fetch("http://localhost:8080/api/agencia/paquetes", {
                 method: "POST",
@@ -675,10 +654,8 @@
                     action: "eliminar",
                     idPaquete: id,
                     idAgencia: idAgenciaActual
-                }),
-                signal: controller.signal
+                })
             });
-            clearTimeout(timeoutId);
             const data = await res.json();
             if (data.status === "success") {
                 cargarPaquetes();

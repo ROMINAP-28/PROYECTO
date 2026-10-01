@@ -116,7 +116,7 @@ window.cargarAgenciasDinamicas = async function() {
                     </div>
                 </div>
             </div>
-            <a href="experiencias.html?agencia=${encodeURIComponent(a.nombre)}&idAgencia=${a.id||a.idAgencia||a.idUsuario||1}" class="btn-ver-tours">Ver tours</a>
+            <a href="detalle-agencia.html?agencia=${encodeURIComponent(a.nombre)}&idAgencia=${a.id||a.idAgencia||a.idUsuario||1}" class="btn-ver-tours">Ver tours</a>
         </div>
     `).join('');
     aplicarFiltrosAgencias();

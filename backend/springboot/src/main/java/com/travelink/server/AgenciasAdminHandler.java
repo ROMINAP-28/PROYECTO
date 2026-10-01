@@ -52,85 +52,125 @@ public class AgenciasAdminHandler implements HttpHandler {
         StringBuilder json = new StringBuilder();
         json.append("{\"status\":\"success\",\"data\":{\"agencias\":[");
         boolean primero = true;
-        boolean exitoBD = false;
+        java.util.Set<String> rucsProcesados = new java.util.HashSet<>();
 
         String sqlAgencia = """
             SELECT 
                 a.idAgencia AS id,
                 a.idUsuario,
                 COALESCE(NULLIF(a.nombreComercial, ''), a.razonSocial) AS nombre,
+                a.razonSocial,
                 a.ruc,
                 COALESCE(a.email, '') AS email,
                 COALESCE(a.telefono, '') AS telefono,
-                COALESCE(a.descripcion, 'Agencia turística autorizada.') AS descripcion
+                COALESCE(a.descripcion, 'Agencia turística autorizada.') AS descripcion,
+                COALESCE(a.estado, 'ACTIVO') AS estado,
+                COALESCE(a.comision, 15.00) AS comision,
+                COALESCE(a.promedioCalificacion, 5.00) AS rating
             FROM Agencia a
             ORDER BY a.idAgencia ASC
             """;
 
-        try (Connection con = ConexionDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sqlAgencia);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = ConexionDB.getConnection()) {
+            if (con != null) {
+                // 1. Fetch Agencias
+                try (PreparedStatement ps = con.prepareStatement(sqlAgencia);
+                     ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String ruc = rs.getString("ruc");
+                        if (ruc != null && !ruc.isBlank()) {
+                            rucsProcesados.add(ruc.trim());
+                        }
 
-            while (rs.next()) {
-                if (!primero) json.append(",");
-                primero = false;
-                exitoBD = true;
+                        if (!primero) json.append(",");
+                        primero = false;
 
-                String nombreNom = rs.getString("nombre");
-                String lower = nombreNom.toLowerCase();
-                String ciudad = "Cusco";
-                if (lower.contains("lima")) ciudad = "Lima";
-                else if (lower.contains("arequipa")) ciudad = "Arequipa";
-                else if (lower.contains("selva") || lower.contains("tambopata")) ciudad = "Madre de Dios";
-                else if (lower.contains("puno") || lower.contains("titicaca")) ciudad = "Puno";
-                else if (lower.contains("ancash") || lower.contains("huascaran")) ciudad = "Áncash";
+                        String nombreNom = rs.getString("nombre");
+                        if (nombreNom != null) nombreNom = nombreNom.toUpperCase();
+                        String razonSocialStr = rs.getString("razonSocial");
+                        if (razonSocialStr != null) razonSocialStr = razonSocialStr.toUpperCase();
 
-                json.append("{")
-                        .append("\"id\":").append(rs.getInt("id")).append(",")
-                        .append("\"idUsuario\":").append(rs.getInt("idUsuario")).append(",")
-                        .append("\"nombre\":\"").append(escapar(nombreNom)).append("\",")
-                        .append("\"ruc\":\"").append(escapar(rs.getString("ruc"))).append("\",")
-                        .append("\"representante\":\"").append(escapar(nombreNom)).append("\",")
-                        .append("\"telefono\":\"").append(escapar(rs.getString("telefono"))).append("\",")
-                        .append("\"email\":\"").append(escapar(rs.getString("email"))).append("\",")
-                        .append("\"descripcion\":\"").append(escapar(rs.getString("descripcion"))).append("\",")
-                        .append("\"ciudad\":\"").append(ciudad).append("\",")
-                        .append("\"comision\":10,")
-                        .append("\"rating\":4.8,")
-                        .append("\"estado\":\"ACTIVO\"")
-                        .append("}");
+                        String lower = (nombreNom != null ? nombreNom : "").toLowerCase();
+                        String ciudad = "Cusco";
+                        if (lower.contains("lima")) ciudad = "Lima";
+                        else if (lower.contains("arequipa")) ciudad = "Arequipa";
+                        else if (lower.contains("selva") || lower.contains("tambopata")) ciudad = "Madre de Dios";
+                        else if (lower.contains("puno") || lower.contains("titicaca")) ciudad = "Puno";
+                        else if (lower.contains("ancash") || lower.contains("huascaran")) ciudad = "Áncash";
+
+                        json.append("{")
+                                .append("\"id\":").append(rs.getInt("id")).append(",")
+                                .append("\"idUsuario\":").append(rs.getInt("idUsuario")).append(",")
+                                .append("\"nombre\":\"").append(escapar(nombreNom)).append("\",")
+                                .append("\"razonSocial\":\"").append(escapar(razonSocialStr)).append("\",")
+                                .append("\"ruc\":\"").append(escapar(ruc)).append("\",")
+                                .append("\"representante\":\"").append(escapar(nombreNom)).append("\",")
+                                .append("\"telefono\":\"").append(escapar(rs.getString("telefono"))).append("\",")
+                                .append("\"email\":\"").append(escapar(rs.getString("email"))).append("\",")
+                                .append("\"descripcion\":\"").append(escapar(rs.getString("descripcion"))).append("\",")
+                                .append("\"ciudad\":\"").append(ciudad).append("\",")
+                                .append("\"comision\":").append(rs.getBigDecimal("comision")).append(",")
+                                .append("\"rating\":").append(rs.getBigDecimal("rating")).append(",")
+                                .append("\"estado\":\"").append(escapar(rs.getString("estado"))).append("\"")
+                                .append("}");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // 2. Fetch SolicitudAgencia (candidate applications) - omit duplicates by RUC
+                String sqlSol = """
+                    SELECT idSolicitud, idUsuario, razonSocial, ruc, representanteLegal, telefonoContacto, correoContacto, estado, COALESCE(motivoRechazo, '') AS motivoRechazo
+                    FROM SolicitudAgencia
+                    ORDER BY idSolicitud DESC
+                    """;
+                try (PreparedStatement ps = con.prepareStatement(sqlSol);
+                     ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String rucSol = rs.getString("ruc");
+                        if (rucSol != null && rucsProcesados.contains(rucSol.trim())) {
+                            continue; // Skip duplicate agency request already listed in Agencia table
+                        }
+                        if (rucSol != null && !rucSol.isBlank()) {
+                            rucsProcesados.add(rucSol.trim());
+                        }
+
+                        if (!primero) json.append(",");
+                        primero = false;
+
+                        String razonSocialStr = rs.getString("razonSocial");
+                        if (razonSocialStr != null) razonSocialStr = razonSocialStr.toUpperCase();
+                        String repStr = rs.getString("representanteLegal");
+                        if (repStr != null) repStr = repStr.toUpperCase();
+
+                        String lower = (razonSocialStr != null ? razonSocialStr : "").toLowerCase();
+                        String ciudad = "Cusco";
+                        if (lower.contains("pacific") || lower.contains("lima")) ciudad = "Lima";
+                        else if (lower.contains("chachapoyas")) ciudad = "Amazonas";
+
+                        json.append("{")
+                                .append("\"id\":").append(1000 + rs.getInt("idSolicitud")).append(",")
+                                .append("\"idSolicitud\":").append(rs.getInt("idSolicitud")).append(",")
+                                .append("\"idUsuario\":").append(rs.getInt("idUsuario")).append(",")
+                                .append("\"nombre\":\"").append(escapar(razonSocialStr)).append("\",")
+                                .append("\"razonSocial\":\"").append(escapar(razonSocialStr)).append("\",")
+                                .append("\"ruc\":\"").append(escapar(rucSol)).append("\",")
+                                .append("\"representante\":\"").append(escapar(repStr)).append("\",")
+                                .append("\"telefono\":\"").append(escapar(rs.getString("telefonoContacto"))).append("\",")
+                                .append("\"email\":\"").append(escapar(rs.getString("correoContacto"))).append("\",")
+                                .append("\"ciudad\":\"").append(ciudad).append("\",")
+                                .append("\"comision\":15.00,")
+                                .append("\"rating\":5.00,")
+                                .append("\"motivoRechazo\":\"").append(escapar(rs.getString("motivoRechazo"))).append("\",")
+                                .append("\"estado\":\"").append(escapar(rs.getString("estado"))).append("\"")
+                                .append("}");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        if (!exitoBD) {
-            String sqlSol = """
-                SELECT idSolicitud, idUsuario, razonSocial, ruc, representanteLegal, telefonoContacto, correoContacto, estado
-                FROM SolicitudAgencia
-                ORDER BY fechaSolicitud DESC
-                """;
-            try (Connection con = ConexionDB.getConnection();
-                 PreparedStatement ps = con.prepareStatement(sqlSol);
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    if (!primero) json.append(",");
-                    primero = false;
-                    json.append("{")
-                            .append("\"id\":").append(rs.getInt("idSolicitud")).append(",")
-                            .append("\"idUsuario\":").append(rs.getInt("idUsuario")).append(",")
-                            .append("\"nombre\":\"").append(escapar(rs.getString("razonSocial"))).append("\",")
-                            .append("\"ruc\":\"").append(escapar(rs.getString("ruc"))).append("\",")
-                            .append("\"representante\":\"").append(escapar(rs.getString("representanteLegal"))).append("\",")
-                            .append("\"telefono\":\"").append(escapar(rs.getString("telefonoContacto"))).append("\",")
-                            .append("\"email\":\"").append(escapar(rs.getString("correoContacto"))).append("\",")
-                            .append("\"ciudad\":\"Cusco\",")
-                            .append("\"comision\":10,")
-                            .append("\"rating\":4.8,")
-                            .append("\"estado\":\"").append(escapar(rs.getString("estado"))).append("\"")
-                            .append("}");
-                }
-            } catch (Exception ignored) {}
         }
 
         json.append("]}}");

@@ -16,6 +16,18 @@ function mostrarMensaje(elemento, mensaje, tipo = "error") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Convierte en mayúsculas automáticamente mientras el usuario escribe
+    const camposUppercase = ["nombreComercial", "razonSocial", "nombre", "apellidoPaterno", "apellidoMaterno"];
+    camposUppercase.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.style.textTransform = "uppercase";
+            input.addEventListener("input", () => {
+                input.value = input.value.toUpperCase();
+            });
+        }
+    });
+
     document.querySelectorAll(".password-toggle").forEach(boton => {
         boton.addEventListener("click", () => {
             const input = document.getElementById(boton.dataset.target);
@@ -27,22 +39,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const formRegistro = document.getElementById("formRegistroAgencia");
     if (formRegistro) {
         const datos = datosAgencia;
-        document.getElementById("nombreComercial").value = datos.nombreComercial || "";
-        document.getElementById("correo").value = datos.correo || "";
-        document.getElementById("nombreUsuario").value = datos.nombreUsuario || "";
+        if (document.getElementById("nombreComercial")) document.getElementById("nombreComercial").value = (datos.nombreComercial || "").toUpperCase();
+        if (document.getElementById("correo")) document.getElementById("correo").value = datos.correo || "";
+        if (document.getElementById("nombreUsuario")) document.getElementById("nombreUsuario").value = datos.nombreUsuario || "";
 
         formRegistro.addEventListener("submit", event => {
             event.preventDefault();
 
-            const nombreComercial = document.getElementById("nombreComercial").value.trim();
-            const correo = document.getElementById("correo").value.trim();
-            const nombreUsuario = document.getElementById("nombreUsuario").value.trim();
-            const contraseña = document.getElementById("contraseña").value;
-            const confirmarcontraseña = document.getElementById("confirmarcontraseña").value;
+            const nombreComercial = document.getElementById("nombreComercial") ? document.getElementById("nombreComercial").value.trim().toUpperCase() : "";
+            const correo = document.getElementById("correo") ? document.getElementById("correo").value.trim() : "";
+            const nombreUsuario = document.getElementById("nombreUsuario") ? document.getElementById("nombreUsuario").value.trim() : "";
+            const contrasenaEl = document.getElementById("contrasena") || document.getElementById("contraseña");
+            const confirmarEl = document.getElementById("confirmarContrasena") || document.getElementById("confirmarcontraseña");
+            const contraseña = contrasenaEl ? contrasenaEl.value : "";
+            const confirmarcontraseña = confirmarEl ? confirmarEl.value : "";
             const mensaje = document.getElementById("mensajeRegistro");
 
             if (!nombreComercial || !correo || !nombreUsuario || !contraseña || !confirmarcontraseña) {
-                mostrarMensaje(mensaje, "Completa todos los campos.");
+                mostrarMensaje(mensaje, "Completa todos los campos obligatorios.");
+                return;
+            }
+
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(correo)) {
+                mostrarMensaje(mensaje, "Ingresa un correo electrónico válido.");
                 return;
             }
 
@@ -60,7 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 nombreComercial,
                 correo,
                 nombreUsuario,
-                contraseña
+                contraseña,
+                contrasena: contraseña
             });
 
             siguientePaso("R_agencia_empresa.html");
@@ -70,16 +91,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const formEmpresa = document.getElementById("formAgenciaEmpresa");
     if (formEmpresa) {
         const datos = datosAgencia;
-        document.getElementById("razonSocial").value = datos.razonSocial || "";
-        document.getElementById("ruc").value = datos.ruc || "";
-        document.getElementById("telefonoEmpresa").value = datos.telefonoEmpresa || "";
-        document.getElementById("direccion").value = datos.direccion || "";
-        document.getElementById("descripcion").value = datos.descripcion || "";
+        if (document.getElementById("razonSocial")) document.getElementById("razonSocial").value = (datos.razonSocial || "").toUpperCase();
+        if (document.getElementById("ruc")) document.getElementById("ruc").value = datos.ruc || "";
+        if (document.getElementById("telefonoEmpresa")) document.getElementById("telefonoEmpresa").value = datos.telefonoEmpresa || "";
+        if (document.getElementById("direccion")) document.getElementById("direccion").value = datos.direccion || "";
+        if (document.getElementById("descripcion")) document.getElementById("descripcion").value = datos.descripcion || "";
 
         formEmpresa.addEventListener("submit", event => {
             event.preventDefault();
 
-            const razonSocial = document.getElementById("razonSocial").value.trim();
+            const razonSocial = document.getElementById("razonSocial").value.trim().toUpperCase();
             const ruc = document.getElementById("ruc").value.trim();
             const telefonoEmpresa = document.getElementById("telefonoEmpresa").value.trim();
             const direccion = document.getElementById("direccion").value.trim();
@@ -88,6 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!razonSocial || !ruc) {
                 mostrarMensaje(mensaje, "Completa la razón social y el RUC.");
+                return;
+            }
+
+            if (!/^[0-9]{11}$/.test(ruc)) {
+                mostrarMensaje(mensaje, "El RUC debe tener exactamente 11 dígitos numéricos.");
+                return;
+            }
+
+            if (telefonoEmpresa && !/^[0-9]{7,9}$/.test(telefonoEmpresa)) {
+                mostrarMensaje(mensaje, "El teléfono de la empresa debe tener entre 7 y 9 dígitos numéricos.");
                 return;
             }
 
@@ -106,8 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const formResponsable =
         document.getElementById("formAgenciaResponsable") ||
         document.getElementById("formResponsable");
-    document.getElementById("formAgenciaResponsable") ||
-    document.getElementById("formResponsable");
 
     if (formResponsable) {
         const campoNombre = document.getElementById("nombre");
@@ -117,23 +146,33 @@ document.addEventListener("DOMContentLoaded", () => {
         const campoTelefono = document.getElementById("telefonoResponsable");
         const mensaje = document.getElementById("mensajeResponsable");
 
-        campoNombre.value = datosAgencia.nombre || "";
-        campoDocumento.value = datosAgencia.nroDocumento || "";
-        campoApellidoPaterno.value = datosAgencia.apellidoPaterno || "";
-        campoApellidoMaterno.value = datosAgencia.apellidoMaterno || "";
-        campoTelefono.value = datosAgencia.telefonoResponsable || "";
+        if (campoNombre) campoNombre.value = (datosAgencia.nombre || "").toUpperCase();
+        if (campoDocumento) campoDocumento.value = datosAgencia.nroDocumento || "";
+        if (campoApellidoPaterno) campoApellidoPaterno.value = (datosAgencia.apellidoPaterno || "").toUpperCase();
+        if (campoApellidoMaterno) campoApellidoMaterno.value = (datosAgencia.apellidoMaterno || "").toUpperCase();
+        if (campoTelefono) campoTelefono.value = datosAgencia.telefonoResponsable || "";
 
         formResponsable.addEventListener("submit", event => {
             event.preventDefault();
 
-            const nombre = campoNombre.value.trim();
+            const nombre = campoNombre.value.trim().toUpperCase();
             const nroDocumento = campoDocumento.value.trim();
-            const apellidoPaterno = campoApellidoPaterno.value.trim();
-            const apellidoMaterno = campoApellidoMaterno.value.trim();
+            const apellidoPaterno = campoApellidoPaterno.value.trim().toUpperCase();
+            const apellidoMaterno = campoApellidoMaterno.value.trim().toUpperCase();
             const telefonoResponsable = campoTelefono.value.trim();
 
             if (!nombre || !nroDocumento || !apellidoPaterno || !apellidoMaterno) {
                 mostrarMensaje(mensaje, "Completa los campos obligatorios.");
+                return;
+            }
+
+            if (!/^[0-9]{8}$/.test(nroDocumento)) {
+                mostrarMensaje(mensaje, "El DNI debe tener exactamente 8 dígitos numéricos.");
+                return;
+            }
+
+            if (telefonoResponsable && !/^[0-9]{7,9}$/.test(telefonoResponsable)) {
+                mostrarMensaje(mensaje, "El teléfono del responsable debe tener entre 7 y 9 dígitos numéricos.");
                 return;
             }
 
@@ -222,22 +261,24 @@ document.addEventListener("DOMContentLoaded", () => {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            nombre: datosAgencia.nombre,
-                            apellidoPaterno: datosAgencia.apellidoPaterno,
-                            apellidoMaterno: datosAgencia.apellidoMaterno,
-                            nroDocumento: datosAgencia.nroDocumento,
-                            nombreUsuario: datosAgencia.nombreUsuario,
-                            correo: datosAgencia.correo,
-                            contraseña: datosAgencia.contraseña,
+                            nombre: datosAgencia.nombre || "",
+                            apellidoPaterno: datosAgencia.apellidoPaterno || "",
+                            apellidoMaterno: datosAgencia.apellidoMaterno || "",
+                            nroDocumento: datosAgencia.nroDocumento || "",
+                            nombreUsuario: datosAgencia.nombreUsuario || "",
+                            correo: datosAgencia.correo || "",
+                            contraseña: datosAgencia.contraseña || datosAgencia.contrasena || "",
+                            contrasena: datosAgencia.contrasena || datosAgencia.contraseña || "",
 
                             telefonoResponsable: datosAgencia.telefonoResponsable || "",
                             telefonoEmpresa: datosAgencia.telefonoEmpresa || "",
 
-                            razonSocial: datosAgencia.razonSocial,
-                            nombreComercial: datosAgencia.nombreComercial,
-                            ruc: datosAgencia.ruc,
-                            direccion: datosAgencia.direccion,
-                            descripcion: datosAgencia.descripcion
+                            razonSocial: datosAgencia.razonSocial || "",
+                            nombreComercial: datosAgencia.nombreComercial || "",
+                            ruc: datosAgencia.ruc || "",
+                            direccion: datosAgencia.direccion || "",
+                            descripcion: datosAgencia.descripcion || "",
+                            documentoRuc: (datosAgencia.archivos && datosAgencia.archivos.documentoRuc) || ""
                         })
                     });
 

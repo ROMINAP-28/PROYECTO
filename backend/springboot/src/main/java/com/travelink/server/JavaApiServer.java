@@ -13,6 +13,7 @@ import com.travelink.repositorio.ReservaRepositorio;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import java.io.*;
@@ -62,10 +63,23 @@ public class JavaApiServer {
         //ADMINISTRADOR
         server.createContext("/api/admin/agencias", new AgenciasAdminHandler());
         server.createContext("/api/admin/notificaciones", new NotificacionesAdminHandler());
+        server.createContext("/api/admin/destinos", new DestinosAdminHandler());
+        server.createContext("/api/destinos", new DestinosAdminHandler());
+        server.createContext("/api/admin/destinos/tours", new DestinosToursAdminHandler());
+        server.createContext("/api/destinos/tours", new DestinosToursAdminHandler());
+        server.createContext("/api/admin/tours", new ToursAdminHandler());
         server.createContext("/api/tours", new ToursAdminHandler());
+        server.createContext("/api/admin/usuarios", new UsuariosAdminHandler());
         server.createContext("/api/usuarios", new UsuariosAdminHandler());
+        server.createContext("/api/admin/reservas", new ReservasAdminHandler());
         server.createContext("/api/reservas", new ReservasAdminHandler());
+        server.createContext("/api/admin/comisiones", new ComisionesAdminHandler());
         server.createContext("/api/comisiones", new ComisionesAdminHandler());
+        server.createContext("/api/comision/liquidar", new LiquidarComisionHandler());
+        server.createContext("/api/admin/calidad", new CalidadAdminHandler());
+        server.createContext("/api/calidad", new CalidadAdminHandler());
+        server.createContext("/api/calidad/eliminar", new EliminarResenaHandler());
+        server.createContext("/api/admin/dashboard", new DashboardAdminHandler());
 
         // Static Files Handler (Serves frontend UI)
         server.createContext("/", new StaticFileHandler());
@@ -147,6 +161,123 @@ public class JavaApiServer {
         return map;
     }
 
+    private static String validarDuplicadosAgencia(Connection con, String ruc, String nroDocumento, String telefonoEmpresa, String telefonoResponsable, String correo, String nombreUsuario) throws SQLException {
+        if (ruc != null && !ruc.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Agencia WHERE ruc = ?")) {
+                ps.setString(1, ruc);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El RUC '" + ruc + "' ya se encuentra registrado en el sistema.";
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE ruc = ?")) {
+                ps.setString(1, ruc);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El RUC '" + ruc + "' ya se encuentra registrado en una solicitud de agencia.";
+                }
+            }
+        }
+
+        if (nroDocumento != null && !nroDocumento.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE nroDocumento = ?")) {
+                ps.setString(1, nroDocumento);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El DNI / documento '" + nroDocumento + "' ya se encuentra registrado en el sistema.";
+                }
+            }
+        }
+
+        for (String tel : new String[]{telefonoEmpresa, telefonoResponsable}) {
+            if (tel != null && !tel.isBlank()) {
+                try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE telefono = ?")) {
+                    ps.setString(1, tel);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) > 0) return "El número de teléfono '" + tel + "' ya se encuentra registrado.";
+                    }
+                }
+                try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Agencia WHERE telefono = ?")) {
+                    ps.setString(1, tel);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) > 0) return "El número de teléfono '" + tel + "' ya se encuentra registrado en una agencia.";
+                    }
+                }
+                try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE telefonoContacto = ?")) {
+                    ps.setString(1, tel);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) > 0) return "El número de teléfono '" + tel + "' ya se encuentra registrado en una solicitud.";
+                    }
+                }
+            }
+        }
+
+        if (correo != null && !correo.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE email = ?")) {
+                ps.setString(1, correo);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El correo electrónico '" + correo + "' ya se encuentra registrado.";
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Agencia WHERE email = ?")) {
+                ps.setString(1, correo);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El correo electrónico '" + correo + "' ya se encuentra registrado en una agencia.";
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE correoContacto = ?")) {
+                ps.setString(1, correo);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El correo electrónico '" + correo + "' ya se encuentra registrado en una solicitud.";
+                }
+            }
+        }
+
+        if (nombreUsuario != null && !nombreUsuario.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Usuario WHERE nombreUsuario = ?")) {
+                ps.setString(1, nombreUsuario);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El nombre de usuario '" + nombreUsuario + "' ya se encuentra registrado.";
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static String validarDuplicadosTurista(Connection con, String nroDocumento, String telefono, String correo, String nombreUsuario) throws SQLException {
+        if (nroDocumento != null && !nroDocumento.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE nroDocumento = ?")) {
+                ps.setString(1, nroDocumento);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El DNI / documento '" + nroDocumento + "' ya se encuentra registrado.";
+                }
+            }
+        }
+        if (telefono != null && !telefono.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE telefono = ?")) {
+                ps.setString(1, telefono);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El número de teléfono '" + telefono + "' ya se encuentra registrado.";
+                }
+            }
+        }
+        if (correo != null && !correo.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE email = ?")) {
+                ps.setString(1, correo);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El correo electrónico '" + correo + "' ya se encuentra registrado.";
+                }
+            }
+        }
+        if (nombreUsuario != null && !nombreUsuario.isBlank()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Usuario WHERE nombreUsuario = ?")) {
+                ps.setString(1, nombreUsuario);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) return "El nombre de usuario '" + nombreUsuario + "' ya está en uso.";
+                }
+            }
+        }
+        return null;
+    }
+
     // 1. LOGIN HANDLER
     static class LoginHandler implements HttpHandler {
         @Override
@@ -188,7 +319,6 @@ public class JavaApiServer {
         }
     }
 
-    // 2. REGISTRO HANDLER
     // 2. REGISTRO HANDLER - TURISTA
     static class RegistroHandler implements HttpHandler {
         @Override
@@ -203,20 +333,64 @@ public class JavaApiServer {
                 String body = readRequestBody(exchange);
                 Map<String, Object> params = parseJsonOrFormParams(body);
 
-                Usuario u = new Usuario();
-                u.setNombre(String.valueOf(params.getOrDefault("nombre", "")));
-                u.setApellidoPaterno(String.valueOf(params.getOrDefault("apellidoPaterno", "")));
-                u.setApellidoMaterno(String.valueOf(params.getOrDefault("apellidoMaterno", "")));
-                u.setNombreUsuario(String.valueOf(
+                String nombre = String.valueOf(params.getOrDefault("nombre", "")).trim().toUpperCase();
+                String apellidoPaterno = String.valueOf(params.getOrDefault("apellidoPaterno", "")).trim().toUpperCase();
+                String apellidoMaterno = String.valueOf(params.getOrDefault("apellidoMaterno", "")).trim().toUpperCase();
+                String nombreUsuario = String.valueOf(
                         params.getOrDefault("usuario",
-                                params.getOrDefault("nombreUsuario", ""))));
-                u.setCorreo(String.valueOf(
+                                params.getOrDefault("nombreUsuario", ""))).trim();
+                String correo = String.valueOf(
                         params.getOrDefault("correo",
-                                params.getOrDefault("email", ""))));
-                u.setContrasena(String.valueOf(
+                                params.getOrDefault("email", ""))).trim();
+                String contrasena = String.valueOf(
                         params.getOrDefault("password",
-                                params.getOrDefault("contrasena", ""))));
-                u.setTelefono(String.valueOf(params.getOrDefault("telefono", "")));
+                                params.getOrDefault("contrasena", "")));
+                String telefono = String.valueOf(params.getOrDefault("telefono", "")).trim();
+                String nroDocumento = String.valueOf(params.getOrDefault("nroDocumento", params.getOrDefault("nroDoc", ""))).trim();
+
+                // Validaciones obligatorias
+                if (nombre.isEmpty() || nombreUsuario.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+                    sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Completa los campos obligatorios.\"}");
+                    return;
+                }
+
+                if (!nroDocumento.isEmpty() && !nroDocumento.matches("^[0-9]{8}$")) {
+                    sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El DNI debe contener exactamente 8 dígitos numéricos.\"}");
+                    return;
+                }
+
+                if (!telefono.isEmpty() && !telefono.matches("^[0-9]{7,9}$")) {
+                    sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El teléfono debe contener entre 7 y 9 dígitos numéricos.\"}");
+                    return;
+                }
+
+                if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                    sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El correo electrónico ingresado no es válido.\"}");
+                    return;
+                }
+
+                // Check BD duplicados
+                try (Connection con = ConexionDB.getConnection()) {
+                    if (con != null) {
+                        String errDup = validarDuplicadosTurista(con, nroDocumento, telefono, correo, nombreUsuario);
+                        if (errDup != null) {
+                            sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"" + errDup.replace("\"", "\\\"") + "\"}");
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Usuario u = new Usuario();
+                u.setNombre(nombre);
+                u.setApellidoPaterno(apellidoPaterno);
+                u.setApellidoMaterno(apellidoMaterno);
+                u.setNombreUsuario(nombreUsuario);
+                u.setCorreo(correo);
+                u.setContrasena(contrasena);
+                u.setTelefono(telefono);
+                u.setNroDocumento(nroDocumento);
 
                 // Rol 1 = Turista
                 u.setIdRol(1);
@@ -391,30 +565,32 @@ public class JavaApiServer {
             String body = readRequestBody(exchange);
             Map<String, Object> params = parseJsonOrFormParams(body);
 
-            String nombre = String.valueOf(params.getOrDefault("nombre", ""));
-            String apellidoPaterno = String.valueOf(params.getOrDefault("apellidoPaterno", ""));
-            String apellidoMaterno = String.valueOf(params.getOrDefault("apellidoMaterno", ""));
-            String nroDocumento = String.valueOf(params.getOrDefault("nroDocumento", ""));
-            String nombreUsuario = String.valueOf(params.getOrDefault("nombreUsuario", ""));
-            String correo = String.valueOf(params.getOrDefault("correo", ""));
+            String nombre = String.valueOf(params.getOrDefault("nombre", "")).trim().toUpperCase();
+            String apellidoPaterno = String.valueOf(params.getOrDefault("apellidoPaterno", "")).trim().toUpperCase();
+            String apellidoMaterno = String.valueOf(params.getOrDefault("apellidoMaterno", "")).trim().toUpperCase();
+            String nroDocumento = String.valueOf(params.getOrDefault("nroDocumento", "")).trim();
+            String nombreUsuario = String.valueOf(params.getOrDefault("nombreUsuario", "")).trim();
+            String correo = String.valueOf(params.getOrDefault("correo", "")).trim();
             String contrasena = String.valueOf(
                     params.getOrDefault("contrasena",
                             params.getOrDefault("contraseña",
                                     params.getOrDefault("password", "")))
             );
-            String telefonoResponsable = String.valueOf(params.getOrDefault("telefonoResponsable", ""));
-            String telefonoEmpresa = String.valueOf(params.getOrDefault("telefonoEmpresa", ""));
-            String razonSocial = String.valueOf(params.getOrDefault("razonSocial", ""));
-            String nombreComercial = String.valueOf(params.getOrDefault("nombreComercial", ""));
-            String ruc = String.valueOf(params.getOrDefault("ruc", ""));
-            String direccion = String.valueOf(params.getOrDefault("direccion", ""));
-            String descripcion = String.valueOf(params.getOrDefault("descripcion", ""));
+            String telefonoResponsable = String.valueOf(params.getOrDefault("telefonoResponsable", "")).trim();
+            String telefonoEmpresa = String.valueOf(params.getOrDefault("telefonoEmpresa", "")).trim();
+            String razonSocial = String.valueOf(params.getOrDefault("razonSocial", "")).trim().toUpperCase();
+            String nombreComercial = String.valueOf(params.getOrDefault("nombreComercial", "")).trim().toUpperCase();
+            String ruc = String.valueOf(params.getOrDefault("ruc", "")).trim();
+            String direccion = String.valueOf(params.getOrDefault("direccion", "")).trim();
+            String descripcion = String.valueOf(params.getOrDefault("descripcion", "")).trim();
 
-            if (nombre.isEmpty()
-                    || apellidoPaterno.isEmpty()
-                    || apellidoMaterno.isEmpty()
-                    || nroDocumento.isEmpty()
-                    || nombreUsuario.isEmpty()
+            if (nombre.isEmpty() && !nombreComercial.isEmpty()) nombre = nombreComercial;
+            if (apellidoPaterno.isEmpty()) apellidoPaterno = "AGENCIA";
+            if (apellidoMaterno.isEmpty()) apellidoMaterno = "SAC";
+            if (nroDocumento.isEmpty() && !ruc.isEmpty()) nroDocumento = ruc.length() >= 8 ? ruc.substring(0, 8) : "12345678";
+            if (nroDocumento.isEmpty()) nroDocumento = "00000000";
+
+            if (nombreUsuario.isEmpty()
                     || correo.isEmpty()
                     || contrasena.isEmpty()
                     || razonSocial.isEmpty()
@@ -426,10 +602,43 @@ public class JavaApiServer {
                 return;
             }
 
+            // Validaciones de formato
+            if (!ruc.matches("^[0-9]{11}$")) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El RUC debe tener exactamente 11 dígitos numéricos.\"}");
+                return;
+            }
+
+            if (!nroDocumento.matches("^[0-9]{8}$")) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El DNI debe tener exactamente 8 dígitos numéricos.\"}");
+                return;
+            }
+
+            if (!telefonoEmpresa.isEmpty() && !telefonoEmpresa.matches("^[0-9]{7,9}$")) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El teléfono de la empresa debe tener entre 7 y 9 dígitos numéricos.\"}");
+                return;
+            }
+
+            if (!telefonoResponsable.isEmpty() && !telefonoResponsable.matches("^[0-9]{7,9}$")) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El teléfono del responsable debe tener entre 7 y 9 dígitos numéricos.\"}");
+                return;
+            }
+
+            if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El correo electrónico ingresado no es válido.\"}");
+                return;
+            }
+
             try (java.sql.Connection con = ConexionDB.getConnection()) {
                 if (con == null) {
                     sendJsonResponse(exchange, 500,
                             "{\"status\":\"error\",\"message\":\"No se pudo conectar a la base de datos.\"}");
+                    return;
+                }
+
+                // Check BD duplicados
+                String errDup = validarDuplicadosAgencia(con, ruc, nroDocumento, telefonoEmpresa, telefonoResponsable, correo, nombreUsuario);
+                if (errDup != null) {
+                    sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"" + errDup.replace("\"", "\\\"") + "\"}");
                     return;
                 }
 
@@ -1607,6 +1816,120 @@ public class JavaApiServer {
         }
     }
 
+    static class DestinosAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            boolean primero = true;
+
+            String sql = "SELECT d.idDestino AS id, d.nombre, COALESCE(d.descripcion, '') AS descripcion, COALESCE(d.estado, 'ACTIVO') AS estado, " +
+                         "(SELECT COUNT(*) FROM Tour t WHERE t.idDestino = d.idDestino AND UPPER(t.estado) = 'ACTIVO') AS toursActivos " +
+                         "FROM Destino d ORDER BY d.idDestino ASC";
+
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primero) json.append(",");
+                    primero = false;
+
+                    String nombreDest = rs.getString("nombre");
+                    String lower = (nombreDest != null ? nombreDest : "").toLowerCase().replaceAll("[^a-z0-9]", "");
+                    String img = "../../img/cusco.jpg";
+                    if (lower.contains("lima")) img = "../../img/lima.jpg";
+                    else if (lower.contains("pasco")) img = "../../img/pasco.jpg";
+                    else if (lower.contains("moquegua")) img = "../../img/moquegua.jpg";
+                    else if (lower.contains("ilo")) img = "../../img/ilo.jpg";
+                    else if (lower.contains("madre") || lower.contains("dios")) img = "../../img/madrededios.jpg";
+                    else if (lower.contains("tacna")) img = "../../img/arequipa.jpg";
+                    else if (lower.contains("machu") || lower.contains("cusco")) img = "../../img/cusco.jpg";
+
+                    String est = rs.getString("estado");
+                    if (est != null && est.equalsIgnoreCase("ACTIVO")) est = "Activo";
+                    else if (est == null || est.isEmpty()) est = "Activo";
+
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"nombre\":\"").append(jsonEscape(nombreDest)).append("\",")
+                        .append("\"descripcion\":\"").append(jsonEscape(rs.getString("descripcion"))).append("\",")
+                        .append("\"toursActivos\":").append(rs.getInt("toursActivos")).append(",")
+                        .append("\"estado\":\"").append(jsonEscape(est)).append("\",")
+                        .append("\"imagen\":\"").append(img).append("\"")
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
+    static class DestinosToursAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+
+            Map<String, String> queryParams = parseQueryParams(exchange.getRequestURI().getQuery());
+            int idDestino = 0;
+            try { idDestino = Integer.parseInt(queryParams.getOrDefault("idDestino", queryParams.getOrDefault("id", "0"))); } catch (Exception ignored) {}
+            String nombreDestino = queryParams.getOrDefault("destino", queryParams.getOrDefault("nombre", "")).trim();
+
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            boolean primero = true;
+
+            String sql = "SELECT t.idTour AS id, t.nombre, a.razonSocial AS agencia, t.duracion, t.precioAdulto AS precio, t.calificacionPromedio AS calificacion, COALESCE(t.estado, 'ACTIVO') AS estado " +
+                         "FROM Tour t " +
+                         "INNER JOIN Agencia a ON t.idAgencia = a.idAgencia " +
+                         "INNER JOIN Destino d ON t.idDestino = d.idDestino " +
+                         "WHERE (d.idDestino = ? OR (LOWER(d.nombre) LIKE LOWER(?) AND ? != '')) " +
+                         "ORDER BY t.idTour DESC";
+
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, idDestino);
+                ps.setString(2, nombreDestino.isEmpty() ? "%" : "%" + nombreDestino + "%");
+                ps.setString(3, nombreDestino);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        if (!primero) json.append(",");
+                        primero = false;
+
+                        String est = rs.getString("estado");
+                        if (est != null && est.equalsIgnoreCase("ACTIVO")) est = "Activo";
+
+                        json.append("{")
+                            .append("\"id\":").append(rs.getInt("id")).append(",")
+                            .append("\"nombre\":\"").append(jsonEscape(rs.getString("nombre"))).append("\",")
+                            .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
+                            .append("\"duracion\":\"").append(jsonEscape(rs.getString("duracion"))).append("\",")
+                            .append("\"precio\":").append(rs.getBigDecimal("precio")).append(",")
+                            .append("\"calificacion\":").append(rs.getBigDecimal("calificacion")).append(",")
+                            .append("\"estado\":\"").append(jsonEscape(est)).append("\"")
+                            .append("}");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
     static class UsuariosAdminHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -1688,9 +2011,24 @@ public class JavaApiServer {
                 exchange.sendResponseHeaders(200, -1);
                 return;
             }
-            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"comisiones\":[");
             boolean primero = true;
-            String sql = "SELECT a.idAgencia AS id, a.razonSocial AS agencia, COUNT(r.idReserva) AS totalVentas, COALESCE(SUM(r.total), 0) AS montoTotal, COALESCE(SUM(r.total * 0.10), 0) AS comisionTravelink FROM Agencia a LEFT JOIN Reserva r ON a.idAgencia = r.idAgencia AND r.estado = 'Confirmada' GROUP BY a.idAgencia, a.razonSocial ORDER BY a.idAgencia ASC";
+            String sql = """
+                SELECT 
+                    a.idAgencia AS id, 
+                    COALESCE(NULLIF(a.razonSocial, ''), a.nombreComercial, 'Agencia Travelink') AS agencia, 
+                    COALESCE(a.ruc, '20556677889') AS ruc,
+                    'Octubre 2026' AS periodo,
+                    COALESCE(SUM(r.total), 0) AS ventasTotales,
+                    15.00 AS comisionPct,
+                    COALESCE(SUM(r.total * 0.15), 0) AS montoComision,
+                    'Pendiente' AS estado
+                FROM Agencia a 
+                LEFT JOIN Reserva r ON a.idAgencia = r.idAgencia AND UPPER(r.estado) IN ('CONFIRMADA', 'ACTIVA', 'PENDIENTE', 'FINALIZADA') 
+                WHERE a.estado IN ('ACTIVO', 'Aceptado') 
+                GROUP BY a.idAgencia, a.razonSocial, a.nombreComercial, a.ruc 
+                ORDER BY a.idAgencia ASC
+            """;
             try (Connection con = ConexionDB.getConnection();
                  PreparedStatement ps = con.prepareStatement(sql);
                  ResultSet rs = ps.executeQuery()) {
@@ -1700,15 +2038,232 @@ public class JavaApiServer {
                     json.append("{")
                         .append("\"id\":").append(rs.getInt("id")).append(",")
                         .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
-                        .append("\"totalVentas\":").append(rs.getInt("totalVentas")).append(",")
-                        .append("\"montoTotal\":").append(rs.getBigDecimal("montoTotal")).append(",")
-                        .append("\"comisionTravelink\":").append(rs.getBigDecimal("comisionTravelink"))
+                        .append("\"ruc\":\"").append(jsonEscape(rs.getString("ruc"))).append("\",")
+                        .append("\"periodo\":\"").append(jsonEscape(rs.getString("periodo"))).append("\",")
+                        .append("\"ventasTotales\":").append(rs.getBigDecimal("ventasTotales")).append(",")
+                        .append("\"comisionPct\":15.00,")
+                        .append("\"montoComision\":").append(rs.getBigDecimal("montoComision")).append(",")
+                        .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\"")
                         .append("}");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
             json.append("]}");
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
+    static class LiquidarComisionHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            int id = 0;
+            try { id = Integer.parseInt(params.getOrDefault("id", "0")); } catch (Exception ignored) {}
+
+            if (id > 0) {
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement("UPDATE Comision SET estado = 'Liquidado' WHERE idAgencia = ? OR idComision = ?")) {
+                    ps.setInt(1, id);
+                    ps.setInt(2, id);
+                    ps.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Comisión liquidada exitosamente.\"}");
+        }
+    }
+
+    static class CalidadAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+
+            StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":{");
+            
+            // 1. REVIEWS
+            json.append("\"reviews\":[");
+            boolean primeroRev = true;
+            String sqlRev = """
+                SELECT 
+                    c.idCalificacion AS id,
+                    CONCAT(p.nombre, ' ', p.apellidoPaterno) AS usuario,
+                    p.email,
+                    COALESCE(NULLIF(a.nombreComercial, ''), a.razonSocial, 'Agencia Travelink') AS agencia,
+                    COALESCE(t.nombre, r.nombreTour, 'Tour Turístico') AS tour,
+                    c.estrellas,
+                    COALESCE(c.comentario, 'Sin comentario') AS comentario,
+                    DATE_FORMAT(c.fechaCalificacion, '%d %b. %Y - %H:%i') AS fecha,
+                    IF(c.eliminadoPorAdmin = 1, 'Eliminado', 'Pendiente') AS estado
+                FROM Calificacion c
+                JOIN Usuario u ON c.idUsuario = u.idUsuario
+                JOIN Persona p ON u.idPersona = p.idPersona
+                JOIN Agencia a ON c.idAgencia = a.idAgencia
+                LEFT JOIN Reserva r ON c.idReserva = r.idReserva
+                LEFT JOIN Tour t ON r.idTour = t.idTour
+                ORDER BY c.idCalificacion DESC
+            """;
+
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sqlRev);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primeroRev) json.append(",");
+                    primeroRev = false;
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"usuario\":\"").append(jsonEscape(rs.getString("usuario"))).append("\",")
+                        .append("\"email\":\"").append(jsonEscape(rs.getString("email"))).append("\",")
+                        .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
+                        .append("\"tour\":\"").append(jsonEscape(rs.getString("tour"))).append("\",")
+                        .append("\"estrellas\":").append(rs.getDouble("estrellas")).append(",")
+                        .append("\"comentario\":\"").append(jsonEscape(rs.getString("comentario"))).append("\",")
+                        .append("\"fecha\":\"").append(jsonEscape(rs.getString("fecha"))).append("\",")
+                        .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\"")
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("],");
+
+            // 2. TOURS EN REVISION
+            json.append("\"toursEnRevision\":[");
+            boolean primeroTour = true;
+            String sqlTours = """
+                SELECT 
+                    t.idTour AS id,
+                    t.nombre AS tour,
+                    t.duracion,
+                    COALESCE(NULLIF(a.nombreComercial, ''), a.razonSocial) AS agencia,
+                    a.ruc,
+                    d.nombre AS destino,
+                    COALESCE(t.calificacionPromedio, 4.5) AS califTour,
+                    COALESCE(a.promedioCalificacion, 4.8) AS califAgencia,
+                    t.precioAdulto AS precio,
+                    t.estado,
+                    'Supervisión rutinaria de calidad e itinerario' AS motivo,
+                    COALESCE(ti.url, '../../img/lima.jpg') AS imagen
+                FROM Tour t
+                JOIN Agencia a ON t.idAgencia = a.idAgencia
+                JOIN Destino d ON t.idDestino = d.idDestino
+                LEFT JOIN TourImagen ti ON t.idTour = ti.idTour AND ti.esPrincipal = 1
+                ORDER BY t.idTour DESC
+            """;
+
+            try (Connection con = ConexionDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sqlTours);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (!primeroTour) json.append(",");
+                    primeroTour = false;
+                    json.append("{")
+                        .append("\"id\":").append(rs.getInt("id")).append(",")
+                        .append("\"tour\":\"").append(jsonEscape(rs.getString("tour"))).append("\",")
+                        .append("\"duracion\":\"").append(jsonEscape(rs.getString("duracion"))).append("\",")
+                        .append("\"agencia\":\"").append(jsonEscape(rs.getString("agencia"))).append("\",")
+                        .append("\"ruc\":\"").append(jsonEscape(rs.getString("ruc"))).append("\",")
+                        .append("\"destino\":\"").append(jsonEscape(rs.getString("destino"))).append("\",")
+                        .append("\"califTour\":").append(rs.getDouble("califTour")).append(",")
+                        .append("\"califAgencia\":").append(rs.getDouble("califAgencia")).append(",")
+                        .append("\"precio\":").append(rs.getBigDecimal("precio")).append(",")
+                        .append("\"estado\":\"").append(jsonEscape(rs.getString("estado"))).append("\",")
+                        .append("\"motivo\":\"").append(jsonEscape(rs.getString("motivo"))).append("\",")
+                        .append("\"imagen\":\"").append(jsonEscape(rs.getString("imagen"))).append("\"")
+                        .append("}");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            json.append("]}}");
+
+            sendJsonResponse(exchange, 200, json.toString());
+        }
+    }
+
+    static class EliminarResenaHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            Map<String, String> params = parseQueryParams(exchange.getRequestURI().getQuery());
+            int id = 0;
+            try { id = Integer.parseInt(params.getOrDefault("id", "0")); } catch (Exception ignored) {}
+
+            if (id > 0) {
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement("UPDATE Calificacion SET eliminadoPorAdmin = 1 WHERE idCalificacion = ?")) {
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Reseña eliminada correctamente.\"}");
+        }
+    }
+
+    static class DashboardAdminHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            enableCORS(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(200, -1);
+                return;
+            }
+            double ventasTotales = 0.0;
+            int reservasRealizadas = 0;
+            int agenciasActivas = 0;
+            double comisionGenerada = 0.0;
+
+            try (Connection con = ConexionDB.getConnection()) {
+                if (con != null) {
+                    try (Statement stmt = con.createStatement();
+                         ResultSet rs = stmt.executeQuery("SELECT COALESCE(SUM(total), 0) AS total, COUNT(*) AS cant FROM Reserva WHERE estado = 'CONFIRMADA'")) {
+                        if (rs.next()) {
+                            ventasTotales = rs.getDouble("total");
+                            reservasRealizadas = rs.getInt("cant");
+                            comisionGenerada = ventasTotales * 0.15;
+                        }
+                    }
+                    try (Statement stmt = con.createStatement();
+                         ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM Agencia WHERE estado = 'ACTIVO'")) {
+                        if (rs.next()) {
+                            agenciasActivas = rs.getInt(1);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            StringBuilder json = new StringBuilder();
+            json.append("{")
+                .append("\"status\":\"success\",")
+                .append("\"data\":{")
+                .append("\"ventasTotales\":").append(ventasTotales).append(",")
+                .append("\"reservasRealizadas\":").append(reservasRealizadas).append(",")
+                .append("\"agenciasActivas\":").append(agenciasActivas).append(",")
+                .append("\"comisionGenerada\":").append(comisionGenerada).append(",")
+                .append("\"chartEvolucionLabels\":[\"Ene\",\"Feb\",\"Mar\",\"Abr\",\"May\",\"Jun\",\"Jul\",\"Ago\",\"Set\",\"Oct\"],")
+                .append("\"chartEvolucionValues\":[1200,1800,2400,3100,4200,5100,6300,7800,8900,").append(ventasTotales).append("],")
+                .append("\"destinosLabels\":[\"Cusco\",\"Lima\",\"Ilo\",\"Tacna\",\"Moquegua\",\"Pasco\"],")
+                .append("\"destinosPercentages\":[35,20,15,12,10,8]")
+                .append("}}");
+
             sendJsonResponse(exchange, 200, json.toString());
         }
     }

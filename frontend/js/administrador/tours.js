@@ -11,8 +11,33 @@ let paginaActual = 1;
 const ITEMS_POR_PAGINA = 5;
 
 document.addEventListener('DOMContentLoaded', () => {
+    cargarCombosAgenciasTours();
     cargarTours();
 });
+
+async function cargarCombosAgenciasTours() {
+    const select = document.getElementById('filtroAgencia');
+    if (!select) return;
+    try {
+        const res = await fetch(`${API_BASE}/agencias`);
+        if (res.ok) {
+            const data = await res.json();
+            const list = data.data || data.agencias || data;
+            select.innerHTML = '<option value="todos">Agencia: Todas</option>';
+            list.forEach(a => {
+                const nombre = a.nombre || a.razonSocial || a.nombreComercial;
+                if (nombre) {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    select.appendChild(opt);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('No se pudo cargar agencias dinámicas:', e);
+    }
+}
 
 async function cargarTours() {
     try {
@@ -26,14 +51,12 @@ async function cargarTours() {
     } catch (e) {
         console.warn('Cargando fallback para tours...', e);
         toursList = [
-            { id: 1, nombre: 'Machu Picchu Clásico Full Day', agencia: 'Andes Tours', destino: 'Cusco', duracion: '1 día', precio: 350.00, calificacion: 4.8, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=150' },
-            { id: 2, nombre: 'Montaña de 7 Colores (Vinicunca)', agencia: 'Inka Travel', destino: 'Cusco', duracion: '1 día', precio: 260.00, calificacion: 4.6, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1589802829985-817e51171b92?w=150' },
-            { id: 3, nombre: 'Valle Sagrado de los Incas & Ollantaytambo', agencia: 'Selva Viva', destino: 'Cusco', duracion: '1 día', precio: 320.00, calificacion: 4.5, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1509299349698-dd22323b5963?w=150' },
-            { id: 4, nombre: 'Tour Islas Ballestas & Huacachina', agencia: 'Ica Travel', destino: 'Ica', duracion: '2 días', precio: 290.00, calificacion: 4.2, estado: 'En revisión', imagen: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=150' },
-            { id: 5, nombre: 'Cañón del Colca 2D/1N', agencia: 'Arequipa Tours', destino: 'Arequipa', duracion: '2 días', precio: 380.00, calificacion: 4.7, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=150' },
-            { id: 6, nombre: 'Ruta del Café & Selva Central', agencia: 'Chanchamayo Expeditions', destino: 'Junín', duracion: '3 días', precio: 450.00, calificacion: 4.3, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=150' },
-            { id: 7, nombre: 'Lago Titicaca & Islas Uros', agencia: 'Machupicchu Tours', destino: 'Puno', duracion: '1 día', precio: 220.00, calificacion: 3.9, estado: 'Desactivado', imagen: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=150' },
-            { id: 8, nombre: 'Amazonía & Reserva Nacional Tambopata', agencia: 'Aventura Perú', destino: 'Madre de Dios', duracion: '3 días', precio: 680.00, calificacion: 4.9, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=150' }
+            { id: 1, nombre: 'Ruta Heroica y Valles del Pisco', agencia: 'ANDES TOURS PERU S.A.C.', destino: 'Tacna', duracion: '1 día', precio: 350.00, calificacion: 4.8, estado: 'Activo', imagen: '../../img/lima.jpg' },
+            { id: 2, nombre: 'Valle Sagrado de los Incas', agencia: 'INKA TRAVEL EXPERIENCES S.A.C.', destino: 'Cusco', duracion: '1 día', precio: 280.00, calificacion: 4.6, estado: 'Activo', imagen: '../../img/cusco.jpg' },
+            { id: 3, nombre: 'City Tour Lima Colonial y Catacumbas', agencia: 'TOUR LIMA S.A', destino: 'Lima', duracion: '1 día', precio: 120.00, calificacion: 4.7, estado: 'Activo', imagen: '../../img/lima.jpg' },
+            { id: 4, nombre: 'Aventura Marina en Reserva Punta de Coles Ilo', agencia: 'AGENCIA SELVA S.A', destino: 'Moquegua', duracion: '1 día', precio: 290.00, calificacion: 4.9, estado: 'Activo', imagen: '../../img/cusco.jpg' },
+            { id: 5, nombre: 'Expedición Bosque de Piedras de Huayllay', agencia: 'AGENCIA ALEGRIA S.A', destino: 'Pasco', duracion: '1 día', precio: 380.00, calificacion: 4.5, estado: 'Activo', imagen: '../../img/lima.jpg' },
+            { id: 6, nombre: 'Circuito Valle Viejo y Viñedos de Pocollay', agencia: 'TOUR AREQUIPA S.A.S', destino: 'Tacna', duracion: '1 día', precio: 260.00, calificacion: 4.5, estado: 'Activo', imagen: '../../img/cusco.jpg' }
         ];
     }
     aplicarFiltros();
@@ -42,6 +65,7 @@ async function cargarTours() {
 function aplicarFiltros() {
     const busqueda = (document.getElementById('filtroBusqueda')?.value || '').toLowerCase().trim();
     const destino = document.getElementById('filtroDestino')?.value || 'todos';
+    const agencia = document.getElementById('filtroAgencia')?.value || 'todos';
     const estado = document.getElementById('filtroEstado')?.value || 'todos';
 
     toursFiltrados = toursList.filter(t => {
@@ -53,10 +77,13 @@ function aplicarFiltros() {
         const coincideDestino = (destino === 'todos') || 
             (t.destino && t.destino.toLowerCase() === destino.toLowerCase());
 
+        const coincideAgencia = (agencia === 'todos') || 
+            (t.agencia && t.agencia.toLowerCase().includes(agencia.toLowerCase()));
+
         const coincideEstado = (estado === 'todos') || 
             (t.estado && t.estado.toLowerCase() === estado.toLowerCase());
 
-        return coincideBusqueda && coincideDestino && coincideEstado;
+        return coincideBusqueda && coincideDestino && coincideAgencia && coincideEstado;
     });
 
     paginaActual = 1;
@@ -66,6 +93,7 @@ function aplicarFiltros() {
 function limpiarFiltros() {
     if (document.getElementById('filtroBusqueda')) document.getElementById('filtroBusqueda').value = '';
     if (document.getElementById('filtroDestino')) document.getElementById('filtroDestino').value = 'todos';
+    if (document.getElementById('filtroAgencia')) document.getElementById('filtroAgencia').value = 'todos';
     if (document.getElementById('filtroEstado')) document.getElementById('filtroEstado').value = 'todos';
     aplicarFiltros();
 }

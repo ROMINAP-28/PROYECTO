@@ -38,23 +38,23 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="NroDocumento">Nro Documento</label>
-                            <input type="text" id="NroDocumento" placeholder="NroDocumento" required maxlength="15">
+                            <label for="NroDocumento">DNI (8 dígitos)</label>
+                            <input type="text" id="NroDocumento" placeholder="DNI (8 dígitos)" required minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe tener exactamente 8 dígitos numéricos">
                         </div>
                         <div class="form-group">
                             <label for="nombre">Nombre</label>
-                            <input type="text" id="nombre" placeholder="Nombre" required maxlength="30">
+                            <input type="text" id="nombre" placeholder="Nombre" required maxlength="30" style="text-transform: uppercase;">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="apellidoPaterno">Apellido Paterno</label>
-                            <input type="text" id="apellidoPaterno" placeholder="Apellido paterno" required maxlength="30">
+                            <input type="text" id="apellidoPaterno" placeholder="Apellido paterno" required maxlength="30" style="text-transform: uppercase;">
                         </div>
                         <div class="form-group">
                             <label for="apellidoMaterno">Apellido Materno</label>
-                            <input type="text" id="apellidoMaterno" placeholder="Apellido materno" required maxlength="30">
+                            <input type="text" id="apellidoMaterno" placeholder="Apellido materno" required maxlength="30" style="text-transform: uppercase;">
                         </div>
                     </div>
 
@@ -126,6 +126,11 @@
                 };
             }
 
+            // Conversión a mayúsculas en tiempo real
+            $('#nombre, #apellidoPaterno, #apellidoMaterno').on('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+
             // Validacion teléfono en tiempo real
             $('#telefono').on('blur change input', function () {
                 const val = this.value.trim();
@@ -147,13 +152,19 @@
             e.preventDefault();
             const usuario = document.getElementById('username').value.trim();
             const nroDoc = document.getElementById('NroDocumento').value.trim();
-            const nombre = document.getElementById('nombre').value.trim();
-            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim();
-            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+            const nombre = document.getElementById('nombre').value.trim().toUpperCase();
+            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim().toUpperCase();
             const correo = document.getElementById('email').value.trim();
             const telefono = document.getElementById('telefono').value.trim();
             const password = document.getElementById('password').value.trim();
             const passwordConfirm = document.getElementById('passwordConfirm').value.trim();
+
+            if (!/^[0-9]{8}$/.test(nroDoc)) {
+                if (typeof toastr !== 'undefined') toastr.error('El DNI debe tener exactamente 8 dígitos numéricos.', 'DNI incorrecto');
+                else alert('El DNI debe tener exactamente 8 dígitos numéricos.');
+                return;
+            }
 
             if (password !== passwordConfirm) {
                 if (typeof toastr !== 'undefined') toastr.error('Las contraseñas no coinciden.', 'Error de Contraseña');

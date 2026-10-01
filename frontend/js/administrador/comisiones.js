@@ -9,8 +9,33 @@ let paginaActual = 1;
 const ITEMS_POR_PAGINA = 5;
 
 document.addEventListener('DOMContentLoaded', () => {
+    cargarCombosAgenciasComisiones();
     cargarComisiones();
 });
+
+async function cargarCombosAgenciasComisiones() {
+    const select = document.getElementById('filtroAgencia');
+    if (!select) return;
+    try {
+        const res = await fetch(`${API_BASE}/agencias`);
+        if (res.ok) {
+            const data = await res.json();
+            const list = data.data || data.agencias || data;
+            select.innerHTML = '<option value="todos">Agencia: Todas</option>';
+            list.forEach(a => {
+                const nombre = a.nombre || a.razonSocial || a.nombreComercial;
+                if (nombre) {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    select.appendChild(opt);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('No se pudo cargar agencias dinámicas:', e);
+    }
+}
 
 async function cargarComisiones() {
     try {
@@ -25,13 +50,12 @@ async function cargarComisiones() {
     } catch (e) {
         console.warn('Cargando fallback para comisiones...', e);
         comisionesList = [
-            { id: 1, agencia: 'Andes Tours S.A.C.', ruc: '20456789012', periodo: 'Abril 2025', ventasTotales: 48500.00, comisionPct: 10, montoComision: 4850.00, estado: 'Pendiente' },
-            { id: 2, agencia: 'Inka Travel Peru EIRL', ruc: '20123456789', periodo: 'Abril 2025', ventasTotales: 36200.00, comisionPct: 12, montoComision: 4344.00, estado: 'Liquidado' },
-            { id: 3, agencia: 'Selva Viva Expeditions', ruc: '20567890123', periodo: 'Abril 2025', ventasTotales: 29800.00, comisionPct: 10, montoComision: 2980.00, estado: 'Pendiente' },
-            { id: 4, agencia: 'Arequipa Tours & Treks', ruc: '20678901234', periodo: 'Abril 2025', ventasTotales: 18400.00, comisionPct: 10, montoComision: 1840.00, estado: 'Pendiente' },
-            { id: 5, agencia: 'Ica Travel Sand & Sun', ruc: '20198765432', periodo: 'Abril 2025', ventasTotales: 22100.00, comisionPct: 10, montoComision: 2210.00, estado: 'Liquidado' },
-            { id: 6, agencia: 'Chanchamayo Expeditions', ruc: '20445566778', periodo: 'Abril 2025', ventasTotales: 14200.00, comisionPct: 10, montoComision: 1420.00, estado: 'Pendiente' },
-            { id: 7, agencia: 'Puno Lake Adventures', ruc: '20334455667', periodo: 'Abril 2025', ventasTotales: 19800.00, comisionPct: 10, montoComision: 1980.00, estado: 'Pendiente' }
+            { id: 1, agencia: 'ANDES TOURS PERU S.A.C.', ruc: '20601234567', periodo: 'Octubre 2026', ventasTotales: 3020.00, comisionPct: 15, montoComision: 453.00, estado: 'Pendiente' },
+            { id: 2, agencia: 'INKA TRAVEL EXPERIENCES S.A.C.', ruc: '20609876543', periodo: 'Octubre 2026', ventasTotales: 1500.00, comisionPct: 15, montoComision: 225.00, estado: 'Pendiente' },
+            { id: 3, agencia: 'AGENCIA ALEGRIA S.A', ruc: '10721439114', periodo: 'Octubre 2026', ventasTotales: 1200.00, comisionPct: 15, montoComision: 180.00, estado: 'Pendiente' },
+            { id: 5, agencia: 'AGENCIA SELVA S.A', ruc: '10721439116', periodo: 'Octubre 2026', ventasTotales: 665.00, comisionPct: 15, montoComision: 99.75, estado: 'Pendiente' },
+            { id: 6, agencia: 'TOUR AREQUIPA S.A.S', ruc: '10721439118', periodo: 'Octubre 2026', ventasTotales: 570.00, comisionPct: 15, montoComision: 85.50, estado: 'Pendiente' },
+            { id: 7, agencia: 'TOUR LIMA S.A', ruc: '10721439113', periodo: 'Octubre 2026', ventasTotales: 760.00, comisionPct: 15, montoComision: 114.00, estado: 'Pendiente' }
         ];
     }
     actualizarKPIs();
@@ -40,7 +64,7 @@ async function cargarComisiones() {
 
 function actualizarKPIs() {
     const totalRecaudado = comisionesList.reduce((acc, c) => acc + (parseFloat(c.montoComision) || 0), 0);
-    const pendientes = comisionesList.filter(c => c.estado.toLowerCase() === 'pendiente');
+    const pendientes = comisionesList.filter(c => (c.estado || '').toLowerCase() === 'pendiente');
     const montoPendiente = pendientes.reduce((acc, c) => acc + (parseFloat(c.montoComision) || 0), 0);
 
     const kpiTotal = document.getElementById('kpiTotalComisiones');
@@ -54,6 +78,7 @@ function actualizarKPIs() {
 
 function aplicarFiltros() {
     const busqueda = (document.getElementById('filtroBusqueda')?.value || '').toLowerCase().trim();
+    const agencia = document.getElementById('filtroAgencia')?.value || 'todos';
     const estado = document.getElementById('filtroEstado')?.value || 'todos';
 
     comisionesFiltradas = comisionesList.filter(c => {
@@ -61,10 +86,13 @@ function aplicarFiltros() {
             (c.agencia && c.agencia.toLowerCase().includes(busqueda)) ||
             (c.ruc && c.ruc.toLowerCase().includes(busqueda));
 
+        const coincideAgencia = (agencia === 'todos') ||
+            (c.agencia && c.agencia.toLowerCase().includes(agencia.toLowerCase()));
+
         const coincideEstado = (estado === 'todos') ||
             (c.estado && c.estado.toLowerCase() === estado.toLowerCase());
 
-        return coincideBusqueda && coincideEstado;
+        return coincideBusqueda && coincideAgencia && coincideEstado;
     });
 
     paginaActual = 1;
@@ -73,6 +101,7 @@ function aplicarFiltros() {
 
 function limpiarFiltros() {
     if (document.getElementById('filtroBusqueda')) document.getElementById('filtroBusqueda').value = '';
+    if (document.getElementById('filtroAgencia')) document.getElementById('filtroAgencia').value = 'todos';
     if (document.getElementById('filtroEstado')) document.getElementById('filtroEstado').value = 'todos';
     aplicarFiltros();
 }

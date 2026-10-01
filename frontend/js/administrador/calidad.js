@@ -13,8 +13,33 @@ let paginaActual = 1;
 const ITEMS_POR_PAGINA = 5;
 
 document.addEventListener('DOMContentLoaded', () => {
+    cargarCombosAgenciasCalidad();
     cargarDatosCalidad();
 });
+
+async function cargarCombosAgenciasCalidad() {
+    const select = document.getElementById('filtroAgencia');
+    if (!select) return;
+    try {
+        const res = await fetch(`${API_BASE}/agencias`);
+        if (res.ok) {
+            const data = await res.json();
+            const list = data.data || data.agencias || data;
+            select.innerHTML = '<option value="todos">Agencia: Todas</option>';
+            list.forEach(a => {
+                const nombre = a.nombre || a.razonSocial || a.nombreComercial;
+                if (nombre) {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    select.appendChild(opt);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('No se pudo cargar agencias dinámicas:', e);
+    }
+}
 
 async function cargarDatosCalidad() {
     try {
@@ -30,22 +55,19 @@ async function cargarDatosCalidad() {
     } catch (e) {
         console.warn('Cargando fallback para calidad...', e);
         reviewsList = [
-            { id: 1, usuario: 'María López', email: 'maria@gmail.com', agencia: 'Andes Tours', tour: 'Machu Picchu Clásico', estrellas: 1.0, comentario: 'La experiencia fue muy mala, el guía no estaba preparado y nos dejó esperando.', fecha: '28 abr. 2025 - 14:32', estado: 'Pendiente' },
-            { id: 2, usuario: 'Carlos Pérez', email: 'carlos@gmail.com', agencia: 'Inka Travel', tour: 'Montaña de 7 Colores', estrellas: 2.0, comentario: 'El transporte llegó tarde y el tour no estuvo bien organizado.', fecha: '27 abr. 2025 - 11:20', estado: 'Pendiente' },
-            { id: 3, usuario: 'Ana Torres', email: 'ana@gmail.com', agencia: 'Selva Viva', tour: 'Lago Titicaca', estrellas: 2.0, comentario: 'El lugar es bonito pero la comida fue muy básica y el transporte incómodo.', fecha: '26 abr. 2025 - 16:45', estado: 'Pendiente' },
-            { id: 4, usuario: 'Jorge Ramírez', email: 'jorge@gmail.com', agencia: 'Aventura Perú', tour: 'Valle Sagrado', estrellas: 3.0, comentario: 'El guía fue amable, pero hubo retrasos molestos en el transporte.', fecha: '25 abr. 2025 - 09:12', estado: 'Pendiente' },
-            { id: 5, usuario: 'Lucía Fernández', email: 'lucia@gmail.com', agencia: 'Machupicchu Tours', tour: 'Cusco Arqueológico', estrellas: 3.0, comentario: 'La organización fue regular, faltó más información del guía local.', fecha: '24 abr. 2025 - 13:27', estado: 'Pendiente' },
-            { id: 6, usuario: 'Diego Huamán', email: 'diego@gmail.com', agencia: 'Ica Travel', tour: 'Huacachina Sandboard', estrellas: 1.0, comentario: 'Carros en mal estado, no me sentí seguro.', fecha: '23 abr. 2025 - 10:15', estado: 'Eliminado' }
+            { id: 50, usuario: 'Diego Armando Quispe', email: 'diego.quispe@travelink.test', agencia: 'ANDES TOURS PERU S.A.C.', tour: 'Ruta Heroica y Valles del Pisco', estrellas: 5.0, comentario: '¡Increíble servicio y atención de primera en Tacna y Moquegua!', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' },
+            { id: 51, usuario: 'Ana Lucía Morales', email: 'ana.morales@travelink.test', agencia: 'INKA TRAVEL EXPERIENCES S.A.C.', tour: 'Valle Sagrado de los Incas', estrellas: 4.0, comentario: 'Muy buen recorrido guiado por el Valle Sagrado.', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' },
+            { id: 52, usuario: 'Jorge Luis Fernández', email: 'jorge.fernandez@travelink.test', agencia: 'TOUR LIMA S.A', tour: 'City Tour Lima Colonial y Catacumbas', estrellas: 5.0, comentario: 'Fascinante recorrido por las catacumbas de Lima.', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' },
+            { id: 53, usuario: 'Maria Elena Sánchez', email: 'maria.sanchez@travelink.test', agencia: 'ANDES TOURS PERU S.A.C.', tour: 'Amazonía Profunda Tambopata', estrellas: 5.0, comentario: 'Inolvidable experiencia en la selva de Madre de Dios.', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' },
+            { id: 54, usuario: 'Carlos Manuel Rojas', email: 'carlos.rojas@travelink.test', agencia: 'AGENCIA ALEGRIA S.A', tour: 'Expedición Bosque de Piedras de Huayllay', estrellas: 4.0, comentario: 'El bosque de piedras fue espectacular, los niños lo disfrutaron mucho.', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' },
+            { id: 55, usuario: 'Sofia Isabel Ramírez', email: 'sofia.ramirez@travelink.test', agencia: 'AGENCIA SELVA S.A', tour: 'Aventura Marina en Reserva Punta de Coles Ilo', estrellas: 5.0, comentario: 'Excelente avistamiento de lobos marinos y pingüinos en Ilo.', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' },
+            { id: 56, usuario: 'Mateo Gabriel Chávez', email: 'mateo.chavez@travelink.test', agencia: 'TOUR AREQUIPA S.A.S', tour: 'Circuito Valle Viejo y Viñedos de Pocollay', estrellas: 4.5, comentario: 'Los vinos y el macerado de damasco riquísimos. Súper recomendado.', fecha: '01 oct. 2026 - 01:52', estado: 'Pendiente' }
         ];
 
         toursRevisionList = [
-            { id: 1, tour: 'Machu Picchu Clásico', duracion: '1 día', agencia: 'Andes Tours', ruc: '20456789012', destino: 'Cusco', califTour: 2.8, califAgencia: 3.2, precio: 350.00, estado: 'Revisión', motivo: 'Comentarios negativos sobre el guía y puntualidad.', imagen: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=150' },
-            { id: 2, tour: 'Laguna Humantay', duracion: '1 día', agencia: 'Montaña 7 Colores', ruc: '20678901234', destino: 'Cusco', califTour: 3.5, califAgencia: 4.1, precio: 280.00, estado: 'Activo', motivo: 'Sin observaciones graves.', imagen: 'https://images.unsplash.com/photo-1589802829985-817e51171b92?w=150' },
-            { id: 3, tour: 'City Tour Cusco', duracion: '1 día', agencia: 'Selva Viva', ruc: '20123456789', destino: 'Cusco', califTour: 2.1, califAgencia: 2.8, precio: 120.00, estado: 'Revisión', motivo: 'Poca información en la descripción e itinerario.', imagen: 'https://images.unsplash.com/photo-1509299349698-dd22323b5963?w=150' },
-            { id: 4, tour: 'Montaña de 7 Colores', duracion: '1 día', agencia: 'Inka Travel', ruc: '20198765432', destino: 'Cusco', califTour: 4.2, califAgencia: 4.5, precio: 280.00, estado: 'Activo', motivo: 'Sin observaciones.', imagen: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=150' },
-            { id: 5, tour: 'Amazonía Peruana', duracion: '3 días', agencia: 'Aventura Perú', ruc: '20654321098', destino: 'Puerto Maldonado', califTour: 3.0, califAgencia: 3.6, precio: 450.00, estado: 'Revisión', motivo: 'Comentarios sobre la logística del alojamiento.', imagen: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=150' },
-            { id: 6, tour: 'Valle Sagrado', duracion: '1 día', agencia: 'Lago Titicaca', ruc: '20567890123', destino: 'Cusco', califTour: 1.8, califAgencia: 2.4, precio: 220.00, estado: 'Suspendido', motivo: 'Múltiples quejas de usuarios por cancelaciones.', imagen: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=150' },
-            { id: 7, tour: 'Lago Titicaca', duracion: '1 día', agencia: 'Machupicchu Tours', ruc: '20678901235', destino: 'Puno', califTour: 3.6, califAgencia: 3.9, precio: 320.00, estado: 'Activo', motivo: 'Sin observaciones.', imagen: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=150' }
+            { id: 1, tour: 'Ruta Heroica y Valles del Pisco', duracion: '1 día', agencia: 'ANDES TOURS PERU S.A.C.', ruc: '20601234567', destino: 'Tacna', califTour: 4.8, califAgencia: 5.0, precio: 350.00, estado: 'Activo', motivo: 'Revisión rutinaria de calidad', imagen: '../../img/lima.jpg' },
+            { id: 2, tour: 'Valle Sagrado de los Incas', duracion: '1 día', agencia: 'INKA TRAVEL EXPERIENCES S.A.C.', ruc: '20609876543', destino: 'Cusco', califTour: 4.6, califAgencia: 4.5, precio: 280.00, estado: 'Activo', motivo: 'Monitoreo de guías turísticos', imagen: '../../img/cusco.jpg' },
+            { id: 3, tour: 'City Tour Lima Colonial', duracion: '1 día', agencia: 'TOUR LIMA S.A', ruc: '10721439113', destino: 'Lima', califTour: 4.7, califAgencia: 4.67, precio: 120.00, estado: 'Activo', motivo: 'Verificación de itinarios urbanos', imagen: '../../img/lima.jpg' }
         ];
     }
     aplicarFiltros();
@@ -88,7 +110,7 @@ function aplicarFiltros() {
                 (r.tour && r.tour.toLowerCase().includes(busqueda));
 
             const coincideAgencia = (agencia === 'todos') ||
-                (r.agencia && r.agencia.toLowerCase() === agencia.toLowerCase());
+                (r.agencia && r.agencia.toLowerCase().includes(agencia.toLowerCase()));
 
             return coincideBusqueda && coincideAgencia;
         });
@@ -100,7 +122,7 @@ function aplicarFiltros() {
                 (t.motivo && t.motivo.toLowerCase().includes(busqueda));
 
             const coincideAgencia = (agencia === 'todos') ||
-                (t.agencia && t.agencia.toLowerCase() === agencia.toLowerCase());
+                (t.agencia && t.agencia.toLowerCase().includes(agencia.toLowerCase()));
 
             return coincideBusqueda && coincideAgencia;
         });
@@ -130,7 +152,7 @@ function renderizarTabla() {
 
     if (tabActivo === 'flagged') {
         if (reviewsFiltrados.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color:#94a3b8;">No hay calificaciones reportadas.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color:#94a3b8;">No hay calificaciones reportadas.</td></tr>`;
             renderPaginator(0, 1, ITEMS_POR_PAGINA, 'paginacionControles', 'paginacionInfo', cambiarPaginaCalidad);
             return;
         }
@@ -153,15 +175,11 @@ function renderizarTabla() {
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <div class="reserva-meta-cell">
-                            <strong>${r.agencia}</strong>
-                            <span>${r.tour}</span>
-                        </div>
-                    </td>
+                    <td><strong>${r.agencia}</strong></td>
+                    <td><span>${r.tour}</span></td>
                     <td>
                         <span class="star-rating-badge" style="color: ${r.estrellas <= 2 ? '#ef4444' : '#d97706'};">
-                            <i class="ti ti-star-filled"></i> ${r.estrellas.toFixed(1)}
+                            <i class="ti ti-star-filled"></i> ${Number(r.estrellas).toFixed(1)}
                         </span>
                     </td>
                     <td><div class="review-comment-box" title="${r.comentario}">${r.comentario}</div></td>
@@ -198,7 +216,7 @@ function renderizarTabla() {
                 <tr>
                     <td>
                         <div class="tour-cell-meta">
-                            <img src="${t.imagen || 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=150'}" class="tour-thumb-img" alt="${t.tour}">
+                            <img src="${t.imagen || '../../img/lima.jpg'}" class="tour-thumb-img" alt="${t.tour}">
                             <div class="tour-text-wrap">
                                 <h6>${t.tour}</h6>
                                 <span>${t.duracion}</span>
@@ -263,18 +281,21 @@ function verDetalleResena(id) {
 function eliminarResena(id) {
     Swal.fire({
         title: '¿Eliminar reseña reportada?',
-        text: 'La calificación ya no afectará el puntaje del tour.',
+        text: 'La calificación se eliminará de la base de datos.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
         cancelButtonColor: '#94a3b8',
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
-    }).then(result => {
+    }).then(async result => {
         if (result.isConfirmed) {
+            try {
+                await fetch(`${API_BASE}/calidad/eliminar?id=${id}`, { method: 'POST' });
+            } catch (e) {}
             reviewsList = reviewsList.filter(r => r.id !== id);
             aplicarFiltros();
-            Swal.fire('Eliminada', 'La reseña ha sido retirada del sistema.', 'success');
+            Swal.fire('Eliminada', 'La reseña ha sido retirada del sistema y actualizada en la base de datos.', 'success');
         }
     });
 }

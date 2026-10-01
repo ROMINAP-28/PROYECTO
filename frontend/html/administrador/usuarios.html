@@ -144,14 +144,14 @@
                     <input type="text" id="filtroBusqueda" placeholder="Buscar usuario..." onkeyup="if(event.key==='Enter') aplicarFiltros()">
                 </div>
 
-                <select class="filter-select" id="filtroRol">
+                <select class="filter-select" id="filtroRol" onchange="aplicarFiltros()">
                     <option value="todos">Rol: Todos</option>
                     <option value="Administrador">Administrador</option>
                     <option value="Agencia">Agencia</option>
                     <option value="Turista">Turista</option>
                 </select>
 
-                <select class="filter-select" id="filtroEstado">
+                <select class="filter-select" id="filtroEstado" onchange="aplicarFiltros()">
                     <option value="todos">Estado: Todos</option>
                     <option value="Activo">Activo</option>
                     <option value="Inactivo">Inactivo</option>

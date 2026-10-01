@@ -31,17 +31,17 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="razonSocial">Razón social</label>
-                        <input type="text" id="razonSocial" name="razonSocial" maxlength="150" pattern="^[A-Za-zÁ-ÿ0-9\s.,-]+$" title="Ingresa una razón social válida" required>
+                        <input type="text" id="razonSocial" name="razonSocial" maxlength="150" pattern="^[A-Za-zÁ-ÿ0-9\s.,-]+$" title="Ingresa una razón social válida" style="text-transform: uppercase;" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="ruc">RUC</label>
-                        <input type="text" id="ruc" name="ruc" minlength="11" maxlength="11" pattern="^[0-9]{11}$" title="El RUC debe tener exactamente 11 dígitos" required>
+                        <label for="ruc">RUC (11 dígitos)</label>
+                        <input type="text" id="ruc" name="ruc" minlength="11" maxlength="11" pattern="^[0-9]{11}$" title="El RUC debe contener exactamente 11 dígitos numéricos" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="telefonoEmpresa">Teléfono</label>
-                        <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa" maxlength="20">
+                        <label for="telefonoEmpresa">Teléfono (7 a 9 dígitos)</label>
+                        <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa" minlength="7" maxlength="9" pattern="^[0-9]{7,9}$" title="El teléfono debe tener entre 7 y 9 dígitos numéricos">
                     </div>
 
                     <div class="form-group">

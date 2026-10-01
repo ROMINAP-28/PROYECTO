@@ -31,27 +31,27 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="nombre">Nombres</label>
-                        <input type="text" id="nombre" name="nombre" maxlength="50" required>
+                        <input type="text" id="nombre" name="nombre" maxlength="50" style="text-transform: uppercase;" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="nroDocumento">DNI / Documento</label>
-                        <input type="text" id="nroDocumento" name="nroDocumento" maxlength="15" required>
+                        <label for="nroDocumento">DNI (8 dígitos)</label>
+                        <input type="text" id="nroDocumento" name="nroDocumento" minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe contener exactamente 8 dígitos numéricos" required>
                     </div>
 
                     <div class="form-group">
                         <label for="apellidoPaterno">Apellido paterno</label>
-                        <input type="text" id="apellidoPaterno" name="apellidoPaterno" maxlength="50" required>
+                        <input type="text" id="apellidoPaterno" name="apellidoPaterno" maxlength="50" style="text-transform: uppercase;" required>
                     </div>
 
                     <div class="form-group">
                         <label for="apellidoMaterno">Apellido materno</label>
-                        <input type="text" id="apellidoMaterno" name="apellidoMaterno" maxlength="50" required>
+                        <input type="text" id="apellidoMaterno" name="apellidoMaterno" maxlength="50" style="text-transform: uppercase;" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="telefonoResponsable">Teléfono</label>
-                        <input type="tel" id="telefonoResponsable" name="telefonoResponsable" maxlength="15">
+                        <label for="telefonoResponsable">Teléfono (7 a 9 dígitos)</label>
+                        <input type="tel" id="telefonoResponsable" name="telefonoResponsable" minlength="7" maxlength="9" pattern="^[0-9]{7,9}$" title="El teléfono debe tener entre 7 y 9 dígitos numéricos">
                     </div>
                 </div>
 

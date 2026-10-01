@@ -23,16 +23,8 @@ async function cargarDestinos() {
             throw new Error('Error al conectar a API');
         }
     } catch (e) {
-        console.warn('Cargando fallback para destinos...', e);
-        destinosList = [
-            { id: 1, nombre: 'Cusco', toursActivos: 12, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=150' },
-            { id: 2, nombre: 'Lago Titicaca', toursActivos: 8, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=150' },
-            { id: 3, nombre: 'Montaña de 7 Colores', toursActivos: 6, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1589802829985-817e51171b92?w=150' },
-            { id: 4, nombre: 'Arequipa', toursActivos: 4, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=150' },
-            { id: 5, nombre: 'Iquitos', toursActivos: 3, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=150' },
-            { id: 6, nombre: 'Máncora', toursActivos: 2, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=150' },
-            { id: 7, nombre: 'Huaraz (Callejón de Huaylas)', toursActivos: 5, estado: 'Activo', imagen: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=150' }
-        ];
+        console.error('Error al obtener destinos de la base de datos:', e);
+        destinosList = [];
     }
     aplicarFiltros();
 }
@@ -85,12 +77,12 @@ function renderizarTabla() {
                 <td><span class="table-id-code">${inicio + idx + 1}</span></td>
                 <td>
                     <div class="destino-cell-meta">
-                        <img src="${d.imagen || 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=150'}" class="destino-thumb-img" alt="${d.nombre}">
+                        <img src="${d.imagen || '../../img/cusco.jpg'}" class="destino-thumb-img" alt="${d.nombre}">
                         <strong>${d.nombre}</strong>
                     </div>
                 </td>
-                <td><span class="type-badge admin">${d.toursActivos} tours activos</span></td>
-                <td><span class="badge-status ${estadoClase}">${d.estado}</span></td>
+                <td><span class="type-badge admin">${d.toursActivos || 0} tours activos</span></td>
+                <td><span class="badge-status ${estadoClase}">${d.estado || 'Activo'}</span></td>
                 <td>
                     <div class="table-actions">
                         <button class="btn-table-pill outline-blue" onclick="verToursEnDestino(${d.id}, '${d.nombre}')">
@@ -112,23 +104,18 @@ async function verToursEnDestino(id, nombreDestino) {
     document.getElementById('modalToursDestino').classList.add('show');
 
     try {
-        const res = await fetch(`${API_BASE}/destinos/tours?destino=${encodeURIComponent(nombreDestino)}`);
+        const res = await fetch(`${API_BASE}/destinos/tours?idDestino=${id}&destino=${encodeURIComponent(nombreDestino)}`);
         let tours = [];
         if (res.ok) {
             const json = await res.json();
-            tours = json.data?.tours || json.tours || json.data || (Array.isArray(json) ? json : []);
+            tours = json.data || json.tours || (Array.isArray(json) ? json : []);
         } else {
-            throw new Error('Fallback local');
+            throw new Error('Error al conectar con la API de tours por destino');
         }
         renderizarToursEnModal(tours, nombreDestino);
     } catch (e) {
-        // Mock dataset matching image mockup
-        const toursMock = [
-            { nombre: 'Machu Picchu Clásico', agencia: 'Andes Tours', duracion: '1 día', precio: 350.00, calificacion: 4.8, estado: 'Activo' },
-            { nombre: 'Montaña de 7 Colores', agencia: 'Inka Travel', duracion: '1 día', precio: 260.00, calificacion: 4.6, estado: 'Activo' },
-            { nombre: 'Valle Sagrado de los Incas', agencia: 'Selva Viva', duracion: '1 día', precio: 320.00, calificacion: 4.5, estado: 'Activo' }
-        ];
-        renderizarToursEnModal(toursMock, nombreDestino);
+        console.error('Error al cargar tours de la base de datos:', e);
+        renderizarToursEnModal([], nombreDestino);
     }
 }
 

@@ -16,6 +16,11 @@ public class Tour {
     private String categoria;
     private double calificacionPromedio;
     private String estado;
+    private boolean aceptaBebes;
+    private String queIncluye;
+    private String queNoIncluye;
+    private int dias;
+    private int horas;
 
     // Relaciones
     private Agencia agencia;
@@ -61,6 +66,21 @@ public class Tour {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    public boolean isAceptaBebes() { return aceptaBebes; }
+    public void setAceptaBebes(boolean aceptaBebes) { this.aceptaBebes = aceptaBebes; }
+
+    public String getQueIncluye() { return queIncluye; }
+    public void setQueIncluye(String queIncluye) { this.queIncluye = queIncluye; }
+
+    public String getQueNoIncluye() { return queNoIncluye; }
+    public void setQueNoIncluye(String queNoIncluye) { this.queNoIncluye = queNoIncluye; }
+
+    public int getDias() { return dias; }
+    public void setDias(int dias) { this.dias = dias; }
+
+    public int getHoras() { return horas; }
+    public void setHoras(int horas) { this.horas = horas; }
 
     public Agencia getAgencia() { return agencia; }
     public void setAgencia(Agencia agencia) { 

@@ -52,6 +52,12 @@
     const previewNeto = document.getElementById("previewNeto");
     const descripcionServicioInput = document.getElementById("descripcionServicio");
 
+    const duracionDiasInput = document.getElementById("duracionDias");
+    const duracionHorasInput = document.getElementById("duracionHoras");
+    const aceptaBebesCheckbox = document.getElementById("aceptaBebes");
+    const queIncluyeInput = document.getElementById("queIncluye");
+    const queNoIncluyeInput = document.getElementById("queNoIncluye");
+
     const dropzoneFotografia = document.getElementById("dropzoneFotografia");
     const inputFileImagen = document.getElementById("inputFileImagen");
     const gridPreviewImagenes = document.getElementById("gridPreviewImagenes");
@@ -506,6 +512,12 @@
         estadoServicioSelect.value = s.estado;
         if (ubicacionServicioInput) ubicacionServicioInput.value = s.ubicacion || "";
 
+        if (duracionDiasInput) duracionDiasInput.value = s.dias || "1";
+        if (duracionHorasInput) duracionHorasInput.value = s.horas || "6";
+        if (aceptaBebesCheckbox) aceptaBebesCheckbox.checked = s.aceptaBebes || false;
+        if (queIncluyeInput) queIncluyeInput.value = s.queIncluye || "";
+        if (queNoIncluyeInput) queNoIncluyeInput.value = s.queNoIncluye || "";
+
         // Parsear duración (e.g. "6 horas", "1 día")
         const durParts = (s.duracion || "").split(" ");
         if (durParts.length >= 2) {
@@ -731,6 +743,11 @@
             precioNino: precioNinoInput.value || "0",
             precioBebe: precioBebeInput.value || "0",
             descripcion: descripcionServicioInput.value.trim(),
+            dias: duracionDiasInput ? duracionDiasInput.value : "1",
+            horas: duracionHorasInput ? duracionHorasInput.value : "6",
+            aceptaBebes: aceptaBebesCheckbox ? aceptaBebesCheckbox.checked : false,
+            queIncluye: queIncluyeInput ? queIncluyeInput.value.trim() : "",
+            queNoIncluye: queNoIncluyeInput ? queNoIncluyeInput.value.trim() : "",
             imagenPrincipal: imagenPrincipal,
             imagenes: urlsRestantes
         };

@@ -283,6 +283,30 @@
                     <textarea id="descripcionServicio" rows="3" placeholder="Describe los itinerarios, atractivos principales y sorpresas del recorrido..."></textarea>
                 </div>
 
+                <div class="form-grid-2">
+                    <div class="form-group-custom">
+                        <label for="queIncluye">¿Qué Incluye?</label>
+                        <textarea id="queIncluye" rows="2" placeholder="Ej. Transporte, Almuerzo..."></textarea>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="queNoIncluye">¿Qué NO Incluye?</label>
+                        <textarea id="queNoIncluye" rows="2" placeholder="Ej. Entradas, Propinas..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group-custom">
+                        <label>Duración en días y horas</label>
+                        <div style="display:flex; gap:8px;">
+                            <input type="number" id="duracionDias" min="0" value="1" placeholder="Días" style="width:80px;" required> <span style="line-height:36px;font-size:14px;">días</span>
+                            <input type="number" id="duracionHoras" min="0" value="0" placeholder="Horas" style="width:80px;" required> <span style="line-height:36px;font-size:14px;">hrs</span>
+                        </div>
+                    </div>
+                    <div class="form-group-custom" style="display:flex; align-items:center; gap:8px; margin-top:28px;">
+                        <input type="checkbox" id="aceptaBebes" style="width:18px; height:18px;">
+                        <label for="aceptaBebes" style="margin:0; font-weight:600; cursor:pointer;">¿Acepta Bebés?</label>
+                    </div>
+                </div>
                 <div class="form-group-custom" style="margin-bottom: 20px;">
                     <label style="font-weight: 700; font-size: 15px; color: #0f172a; margin-bottom: 8px; display: block;">
                         Subir Fotografía

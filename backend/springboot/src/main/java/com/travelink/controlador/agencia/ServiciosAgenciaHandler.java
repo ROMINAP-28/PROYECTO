@@ -70,7 +70,7 @@ import com.travelink.repositorio.ReservaRepositorio;
             try (Connection con = ConexionDB.getConnection()) {
                 StringBuilder sql = new StringBuilder(
                         "SELECT t.idTour, t.nombre, t.descripcion, t.categoria, t.precioAdulto, t.precioNino, t.precioBebe, " +
-                        "t.duracion, t.estado, t.idAgencia, t.idDestino, d.nombre AS destino " +
+                        "t.duracion, t.estado, t.idAgencia, t.idDestino, t.aceptaBebes, t.queIncluye, t.queNoIncluye, t.dias, t.horas, t.ubicacion, d.nombre AS destino " +
                         "FROM Tour t " +
                         "INNER JOIN Destino d ON t.idDestino = d.idDestino " +
                         "WHERE t.idAgencia = ? "
@@ -114,6 +114,12 @@ import com.travelink.repositorio.ReservaRepositorio;
                             String estado = rs.getString("estado");
                             int idDestino = rs.getInt("idDestino");
                             String destino = rs.getString("destino");
+                            boolean aceptaBebes = rs.getBoolean("aceptaBebes");
+                            String queIncluye = rs.getString("queIncluye");
+                            String queNoIncluye = rs.getString("queNoIncluye");
+                            int dias = rs.getInt("dias");
+                            int horas = rs.getInt("horas");
+                            String ubicacion = rs.getString("ubicacion");
 
                             // Imágenes del tour
                             StringBuilder imagenesJson = new StringBuilder("[");
@@ -187,6 +193,12 @@ import com.travelink.repositorio.ReservaRepositorio;
                                     .append("\"comision15\":").append(String.format(Locale.US, "%.2f", comision)).append(",")
                                     .append("\"neto85\":").append(String.format(Locale.US, "%.2f", neto)).append(",")
                                     .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion)).append("\",")
+                                    .append("\"dias\":").append(dias).append(",")
+                                    .append("\"horas\":").append(horas).append(",")
+                                    .append("\"aceptaBebes\":").append(aceptaBebes).append(",")
+                                    .append("\"queIncluye\":\"").append(JavaApiServer.jsonEscape(queIncluye != null ? queIncluye : "")).append("\",")
+                                    .append("\"queNoIncluye\":\"").append(JavaApiServer.jsonEscape(queNoIncluye != null ? queNoIncluye : "")).append("\",")
+                                    .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "")).append("\",")
                                     .append("\"estado\":\"").append(JavaApiServer.jsonEscape(estado)).append("\",")
                                     .append("\"imagenPrincipal\":\"").append(JavaApiServer.jsonEscape(mainImgUrl)).append("\",")
                                     .append("\"imagenes\":").append(imagenesJson.toString()).append(",")
@@ -448,8 +460,15 @@ import com.travelink.repositorio.ReservaRepositorio;
                         }
                     }
                     String ubicacion = String.valueOf(params.getOrDefault("ubicacion", "")).trim();
+                    boolean aceptaBebes = Boolean.parseBoolean(String.valueOf(params.getOrDefault("aceptaBebes", "false")));
+                    String queIncluye = String.valueOf(params.getOrDefault("queIncluye", "")).trim();
+                    String queNoIncluye = String.valueOf(params.getOrDefault("queNoIncluye", "")).trim();
+                    int dias = 1;
+                    int horas = 6;
+                    try { dias = Integer.parseInt(String.valueOf(params.getOrDefault("dias", "1"))); } catch (Exception ignored) {}
+                    try { horas = Integer.parseInt(String.valueOf(params.getOrDefault("horas", "6"))); } catch (Exception ignored) {}
 
-                    String sqlUpd = "UPDATE Tour SET nombre = ?, descripcion = ?, categoria = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, estado = ?, idDestino = ?, ubicacion = ? WHERE idTour = ? AND idAgencia = ?";
+                    String sqlUpd = "UPDATE Tour SET nombre = ?, descripcion = ?, categoria = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, estado = ?, idDestino = ?, ubicacion = ?, aceptaBebes = ?, queIncluye = ?, queNoIncluye = ?, dias = ?, horas = ? WHERE idTour = ? AND idAgencia = ?";
                     try (PreparedStatement ps = con.prepareStatement(sqlUpd)) {
                         ps.setString(1, nombre);
                         ps.setString(2, descripcion);
@@ -461,15 +480,28 @@ import com.travelink.repositorio.ReservaRepositorio;
                         ps.setString(8, estado);
                         ps.setInt(9, idDestino);
                         ps.setString(10, ubicacion);
-                        ps.setInt(11, idTour);
-                        ps.setInt(12, idAgencia);
+                        ps.setBoolean(11, aceptaBebes);
+                        ps.setString(12, queIncluye.isEmpty() ? null : queIncluye);
+                        ps.setString(13, queNoIncluye.isEmpty() ? null : queNoIncluye);
+                        ps.setInt(14, dias);
+                        ps.setInt(15, horas);
+                        ps.setInt(16, idTour);
+                        ps.setInt(17, idAgencia);
                         ps.executeUpdate();
                     }
                 } else {
                     // Crear nuevo
                     String ubicacion = String.valueOf(params.getOrDefault("ubicacion", "")).trim();
+                    boolean aceptaBebes = Boolean.parseBoolean(String.valueOf(params.getOrDefault("aceptaBebes", "false")));
+                    String queIncluye = String.valueOf(params.getOrDefault("queIncluye", "")).trim();
+                    String queNoIncluye = String.valueOf(params.getOrDefault("queNoIncluye", "")).trim();
+                    int dias = 1;
+                    int horas = 6;
+                    try { dias = Integer.parseInt(String.valueOf(params.getOrDefault("dias", "1"))); } catch (Exception ignored) {}
+                    try { horas = Integer.parseInt(String.valueOf(params.getOrDefault("horas", "6"))); } catch (Exception ignored) {}
+
                     String slug = nombre.toLowerCase().replaceAll("[^a-z0-9]+", "-") + "-" + (System.currentTimeMillis() % 100000);
-                    String sqlIns = "INSERT INTO Tour (idAgencia, idDestino, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, categoria, estado, ubicacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    String sqlIns = "INSERT INTO Tour (idAgencia, idDestino, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, categoria, estado, ubicacion, aceptaBebes, queIncluye, queNoIncluye, dias, horas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     try (PreparedStatement ps = con.prepareStatement(sqlIns, Statement.RETURN_GENERATED_KEYS)) {
                         ps.setInt(1, idAgencia);
                         ps.setInt(2, idDestino);
@@ -483,6 +515,11 @@ import com.travelink.repositorio.ReservaRepositorio;
                         ps.setString(10, tipoServicio);
                         ps.setString(11, estado);
                         ps.setString(12, ubicacion);
+                        ps.setBoolean(13, aceptaBebes);
+                        ps.setString(14, queIncluye.isEmpty() ? null : queIncluye);
+                        ps.setString(15, queNoIncluye.isEmpty() ? null : queNoIncluye);
+                        ps.setInt(16, dias);
+                        ps.setInt(17, horas);
                         ps.executeUpdate();
                         try (ResultSet rk = ps.getGeneratedKeys()) {
                             if (rk.next()) idTour = rk.getInt(1);

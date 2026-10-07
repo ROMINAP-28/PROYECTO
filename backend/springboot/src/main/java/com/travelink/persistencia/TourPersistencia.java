@@ -13,8 +13,8 @@ public class TourPersistencia implements TourRepositorio {
 
     @Override
     public Tour guardar(Tour tour) {
-        String sql = "INSERT INTO Tour (idAgencia, idDestino, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, categoria, calificacionPromedio, estado) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Tour (idAgencia, idDestino, slug, nombre, descripcion, precioAdulto, precioNino, precioBebe, duracion, categoria, calificacionPromedio, estado, aceptaBebes, queIncluye, queNoIncluye, dias, horas) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -30,6 +30,11 @@ public class TourPersistencia implements TourRepositorio {
             ps.setString(10, tour.getCategoria());
             ps.setDouble(11, tour.getCalificacionPromedio());
             ps.setString(12, tour.getEstado() != null ? tour.getEstado() : "ACTIVO");
+            ps.setBoolean(13, tour.isAceptaBebes());
+            ps.setString(14, tour.getQueIncluye());
+            ps.setString(15, tour.getQueNoIncluye());
+            ps.setInt(16, tour.getDias() > 0 ? tour.getDias() : 1);
+            ps.setInt(17, tour.getHoras() > 0 ? tour.getHoras() : 6);
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -132,7 +137,7 @@ public class TourPersistencia implements TourRepositorio {
 
     @Override
     public boolean actualizar(Tour tour) {
-        String sql = "UPDATE Tour SET idAgencia = ?, idDestino = ?, slug = ?, nombre = ?, descripcion = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, categoria = ?, estado = ? WHERE idTour = ?";
+        String sql = "UPDATE Tour SET idAgencia = ?, idDestino = ?, slug = ?, nombre = ?, descripcion = ?, precioAdulto = ?, precioNino = ?, precioBebe = ?, duracion = ?, categoria = ?, estado = ?, aceptaBebes = ?, queIncluye = ?, queNoIncluye = ?, dias = ?, horas = ? WHERE idTour = ?";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, tour.getIdAgencia());
@@ -146,7 +151,12 @@ public class TourPersistencia implements TourRepositorio {
             ps.setString(9, tour.getDuracion());
             ps.setString(10, tour.getCategoria());
             ps.setString(11, tour.getEstado());
-            ps.setInt(12, tour.getIdTour());
+            ps.setBoolean(12, tour.isAceptaBebes());
+            ps.setString(13, tour.getQueIncluye());
+            ps.setString(14, tour.getQueNoIncluye());
+            ps.setInt(15, tour.getDias() > 0 ? tour.getDias() : 1);
+            ps.setInt(16, tour.getHoras() > 0 ? tour.getHoras() : 6);
+            ps.setInt(17, tour.getIdTour());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -182,6 +192,11 @@ public class TourPersistencia implements TourRepositorio {
         t.setCategoria(rs.getString("categoria"));
         t.setCalificacionPromedio(rs.getDouble("calificacionPromedio"));
         t.setEstado(rs.getString("estado"));
+        t.setAceptaBebes(rs.getBoolean("aceptaBebes"));
+        t.setQueIncluye(rs.getString("queIncluye"));
+        t.setQueNoIncluye(rs.getString("queNoIncluye"));
+        t.setDias(rs.getInt("dias"));
+        t.setHoras(rs.getInt("horas"));
         return t;
     }
 }

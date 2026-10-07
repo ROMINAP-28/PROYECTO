@@ -114,10 +114,23 @@ public class ReservaPersistencia {
                 }
             }
 
-            String sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idTourFecha, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
+            // Ensure DB schema supports idPaquete (HACK for missing schema update)
+            try (Statement st = con.createStatement()) {
+                try { st.execute("ALTER TABLE DetalleReserva DROP FOREIGN KEY fk_detalle_tourfecha"); } catch(Exception e) {}
+                try { st.execute("ALTER TABLE DetalleReserva MODIFY idTourFecha INT NULL"); } catch(Exception e) {}
+                try { st.execute("ALTER TABLE DetalleReserva ADD idPaquete INT NULL"); } catch(Exception e) {}
+                try { st.execute("ALTER TABLE DetalleReserva ADD CONSTRAINT fk_detalle_tourfecha FOREIGN KEY (idTourFecha) REFERENCES TourFecha(idTourFecha) ON DELETE RESTRICT ON UPDATE CASCADE"); } catch(Exception e) {}
+            } catch(Exception e) {}
+
+            String sqlDetalle;
+            if (existeFecha) {
+                sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idTourFecha, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
+            } else {
+                sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idPaquete, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
+            }
             try (PreparedStatement psD = con.prepareStatement(sqlDetalle)) {
                 psD.setInt(1, idReservaGenerada);
-                psD.setInt(2, idTourFecha);
+                psD.setInt(2, idTourFecha); // Either idTourFecha or idPaquete
                 psD.setInt(3, cantAdultos);
                 psD.setInt(4, cantNinos);
                 psD.setInt(5, cantBebes);

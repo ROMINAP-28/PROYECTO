@@ -57,14 +57,17 @@ D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\server\Jav
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\server\NotificacionesAdminHandler.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\server\PagosAgenciaHandler.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\server\PaquetesAgenciaHandler.java
+D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\server\QueryDestinos.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\server\TiposAgenciaHandler.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\CheckColumnsDB.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\InsertarReservasPendientes.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\LimpiarDatosDB.java
+D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\ListAgencias.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\MigradorDB.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\MigrarAdminDB.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\MigrarNotificacionesDB.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\RegistrarAdminDB.java
+D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\SeedAllAgenciasData.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\SeedCatalogDB.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\TestNotificaciones.java
 D:\ProyectosU\PROYECTO\backend\springboot\src\main\java\com\travelink\tools\VerificarUsuarios.java

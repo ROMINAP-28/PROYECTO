@@ -224,7 +224,7 @@
                         };
                         localStorage.setItem('travelink_current_user', JSON.stringify(userSaved));
                         if (typeof toastr !== 'undefined') toastr.success('¡Registro exitoso para ' + userSaved.username + '! Redirigiendo...');
-                        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+                        setTimeout(() => { window.location.href = '../index.html'; }, 1000);
                     } else {
                         if (typeof toastr !== 'undefined') toastr.error(data.message || 'Error al registrar.', 'Error de Registro');
                         else alert(data.message || 'Error al registrar.');
@@ -233,7 +233,7 @@
                 .catch(err => {
                     localStorage.setItem('travelink_current_user', JSON.stringify(newUserObj));
                     if (typeof toastr !== 'undefined') toastr.success('¡Registro completado!');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+                    setTimeout(() => { window.location.href = '../index.html'; }, 1000);
                 });
         });
     </script>

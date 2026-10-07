@@ -521,8 +521,8 @@
         if (nombrePaqueteInput) nombrePaqueteInput.value = "";
         if (descPaqueteInput) descPaqueteInput.value = "";
         if (precioPaqueteInput) precioPaqueteInput.value = "";
-        if (descuentoPaqueteInput) descuentoPaqueteInput.value = "10";
-        if (duracionPaqueteInput) duracionPaqueteInput.value = "3 días / 2 noches";
+        if (descuentoPaqueteInput) descuentoPaqueteInput.value = "";
+        if (duracionPaqueteInput) duracionPaqueteInput.value = "";
         if (estadoPaqueteSelect) estadoPaqueteSelect.value = "PUBLICADO";
         if (imagenPaqueteInput) imagenPaqueteInput.value = "";
 
@@ -534,9 +534,10 @@
         const pPort = document.getElementById("imgPreviewPortada");
         const pG1 = document.getElementById("imgPreviewGaleria1");
         const pG2 = document.getElementById("imgPreviewGaleria2");
-        if (pPort) pPort.src = "../../img/lima.jpg";
-        if (pG1) pG1.src = "../../img/valle.jpg";
-        if (pG2) pG2.src = "../../img/cusco.jpg";
+        const emptyImg = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+        if (pPort) pPort.src = emptyImg;
+        if (pG1) pG1.src = emptyImg;
+        if (pG2) pG2.src = emptyImg;
 
         if (condicionesPaqueteInput) condicionesPaqueteInput.value = "";
         if (mensajePaquete) mensajePaquete.style.display = "none";

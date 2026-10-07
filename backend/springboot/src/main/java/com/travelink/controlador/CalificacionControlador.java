@@ -1,4 +1,11 @@
 package com.travelink.controlador;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import com.travelink.entidades.Usuario;
 
 import com.travelink.entidades.Calificacion;
 import com.travelink.persistencia.CalificacionPersistencia;
@@ -8,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CalificacionControlador {
-    private final CalificacionPersistencia calificacionPersistencia;
+    private CalificacionPersistencia calificacionPersistencia;
 
     public CalificacionControlador() {
         this.calificacionPersistencia = new CalificacionPersistencia();
@@ -42,3 +49,4 @@ public class CalificacionControlador {
         return respuesta;
     }
 }
+

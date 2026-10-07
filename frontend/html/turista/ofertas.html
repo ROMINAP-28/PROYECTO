@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -34,7 +34,7 @@
                         <p>briadayanainfantes@gmail.com</p>
                     </div>
                 </div>
-                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menÃº"></i>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
             </div>
             <a href="../index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
             <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
@@ -43,12 +43,12 @@
             <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
             <div class="menu-divider hide-on-desktop"></div>
             <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
-                sesiÃ³n</a>
+                sesión</a>
         </nav>
 
         <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Ãšnete como agencia</a>
-              <a href="login.html" class="btn-auth-login">Iniciar sesiÃ³n</a>
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
             <a href="registro.html" class="btn-auth-register">Registrarse</a>
         </div>
     </header>
@@ -57,9 +57,9 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
             <div>
                 <h1 class="ofertas-title" style="margin: 0 0 6px 0; font-size: 28px; color: #0b1f38;">Ofertas Especiales</h1>
-                <p style="margin: 0; color: #64748b; font-size: 14px;">Aprovecha descuentos exclusivos y cupos limitados en los mejores tours del PerÃº.</p>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Aprovecha descuentos exclusivos y cupos limitados en los mejores tours del Perú.</p>
             </div>
-            <!-- Barra de bÃºsqueda rÃ¡pida -->
+            <!-- Barra de búsqueda rápida -->
             <div style="display: flex; gap: 10px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 14px; align-items: center; width: 100%; max-width: 320px;">
                 <i class="fas fa-search" style="color: #64748b;"></i>
                 <input type="text" id="ofertas-busqueda" placeholder="Buscar oferta..." oninput="filtrarOfertas()"
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <!-- Filtro por CategorÃ­as (Pills) -->
+        <!-- Filtro por Categorías (Pills) -->
         <div style="display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; align-items: center;">
             <button class="filtro-pill active" onclick="filtrarCategoriaOfertas('', this)"
                 style="padding: 8px 18px; border-radius: 20px; border: 1px solid #196f3d; background: #196f3d; color: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
@@ -91,7 +91,7 @@
             </button>
             <button class="filtro-pill" onclick="filtrarCategoriaOfertas('gastronomia', this)"
                 style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                GastronomÃ­a
+                Gastronomía
             </button>
             <button class="filtro-pill" onclick="filtrarCategoriaOfertas('relax', this)"
                 style="padding: 8px 18px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
@@ -104,7 +104,7 @@
         </div>
 
         <div class="ofertas-grid" id="ofertas-grid-container">
-            <!-- Carga dinÃ¡mica de ofertas desde la Base de Datos -->
+            <!-- Carga dinámica de ofertas desde la Base de Datos -->
             <div class="oferta-card-item" data-nombre="Tour Colca" data-categoria="aventura naturaleza" data-destino="arequipa"
                 onclick="location.href='detalle.html?tour=colca&from=ofertas'">
                 <img src="../../img/colca.jpg" alt="Tour Colca" class="oferta-card-img"
@@ -150,15 +150,15 @@
                 </div>
             </div>
 
-            <!-- Oferta 3: CaÃ±Ã³n de Cotahuasi -->
-            <div class="oferta-card-item" data-nombre="CaÃ±Ã³n de Cotahuasi" data-categoria="aventura naturaleza" data-destino="arequipa"
+            <!-- Oferta 3: Cañón de Cotahuasi -->
+            <div class="oferta-card-item" data-nombre="Cañón de Cotahuasi" data-categoria="aventura naturaleza" data-destino="arequipa"
                 onclick="location.href='detalle.html?tour=cotahuasi&from=ofertas'">
-                <img src="../../img/valle.jpg" alt="CaÃ±Ã³n de Cotahuasi" class="oferta-card-img"
+                <img src="../../img/valle.jpg" alt="Cañón de Cotahuasi" class="oferta-card-img"
                     onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 <div class="oferta-card-content">
                     <div class="oferta-card-top">
                         <div>
-                            <h3 class="oferta-card-title">CaÃ±Ã³n de Cotahuasi</h3>
+                            <h3 class="oferta-card-title">Cañón de Cotahuasi</h3>
                             <div class="oferta-card-location">
                                 <span>Arequipa</span> <i class="fa-regular fa-compass"></i>
                             </div>
@@ -173,15 +173,15 @@
                 </div>
             </div>
 
-            <!-- Oferta 4: Selva AmazÃ³nica -->
-            <div class="oferta-card-item" data-nombre="Selva AmazÃ³nica" data-categoria="naturaleza aventura" data-destino="madre de dios"
+            <!-- Oferta 4: Selva Amazónica -->
+            <div class="oferta-card-item" data-nombre="Selva Amazónica" data-categoria="naturaleza aventura" data-destino="madre de dios"
                 onclick="location.href='detalle.html?tour=amazonia&from=ofertas'">
-                <img src="../../img/uros.jpg" alt="Selva AmazÃ³nica" class="oferta-card-img"
+                <img src="../../img/uros.jpg" alt="Selva Amazónica" class="oferta-card-img"
                     onerror="this.onerror=null; this.src='../../img/fondo1.png'">
                 <div class="oferta-card-content">
                     <div class="oferta-card-top">
                         <div>
-                            <h3 class="oferta-card-title">Selva AmazÃ³nica</h3>
+                            <h3 class="oferta-card-title">Selva Amazónica</h3>
                             <div class="oferta-card-location">
                                 <span>Puerto Maldonado</span>
                             </div>
@@ -204,7 +204,7 @@
                 <div class="oferta-card-content">
                     <div class="oferta-card-top">
                         <div>
-                            <h3 class="oferta-card-title">Machu Picchu ClÃ¡sico</h3>
+                            <h3 class="oferta-card-title">Machu Picchu Clásico</h3>
                             <div class="oferta-card-location">
                                 <span>Cusco</span> <i class="fa-regular fa-compass"></i>
                             </div>
@@ -247,7 +247,7 @@
         <div id="no-ofertas-resultados" style="display: none; text-align: center; padding: 50px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
             <i class="fas fa-tags" style="font-size: 36px; color: #cbd5e1; margin-bottom: 12px;"></i>
             <h3 style="color: #0b1f38; font-size: 17px; margin: 0 0 6px 0;">No se encontraron ofertas</h3>
-            <p style="color: #64748b; font-size: 13.5px; margin: 0 0 16px 0;">No hay ofertas activas para esta categorÃ­a o tÃ©rmino de bÃºsqueda.</p>
+            <p style="color: #64748b; font-size: 13.5px; margin: 0 0 16px 0;">No hay ofertas activas para esta categoría o término de búsqueda.</p>
             <button onclick="limpiarFiltrosOfertas()" style="background: #196f3d; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; cursor: pointer;">
                 Restablecer ofertas
             </button>
@@ -262,7 +262,7 @@
                     <img src="../../img/logo.png" alt="Travelink Logo">
                 </div>
                 <p style="margin-top: 15px; font-size: 14px; color: #a0aec0;">Plataforma digital de turismo y
-                    Experiencias<br>en todo el PerÃº.</p>
+                    Experiencias<br>en todo el Perú.</p>
             </div>
             <div>
                 <h4>Enlaces</h4>
@@ -278,13 +278,13 @@
                 <h4>Ayuda</h4>
                 <ul>
                     <li><a href="#">Preguntas frecuentes</a></li>
-                    <li><a href="#">TÃ©rminos y condiciones</a></li>
-                    <li><a href="#">PolÃ­tica de privacidÃ­ad</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidíad</a></li>
                     <li><a href="#">Contacto</a></li>
                 </ul>
             </div>
             <div>
-                <h4>SÃ­guenos</h4>
+                <h4>Síguenos</h4>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -331,10 +331,10 @@
             }
 
             const fallbackOfertas = [
-                { idPaquete: 1, nombre: 'Tour CaÃ±Ã³n del Colca', destino: 'Arequipa', categoria: 'aventura naturaleza', precio: 160.00, cuposDisponibles: 7, cupoTotal: 20, imagen: '../../img/colca.jpg' },
+                { idPaquete: 1, nombre: 'Tour Cañón del Colca', destino: 'Arequipa', categoria: 'aventura naturaleza', precio: 160.00, cuposDisponibles: 7, cupoTotal: 20, imagen: '../../img/colca.jpg' },
                 { idPaquete: 2, nombre: 'Laguna Humantay Expreso', destino: 'Cusco', categoria: 'naturaleza aventura', precio: 150.00, cuposDisponibles: 5, cupoTotal: 25, imagen: '../../img/huaraz.jpg' },
                 { idPaquete: 3, nombre: 'Oasis Huacachina Sandboarding', destino: 'Ica', categoria: 'aventura relax', precio: 99.00, cuposDisponibles: 4, cupoTotal: 30, imagen: '../../img/ica.jpg' },
-                { idPaquete: 4, nombre: 'AmazonÃ­a Profunda Tambopata', destino: 'Madre de Dios', categoria: 'naturaleza aventura', precio: 1450.00, cuposDisponibles: 10, cupoTotal: 15, imagen: '../../img/selva.jpg' }
+                { idPaquete: 4, nombre: 'Amazonía Profunda Tambopata', destino: 'Madre de Dios', categoria: 'naturaleza aventura', precio: 1450.00, cuposDisponibles: 10, cupoTotal: 15, imagen: '../../img/selva.jpg' }
             ];
             renderizarOfertasCards(fallbackOfertas);
         }
@@ -347,7 +347,7 @@
                 const img = p.imagen || p.imagenUrl || '../../img/lima.jpg';
                 const cupos = p.cuposDisponibles !== undefined ? p.cuposDisponibles : (p.cupoDisponible !== undefined ? p.cupoDisponible : 7);
                 const total = p.cupoTotal || 30;
-                const destino = p.destino || p.ubicacion || 'PerÃº';
+                const destino = p.destino || p.ubicacion || 'Perú';
                 const cat = p.categoria || 'naturaleza aventura';
 
                 return 

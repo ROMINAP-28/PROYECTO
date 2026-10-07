@@ -1,2 +1,35 @@
-# Project exclude paths
-/out/
+# Compiled Java Bytecode
+*.class
+
+# Build Output Directories
+target/
+bin/
+out/
+backend/springboot/target/
+backend/springboot/bin/
+backend/springboot/sources.txt
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code (except settings if shared, but keep user local configs ignored)
+.vscode/launch.json
+.vscode/*.log
+
+# Logs & Temp files
+*.log
+*.tmp
+hs_err_pid*
+replay_pid*
+
+# OS specific files
+.DS_Store
+Thumbs.db

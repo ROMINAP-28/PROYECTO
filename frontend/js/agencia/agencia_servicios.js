@@ -44,6 +44,7 @@
     const duracionValorInput = document.getElementById("duracionValor");
     const duracionUnidadSelect = document.getElementById("duracionUnidad");
     const estadoServicioSelect = document.getElementById("estadoServicio");
+    const ubicacionServicioInput = document.getElementById("ubicacionServicio");
     const precioAdultoInput = document.getElementById("precioAdulto");
     const precioNinoInput = document.getElementById("precioNino");
     const precioBebeInput = document.getElementById("precioBebe");
@@ -503,6 +504,7 @@
         tipoServicioSelect.value = s.tipoServicio || s.categoria;
         destinoServicioSelect.value = s.idDestino;
         estadoServicioSelect.value = s.estado;
+        if (ubicacionServicioInput) ubicacionServicioInput.value = s.ubicacion || "";
 
         // Parsear duración (e.g. "6 horas", "1 día")
         const durParts = (s.duracion || "").split(" ");
@@ -724,6 +726,7 @@
             idDestino: destinoServicioSelect.value,
             duracion: duracion,
             estado: estadoServicioSelect.value,
+            ubicacion: ubicacionServicioInput ? ubicacionServicioInput.value.trim() : "",
             precioAdulto: precioAdultoInput.value,
             precioNino: precioNinoInput.value || "0",
             precioBebe: precioBebeInput.value || "0",

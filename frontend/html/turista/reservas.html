@@ -56,81 +56,8 @@
     <main class="reservas-container">
         <h1 class="reservas-title">Mis Reservas</h1>
 
-        <!-- Sub-tabs -->
-        <div class="reservas-tabs">
-            <span class="tab-item active" id="tab-historial">Historial</span>
-            <span class="tab-item" id="tab-activas">Reservas activas</span>
-        </div>
 
-        <!-- Main Reserva Card (Image 3 layout) -->
-        <div class="reserva-main-card">
-            <!-- Top Section Grid -->
-            <div class="reserva-top-grid">
-                <!-- Left Details -->
-                <div class="reserva-info-left">
-                    <img src="../../img/valle.jpg" alt="Machu Picchu Clásico" class="reserva-thumb"
-                        onerror="this.onerror=null; this.src='../../img/fondo1.png';">
-                    <div class="reserva-details">
-                        <div class="reserva-header-row">
-                            <h2 class="reserva-tour-title">Machu Picchu Clásico</h2>
-                            <span class="status-badge-finalizada">Finalizada</span>
-                        </div>
-                        <p class="reserva-agency">Andes Tours</p>
-                        <p class="reserva-meta-text">Fecha de registro: 10 oct. 2025</p>
-                        <p class="reserva-meta-text">Ubicación: Cusco</p>
-                        <p class="reserva-meta-text">Fecha: 12 oct. 2025 - 15 oct. 2025</p>
-                        <p class="reserva-meta-text">Total personas: 3</p>
-                    </div>
-                </div>
 
-                <!-- Right Box -->
-                <div class="reserva-right-box">
-                    <p>Titular: <strong>Ana Garcia</strong></p>
-                    <p>Método de pago: <strong>Efectivo</strong></p>
-                    <p class="total-price">Total: S/ 1,050.00</p>
-                </div>
-            </div>
-
-            <!-- Actions Row -->
-            <div class="reserva-actions-row">
-                <button class="btn-action-outline" onclick="verDetallesReserva('TRK-001')">Ver detalles</button>
-                <button class="btn-action-solid-green"
-                    onclick="abrirModalCalificar('Machu Picchu Clásico', 'Cusco', 'Andes Tours', '../../img/valle.jpg')">Calificar</button>
-                <button class="btn-action-outline" onclick="descargarVoucherPDF('TRK-001')">Exportar PDF</button>
-                <button class="btn-action-danger" onclick="cancelarReservaConfirm('TRK-001')">Cancelar reserva</button>
-            </div>
-
-            <!-- Passengers Section -->
-            <h3 class="passengers-section-title">Detalle de pasajeros</h3>
-            <div class="passengers-table-container">
-                <table class="passengers-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>DNI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Ana Garcia</td>
-                            <td>12345678</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Carlos Garcia</td>
-                            <td>87654321</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Lucia Garcia</td>
-                            <td>11223344</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
         <!-- Additional dynamic container for extra user reservations -->
         <div class="lista-reservas"></div>
@@ -230,9 +157,9 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../js/turista/navigation.js"></script>
-    <script src="../../js/agencia/user_session.js"></script>
-    <script src="../../js/reservas.js"></script>
+    <script src="../../js/turista/navigation.js?v=2"></script>
+    <script src="../../js/agencia/user_session.js?v=2"></script>
+    <script src="../../js/agencia/reservas.js?v=2"></script>
 </body>
 
 </html>

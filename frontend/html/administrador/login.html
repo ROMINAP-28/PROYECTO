@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -111,7 +111,7 @@
                         body: JSON.stringify({ usuarioCorreo: usuario, password: password })
                     });
                 } catch (fetchErr) {
-                    // Si falló la primera URL, intentar explícitamente a http://localhost:8080/api/login
+                    // Si falló la primera URL, intentar explí­citamente a http://localhost:8080/api/login
                     response = await fetch('http://localhost:8080/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

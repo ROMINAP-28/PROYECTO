@@ -72,6 +72,17 @@
                     dynamicLink.innerHTML = '<i class="fa-solid fa-users hide-on-desktop"></i> Nosotros';
                 }
             }
+
+            // Set active state for nav links based on current URL
+            const currentPath = window.location.pathname;
+            links.forEach(a => {
+                if (a.href && currentPath.includes(a.getAttribute('href').replace('../', ''))) {
+                    a.style.color = '#196f3d';
+                    a.style.fontWeight = 'bold';
+                    a.style.borderBottom = '2px solid #196f3d';
+                    a.style.paddingBottom = '4px';
+                }
+            });
         });
 
         // Remove shopping cart icon entirely from all views

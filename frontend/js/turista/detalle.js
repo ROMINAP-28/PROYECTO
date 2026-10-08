@@ -1,4 +1,4 @@
-function toggleHeart(element) {
+﻿function toggleHeart(element) {
     if (element.classList.contains('far')) {
         element.classList.remove('far');
         element.classList.add('fas');

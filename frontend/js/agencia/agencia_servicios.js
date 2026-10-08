@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Travelink - Módulo Servicios Turísticos (Fase 3)
  */
 
@@ -983,7 +983,7 @@
             <tr>
                 <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#64748b;">${i + 1}</td>
                 <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; font-weight:600; color:#0f172a;">${t.nombre}</td>
-                <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#475569; font-size:12px;">${t.descripcion || '—'}</td>
+                <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#475569; font-size:12px;">${t.descripcion || 'â€”'}</td>
                 <td style="padding:10px 12px; border-bottom:1px solid #f1f5f9;">
                     <span style="background:#eff6ff; color:#2563eb; font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px;">${t.estado}</span>
                 </td>

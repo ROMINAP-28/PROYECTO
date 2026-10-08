@@ -1,4 +1,4 @@
-/**
+?/**
  * Travelink - Módulo Pagos y Liquidaciones Agencia
  */
 (function () {

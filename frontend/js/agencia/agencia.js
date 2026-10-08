@@ -1,4 +1,4 @@
-const datosAgencia = JSON.parse(localStorage.getItem("datosAgencia")) || {};
+﻿const datosAgencia = JSON.parse(localStorage.getItem("datosAgencia")) || {};
 
 function guardarDatos(datos) {
     Object.assign(datosAgencia, datos);
@@ -1694,7 +1694,7 @@ if (tablaReservas) {
 
     // Formatear fechas recibidas desde MySQL
     function formatoFecha(fecha) {
-        if (!fecha) return "—";
+        if (!fecha) return "â€”";
 
         const fechaTexto = String(fecha).replace(" ", "T");
         const fechaObjeto = new Date(fechaTexto);
@@ -1793,12 +1793,12 @@ if (tablaReservas) {
         tablaPagos.innerHTML = filtrados.map(p => `
             <tr>
                 <td>${escaparHTML(p.idPago)}</td>
-                <td>${escaparHTML(p.numeroOperacion || "—")}</td>
+                <td>${escaparHTML(p.numeroOperacion || "â€”")}</td>
                 <td>
                     <strong>${escaparHTML(p.codigoReserva || ("Reserva #" + p.idReserva))}</strong>
                 </td>
                 <td>${formatoFecha(p.fechaPago)}</td>
-                <td>${escaparHTML(p.metodoPago || "—")}</td>
+                <td>${escaparHTML(p.metodoPago || "â€”")}</td>
                 <td><strong style="color:#0f172a;">${formatoSoles(p.monto)}</strong></td>
                 <td>${etiquetaEstado(p.estado)}</td>
                 <td style="white-space:nowrap;">
@@ -1828,7 +1828,7 @@ if (tablaReservas) {
         if (!p) return;
         const setTxt = (id, val) => {
             const el = document.getElementById(id);
-            if (el) el.textContent = val ?? "—";
+            if (el) el.textContent = val ?? "â€”";
         };
         setTxt("detNroOperacion", p.numeroOperacion || ("OP-" + p.idPago));
         setTxt("detCodigoReserva", p.codigoReserva || ("RES-" + p.idReserva));
@@ -2080,7 +2080,7 @@ function verDetallesReserva(codigo, cliente, servicio, fecha, personas, total, e
     const modal = document.getElementById("modalDetalleReserva"); 
     const content = document.getElementById("contenidoDetalleReserva"); 
     if(modal && content) { 
-        content.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Código de Reserva:</strong> <span>${codigo}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Cliente Principal:</strong> <span>${cliente}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Servicio / Tour:</strong> <span>${servicio}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Fecha de Salida:</strong> <span>${fecha}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>N° de Personas:</strong> <span>${personas}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Estado:</strong> <span class="status-badge ${estado.toLowerCase()}">${estado}</span></div><hr style="border:none; border-top:1px solid #e2e8f0; margin:15px 0;"><div style="display:flex; justify-content:space-between; font-size:16px;"><strong>Total Pagado:</strong> <strong style="color:#2563eb;">S/ ${total}</strong></div>`; 
+        content.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Código de Reserva:</strong> <span>${codigo}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Cliente Principal:</strong> <span>${cliente}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Servicio / Tour:</strong> <span>${servicio}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Fecha de Salida:</strong> <span>${fecha}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>NÂ° de Personas:</strong> <span>${personas}</span></div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Estado:</strong> <span class="status-badge ${estado.toLowerCase()}">${estado}</span></div><hr style="border:none; border-top:1px solid #e2e8f0; margin:15px 0;"><div style="display:flex; justify-content:space-between; font-size:16px;"><strong>Total Pagado:</strong> <strong style="color:#2563eb;">S/ ${total}</strong></div>`; 
         modal.style.display = "flex"; 
     } 
 }

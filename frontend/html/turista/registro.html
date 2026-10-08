@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -28,7 +28,7 @@
         <div class="auth-card-wrap">
             <div class="auth-card">
                 <h2 class="auth-card-title">Crear cuenta</h2>
-                <p class="auth-card-subtitle">Únete a nuestra comunidad y empieza a vivir nuevas experiencias</p>
+                <p class="auth-card-subtitle">íšnete a nuestra comunidad y empieza a vivir nuevas experiencias</p>
 
                 <form id="formRegistro" class="auth-form">
                     <div class="form-group">
@@ -38,8 +38,8 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="NroDocumento">DNI (8 dígitos)</label>
-                            <input type="text" id="NroDocumento" placeholder="DNI (8 dígitos)" required minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe tener exactamente 8 dígitos numéricos">
+                            <label for="NroDocumento">DNI (8 dí­gitos)</label>
+                            <input type="text" id="NroDocumento" placeholder="DNI (8 dí­gitos)" required minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe tener exactamente 8 dí­gitos numéricos">
                         </div>
                         <div class="form-group">
                             <label for="nombre">Nombre</label>
@@ -64,8 +64,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="telefono">Teléfono de contacto (9 dígitos, inicia con 9)</label>
-                        <input type="tel" id="telefono" placeholder="Teléfono (9 dígitos, inicia con 9)" required maxlength="9" pattern="^9\d{8}$">
+                        <label for="telefono">Teléfono de contacto (9 dí­gitos, inicia con 9)</label>
+                        <input type="tel" id="telefono" placeholder="Teléfono (9 dí­gitos, inicia con 9)" required maxlength="9" pattern="^9\d{8}$">
                     </div>
 
                     <div class="form-group">
@@ -138,8 +138,8 @@
                     if (!/^9\d{8}$/.test(val)) {
                         $(this).removeClass('valido').addClass('novalido');
                         $(this).parent().find('.error-msg').remove();
-                        $(this).after('<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Debe empezar con 9 y tener 9 dígitos</div>');
-                        if (typeof toastr !== 'undefined') toastr.error('Debe empezar con 9 y tener 9 dígitos', 'Teléfono incorrecto');
+                        $(this).after('<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Debe empezar con 9 y tener 9 dí­gitos</div>');
+                        if (typeof toastr !== 'undefined') toastr.error('Debe empezar con 9 y tener 9 dí­gitos', 'Teléfono incorrecto');
                     } else {
                         $(this).removeClass('novalido').addClass('valido');
                         $(this).parent().find('.error-msg').remove();
@@ -161,8 +161,8 @@
             const passwordConfirm = document.getElementById('passwordConfirm').value.trim();
 
             if (!/^[0-9]{8}$/.test(nroDoc)) {
-                if (typeof toastr !== 'undefined') toastr.error('El DNI debe tener exactamente 8 dígitos numéricos.', 'DNI incorrecto');
-                else alert('El DNI debe tener exactamente 8 dígitos numéricos.');
+                if (typeof toastr !== 'undefined') toastr.error('El DNI debe tener exactamente 8 dí­gitos numéricos.', 'DNI incorrecto');
+                else alert('El DNI debe tener exactamente 8 dí­gitos numéricos.');
                 return;
             }
 
@@ -175,9 +175,9 @@
             if (!/^9\d{8}$/.test(telefono)) {
                 $('#telefono').removeClass('valido').addClass('novalido');
                 $('#telefono').parent().find('.error-msg').remove();
-                $('#telefono').after('<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Debe empezar con 9 y tener 9 dígitos</div>');
-                if (typeof toastr !== 'undefined') toastr.error('Debe empezar con 9 y tener 9 dígitos.', 'Teléfono incorrecto');
-                else alert('El teléfono debe iniciar con 9 y tener 9 dígitos.');
+                $('#telefono').after('<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Debe empezar con 9 y tener 9 dí­gitos</div>');
+                if (typeof toastr !== 'undefined') toastr.error('Debe empezar con 9 y tener 9 dí­gitos.', 'Teléfono incorrecto');
+                else alert('El teléfono debe iniciar con 9 y tener 9 dí­gitos.');
                 return;
             }
 

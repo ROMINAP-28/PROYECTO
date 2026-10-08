@@ -1,4 +1,4 @@
-/**
+?/**
  * Travelink - Control de Calidad
  * Sub-tabs: Calificaciones Flaggeadas & Tours en Revisión
  * Filtros compactos, Paginación dinámica (máx 5 registros)

@@ -210,7 +210,7 @@ window.cargarPaquetesDinamicos = async function() {
             
             return `
             <div class="card card-exp"
-                data-destino="${(p.descripcion||'').toLowerCase()}" data-categoria="cultura historia" data-rating="4.8" data-nombre="${(p.nombre||'').toLowerCase()}"
+                data-destino="${(p.destino || p.ubicacion || '').toLowerCase()}" data-categoria="${(p.categoria || p.tipoServicio || 'cultura historia').toLowerCase()}" data-rating="${p.calificacionPromedio || '4.8'}" data-nombre="${(p.nombre||'').toLowerCase()}"
                 onclick="verDetallePaquete(${p.idPaquete || p.id})"
                 style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; cursor:pointer; transition:transform 0.2s; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
                 <div style="position:relative;">
@@ -244,8 +244,8 @@ window.cargarPaquetesDinamicos = async function() {
 };
 
 window.verDetallePaquete = function(idPaquete) {
-    const usuario = localStorage.getItem('usuarioLogueado') || localStorage.getItem('turistaSesion');
-    if (!usuario) {
+    const usuario = localStorage.getItem('usuarioLogueado') || localStorage.getItem('turistaSesion') || localStorage.getItem('travelink_user') || localStorage.getItem('agenciaSesion');
+    if (!usuario || Object.keys(JSON.parse(usuario)).length === 0) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 title: 'Inicio de Sesión Requerido',
@@ -267,7 +267,7 @@ window.verDetallePaquete = function(idPaquete) {
         }
         return;
     }
-    window.location.href = `form_reserva.html?idPaquete=${idPaquete}`;
+    window.location.href = `detalle.html?tour=${idPaquete}&from=experiencias`;
 };
 
 document.addEventListener('DOMContentLoaded', () => {

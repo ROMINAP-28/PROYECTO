@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Travelink Admin Dashboard & Management System
  * Handles 7 core views: Inicio (Dashboard), Usuarios, Tours, Agencias, Reservas, Reportes, Configuración
  */
@@ -650,7 +650,7 @@ function verDetalleAgencia(nombre, contacto, ubicacion) {
                 <p><strong>Contacto Email:</strong> ${contacto}</p>
                 <p><strong>Ubicación:</strong> ${ubicacion}</p>
                 <p><strong>Comisión Actual:</strong> 10%</p>
-                <p><strong>Calificación:</strong> ⭐ 4.8 / 5.0</p>
+                <p><strong>Calificación:</strong> â­ 4.8 / 5.0</p>
                 <p><strong>Estado:</strong> Activo verificado</p>
             </div>
         `,

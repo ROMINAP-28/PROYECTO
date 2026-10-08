@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Travelink - Gestión de Agencias
  * 3 Pestañas: Solicitudes (Aceptar/Rechazar), Activas y Suspendidas
  * Filtros compactos, Paginación dinámica (máx 5 registros)
@@ -141,7 +141,7 @@ function renderizarTabla() {
                 <td>
                     <div class="contact-info-block">
                         <span><strong>${a.representante || 'N/A'}</strong></span>
-                        <small>${a.email || ''} • ${a.telefono || ''}</small>
+                        <small>${a.email || ''} â€¢ ${a.telefono || ''}</small>
                     </div>
                 </td>
                 <td><i class="ti ti-map-pin" style="color:#ef4444; font-size:13px;"></i> ${a.ciudad || 'Perú'}</td>

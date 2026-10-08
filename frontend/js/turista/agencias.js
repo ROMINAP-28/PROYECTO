@@ -1,4 +1,4 @@
-// Travelink - Lógica de Agencias y Filtros
+﻿// Travelink - Lógica de Agencias y Filtros
 
 function normalizarTexto(str) {
     if (!str) return '';

@@ -6,8 +6,8 @@ import java.sql.*;
 public class CheckColumnsDB {
     public static void main(String[] args) {
         try (Connection con = ConexionDB.getConnection()) {
-            String[] tables = {"Agencia", "Calificacion", "Comision", "SolicitudAgencia", "HistorialAgencia", "Tour", "Usuario"};
             DatabaseMetaData meta = con.getMetaData();
+            String[] tables = {"Calificacion", "Comision", "Liquidacion", "Notificacion", "Persona", "Usuario", "Reserva", "Tour", "Agencia"};
             for (String t : tables) {
                 System.out.println("=== TABLA: " + t + " ===");
                 try (ResultSet rs = meta.getColumns(null, null, t, null)) {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Travelink - Módulo Disponibilidad y Cupos
  */
 (function () {
@@ -190,7 +190,7 @@
 
             const horaIni = (d.horaInicio || '').substring(0, 5);
             const horaFn = (d.horaFin || '').substring(0, 5);
-            const horario = horaIni ? (horaFn ? `${horaIni} - ${horaFn}` : `${horaIni} hrs`) : '—';
+            const horario = horaIni ? (horaFn ? `${horaIni} - ${horaFn}` : `${horaIni} hrs`) : 'â€”';
 
             // Botón Cerrar ventas / Reabrir
             const btnCerrarReabrir = estado === "CERRADO"

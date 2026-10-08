@@ -19,7 +19,7 @@ $(document).ready(function() {
             this.value = formatted;
             
             const prev = document.getElementById('previewNum');
-            if (prev) prev.innerText = formatted || '•••• •••• •••• ••••';
+            if (prev) prev.innerText = formatted || 'â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢';
         });
     }
 
@@ -275,15 +275,18 @@ function guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodo, codigo
     const totalP = cantA + cantN;
 
     const fechaInput = document.getElementById('fechaInicio') ? document.getElementById('fechaInicio').value : '2026-10-15';
+    const urlParams = new URLSearchParams(window.location.search);
+    const tituloTour = urlParams.get('titulo') ? decodeURIComponent(urlParams.get('titulo')) : 'Tour Cañón del Colca, full day';
+    const agenciaNombre = urlParams.get('agencia') ? decodeURIComponent(urlParams.get('agencia')) : 'Inti Andes Tours';
 
     const nueva = {
         id: nextNum,
         codigo: codeStr,
-        titulo: 'Tour Cañón del Colca, full day',
+        titulo: tituloTour,
         ubicacion: 'Arequipa, Perú',
         fechas: fechaInput + ' - ' + fechaInput,
         personas: totalP + (totalP === 1 ? ' persona' : ' personas'),
-        agencia: 'Agencia: Inti Andes Tours',
+        agencia: 'Agencia: ' + agenciaNombre,
         estado: 'Confirmada',
         total: totalCosto,
         metodoPago: metodo,
@@ -320,6 +323,15 @@ function confirmarReserva() {
     };
     const metodoNombre = nombresMetodo[metodoPagoActual] || 'Presencial';
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const idPaquete = parseInt(urlParams.get('idPaquete')) || 1;
+    const tituloTour = urlParams.get('titulo') ? decodeURIComponent(urlParams.get('titulo')) : 'Tour Cañón del Colca, full day';
+
+    const inputNombre = document.getElementById('inputNombre');
+    const nombreTitular = inputNombre ? inputNombre.value.split(' ')[0] : (user.nombre || 'Ana');
+    const apellidosTitular = inputNombre && inputNombre.value.split(' ').length > 1 ? inputNombre.value.split(' ').slice(1).join(' ') : (user.apellidos || 'Garcia');
+    const dniTitular = document.getElementById('inputDoc') ? document.getElementById('inputDoc').value : '12345678';
+
     const payload = {
         email: user.email || 'briadayanainfantes@gmail.com',
         idUsuario: user.id || user.idUsuario || 1,
@@ -327,9 +339,14 @@ function confirmarReserva() {
         cantidadPersonas: totalPersonas,
         precioTotal: totalCosto,
         metodoPago: metodoNombre,
-        observaciones: `Tour Cañón del Colca, full day | Adultos: ${cantA}, Niños: ${cantN}, Bebés: ${cantB}`,
+        observaciones: `${tituloTour} | Adultos: ${cantA}, Niños: ${cantN}, Bebés: ${cantB}`,
         codigo: randomCode,
-        titulo: 'Tour Cañón del Colca, full day'
+        titulo: tituloTour,
+        idPaquete: idPaquete,
+        idTourFecha: idPaquete,
+        dni: dniTitular,
+        nombre: nombreTitular,
+        apellidos: apellidosTitular
     };
 
     // Petición a la base de datos MySQL

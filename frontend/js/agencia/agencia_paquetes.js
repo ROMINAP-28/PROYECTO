@@ -1,4 +1,4 @@
-/**
+?/**
  * Travelink - Módulo Paquetes Turísticos
  */
 (function () {

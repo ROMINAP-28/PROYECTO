@@ -1,4 +1,4 @@
-/**
+?/**
  * Travelink - Catálogo General de Tours (Vista Administrador)
  * Quitado botón "+ Nuevo Tour" y edición de precio.
  * Filtros por 24 Departamentos y Estado con única acción Activar/Desactivar.

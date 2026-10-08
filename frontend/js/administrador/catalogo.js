@@ -1,4 +1,4 @@
-/**
+?/**
  * Travelink - Catálogo de Destinos
  * Filtros compactos, Paginación dinámica (máx 5 registros) y Modal de Tours por Destino
  */

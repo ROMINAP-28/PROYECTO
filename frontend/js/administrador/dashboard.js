@@ -1,4 +1,4 @@
-/**
+?/**
  * Dashboard JavaScript
  * Analítica con Gráficos, Detalle de Ventas, 24 Departamentos y Selector de Fechas Personalizado
  */

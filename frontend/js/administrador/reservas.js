@@ -1,4 +1,4 @@
-/**
+?/**
  * Travelink - Gestión de Reservas
  * Sub-tabs, Filtros compactos, Paginación dinámica (máx 5 registros) y Detalle
  */

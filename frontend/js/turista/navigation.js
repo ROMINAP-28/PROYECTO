@@ -1,4 +1,4 @@
-// Travelink Navigation & Mobile Drawer System
+﻿// Travelink Navigation & Mobile Drawer System
 
 document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.menu-toggle');

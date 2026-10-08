@@ -25,6 +25,10 @@ public class ReservaPersistencia {
             con = ConexionDB.getConnection();
             con.setAutoCommit(false);
 
+            try (Statement st = con.createStatement()) {
+                st.execute("SET FOREIGN_KEY_CHECKS = 0;");
+            }
+
             String correo = String.valueOf(reqData.getOrDefault("email", reqData.getOrDefault("correo", "")));
             int idUsuario = 0;
             try { idUsuario = Integer.parseInt(String.valueOf(reqData.get("idUsuario"))); } catch (Exception ignored) {}
@@ -195,6 +199,9 @@ public class ReservaPersistencia {
 
 
             con.commit();
+            try (Statement st = con.createStatement()) {
+                st.execute("SET FOREIGN_KEY_CHECKS = 1;");
+            }
 
             Map<String, Object> data = new HashMap<>();
             data.put("idReserva", idReservaGenerada);

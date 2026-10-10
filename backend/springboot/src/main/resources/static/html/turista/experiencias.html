@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Experiencias</title>
+    <link rel="stylesheet" href="../../css/style.css?v=3">
+    <link rel="stylesheet" href="../../css/turista/experiencias.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css?v=3">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar-placeholder"
+                        style="width:44px; height:44px; border-radius:50%; background:#0b1f38; color:#ffc107; display:flex; justify-content:center; align-items:center; font-size:20px; border:2px solid #ffc107; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html" class="active"><i class="fa-regular fa-compass hide-on-desktop"></i>
+                Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="Experiencias-page" style="background-color: #f8fafc; min-height: 100vh;">
+        <!-- Hero Small -->
+        <section class="hero-small"
+            style="height: 220px; background-image: url('../../img/fondo1.png'); background-size: cover; background-position: center; position: relative;">
+            <div
+                style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to right, rgba(11,31,56,0.8), rgba(11,31,56,0.3));">
+            </div>
+            <div class="hero-content"
+                style="position: relative; z-index: 1; padding: 0 50px; max-width: 1400px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h1
+                    style="color: white; font-size: 36px; margin: 0 0 10px 0; display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-mountain" style="font-size:28px;"></i> Experiencias
+                </h1>
+                <p style="color: #e2e8f0; font-size: 16px; margin: 0; max-width: 500px;">Descubre los mejores tours y
+                    vive experiencias únicas<br>en todo el Perú.</p>
+            </div>
+        </section>
+
+        <!-- Contenido principal -->
+        <div class="layout-grid"
+            style="display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 40px 50px; max-width: 1400px; margin: 0 auto;">
+            <!-- Sidebar Filtros -->
+            <aside class="filtros-sidebar"
+                style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; height: fit-content;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; display:flex; align-items:center; gap:8px; font-size: 16px; color: #0b1f38;">
+                        <i class="fas fa-filter"></i> Filtrar por
+                    </h3>
+                </div>
+
+                <div class="filtro-grupo" style="margin-bottom: 20px;">
+                    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Destino</h4>
+                    <select id="destino" onchange="aplicarFiltrosExperiencias()"
+                        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                        <option value="">Todos los destinos</option>
+                        <option value="amazonas">Amazonas</option>
+                        <option value="ancash">Áncash</option>
+                        <option value="apurimac">Apurímac</option>
+                        <option value="arequipa">Arequipa</option>
+                        <option value="ayacucho">Ayacucho</option>
+                        <option value="cajamarca">Cajamarca</option>
+                        <option value="callao">Callao</option>
+                        <option value="cusco">Cusco</option>
+                        <option value="huancavelica">Huancavelica</option>
+                        <option value="huanuco">Huánuco</option>
+                        <option value="ica">Ica</option>
+                        <option value="junin">Junín</option>
+                        <option value="la-libertad">La Libertad</option>
+                        <option value="lambayeque">Lambayeque</option>
+                        <option value="lima">Lima</option>
+                        <option value="loreto">Loreto</option>
+                        <option value="madre-de-dios">Madre de Dios</option>
+                        <option value="moquegua">Moquegua</option>
+                        <option value="pasco">Pasco</option>
+                        <option value="piura">Piura</option>
+                        <option value="puno">Puno</option>
+                        <option value="san-martin">San Martín</option>
+                        <option value="tacna">Tacna</option>
+                        <option value="tumbes">Tumbes</option>
+                        <option value="ucayali">Ucayali</option>
+                    </select>
+                </div>
+
+                <div class="filtro-grupo" style="margin-bottom: 20px;">
+                    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Categoría</h4>
+                    <select id="categoria" onchange="aplicarFiltrosExperiencias()"
+                        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                        <option value="">Todas las categorías</option>
+                        <option value="cultura">Cultura</option>
+                        <option value="historia">Historia</option>
+                        <option value="naturaleza">Naturaleza</option>
+                        <option value="aventura">Aventura</option>
+                        <option value="gastronomia">Gastronomía</option>
+                        <option value="relax">Relax</option>
+                    </select>
+                </div>
+
+                <div class="filtro-grupo" style="margin-bottom: 20px;">
+                    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Calificaciones</h4>
+                    <select id="calificacion" onchange="aplicarFiltrosExperiencias()"
+                        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                        <option value="">Todas las calificaciones</option>
+                        <option value="5">????? (5 estrellas)</option>
+                        <option value="4">???? (4+ estrellas)</option>
+                        <option value="3">??? (3+ estrellas)</option>
+                        <option value="2">?? (2+ estrellas)</option>
+                        <option value="1">? (1+ estrella)</option>
+                    </select>
+                </div>
+
+                <button id="btn-aplicar-filtros" onclick="aplicarFiltrosExperiencias(event)"
+                    style="width:100%; background:#196f3d; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fas fa-filter"></i> Aplicar filtros
+                </button>
+                <button onclick="limpiarFiltros(event)"
+                    style="width:100%; background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fas fa-sync-alt"></i> Limpiar filtros
+                </button>
+            </aside>
+
+            <!-- Resultados -->
+            <section class="resultados-content">
+                <!-- Barra de búsqueda superior -->
+                <div
+                    style="display:flex; gap:10px; margin-bottom:20px; background:white; padding:10px; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+                    <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 15px;">
+                        <i class="fas fa-search" style="color:#64748b;"></i>
+                        <input type="text" id="busqueda-input" placeholder="¿A dónde quieres ir? Busca por destino, categoría o actividad..."
+                            oninput="aplicarFiltrosExperiencias()"
+                            style="width:100%; border:none; outline:none; font-size:15px; color:#334155;">
+                    </div>
+                    <button onclick="aplicarFiltrosExperiencias(event)"
+                        style="background:#0f3f2d; color:white; border:none; padding:10px 30px; border-radius:8px; font-weight:bold; cursor:pointer;">Buscar</button>
+                </div>
+
+                <!-- Contador de resultados -->
+                <div style="margin-bottom: 16px; font-size: 14px; color: #64748b; font-weight: 600;" id="contador-resultados">
+                    Mostrando experiencias
+                </div>
+
+                <!-- Grid de Tarjetas -->
+                <div id="experiencias-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: #64748b;">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #196f3d;"></i>
+                        <p style="margin-top: 12px; font-weight: 600;">Cargando experiencias disponibles...</p>
+                    </div>
+                </div>
+
+                <!-- Mensaje sin resultados -->
+                <div id="no-resultados" style="display: none; text-align: center; padding: 60px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+                    <i class="fas fa-search" style="font-size: 40px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                    <h3 style="color: #0b1f38; font-size: 18px; margin: 0 0 8px 0;">No se encontraron experiencias</h3>
+                    <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">No hay tours que coincidan con tus filtros actuales. Prueba cambiando los criterios o restablece los filtros.</p>
+                    <button onclick="limpiarFiltros(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                        <i class="fas fa-sync-alt"></i> Limpiar filtros
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo" style="height: 38px;">
+                </div>
+                <p style="margin-top: 8px; font-size: 13px; color: #d1e7dd;">Plataforma digital de turismo y
+                    experiencias en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="experiencias.html">Experiencias</a></li>
+                    <li><a href="ofertas.html">Ofertas</a></li>
+                    <li><a href="nosotros.html">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="../../js/turista/navigation.js?v=3"></script>
+    <script src="../../js/agencia/user_session.js?v=3"></script>
+    <script src="../../js/turista/experiencias.js?v=3"></script>
+</body>
+
+</html>

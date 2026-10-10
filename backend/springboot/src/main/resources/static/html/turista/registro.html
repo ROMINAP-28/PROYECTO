@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Crear cuenta</title>
+    <link rel="stylesheet" href="../../css/turista/auth.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css?v=3">
+    <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css?v=3" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="auth-page">
+    <div class="auth-container-fullscreen">
+        <!-- Left Hero Column -->
+        <div class="auth-hero-col">
+            <div>
+                <a href="/index.html" class="auth-hero-logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo">
+                </a>
+                <h1 class="auth-hero-title">Descubre el mundo<br>con nosotros</h1>
+                <p class="auth-hero-desc">Tours, experiencias y las mejores agencias<br>en un solo lugar.</p>
+            </div>
+        </div>
+
+        <!-- Right Form Card -->
+        <div class="auth-card-wrap">
+            <div class="auth-card">
+                <h2 class="auth-card-title">Crear cuenta</h2>
+                <p class="auth-card-subtitle">íšnete a nuestra comunidad y empieza a vivir nuevas experiencias</p>
+
+                <form id="formRegistro" class="auth-form">
+                    <div class="form-group">
+                        <label for="username">Nombre de usuario</label>
+                        <input type="text" id="username" placeholder="Usuario" required maxlength="25">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="NroDocumento">DNI (8 dí­gitos)</label>
+                            <input type="text" id="NroDocumento" placeholder="DNI (8 dí­gitos)" required minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe tener exactamente 8 dí­gitos numéricos">
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" placeholder="Nombre" required maxlength="30" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="apellidoPaterno">Apellido Paterno</label>
+                            <input type="text" id="apellidoPaterno" placeholder="Apellido paterno" required maxlength="30" style="text-transform: uppercase;">
+                        </div>
+                        <div class="form-group">
+                            <label for="apellidoMaterno">Apellido Materno</label>
+                            <input type="text" id="apellidoMaterno" placeholder="Apellido materno" required maxlength="30" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" placeholder="Correo electrónico" required maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono de contacto (9 dí­gitos, inicia con 9)</label>
+                        <input type="tel" id="telefono" placeholder="Teléfono (9 dí­gitos, inicia con 9)" required maxlength="9" pattern="^9\d{8}$">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="input-password-wrap">
+                            <input type="password" id="password" placeholder="Contraseña" required>
+                            <i class="fa-regular fa-eye eye-icon" onclick="togglePassword(this, 'password')"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="passwordConfirm">Confirmar contraseña</label>
+                        <div class="input-password-wrap">
+                            <input type="password" id="passwordConfirm" placeholder="Confirmar contraseña" required>
+                            <i class="fa-regular fa-eye eye-icon" onclick="togglePassword(this, 'passwordConfirm')"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-green-submit">
+                        <span>Registrarse</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="auth-card-footer">
+                    ¿Ya tienes una cuenta? <a href="login.html">Inicia sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js?v=3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.js?v=3"></script>
+    <script src="../../js/validador.js?v=3"></script>
+
+    <script>
+        function togglePassword(iconEl, inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                iconEl.classList.remove('fa-eye', 'fa-regular');
+                iconEl.classList.add('fa-eye-slash', 'fa-regular');
+            } else {
+                input.type = 'password';
+                iconEl.classList.remove('fa-eye-slash', 'fa-regular');
+                iconEl.classList.add('fa-eye', 'fa-regular');
+            }
+        }
+
+        $(document).ready(function () {
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    positionClass: 'toast-top-right',
+                    timeOut: 3000,
+                    closeButton: true,
+                    progressBar: true
+                };
+            }
+
+            // Conversión a mayúsculas en tiempo real
+            $('#nombre, #apellidoPaterno, #apellidoMaterno').on('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+
+            // Validacion teléfono en tiempo real
+            $('#telefono').on('blur change input', function () {
+                const val = this.value.trim();
+                if (val.length === 9) {
+                    if (!/^9\d{8}$/.test(val)) {
+                        $(this).removeClass('valido').addClass('novalido');
+                        $(this).parent().find('.error-msg').remove();
+                        $(this).after('<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Debe empezar con 9 y tener 9 dí­gitos</div>');
+                        if (typeof toastr !== 'undefined') toastr.error('Debe empezar con 9 y tener 9 dí­gitos', 'Teléfono incorrecto');
+                    } else {
+                        $(this).removeClass('novalido').addClass('valido');
+                        $(this).parent().find('.error-msg').remove();
+                    }
+                }
+            });
+        });
+
+        document.getElementById('formRegistro').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const usuario = document.getElementById('username').value.trim();
+            const nroDoc = document.getElementById('NroDocumento').value.trim();
+            const nombre = document.getElementById('nombre').value.trim().toUpperCase();
+            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim().toUpperCase();
+            const correo = document.getElementById('email').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const passwordConfirm = document.getElementById('passwordConfirm').value.trim();
+
+            if (!/^[0-9]{8}$/.test(nroDoc)) {
+                if (typeof toastr !== 'undefined') toastr.error('El DNI debe tener exactamente 8 dí­gitos numéricos.', 'DNI incorrecto');
+                else alert('El DNI debe tener exactamente 8 dí­gitos numéricos.');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                if (typeof toastr !== 'undefined') toastr.error('Las contraseñas no coinciden.', 'Error de Contraseña');
+                else alert('Las contraseñas no coinciden.');
+                return;
+            }
+
+            if (!/^9\d{8}$/.test(telefono)) {
+                $('#telefono').removeClass('valido').addClass('novalido');
+                $('#telefono').parent().find('.error-msg').remove();
+                $('#telefono').after('<div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Debe empezar con 9 y tener 9 dí­gitos</div>');
+                if (typeof toastr !== 'undefined') toastr.error('Debe empezar con 9 y tener 9 dí­gitos.', 'Teléfono incorrecto');
+                else alert('El teléfono debe iniciar con 9 y tener 9 dí­gitos.');
+                return;
+            }
+
+            const payload = {
+                nombre: nombre,
+                usuario: usuario,
+                nroDocumento: nroDoc,
+                apellidoPaterno: apellidoPaterno,
+                apellidoMaterno: apellidoMaterno,
+                correo: correo,
+                telefono: telefono,
+                password: password
+            };
+
+            const newUserObj = {
+                id: Date.now(),
+                username: usuario,
+                nroDocumento: nroDoc,
+                email: correo,
+                nombre: nombre,
+                apellidos: (apellidoPaterno + ' ' + apellidoMaterno).trim(),
+                telefono: telefono,
+                idRol: 2
+            };
+
+            fetch('http://localhost:8080/api/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const u = data.user || {};
+                        const userSaved = {
+                            id: u.idUsuario || Date.now(),
+                            username: u.nombreUsuario || usuario,
+                            nroDocumento: u.nroDocumento || nroDoc,
+                            email: u.correo || correo,
+                            nombre: u.nombre || nombre,
+                            apellidos: (u.apellidoPaterno || apellidoPaterno) + ' ' + (u.apellidoMaterno || apellidoMaterno),
+                            telefono: u.telefono || telefono,
+                            idRol: 2
+                        };
+                        localStorage.setItem('travelink_current_user', JSON.stringify(userSaved));
+                        if (typeof toastr !== 'undefined') toastr.success('¡Registro exitoso para ' + userSaved.username + '! Redirigiendo...');
+                        setTimeout(() => { window.location.href = '/index.html'; }, 1000);
+                    } else {
+                        if (typeof toastr !== 'undefined') toastr.error(data.message || 'Error al registrar.', 'Error de Registro');
+                        else alert(data.message || 'Error al registrar.');
+                    }
+                })
+                .catch(err => {
+                    localStorage.setItem('travelink_current_user', JSON.stringify(newUserObj));
+                    if (typeof toastr !== 'undefined') toastr.success('¡Registro completado!');
+                    setTimeout(() => { window.location.href = '/index.html'; }, 1000);
+                });
+        });
+    </script>
+</body>
+
+</html>

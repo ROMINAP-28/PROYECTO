@@ -13,7 +13,7 @@ public class CalificacionPersistencia implements CalificacionRepositorio {
 
     @Override
     public Calificacion guardar(Calificacion calificacion) {
-        String sql = "INSERT INTO Calificacion (idUsuario, idAgencia, idReserva, estrellas, comentario) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Calificacion (idUsuario, idAgencia, idReserva, estrellas, comentario, fechaCalificacion) VALUES (?, ?, ?, ?, ?, NOW())";
         try (Connection con = ConexionDB.getConnection()) {
             try (Statement st = con.createStatement()) {
                 st.execute("SET FOREIGN_KEY_CHECKS = 0;");
@@ -38,8 +38,7 @@ public class CalificacionPersistencia implements CalificacionRepositorio {
             return calificacion;
         } catch (SQLException e) {
             e.printStackTrace();
-            calificacion.setIdCalificacion((int)(Math.random() * 1000));
-            return calificacion;
+            return null;
         }
     }
 

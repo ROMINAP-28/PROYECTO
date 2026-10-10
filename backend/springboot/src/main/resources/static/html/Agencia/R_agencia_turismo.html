@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información turí­stica</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css?v=3">
+</head>
+<body>
+<main class="registro-container">
+    <div class="registro-wrapper">
+        <aside class="registro-visual">
+            <div class="registro-visual-content">
+                <div class="registro-logo">Travel<span>ink</span></div>
+                <p class="registro-tagline">Conectando destinos</p>
+            </div>
+            <div class="registro-visual-text">
+                <h2>Cuéntanos sobre tu oferta.</h2>
+                <p>Esta información ayudará a definir la propuesta turí­stica de tu agencia.</p>
+            </div>
+        </aside>
+
+        <section class="registro-form-area">
+            <div class="registro-top">
+                <span class="registro-step">Paso 4 de 6</span>
+                <h1>Información turí­stica</h1>
+                <p>Describe brevemente la actividad turí­stica de tu agencia.</p>
+            </div>
+
+            <form id="formAgenciaTurismo">
+                <div class="form-group">
+                    <label for="descripcionTuristica">Descripción de la oferta turí­stica</label>
+                    <textarea id="descripcionTuristica" name="descripcionTuristica" placeholder="Describe los servicios, experiencias o destinos que ofrece tu agencia."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacionesTuristicas">Información adicional</label>
+                    <textarea id="observacionesTuristicas" name="observacionesTuristicas" placeholder="Agrega información que consideres relevante."></textarea>
+                </div>
+
+                <p id="mensajeTurismo" class="form-message"></p>
+
+                <div class="registro-actions">
+                    <button type="button" class="btn-secondary" onclick="history.back()">Atrás</button>
+                    <button type="submit" class="btn-primary">Continuar</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script src="../../js/agencia/agencia.js?v=3"></script>
+</body>
+</html>

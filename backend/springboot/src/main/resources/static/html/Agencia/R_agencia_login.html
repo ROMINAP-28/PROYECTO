@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Login Agencia</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css?v=3">
+</head>
+<body class="agencia-page">
+
+<main class="login-layout">
+
+    <section class="login-image">
+        <div class="login-overlay">
+            <span class="brand-light">Travelink</span>
+            <h1>Conecta tu agencia con nuevos viajeros.</h1>
+            <p>Administra tus servicios y experiencias desde Travelink.</p>
+        </div>
+    </section>
+
+    <section class="login-card">
+
+        <div class="form-header">
+            <span class="step-label">Portal de agencias</span>
+            <h2>Iniciar sesión</h2>
+            <p>Accede a la administración de tu agencia.</p>
+        </div>
+
+        <form id="formLoginAgencia">
+
+            <div class="form-group">
+                <label for="loginUsuario">Correo o usuario</label>
+                <input
+                        type="text"
+                        id="loginUsuario" placeholder="Correo o nombre de usuario" pattern="^[A-Za-z0-9@\._-]+$" title="Ingresa un usuario o correo válido (sin espacios)" required>
+            </div>
+
+            <div class="form-group">
+                <label for="loginPassword">contraseña</label>
+                <div class="password-field">
+                    <input
+                            type="password"
+                            id="loginPassword"
+                            placeholder="contraseña"
+                            required>
+
+                    <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="loginPassword">
+                        â—‰
+                    </button>
+                </div>
+            </div>
+
+            <p id="mensajeLogin" class="form-message"></p>
+
+            <button type="submit" class="btn-primary">
+                Iniciar sesión
+            </button>
+
+        </form>
+
+        <a href="#" class="forgot-password">
+            ¿Olvidaste tu contraseña?
+        </a>
+
+        <p class="auth-footer">
+            ¿No tienes una cuenta?
+            <a href="R_agencia_registro.html">Regí­strate</a>
+        </p>
+
+    </section>
+
+</main>
+
+<script src="../../js/agencia/agencia.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de agencia</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css?v=3">
+</head>
+<body>
+<main class="registro-container">
+    <div class="registro-wrapper">
+        <aside class="registro-visual">
+            <div class="registro-visual-content">
+                <div class="registro-logo">Travel<span>ink</span></div>
+                <p class="registro-tagline">Conectando destinos</p>
+            </div>
+            <div class="registro-visual-text">
+                <h2>Tu agencia, nuevos horizontes.</h2>
+                <p>Forma parte de Travelink y conecta tus servicios con nuevos viajeros.</p>
+            </div>
+        </aside>
+
+        <section class="registro-form-area">
+            <div class="registro-top">
+                <span class="registro-step">Paso 1 de 6</span>
+                <h1>Crear cuenta</h1>
+                <p>Registra los datos iniciales de tu agencia.</p>
+            </div>
+
+            <form id="formRegistroAgencia">
+                <div class="form-group">
+                    <label for="nombreComercial">Nombre comercial</label>
+                    <input type="text" id="nombreComercial" name="nombreComercial" maxlength="150" pattern="^[A-Za-zí-í¿0-9\s.,-]+$" title="Solo letras, números y signos básicos" style="text-transform: uppercase;" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" id="correo" name="correo" maxlength="150" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Ingrese un correo válido" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreUsuario">Nombre de usuario</label>
+                    <input type="text" id="nombreUsuario" name="nombreUsuario" maxlength="50" pattern="^[A-Za-z0-9_-]+$" title="Solo letras, números, guiones y sin espacios" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contrasena">Contraseña</label>
+                    <div class="password-field">
+                        <input type="password" id="contrasena" name="contrasena" minlength="8" maxlength="255" title="Mí­nimo 8 caracteres" required>
+                        <button type="button" class="password-toggle" data-target="contrasena">â—‰</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmarContrasena">Confirmar contraseña</label>
+                    <div class="password-field">
+                        <input type="password" id="confirmarContrasena" name="confirmarContrasena" minlength="8" maxlength="255" title="Mí­nimo 8 caracteres" required>
+                        <button type="button" class="password-toggle" data-target="confirmarContrasena">â—‰</button>
+                    </div>
+                </div>
+
+                <p id="mensajeRegistro" class="form-message"></p>
+
+                <div class="registro-actions">
+                    <button type="submit" class="btn-primary">Continuar</button>
+                </div>
+            </form>
+
+            <p class="registro-login">¿Ya tienes una cuenta? <a href="R_agencia_login.html">Iniciar sesión</a></p>
+        </section>
+    </div>
+</main>
+
+<script src="../../js/agencia/agencia.js?v=3"></script>
+</body>
+</html>

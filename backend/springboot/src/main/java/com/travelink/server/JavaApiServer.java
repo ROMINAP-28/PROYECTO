@@ -35,7 +35,7 @@ public class JavaApiServer {
     public static final UsuarioControlador usuarioControlador = new UsuarioControlador();
     public static final ReservaRepositorio reservaRepositorio = new ReservaRepositorio();
     public static final CalificacionControlador calificacionControlador = new CalificacionControlador();
-    public static final String FRONTEND_DIR = "frontend";
+    public static final String FRONTEND_DIR = "backend/springboot/src/main/resources/static";
 
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);

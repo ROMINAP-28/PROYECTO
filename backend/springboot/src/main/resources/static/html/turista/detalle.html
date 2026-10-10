@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Travelink - Detalle del Tour</title>
+    <link rel="stylesheet" href="../../css/style.css?v=3">
+    <link rel="stylesheet" href="../../css/turista/experiencias.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body style="background-color: #ffffff;">
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar-placeholder"
+                        style="width:44px; height:44px; border-radius:50%; background:#0b1f38; color:#ffffff; display:flex; justify-content:center; align-items:center; font-size:20px; border:2px solid #196f3d; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html" id="nav-exp-link"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html" id="nav-agencies-link"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html" id="nav-offers-link"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="detail-page-container" style="max-width: 1240px; margin: 0 auto; padding: 25px 40px 60px 40px;">
+        <!-- Botón de regreso dinámico -->
+        <a href="experiencias.html" id="btn-back-dynamic" class="btn-back-link" style="margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; color: #0d5c52; font-weight: 700; text-decoration: none; font-size: 14px;">
+            <i class="fa-solid fa-arrow-left"></i> <span id="btn-back-text">Volver a experiencias</span>
+        </a>
+
+        <!-- Top Section: Gallery + Header Info -->
+        <div class="detail-top-grid">
+            <!-- Left: Gallery -->
+            <div class="detail-gallery-container">
+                <div class="main-detail-img-wrap" style="height: 380px; border-radius: 12px; overflow: hidden; background: #e2e8f0; margin-bottom: 12px;">
+                    <img id="mainDetailImg" src="../../img/cusco.jpg" alt="Tour" style="width:100%; height:100%; object-fit: cover;">
+                </div>
+                <div class="thumbs-row-5" style="display: flex; gap: 10px;">
+                    <div class="thumb-item active-thumb" onclick="changeDetailImg(this, this.querySelector('img').src)">
+                        <img id="thumb1" src="../../img/cusco.jpg" alt="Thumb 1" style="width: 100%; height: 65px; object-fit: cover; border-radius: 8px; cursor: pointer;">
+                    </div>
+                    <div class="thumb-item" onclick="changeDetailImg(this, this.querySelector('img').src)">
+                        <img id="thumb2" src="../../img/7colores.jpg" alt="Thumb 2" style="width: 100%; height: 65px; object-fit: cover; border-radius: 8px; cursor: pointer;">
+                    </div>
+                    <div class="thumb-item" onclick="changeDetailImg(this, this.querySelector('img').src)">
+                        <img id="thumb3" src="../../img/colca.jpg" alt="Thumb 3" style="width: 100%; height: 65px; object-fit: cover; border-radius: 8px; cursor: pointer;">
+                    </div>
+                    <div class="thumb-item" onclick="changeDetailImg(this, this.querySelector('img').src)">
+                        <img id="thumb4" src="../../img/uros.jpg" alt="Thumb 4" style="width: 100%; height: 65px; object-fit: cover; border-radius: 8px; cursor: pointer;">
+                    </div>
+                    <div class="thumb-item" onclick="changeDetailImg(this, this.querySelector('img').src)">
+                        <img id="thumb5" src="../../img/arequipa.jpg" alt="Thumb 5" style="width: 100%; height: 65px; object-fit: cover; border-radius: 8px; cursor: pointer;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Info Header -->
+            <div class="detail-info-header">
+                <div class="title-price-row">
+                    <h1 class="detail-main-title" id="tour-title">Machu Picchu Clásico</h1>
+                    <div class="detail-price-box">
+                        <span class="detail-price-amount" id="tour-price-main">S/ 350.00</span>
+                        <span class="detail-price-unit">por persona</span>
+                    </div>
+                </div>
+
+                <div class="agency-rating-bar" style="margin-bottom: 20px;">
+                    <div class="agency-pill">
+                        <div class="agency-avatar-circle" style="background: #1e293b; color: #f59e0b;">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <span class="agency-pill-name" id="tour-agency-name">Andes Tours</span>
+                    </div>
+                    <div class="rating-inline">
+                        <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
+                        <span class="rating-score" id="tour-rating-val">4.8</span>
+                        <span class="rating-reviews" id="tour-reviews-count">(300 reseñas)</span>
+                    </div>
+                </div>
+
+                <div class="pills-group" style="display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;">
+                    <div class="info-pill-item" id="tour-pill-cat">
+                        <i class="fa-solid fa-landmark"></i> Cultura
+                    </div>
+                    <div class="info-pill-item" id="tour-pill-duration">
+                        <i class="fa-regular fa-clock"></i> 1 dí­a
+                    </div>
+                    <div class="info-pill-item" id="tour-pill-location">
+                        <i class="fa-solid fa-location-dot"></i> Cusco
+                    </div>
+                </div>
+
+                <div class="detail-desc-block">
+                    <h3 style="font-size: 16px; color: #0b1f38; margin-bottom: 8px;">Descripción</h3>
+                    <p id="tour-desc" style="color: #64748b; line-height: 1.6; font-size: 14px;">
+                        Vive la experiencia de conocer una de las 7 maravillas del mundo, Machu Picchu. Un recorrido único por la historia, cultura y naturaleza del Perú.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section: 3 Cards Grid -->
+        <div class="detail-3cards-grid" style="margin-top: 40px;">
+            <!-- Card 1: Incluye -->
+            <div class="detail-spec-card">
+                <h3>Incluye</h3>
+                <ul class="check-features-list">
+                    <li><i class="fa-solid fa-check"></i> Transporte turí­stico ida y vuelta</li>
+                    <li><i class="fa-solid fa-check"></i> Guí­a profesional certificado</li>
+                    <li><i class="fa-solid fa-check"></i> Boleto de ingreso incluido</li>
+                    <li><i class="fa-solid fa-check"></i> Botiquí­n y asistencia médica</li>
+                </ul>
+            </div>
+
+            <!-- Card 2: Precios por persona -->
+            <div class="detail-spec-card">
+                <h3>Precios por persona</h3>
+                <div class="prices-table-rows">
+                    <div class="price-row-item bg-shaded">
+                        <span>Adulto</span>
+                        <strong id="price-adulto">S/ 350.00</strong>
+                    </div>
+                    <div class="price-row-item">
+                        <span>Niño (6 - 12 años)</span>
+                        <strong id="price-nino">S/ 250.00</strong>
+                    </div>
+                    <div class="price-row-item bg-shaded">
+                        <span>Bebé (0 - 5 años)</span>
+                        <strong id="price-bebe">S/ 100.00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Fechas y horarios disponibles -->
+            <div class="detail-spec-card">
+                <h3>Fechas y horarios disponibles</h3>
+                <div class="schedule-radio-group">
+                    <label class="schedule-radio-label">
+                        <input type="radio" name="horario_disponible" checked>
+                        <div class="schedule-box-inner">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span id="schedule-opt-1">Mañana - 06:00 AM</span>
+                        </div>
+                    </label>
+                    <label class="schedule-radio-label">
+                        <input type="radio" name="horario_disponible">
+                        <div class="schedule-box-inner">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span id="schedule-opt-2">Mediodí­a - 11:30 AM</span>
+                        </div>
+                    </label>
+                    <label class="schedule-radio-label">
+                        <input type="radio" name="horario_disponible">
+                        <div class="schedule-box-inner">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span id="schedule-opt-3">Tarde - 02:00 PM</span>
+                        </div>
+                    </label>
+                </div>
+                <button class="btn-reservar-ref" onclick="irAReserva()" style="margin-top: 15px;">Reservar ahora</button>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Calificación y comentarios -->
+        <div class="bottom-reviews-section" style="margin-top: 40px; background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #eef2f6;">
+            <h3 style="margin: 0 0 12px 0; color: #0b1f38;">Calificación y comentarios</h3>
+            <div class="reviews-score-summary" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <i class="fa-solid fa-star" style="color: #f59e0b; font-size: 18px;"></i>
+                <span id="reviews-summary-score" style="font-weight: 700; color: #0f2942; font-size: 18px;">4.8</span>
+                <span id="reviews-summary-count" style="color: #64748b;">(300 comentarios verificados)</span>
+            </div>
+            <div style="color: #475569; font-size: 13.5px; line-height: 1.5;">
+                <p><strong>"Excelente experiencia":</strong> La puntualidad, los paisajes y la atención del guí­a fueron insuperables. ¡100% recomendado!</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" style="background-color: #0b1f38; color: #ffffff; padding: 40px 0 20px 0; margin-top: 60px;">
+        <div class="footer-grid" style="max-width: 1240px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo" style="height: 38px;">
+                </div>
+                <p style="margin-top: 10px; font-size: 13.5px; color: #cbd5e1;">Plataforma digital de turismo y experiencias en todo el Perú.</p>
+            </div>
+            <div>
+                <h4 style="font-size: 15px; margin-bottom: 14px;">Enlaces</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <li><a href="/index.html" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
+                    <li><a href="experiencias.html" style="color: #94a3b8; text-decoration: none;">Experiencias</a></li>
+                    <li><a href="agencias.html" style="color: #94a3b8; text-decoration: none;">Agencias</a></li>
+                    <li><a href="ofertas.html" style="color: #94a3b8; text-decoration: none;">Ofertas</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 15px; margin-bottom: 14px;">Ayuda</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Preguntas frecuentes</a></li>
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Términos y condiciones</a></li>
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 15px; margin-bottom: 14px;">Sí­guenos</h4>
+                <div class="social-links" style="display: flex; gap: 10px;">
+                    <a href="#" style="width: 32px; height: 32px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" style="width: 32px; height: 32px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="width: 32px; height: 32px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 30px; font-size: 13px; color: #94a3b8;">
+            &copy; 2026 Travelink. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script src="../../js/agencia/user_session.js?v=3"></script>
+    <script src="../../js/turista/navigation.js?v=3"></script>
+    <script>
+        let currentTourId = 1;
+        let currentAgencyName = 'ANDES TOURS PERU S.A.C.';
+
+        // Catálogo de Tours y Detalles
+        const TOURS_DATA = {
+            '1': {
+                id: 1,
+                title: 'Machu Picchu Clásico y Valle Sagrado',
+                price: 350,
+                priceAdulto: 350,
+                priceNino: 250,
+                priceBebe: 100,
+                categoria: 'Cultura',
+                catIcon: 'fa-landmark',
+                duracion: '1 dí­a',
+                ubicacion: 'Cusco',
+                agencia: 'ANDES TOURS PERU S.A.C.',
+                rating: 4.8,
+                reviews: '(300 reseñas)',
+                desc: 'Vive la experiencia de conocer una de las 7 maravillas del mundo moderno, Machu Picchu. Un recorrido guiado exclusivo por los templos, andenerí­as y miradores sagrados del santuario inca.',
+                imgMain: '../../img/colca.jpg',
+                thumbs: ['../../img/colca.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
+            },
+            '2': {
+                id: 2,
+                title: 'Montaña de 7 Colores (Vinicunca)',
+                price: 280,
+                priceAdulto: 280,
+                priceNino: 190,
+                priceBebe: 80,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '1 dí­a',
+                ubicacion: 'Cusco',
+                agencia: 'INKA TRAVEL EXPERIENCES S.A.C.',
+                rating: 4.7,
+                reviews: '(198 reseñas)',
+                desc: 'La belleza natural de los Andes en todo su esplendor. Camina hacia el mirador de la cumbre de Vinicunca a más de 5,000 m.s.n.m. y maraví­llate con sus franjas geológicas multicolores.',
+                imgMain: '../../img/7colores.jpg',
+                thumbs: ['../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/huaraz.jpg', '../../img/uros.jpg']
+            },
+            '3': {
+                id: 3,
+                title: 'Laguna Humantay Trek & Aventura',
+                price: 150,
+                priceAdulto: 150,
+                priceNino: 100,
+                priceBebe: 50,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '1 dí­a',
+                ubicacion: 'Cusco',
+                agencia: 'AGENCIA ALEGRIA S.A',
+                rating: 4.9,
+                reviews: '(178 reseñas)',
+                desc: 'Caminata inolvidable hacia una impresionante laguna de aguas color esmeralda y turquesa alimentada por el glaciar del nevado Humantay en la cordillera de Vilcabamba.',
+                imgMain: '../../img/puno.jpg',
+                thumbs: ['../../img/puno.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/uros.jpg']
+            },
+            '4': {
+                id: 4,
+                title: 'Amazoní­a Profunda Tambopata',
+                price: 1450,
+                priceAdulto: 1450,
+                priceNino: 980,
+                priceBebe: 350,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '4 dí­as / 3 noches',
+                ubicacion: 'Madre de Dios',
+                agencia: 'AGENCIA SELVA S.A',
+                rating: 4.8,
+                reviews: '(95 reseñas)',
+                desc: 'Inmersión completa en la selva virgen con observación de fauna silvestre, caminatas nocturnas, canopy, kayak y alojamiento de primera en ecolodge.',
+                imgMain: '../../img/selva.jpg',
+                thumbs: ['../../img/selva.jpg', '../../img/uros.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg']
+            },
+            '5': {
+                id: 5,
+                title: 'Cañón del Colca & Mirador del Cóndor',
+                price: 180,
+                priceAdulto: 180,
+                priceNino: 120,
+                priceBebe: 60,
+                categoria: 'Aventura',
+                catIcon: 'fa-person-hiking',
+                duracion: '2 dí­as / 1 noche',
+                ubicacion: 'Arequipa',
+                agencia: 'TOUR AREQUIPA S.A.S',
+                rating: 4.9,
+                reviews: '(188 reseñas)',
+                desc: 'Descubre uno de los cañones más profundos de la Tierra, visita pueblos andinos tradicionales de Yanque y Chivay, y sé testigo del imponente vuelo del cóndor andino.',
+                imgMain: '../../img/arequipa.jpg',
+                thumbs: ['../../img/arequipa.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/huaraz.jpg']
+            },
+            '6': {
+                id: 6,
+                title: 'Oasis de Huacachina & Tubulares Ica',
+                price: 190,
+                priceAdulto: 190,
+                priceNino: 130,
+                priceBebe: 50,
+                categoria: 'Aventura',
+                catIcon: 'fa-person-hiking',
+                duracion: '1 dí­a',
+                ubicacion: 'Ica',
+                agencia: 'TOUR LIMA S.A',
+                rating: 4.8,
+                reviews: '(210 reseñas)',
+                desc: 'Recorre el desierto en buggies tubulares a toda velocidad y deslí­zate en sandboard por las dunas gigantes que rodean el oasis natural de Huacachina.',
+                imgMain: '../../img/ica.jpg',
+                thumbs: ['../../img/ica.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/arequipa.jpg', '../../img/cusco.jpg']
+            },
+            'machu-picchu': {
+                id: 1,
+                title: 'Machu Picchu Clásico',
+                price: 350,
+                priceAdulto: 350,
+                priceNino: 250,
+                priceBebe: 100,
+                categoria: 'Cultura',
+                catIcon: 'fa-landmark',
+                duracion: '1 dí­a',
+                ubicacion: 'Cusco',
+                agencia: 'ANDES TOURS PERU S.A.C.',
+                rating: 4.8,
+                reviews: '(300 reseñas)',
+                desc: 'Vive la experiencia de conocer una de las 7 maravillas del mundo moderno, Machu Picchu. Un recorrido guiado exclusivo por los templos, andenerí­as y miradores sagrados del santuario inca.',
+                imgMain: '../../img/colca.jpg',
+                thumbs: ['../../img/colca.jpg', '../../img/cusco.jpg', '../../img/7colores.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
+            },
+            '7-colores': {
+                id: 2,
+                title: 'Montaña de 7 Colores',
+                price: 280,
+                priceAdulto: 280,
+                priceNino: 190,
+                priceBebe: 80,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '1 dí­a',
+                ubicacion: 'Cusco',
+                agencia: 'INKA TRAVEL EXPERIENCES S.A.C.',
+                rating: 4.7,
+                reviews: '(198 reseñas)',
+                desc: 'La belleza natural de los Andes en todo su esplendor. Camina hacia el mirador de la cumbre de Vinicunca a más de 5,000 m.s.n.m. y maraví­llate con sus franjas geológicas multicolores.',
+                imgMain: '../../img/7colores.jpg',
+                thumbs: ['../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/huaraz.jpg', '../../img/uros.jpg']
+            },
+            'colca': {
+                id: 5,
+                title: 'Tour Cañón del Colca',
+                price: 180,
+                priceAdulto: 180,
+                priceNino: 120,
+                priceBebe: 60,
+                categoria: 'Aventura',
+                catIcon: 'fa-person-hiking',
+                duracion: '2 dí­as / 1 noche',
+                ubicacion: 'Arequipa',
+                agencia: 'TOUR AREQUIPA S.A.S',
+                rating: 4.9,
+                reviews: '(188 reseñas)',
+                desc: 'Descubre uno de los cañones más profundos de la Tierra, visita pueblos andinos tradicionales de Yanque y Chivay, y sé testigo del imponente vuelo del cóndor andino.',
+                imgMain: '../../img/arequipa.jpg',
+                thumbs: ['../../img/arequipa.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/huaraz.jpg']
+            },
+            'humantay': {
+                id: 3,
+                title: 'Trek Laguna Humantay',
+                price: 150,
+                priceAdulto: 150,
+                priceNino: 100,
+                priceBebe: 50,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '1 dí­a',
+                ubicacion: 'Cusco',
+                agencia: 'AGENCIA ALEGRIA S.A',
+                rating: 4.9,
+                reviews: '(178 reseñas)',
+                desc: 'Caminata inolvidable hacia una impresionante laguna de aguas color esmeralda y turquesa alimentada por el glaciar del nevado Humantay en la cordillera de Vilcabamba.',
+                imgMain: '../../img/puno.jpg',
+                thumbs: ['../../img/puno.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg', '../../img/colca.jpg', '../../img/uros.jpg']
+            },
+            'amazonia': {
+                id: 4,
+                title: 'Aventura en la Amazoní­a',
+                price: 1450,
+                priceAdulto: 1450,
+                priceNino: 980,
+                priceBebe: 350,
+                categoria: 'Naturaleza',
+                catIcon: 'fa-leaf',
+                duracion: '4 dí­as / 3 noches',
+                ubicacion: 'Madre de Dios',
+                agencia: 'AGENCIA SELVA S.A',
+                rating: 4.8,
+                reviews: '(95 reseñas)',
+                desc: 'Inmersión completa en la selva virgen con observación de fauna silvestre, caminatas nocturnas, canopy, kayak y alojamiento de primera en ecolodge.',
+                imgMain: '../../img/selva.jpg',
+                thumbs: ['../../img/selva.jpg', '../../img/uros.jpg', '../../img/colca.jpg', '../../img/7colores.jpg', '../../img/cusco.jpg']
+            },
+            'huacachina': {
+                id: 6,
+                title: 'Oasis de Huacachina & Sandboarding',
+                price: 190,
+                priceAdulto: 190,
+                priceNino: 130,
+                priceBebe: 50,
+                categoria: 'Aventura',
+                catIcon: 'fa-person-hiking',
+                duracion: '1 dí­a',
+                ubicacion: 'Ica',
+                agencia: 'TOUR LIMA S.A',
+                rating: 4.8,
+                reviews: '(210 reseñas)',
+                desc: 'Recorre el desierto en buggies tubulares a toda velocidad y deslí­zate en sandboard por las dunas gigantes que rodean el oasis natural de Huacachina.',
+                imgMain: '../../img/ica.jpg',
+                thumbs: ['../../img/ica.jpg', '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/arequipa.jpg', '../../img/cusco.jpg']
+            }
+        };
+
+        function changeDetailImg(thumbElem, newSrc) {
+            const mainImg = document.getElementById('mainDetailImg');
+            if (mainImg && newSrc) {
+                mainImg.src = newSrc;
+            }
+            document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active-thumb'));
+            if (thumbElem) {
+                thumbElem.classList.add('active-thumb');
+            }
+        }
+
+        function irAReserva() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramId = urlParams.get('idPaquete') || urlParams.get('tour') || '1';
+            const agenciaParam = urlParams.get('agencia') || '';
+            const tituloEl = document.getElementById('tour-title');
+            const titulo = tituloEl ? tituloEl.innerText : 'Tour reservado';
+            window.location.href = `form_reserva.html?idPaquete=${paramId}&agencia=${encodeURIComponent(agenciaParam)}&titulo=${encodeURIComponent(titulo)}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get('from') || 'experiencias';
+            const paramId = urlParams.get('idPaquete') || urlParams.get('tour') || '1';
+            const tourKey = String(paramId).toLowerCase();
+            const agenciaParam = urlParams.get('agencia');
+
+            const btnBack = document.getElementById('btn-back-dynamic');
+            const btnBackText = document.getElementById('btn-back-text');
+
+            if (from === 'agencias') {
+                btnBackText.textContent = 'Volver a agencias';
+                if (agenciaParam) {
+                    btnBack.href = `detalle-agencia.html?agencia=${encodeURIComponent(agenciaParam)}`;
+                } else {
+                    btnBack.href = 'agencias.html';
+                }
+                document.getElementById('nav-agencies-link')?.classList.add('active');
+                document.getElementById('nav-exp-link')?.classList.remove('active');
+            } else if (from === 'ofertas') {
+                btnBackText.textContent = 'Volver a ofertas';
+                btnBack.href = 'ofertas.html';
+                document.getElementById('nav-offers-link')?.classList.add('active');
+                document.getElementById('nav-exp-link')?.classList.remove('active');
+            } else {
+                btnBackText.textContent = 'Volver a experiencias';
+                btnBack.href = 'experiencias.html';
+                document.getElementById('nav-exp-link')?.classList.add('active');
+            }
+
+            let tour = TOURS_DATA[tourKey] || TOURS_DATA['1'] || TOURS_DATA['machu-picchu'];
+
+            // Intentar fetch dinámico desde el servidor para sincronizar con BD
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1200);
+                const resp = await fetch(`http://localhost:8080/api/agencia/paquetes?idAgencia=0`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+                if (data && data.status === 'success' && Array.isArray(data.paquetes)) {
+                    const matchPaq = data.paquetes.find(p => String(p.idPaquete || p.id) === String(paramId) || (p.nombre && p.nombre.toLowerCase().includes(tourKey)));
+                    if (matchPaq) {
+                        const pVal = parseFloat(matchPaq.precio || tour.price);
+                        tour = {
+                            id: matchPaq.idPaquete || matchPaq.id,
+                            title: matchPaq.nombre,
+                            price: pVal,
+                            priceAdulto: pVal,
+                            priceNino: Math.round(pVal * 0.7),
+                            priceBebe: Math.round(pVal * 0.3),
+                            categoria: 'Cultura / Aventura',
+                            catIcon: 'fa-landmark',
+                            duracion: matchPaq.duracion || '1 dí­a',
+                            ubicacion: matchPaq.ubicacion || 'Perú',
+                            agencia: matchPaq.agencia || agenciaParam || 'Agencia Autorizada',
+                            rating: 4.8,
+                            reviews: '(Reseñas en vivo)',
+                            desc: matchPaq.descripcion || tour.desc,
+                            imgMain: matchPaq.imagen || matchPaq.imagenUrl || tour.imgMain,
+                            thumbs: [matchPaq.imagen || tour.imgMain, '../../img/7colores.jpg', '../../img/colca.jpg', '../../img/uros.jpg', '../../img/arequipa.jpg']
+                        };
+                    }
+                }
+            } catch (e) {
+                console.warn('Cargando detalle sincronizado desde el catálogo local:', e);
+            }
+
+            currentTourId = tour.id || 1;
+            currentAgencyName = agenciaParam || tour.agencia || 'Agencia Autorizada';
+
+            document.getElementById('page-title').textContent = `Travelink - ${tour.title}`;
+            document.getElementById('tour-title').textContent = tour.title;
+            document.getElementById('tour-price-main').textContent = `S/ ${tour.price.toFixed(2)}`;
+            document.getElementById('tour-agency-name').textContent = currentAgencyName;
+            document.getElementById('tour-rating-val').textContent = tour.rating;
+            document.getElementById('tour-reviews-count').textContent = tour.reviews;
+            document.getElementById('tour-desc').textContent = tour.desc;
+
+            document.getElementById('tour-pill-cat').innerHTML = `<i class="fa-solid ${tour.catIcon}"></i> ${tour.categoria}`;
+            document.getElementById('tour-pill-duration').innerHTML = `<i class="fa-regular fa-clock"></i> ${tour.duracion}`;
+            document.getElementById('tour-pill-location').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${tour.ubicacion}`;
+
+            document.getElementById('price-adulto').textContent = `S/ ${tour.priceAdulto.toFixed(2)}`;
+            document.getElementById('price-nino').textContent = `S/ ${tour.priceNino.toFixed(2)}`;
+            document.getElementById('price-bebe').textContent = `S/ ${tour.priceBebe.toFixed(2)}`;
+
+            document.getElementById('reviews-summary-score').textContent = tour.rating;
+            document.getElementById('reviews-summary-count').textContent = `${tour.reviews} verificados`;
+
+            document.getElementById('mainDetailImg').src = tour.imgMain;
+            if (tour.thumbs && tour.thumbs.length >= 5) {
+                for (let i = 0; i < 5; i++) {
+                    const thumbEl = document.getElementById(`thumb${i+1}`);
+                    if (thumbEl && tour.thumbs[i]) {
+                        thumbEl.src = tour.thumbs[i];
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

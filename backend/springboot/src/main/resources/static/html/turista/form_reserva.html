@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Formulario de Reserva</title>
+
+    <link rel="stylesheet" href="../../css/style.css?v=3">
+    <link rel="stylesheet" href="../../css/turista/form_reserva.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css?v=3" rel="stylesheet">
+</head>
+
+<body style="background-color: #f8fafc;">
+    <!-- NAVBAR LIMPIA HOGAR -->
+    <header class="navbar navbar-home-clean" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;" onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar-placeholder" style="width:44px; height:44px; border-radius:50%; background:#0b1f38; color:#ffffff; display:flex; justify-content:center; align-items:center; font-size:20px; border:2px solid #196f3d; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar meníƒÂº"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html" class="active"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar sesiíƒÂ³n</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">íƒÅ¡nete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesiíƒÂ³n</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <!-- HERO BACKGROUND -->
+    <div class="checkout-hero-bg">
+        <img src="../../img/fondo1.png" alt="Fondo Paisaje" class="hero-bg-img">
+        <div class="hero-bg-overlay"></div>
+    </div>
+
+    <!-- MAIN FLOATING WRAPPER -->
+    <main class="checkout-floating-wrapper">
+        <div class="checkout-card">
+
+            <!-- STEPPER PROGRESS BAR -->
+            <div class="stepper-bar-container">
+                <div class="stepper-track">
+                    <div class="stepper-track-progress" id="stepperTrackProgress" style="width: 0%;"></div>
+                </div>
+                <div class="stepper-steps">
+                    <div class="step-node active" data-step="1" onclick="mostrarPaso(1)">
+                        <div class="step-node-circle">
+                            <span class="step-num">1</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-node-label">Tours</span>
+                    </div>
+                    <div class="step-node" data-step="2" onclick="mostrarPaso(2)">
+                        <div class="step-node-circle">
+                            <span class="step-num">2</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-node-label">Datos</span>
+                    </div>
+                    <div class="step-node" data-step="3" onclick="mostrarPaso(3)">
+                        <div class="step-node-circle">
+                            <span class="step-num">3</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-node-label">Pago</span>
+                    </div>
+                    <div class="step-node" data-step="4" onclick="mostrarPaso(4)">
+                        <div class="step-node-circle">
+                            <span class="step-num">4</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-node-label">Confirmar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 1: Formulario de Reserva - 4.1 Tours -->
+            <section class="paso active" id="paso1">
+                <h2 class="paso-title-ref">Formulario de Reserva - 4.1 Tours</h2>
+
+                <div class="tour-table-card">
+                    <div class="tour-table-header">
+                        <div>Tour / Agencia</div>
+                        <div>Fecha / Horario</div>
+                        <div>Personas</div>
+                        <div>Precio</div>
+                    </div>
+                    <div class="tour-table-body">
+                        <div class="tour-info-cell">
+                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clíƒ¡sico" class="tour-cell-img" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
+                            <div class="tour-cell-text">
+                                <h4>Machu Picchu Clíƒ¡sico</h4>
+                                <p>Andes Tours</p>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="cell-val">12 oct. 2025 - 06:00</span>
+                        </div>
+                        <div>
+                            <span class="cell-val" id="cellPersonasResumen">Adultos: 2<br>NiíƒÂ±os: 1<br>BebíƒÂ©s: 0</span>
+                        </div>
+                        <div class="price-cell">
+                            <strong class="cell-price" id="precioTotalItem">S/ 1,050.00</strong>
+                            <button type="button" class="btn-eliminar-item" onclick="if(typeof toastr !== 'undefined') toastr.info('Elemento eliminado');">
+                                <i class="fa-regular fa-trash-can"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cantidad de personas -->
+                    <div class="cantidad-personas-box">
+                        <h5>Cantidad de personas</h5>
+                        <div class="counters-row-3">
+                            <div class="counter-input-group">
+                                <label>Adultos</label>
+                                <div class="counter-control-wrap">
+                                    <input type="number" id="cantAdultos" value="2" min="1" readonly>
+                                    <div class="counter-arrows">
+                                        <button type="button" onclick="cambiarCantidad('adultos', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                                        <button type="button" onclick="cambiarCantidad('adultos', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="counter-input-group">
+                                <label>NiíƒÂ±os (6-12)</label>
+                                <div class="counter-control-wrap">
+                                    <input type="number" id="cantNinos" value="1" min="0" readonly>
+                                    <div class="counter-arrows">
+                                        <button type="button" onclick="cambiarCantidad('ninos', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                                        <button type="button" onclick="cambiarCantidad('ninos', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="counter-input-group">
+                                <label>BebíƒÂ©s (0-5)</label>
+                                <div class="counter-control-wrap">
+                                    <input type="number" id="cantBebes" value="0" min="0" readonly>
+                                    <div class="counter-arrows">
+                                        <button type="button" onclick="cambiarCantidad('bebes', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                                        <button type="button" onclick="cambiarCantidad('bebes', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="paso-actions-footer">
+                    <button type="button" class="btn-step-volver" onclick="window.location.href='experiencias.html'">Volver</button>
+                    <button type="button" class="btn-step-siguiente" onclick="mostrarPaso(2)">Siguiente</button>
+                </div>
+            </section>
+
+            <!-- PASO 2: Formulario de Reserva - 4.2 Datos -->
+            <section class="paso" id="paso2">
+                <h2 class="paso-title-ref">Formulario de Reserva - 4.2 Datos</h2>
+
+                <div class="passenger-card-box">
+                    <div class="passenger-card-header">
+                        <h3>Pasajero 1 <span class="badge-titular">(Titular)</span></h3>
+                        <button type="button" class="btn-trash-icon" title="Eliminar pasajero"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                    <div class="passenger-grid-3">
+                        <div class="input-field-block">
+                            <label>Nombres</label>
+                            <input type="text" id="inputNombre" value="Jane">
+                        </div>
+                        <div class="input-field-block">
+                            <label>Apellido paterno</label>
+                            <input type="text" id="inputPaterno" value="Garcia">
+                        </div>
+                        <div class="input-field-block">
+                            <label>Apellido materno</label>
+                            <input type="text" id="inputMaterno" value="LíƒÂ³pez">
+                        </div>
+                        <div class="input-field-block">
+                            <label>DNI</label>
+                            <input type="text" id="inputDNI" value="12345678" maxlength="8">
+                        </div>
+                        <div class="input-field-block">
+                            <label>TelíƒÂ©fono</label>
+                            <input type="tel" id="inputTelefono" value="987654321" maxlength="9">
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <button type="button" class="btn-outline-add-person">+ Agregar persona</button>
+
+                <div class="paso-actions-footer">
+                    <button type="button" class="btn-step-volver" onclick="mostrarPaso(1)">Volver</button>
+                    <button type="button" class="btn-step-siguiente" onclick="mostrarPaso(3)">Siguiente</button>
+                </div>
+            </section>
+
+            <!-- PASO 3: Formulario de Reserva - 4.3 Pago (Cíƒâ€œDIGO ORIGINAL CONSERVADO) -->
+            <section class="paso" id="paso3">
+                <h2 class="paso-title-ref">Formulario de Reserva - 4.3 Pago</h2>
+
+                <div class="opciones-pago">
+                    <label class="tarjeta-pago activa" onclick="seleccionarPago(this, 'efectivo')">
+                        <i class="fa-solid fa-money-bill-wave icono-pago"></i>
+                        <h3>Presencial</h3>
+                        <p>Pago en agencia</p>
+                    </label>
+                    <label class="tarjeta-pago" onclick="seleccionarPago(this, 'yape')">
+                        <i class="fa-solid fa-qrcode icono-pago" style="color: #6a1b9a;"></i>
+                        <h3>Yape</h3>
+                        <p>Paga con Yape</p>
+                    </label>
+                    <label class="tarjeta-pago" onclick="seleccionarPago(this, 'plin')">
+                        <i class="fa-solid fa-qrcode icono-pago" style="color: #00e4ff;"></i>
+                        <h3>Plin</h3>
+                        <p>Paga con Plin</p>
+                    </label>
+                    <label class="tarjeta-pago" onclick="seleccionarPago(this, 'tarjeta')">
+                        <i class="fa-solid fa-credit-card icono-pago"></i>
+                        <h3>Tarjeta</h3>
+                        <p>CríƒÂ©dito / DíƒÂ©bito</p>
+                    </label>
+                </div>
+
+                                <div id="pagoEfectivo" class="detalle-pago visible">
+                    <p><i class="fa-solid fa-wallet"></i> Pago presencial. Se requiere un abono del 15% por adelantado vía Yape, Plin o Transferencia para confirmar.</p>
+                    <div class="qr-panel">
+                        <p style="font-size:13px; font-weight:bold; text-align:left; margin-bottom:5px;">Adjuntar comprobante del 15%:</p>
+                        <label for="comprobantePresencial" class="upload-dropzone" id="dropzonePresencial">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            <span>Subir archivo(s)</span>
+                        </label>
+                        <input type="file" id="comprobantePresencial" class="upload-input" accept="image/*,.pdf" onchange="mostrarPreview('Presencial')">
+
+                        <div class="upload-preview" id="previewPresencial" style="display:none;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-file-circle-check" style="color:#196f3d; font-size:18px;"></i>
+                                <span id="filenamePresencial"></span>
+                            </div>
+                            <button class="remove-upload" onclick="removerPreview('Presencial')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pagoYape" class="detalle-pago">
+                    <div class="qr-panel">
+                        <h3 style="margin-top:0;"><i class="fa-solid fa-border-all"></i> Escanea el QR con Yape</h3>
+                        <img src="../../img/qr-yape.png" alt="QR Yape" style="width:180px; height:180px; object-fit:contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x180?text=QR+Yape'">
+                        <p style="font-size:13px; color:#64748b; margin-bottom: 10px;">Una vez realizado el pago, sube tu comprobante.</p>
+
+                        <p style="font-size:13px; font-weight:bold; text-align:left; margin-bottom:5px;">Adjuntar evidencia:</p>
+                        <label for="comprobanteYape" class="upload-dropzone" id="dropzoneYape">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            <span>Subir archivo(s)</span>
+                        </label>
+                        <input type="file" id="comprobanteYape" class="upload-input" accept="image/*,.pdf" onchange="mostrarPreview('Yape')">
+
+                        <div class="upload-preview" id="previewYape">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-file-circle-check" style="color:#196f3d; font-size:18px;"></i>
+                                <span id="filenameYape"></span>
+                            </div>
+                            <button type="button" class="upload-remove" onclick="removerPreview('Yape')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pagoPlin" class="detalle-pago">
+                    <div class="qr-panel">
+                        <h3 style="margin-top:0;"><i class="fa-solid fa-border-all"></i> Escanea el QR con Plin</h3>
+                        <img src="../../img/qr-plin.png" alt="QR Plin" style="width:180px; height:180px; object-fit:contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/180x180?text=QR+Plin'">
+                        <p style="font-size:13px; color:#64748b; margin-bottom: 10px;">Una vez realizado el pago, sube tu comprobante.</p>
+
+                        <p style="font-size:13px; font-weight:bold; text-align:left; margin-bottom:5px;">Adjuntar evidencia:</p>
+                        <label for="comprobantePlin" class="upload-dropzone" id="dropzonePlin">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            <span>Subir archivo(s)</span>
+                        </label>
+                        <input type="file" id="comprobantePlin" class="upload-input" accept="image/*,.pdf" onchange="mostrarPreview('Plin')">
+
+                        <div class="upload-preview" id="previewPlin">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-file-circle-check" style="color:#196f3d; font-size:18px;"></i>
+                                <span id="filenamePlin"></span>
+                            </div>
+                            <button type="button" class="upload-remove" onclick="removerPreview('Plin')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pagoTarjeta" class="detalle-pago">
+                    <h3 style="margin-top:0;"><i class="fa-solid fa-credit-card"></i> Datos de la tarjeta</h3>
+
+                    <!-- Card Preview -->
+                    <div class="card-preview" id="cardPreview">
+                        <div class="card-chip"><i class="fa-solid fa-microchip"></i></div>
+                        <div class="card-number-preview" id="previewNum">í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢ í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢ í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢ í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢í¢â‚¬Â¢</div>
+                        <div class="card-bottom">
+                            <div>
+                                <div class="card-label">Titular</div>
+                                <div class="card-holder-preview" id="previewNombre">NOMBRE APELLIDO</div>
+                            </div>
+                            <div>
+                                <div class="card-label">Vence</div>
+                                <div class="card-exp-preview" id="previewVence">MM/AAAA</div>
+                            </div>
+                            <div class="card-brand" id="previewBrand">
+                                <i class="fa-brands fa-cc-visa" style="font-size:28px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-field-block" style="margin-bottom:15px;">
+                        <label>NíƒÂºmero de tarjeta</label>
+                        <input type="text" id="numTarjeta" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="input-field-block" style="margin-bottom:15px;">
+                        <label>Nombre del titular</label>
+                        <input type="text" id="nombreTitular" placeholder="Como figura en la tarjeta" maxlength="40">
+                    </div>
+                    <div style="display:flex; gap:15px; margin-bottom:15px;">
+                        <div class="input-field-block" style="flex:1;">
+                            <label>Vencimiento</label>
+                            <input type="text" id="vencimiento" placeholder="MM/AAAA" maxlength="7">
+                        </div>
+                        <div class="input-field-block" style="flex:1;">
+                            <label>CVV</label>
+                            <div style="position:relative;">
+                                <input type="password" id="cvv" placeholder="123" maxlength="4">
+                                <i class="fa-solid fa-eye" style="position:absolute; right:12px; top:13px; color:#94a3b8; cursor:pointer;" onclick="let i = document.getElementById('cvv'); i.type = i.type === 'password' ? 'text' : 'password'; this.classList.toggle('fa-eye-slash');"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="paso-actions-footer">
+                    <button type="button" class="btn-step-volver" onclick="mostrarPaso(2)">Volver</button>
+                    <button type="button" class="btn-step-siguiente" onclick="validarPasoPago()">Siguiente</button>
+                </div>
+            </section>
+
+            <!-- PASO 4: Formulario de Reserva - 4.4 Confirmar -->
+            <section class="paso" id="paso4">
+                <h2 class="paso-title-ref">Formulario de Reserva - 4.4 Confirmar</h2>
+
+                <div class="summary-cards-3grid">
+                    <!-- Card 1: Resumen del tour -->
+                    <div class="summary-box-card">
+                        <h3>Resumen del tour</h3>
+                        <div class="summary-tour-header">
+                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clíƒ¡sico" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
+                            <div>
+                                <h4>Machu Picchu Clíƒ¡sico</h4>
+                                <p>Andes Tours</p>
+                                <div class="rating-mini"><i class="fa-solid fa-star"></i> <strong>4.8</strong> <span>(120 comentarios)</span></div>
+                            </div>
+                        </div>
+                        <div class="summary-details-list">
+                            <div class="summary-row-item">
+                                <span>Fecha y horario</span>
+                                <span>Personas</span>
+                                <span>Precio</span>
+                            </div>
+                            <div class="summary-row-item bold-vals">
+                                <span>12 oct. 2025 - 08:00</span>
+                                <span id="rTotalPersonas">2</span>
+                                <strong id="rTotalPrecio">S/ 700.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Datos del pasajero -->
+                    <div class="summary-box-card">
+                        <h3>Datos del pasajero</h3>
+                        <div class="passenger-summary-item">
+                            <h5>Pasajero 1</h5>
+                            <p class="p-name" id="rTitularNombre">Juan Garcia Lopez</p>
+                            <p class="p-info">DNI: <span id="rTitularDNI">12345678</span></p>
+                            <p class="p-info">12/06/1990</p>
+                        </div>
+                        <div class="passenger-summary-item">
+                            <h5>Pasajero 2</h5>
+                            <p class="p-name">Carlos Perez Rodriguez</p>
+                            <p class="p-info">DNI: 87664321</p>
+                            <p class="p-info">25 aíƒÂ±os</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: MíƒÂ©todo de pago -->
+                    <div class="summary-box-card">
+                        <h3>MíƒÂ©todo de pago</h3>
+                        <div class="payment-summary-block">
+                            <p class="payment-method-title">Tarjeta de críƒÂ©dito / díƒÂ©bito</p>
+                            <div class="card-number-summary">
+                                <span>**** **** **** 3456</span>
+                                <i class="fa-brands fa-cc-visa" style="font-size:24px; color:#1a1f71;"></i>
+                            </div>
+                            <div class="total-summary-row">
+                                <span>Total</span>
+                                <strong id="sumTotalFinal">S/ 700.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="paso-actions-footer">
+                    <button type="button" class="btn-step-volver" onclick="mostrarPaso(3)">Volver</button>
+                    <button type="button" class="btn-step-siguiente" onclick="mostrarModal()">Confirmar reserva</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL CONFIRMACIíƒâ€œN -->
+    <div id="modalConfirmar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:white; padding:30px; border-radius:16px; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <div style="font-size:44px; color:#f59e0b; margin-bottom:15px;"><i class="fa-solid fa-circle-question"></i></div>
+            <h2 style="margin:0 0 10px 0; color:#0f2942;">í‚¿Confirmar reserva?</h2>
+            <p style="color:#64748b; margin-bottom:25px; font-size:14px;">í‚¿Estíƒ¡s seguro de que deseas realizar esta reserva? Una vez confirmada no podríƒ¡s modificarla.</p>
+            <div style="display:flex; justify-content:center; gap:15px;">
+                <button type="button" onclick="cerrarModal()" style="padding:10px 20px; border:none; background:#f1f5f9; color:#475569; border-radius:8px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-xmark"></i> No, Cancelar</button>
+                <button type="button" onclick="confirmarReserva()" style="padding:10px 20px; border:none; background:#196f3d; color:white; border-radius:8px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-check"></i> SíƒÂ­, confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" style="background-color: #145a32; color: #ffffff; padding: 40px 0 20px 0; margin-top: 60px;">
+        <div class="footer-bottom" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <p style="margin: 0; font-size: 14px;">&copy; 2026 Travelink. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js?v=3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.js?v=3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function mostrarPreview(tipo) {
+            const input = document.getElementById('comprobante' + tipo);
+            const dropzone = document.getElementById('dropzone' + tipo);
+            const preview = document.getElementById('preview' + tipo);
+            const filename = document.getElementById('filename' + tipo);
+
+            if (input.files && input.files.length > 0) {
+                dropzone.style.display = 'none';
+                preview.style.display = 'flex';
+                filename.textContent = input.files[0].name;
+            }
+        }
+
+        function removerPreview(tipo) {
+            const input = document.getElementById('comprobante' + tipo);
+            const dropzone = document.getElementById('dropzone' + tipo);
+            const preview = document.getElementById('preview' + tipo);
+
+            input.value = "";
+            dropzone.style.display = 'flex';
+            preview.style.display = 'none';
+        }
+    </script>
+    <script src="../../js/turista/navigation.js?v=3"></script>
+    <script src="../../js/agencia/user_session.js?v=3"></script>
+    <script src="../../js/validador.js?v=3"></script>
+    <script src="../../js/agencia/form_reserva.js?v=3"></script>
+</body>
+
+</html>

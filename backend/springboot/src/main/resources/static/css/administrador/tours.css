@@ -1,0 +1,40 @@
+/* Estilos específicos para la vista de Tours */
+.tour-cell-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tour-thumb-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+.tour-text-wrap h6 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.tour-text-wrap span {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.star-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d97706;
+}
+
+.star-rating-badge i {
+  font-size: 13px;
+}

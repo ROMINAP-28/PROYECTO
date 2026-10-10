@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Panel de Agencia</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css?v=3">
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css?v=3">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css?v=3">
+</head>
+
+<body class="dashboard-page admin-body" style="margin:0; padding:0; height:100vh; overflow:hidden; background:#f8fafc;">
+
+    <div class="dashboard" style="display:flex; width:100vw; height:100vh; overflow:hidden;">
+
+        <!-- SIDEBAR ESTILO ADMIN UNIFICADO -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header" style="padding: 20px; text-align: center;">
+                <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"
+                    style="max-width: 150px; height: auto;">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="inicio.html" class="nav-item active">
+                    <i class="ti ti-smart-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="servicios.html" class="nav-item">
+                    <i class="ti ti-compass"></i>
+                    <span>Servicios turí­sticos</span>
+                </a>
+                <a href="disponibilidad.html" class="nav-item">
+                    <i class="ti ti-calendar-time"></i>
+                    <span>Disponibilidad y cupos</span>
+                </a>
+                <a href="paquetes.html" class="nav-item">
+                    <i class="ti ti-package"></i>
+                    <span>Paquetes turí­sticos</span>
+                </a>
+                <a href="reservas.html" class="nav-item">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="pagos.html" class="nav-item">
+                    <i class="ti ti-coins"></i>
+                    <span>Pagos y liquidaciones</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="ti ti-settings"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <!-- TOPBAR ESTILO ADMIN UNIFICADO -->
+            <header class="admin-topbar" style="height: 64px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: flex-end; padding: 0 28px; position: sticky; top: 0; z-index: 1000; width: 100%;">
+                <div style="display:flex; align-items:center; gap:16px; position:relative; margin-left:auto;">
+                    <button type="button" class="notification-btn" title="Notificaciones" id="btnNotifAgencia">
+                        <i class="ti ti-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="notifications-dropdown-card" id="notifDropdownAgencia"
+                        style="display:none; position:absolute; top:56px; right:120px; background:white; border:1px solid #e2e8f0; border-radius:10px; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000;">
+                        <div style="padding:15px; border-bottom:1px solid #e2e8f0;">
+                            <span style="font-weight:600; font-size:14px; color:#0f172a;">Notificaciones</span>
+                        </div>
+                        <div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                            <i class="ti ti-bell-off" style="font-size:24px; color:#94a3b8; display:block; margin-bottom:6px;"></i>
+                            No hay notificaciones nuevas.
+                        </div>
+                    </div>
+
+                    <div class="user-dropdown-container" style="position:relative;">
+                        <button type="button" class="user-profile-toggle" id="btnPerfilToggle">
+                            <div class="user-avatar-img" id="agencyAvatarLetter" style="background:#2563eb; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">A</div>
+                            <div class="user-info-text">
+                                <span class="user-name" id="nombreAgenciaTop" style="font-weight:600; color:#0f172a; font-size:14px;">INKA TRAVEL</span>
+                                <span class="user-role" style="font-size:12px; color:#64748b;">Agencia turí­stica</span>
+                            </div>
+                        </button>
+
+                        <div id="perfilDropdownAgencia"
+                            style="display:none; position:absolute; top:56px; right:0; background:white; border:1px solid #e2e8f0; border-radius:10px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:9999; padding:8px 0;">
+                            <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;" id="dropdownNombreAgencia">INKA TRAVEL</p>
+                                <p style="margin:0; font-size:12px; color:#64748b;">Agencia Turí­stica</p>
+                            </div>
+                            <a href="#" onclick="document.getElementById('inputFotoPerfil').click(); return false;" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#334155; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-photo" style="font-size:17px; color:#64748b;"></i> Cambiar foto de perfil
+                            </a>
+                            <input type="file" id="inputFotoPerfil" accept="image/*" style="display:none;">
+                            <div style="height:1px; background:#f1f5f9; margin:6px 0;"></div>
+                            <a href="#" id="btnCerrarSesionDropdown" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#ef4444; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-logout" style="font-size:17px;"></i> Cerrar sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENIDO DASHBOARD INICIO -->
+            <div class="content-container">
+
+                <section class="welcome-banner">
+                    <h2>Bienvenido, <span id="bienvenidaAgencia">INKA TRAVEL</span></h2>
+                    <p>Resumen operativo en tiempo real de tus servicios, reservas y finanzas.</p>
+                </section>
+
+                <section class="stats-grid-4">
+                    <article class="stat-card-custom">
+                        <div class="stat-icon"><i class="ti ti-compass"></i></div>
+                        <div class="stat-info">
+                            <span>Servicios Activos</span>
+                            <strong id="totalServicios">0</strong>
+                        </div>
+                    </article>
+
+                    <article class="stat-card-custom">
+                        <div class="stat-icon" style="background:#f0fdf4; color:#16a34a;"><i class="ti ti-calendar-event"></i></div>
+                        <div class="stat-info">
+                            <span>Total Reservas</span>
+                            <strong id="totalReservas">0</strong>
+                        </div>
+                    </article>
+
+                    <article class="stat-card-custom">
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;"><i class="ti ti-users"></i></div>
+                        <div class="stat-info">
+                            <span>Viajeros Registrados</span>
+                            <strong id="totalViajeros">0</strong>
+                        </div>
+                    </article>
+
+                    <article class="stat-card-custom">
+                        <div class="stat-icon" style="background:#faf5ff; color:#9333ea;"><i class="ti ti-currency-dollar"></i></div>
+                        <div class="stat-info">
+                            <span>Ventas Totales</span>
+                            <strong id="totalIngresos">S/ 0.00</strong>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="dashboard-two-col">
+                    <article class="card-box">
+                        <div class="card-box-header">
+                            <h3>Reservas recientes</h3>
+                            <a href="reservas.html">Ver todas &rarr;</a>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Servicio Turí­stico</th>
+                                        <th>Fecha Salida</th>
+                                        <th>Pasajeros</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaReservas">
+                                    <tr>
+                                        <td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">Cargando reservas...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="card-box">
+                        <div class="card-box-header">
+                            <h3>Próximas salidas programadas</h3>
+                            <a href="disponibilidad.html">Ver disponibilidad &rarr;</a>
+                        </div>
+                        <div id="listaDisponibilidad">
+                            <div style="text-align:center; padding:20px; color:#94a3b8;">Cargando salidas...</div>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="card-box">
+                    <div class="card-box-header">
+                        <h3>Resumen Financiero y Liquidaciones</h3>
+                        <a href="pagos.html">Ver detalle de pagos &rarr;</a>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; text-align:center; padding:10px 0;">
+                        <div style="background:#f8fafc; padding:16px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <span style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Pagos Recibidos</span>
+                            <strong style="font-size:18px; color:#0f172a;" id="pagosRecibidos">S/ 0.00</strong>
+                        </div>
+                        <div style="background:#f8fafc; padding:16px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <span style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Comisión Travelink (15%)</span>
+                            <strong style="font-size:18px; color:#2563eb;" id="comisiones">S/ 0.00</strong>
+                        </div>
+                        <div style="background:#f8fafc; padding:16px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <span style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Liquidaciones Pendientes</span>
+                            <strong style="font-size:18px; color:#c2410c;" id="liquidacionesPendientes">0</strong>
+                        </div>
+                        <div style="background:#f8fafc; padding:16px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <span style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Monto Neto Agencia</span>
+                            <strong style="font-size:18px; color:#16a34a;" id="montoNeto">S/ 0.00</strong>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../../js/agencia/agencia_inicio.js?v=2"></script>
+</body>
+</html>

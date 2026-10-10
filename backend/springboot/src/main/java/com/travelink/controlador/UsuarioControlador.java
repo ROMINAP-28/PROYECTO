@@ -9,6 +9,7 @@ import com.travelink.entidades.Usuario;
 
 import com.travelink.entidades.Usuario;
 import com.travelink.persistencia.UsuarioPersistencia;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,20 @@ public class UsuarioControlador {
 
         if (usuarioOpt.isPresent()) {
             Usuario u = usuarioOpt.get();
-            if (u.getContrasena().equals(contrasena)) {
+            boolean check = false;
+            try {
+                // If it's a bcrypt hash it will start with $2a$ or $2b$
+                if (u.getContrasena().startsWith("$2")) {
+                    check = BCrypt.checkpw(contrasena, u.getContrasena());
+                } else {
+                    // Fallback to plain text comparison for existing users without hash
+                    check = u.getContrasena().equals(contrasena);
+                }
+            } catch (Exception e) {
+                check = false;
+            }
+
+            if (check) {
                 respuesta.put("status", "success");
                 respuesta.put("message", "Login exitoso");
                 respuesta.put("user", u);
@@ -48,6 +62,10 @@ public class UsuarioControlador {
             respuesta.put("message", "El correo ya se encuentra registrado");
             return respuesta;
         }
+
+        // Hash the password using BCrypt
+        String hashed = BCrypt.hashpw(nuevoUsuario.getContrasena(), BCrypt.gensalt(12));
+        nuevoUsuario.setContrasena(hashed);
 
         Usuario guardado = usuarioPersistencia.guardar(nuevoUsuario);
         respuesta.put("status", "success");

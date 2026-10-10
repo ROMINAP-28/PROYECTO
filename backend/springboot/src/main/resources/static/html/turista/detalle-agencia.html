@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Tours de Agencia</title>
+    <link rel="stylesheet" href="../../css/style.css?v=3">
+    <link rel="stylesheet" href="../../css/turista/agencias.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=3">
+</head>
+
+<body style="background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+    <!-- Navbar -->
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar-placeholder"
+                        style="width:44px; height:44px; border-radius:50%; background:#0b1f38; color:#ffffff; display:flex; justify-content:center; align-items:center; font-size:20px; border:2px solid #196f3d; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html" class="active"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">íšnete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="tours-agency-page" style="flex: 1;">
+        <!-- Botón Volver -->
+        <a href="agencias.html" class="btn-back-link">
+            <i class="fa-solid fa-arrow-left"></i> Volver a agencias
+        </a>
+
+        <!-- Header con Tí­tulo y Filtros -->
+        <div class="agency-header-row">
+            <div class="agency-title-info">
+                <h1 id="agency-name-title">Tours de Andes Tours</h1>
+                <p id="agency-desc-subtitle">Descubre los mejores tours y vive experiencias únicas con Andes Tours.</p>
+            </div>
+
+            <div class="agency-controls">
+                <div class="sort-wrapper">
+                    <span>Ordenar por:</span>
+                    <select class="sort-select" id="sort-tours-select" onchange="ordenarTours()">
+                        <option value="populares">Más populares</option>
+                        <option value="menor-precio">Menor precio</option>
+                        <option value="mayor-precio">Mayor precio</option>
+                        <option value="mejor-calificados">Mejor calificados</option>
+                    </select>
+                </div>
+
+                <div class="view-btn-group">
+                    <button class="view-toggle-btn active" title="Vista Cuadrí­cula">
+                        <i class="fa-solid fa-border-all"></i>
+                    </button>
+                    <button class="view-toggle-btn" title="Vista Lista">
+                        <i class="fa-solid fa-list"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de Tarjetas (6 tarjetas exactas) -->
+        <div class="agency-tours-grid" id="agency-tours-container">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: #64748b;">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #196f3d;"></i>
+                <p style="margin-top: 12px; font-weight: 600;">Cargando tours de la agencia...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: auto; background: #0b1f38; color: white; padding: 40px 0 20px 0;">
+        <div class="footer-grid" style="max-width: 1280px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo" style="height: 38px;">
+                </div>
+                <p style="margin-top: 12px; font-size: 13.5px; color: #cbd5e1; line-height: 1.5;">Plataforma digital de turismo y experiencias en todo el Perú.</p>
+            </div>
+            <div>
+                <h4 style="font-size: 15px; margin-bottom: 14px; color: #ffffff;">Enlaces</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <li><a href="/index.html" style="color: #94a3b8; text-decoration: none;">Inicio</a></li>
+                    <li><a href="experiencias.html" style="color: #94a3b8; text-decoration: none;">Experiencias</a></li>
+                    <li><a href="agencias.html" style="color: #94a3b8; text-decoration: none;">Agencias</a></li>
+                    <li><a href="ofertas.html" style="color: #94a3b8; text-decoration: none;">Ofertas</a></li>
+                    <li><a href="nosotros.html" style="color: #94a3b8; text-decoration: none;">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 15px; margin-bottom: 14px; color: #ffffff;">Ayuda</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Preguntas frecuentes</a></li>
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Términos y condiciones</a></li>
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Polí­tica de privacidad</a></li>
+                    <li><a href="#" style="color: #94a3b8; text-decoration: none;">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 15px; margin-bottom: 14px; color: #ffffff;">Sí­guenos</h4>
+                <div class="social-links" style="display: flex; gap: 12px;">
+                    <a href="#" style="width: 34px; height: 34px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" style="width: 34px; height: 34px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="width: 34px; height: 34px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" style="width: 34px; height: 34px; border-radius: 50%; background: #1e293b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../js/turista/navigation.js?v=3"></script>
+    <script src="../../js/agencia/user_session.js?v=3"></script>
+    <script>
+        function toggleHeart(btn) {
+            btn.classList.toggle('liked');
+            const icon = btn.querySelector('i');
+            if (btn.classList.contains('liked')) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+            } else {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+            }
+        }
+
+        function ordenarTours() {
+            const container = document.getElementById('agency-tours-container');
+            const sortBy = document.getElementById('sort-tours-select').value;
+            const cards = Array.from(container.querySelectorAll('.tour-card'));
+
+            cards.sort((a, b) => {
+                const precioA = parseFloat(a.getAttribute('data-precio') || '0');
+                const precioB = parseFloat(b.getAttribute('data-precio') || '0');
+                const ratingA = parseFloat(a.getAttribute('data-rating') || '0');
+                const ratingB = parseFloat(b.getAttribute('data-rating') || '0');
+
+                if (sortBy === 'menor-precio') return precioA - precioB;
+                if (sortBy === 'mayor-precio') return precioB - precioA;
+                if (sortBy === 'mejor-calificados') return ratingB - ratingA;
+                return 0;
+            });
+
+            cards.forEach(c => container.appendChild(c));
+        }
+
+        function setView(mode, btn) {
+            const container = document.getElementById('agency-tours-container');
+            document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            if (mode === 'list') {
+                container.style.gridTemplateColumns = '1fr';
+            } else {
+                container.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            }
+        }
+
+        // Carga dinámica de tours por Agencia
+        async function cargarToursDeAgencia() {
+            const params = new URLSearchParams(window.location.search);
+            const nombreAgencia = params.get('agencia') || 'ANDES TOURS PERU S.A.C.';
+            const idAgencia = parseInt(params.get('idAgencia') || '1');
+
+            const titleEl = document.getElementById('agency-name-title');
+            const subEl = document.getElementById('agency-desc-subtitle');
+            if (titleEl) titleEl.textContent = 'Tours de ' + nombreAgencia;
+            if (subEl) subEl.textContent = 'Descubre los mejores tours y vive experiencias únicas con ' + nombreAgencia + '.';
+
+            const container = document.getElementById('agency-tours-container');
+            if (!container) return;
+
+            const toursPorAgencia = {
+                1: [
+                    { id: 1, nombre: 'Machu Picchu Clásico y Valle Sagrado', desc: 'Excursión completa al santuario histórico con guí­a profesional y tren panorámico.', duracion: '1 dí­a', ubicacion: 'Cusco', precio: 350.00, rating: 4.8, img: '../../img/colca.jpg', cat: 'cultura' },
+                    { id: 2, nombre: 'Montaña de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaña de colores con desayuno y almuerzo buffet.', duracion: '1 dí­a', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
+                    { id: 3, nombre: 'Valle Sagrado de los Incas Privado', desc: 'Historia, cultura y paisajes increí­bles en Pisac, Ollantaytambo y Chinchero.', duracion: '1 dí­a', ubicacion: 'Cusco', precio: 320.00, rating: 4.6, img: '../../img/cusco.jpg', cat: 'cultura' }
+                ],
+                2: [
+                    { id: 2, nombre: 'Montaña de 7 Colores (Vinicunca)', desc: 'Trek guiado a la impresionante montaña de colores con desayuno y almuerzo buffet.', duracion: '1 dí­a', ubicacion: 'Cusco', precio: 280.00, rating: 4.7, img: '../../img/7colores.jpg', cat: 'naturaleza' },
+                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisají­stica hacia la turquesa Laguna Humantay con asistencia médica.', duracion: '1 dí­a', ubicacion: 'Cusco', precio: 150.00, rating: 4.9, img: '../../img/puno.jpg', cat: 'aventura' },
+                    { id: 5, nombre: 'Camino Inca Express 2D/1N', desc: 'Recorrido por la legendaria ruta incaica finalizando en la Puerta del Sol Intipunku.', duracion: '2 dí­as', ubicacion: 'Cusco', precio: 480.00, rating: 4.9, img: '../../img/colca.jpg', cat: 'aventura' }
+                ],
+                3: [
+                    { id: 4, nombre: 'Laguna Humantay Trek & Aventura', desc: 'Caminata paisají­stica hacia la turquesa Laguna Humantay con equipo de oxí­geno.', duracion: '1 dí­a', ubicacion: 'Cusco', precio: 150.00, rating: 4.8, img: '../../img/puno.jpg', cat: 'aventura' },
+                    { id: 6, nombre: 'Cuatrimotos Maras & Moray', desc: 'Experiencia llena de adrenalina visitando las salineras de Maras y el laboratorio inca.', duracion: '1/2 dí­a', ubicacion: 'Cusco', precio: 160.00, rating: 4.7, img: '../../img/cusco.jpg', cat: 'aventura' },
+                    { id: 7, nombre: 'Sacsayhuamán & Qenqo City Tour', desc: 'Excursión guiada por los complejos arqueológicos más impresionantes alrededor del Cusco.', duracion: '1/2 dí­a', ubicacion: 'Cusco', precio: 110.00, rating: 4.5, img: '../../img/7colores.jpg', cat: 'cultura' }
+                ],
+                5: [
+                    { id: 4, nombre: 'Amazoní­a Profunda Tambopata', desc: 'Inmersión completa en la selva virgen con observación de fauna silvestre y canopy.', duracion: '4 dí­as / 3 noches', ubicacion: 'Madre de Dios', precio: 1450.00, rating: 4.8, img: '../../img/selva.jpg', cat: 'naturaleza' },
+                    { id: 8, nombre: 'Reserva Nacional Lago Sandoval', desc: 'Paseo en bote por la reserva natural, avistamiento de nutrias gigantes y caminata nocturna.', duracion: '2 dí­as', ubicacion: 'Madre de Dios', precio: 520.00, rating: 4.9, img: '../../img/huayllay-package.jpg', cat: 'naturaleza' }
+                ],
+                6: [
+                    { id: 5, nombre: 'Cañón del Colca & Mirador del Cóndor', desc: 'Recorrido por el Cañón del Colca, baños termales de La Calera y Cóndor andino.', duracion: '2 dí­as / 1 noche', ubicacion: 'Arequipa', precio: 180.00, rating: 4.9, img: '../../img/arequipa.jpg', cat: 'aventura' },
+                    { id: 9, nombre: 'Ruta del Sillar & Monasterio Santa Catalina', desc: 'Tour histórico por la Ciudad Blanca con visita a las canteras vivas de sillar.', duracion: '1 dí­a', ubicacion: 'Arequipa', precio: 95.00, rating: 4.7, img: '../../img/fondo1.png', cat: 'cultura' }
+                ],
+                7: [
+                    { id: 6, nombre: 'Oasis de Huacachina & Tubulares Ica', desc: 'Aventura en los tubulares del desierto de Ica, sandboarding y visita a bodegas.', duracion: '1 dí­a', ubicacion: 'Ica', precio: 190.00, rating: 4.8, img: '../../img/ica.jpg', cat: 'aventura' },
+                    { id: 10, nombre: 'City Tour Lima Colonial & Catacumbas', desc: 'Recorrido colonial por el centro histórico, Convento de San Francisco y Larcomar.', duracion: '1/2 dí­a', ubicacion: 'Lima', precio: 85.00, rating: 4.7, img: '../../img/lima-package.jpg', cat: 'cultura' }
+                ]
+            };
+
+            let tours = toursPorAgencia[idAgencia] || toursPorAgencia[1];
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1200);
+                const resp = await fetch('http://localhost:8080/api/agencia/paquetes?idAgencia=' + idAgencia, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+                if (data && data.status === 'success' && Array.isArray(data.paquetes) && data.paquetes.length > 0) {
+                    tours = data.paquetes.map(function(p) {
+                        return {
+                            id: p.idPaquete || p.id,
+                            nombre: p.nombre,
+                            desc: p.descripcion,
+                            duracion: p.duracion || '1 dí­a',
+                            ubicacion: p.ubicacion || 'Perú',
+                            precio: p.precio || 200,
+                            rating: 4.8,
+                            img: p.imagen || p.imagenUrl || '../../img/colca.jpg',
+                            cat: 'cultura'
+                        };
+                    });
+                }
+            } catch (e) {
+                console.warn('Usando tours locales de agencia:', e);
+            }
+
+            container.innerHTML = tours.map(function(t) {
+                return '<div class="tour-card" data-precio="' + t.precio + '" data-rating="' + t.rating + '">' +
+                    '<div class="tour-card-image">' +
+                        '<span class="tour-badge-pill ' + t.cat + '">' +
+                            '<i class="fa-solid fa-fire"></i> ' + t.cat.toUpperCase() +
+                        '</span>' +
+                        '<button class="btn-card-heart" onclick="toggleHeart(this)" title="Guardar en favoritos">' +
+                            '<i class="fa-regular fa-heart"></i>' +
+                        '</button>' +
+                        '<img src="' + t.img + '" alt="' + t.nombre + '" onerror="this.onerror=null; this.src=\'../../img/fondo1.png\'">' +
+                    '</div>' +
+                    '<div class="tour-card-body">' +
+                        '<h3 class="tour-card-title">' + t.nombre + '</h3>' +
+                        '<p class="tour-card-desc">' + t.desc + '</p>' +
+                        '<div class="tour-meta-row">' +
+                            '<span class="tour-meta-item"><i class="fa-regular fa-calendar"></i> ' + t.duracion + '</span>' +
+                            '<span class="tour-meta-item"><i class="fa-solid fa-location-dot"></i> ' + t.ubicacion + '</span>' +
+                            '<span class="tour-meta-item"><i class="fa-solid fa-users"></i> Tour verificado</span>' +
+                        '</div>' +
+                        '<div class="tour-pricing-row">' +
+                            '<div class="tour-rating-box">' +
+                                '<i class="fa-solid fa-star"></i> ' + t.rating + ' <span>(Reseñas activas)</span>' +
+                            '</div>' +
+                            '<div class="tour-price-box">' +
+                                '<div class="tour-price-val">S/ ' + parseFloat(t.precio).toFixed(2) + '</div>' +
+                                '<div class="tour-price-sub">por persona</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<a href="detalle.html?tour=' + t.id + '&from=agencias&agencia=' + encodeURIComponent(nombreAgencia) + '" class="btn-select-tour">' +
+                            'Reservar / Ver Detalle <i class="fa-solid fa-arrow-right"></i>' +
+                        '</a>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarToursDeAgencia();
+
+            var btns = document.querySelectorAll('.view-toggle-btn');
+            if (btns[0]) btns[0].addEventListener('click', function() { setView('grid', btns[0]); });
+            if (btns[1]) btns[1].addEventListener('click', function() { setView('list', btns[1]); });
+        });
+    </script>
+</body>
+
+</html>

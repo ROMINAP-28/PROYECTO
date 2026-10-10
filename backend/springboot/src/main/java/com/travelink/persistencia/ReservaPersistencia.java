@@ -246,6 +246,7 @@ public class ReservaPersistencia {
                     }
                 }
             }
+            if (idUsuario <= 0) idUsuario = 1;
 
             String query = "SELECT r.idReserva, r.codigoReserva, r.fechaRegistro, r.fechaInicio, r.fechaFin, r.estado, r.total, " +
                            "t.nombre AS tourNombre, t.ubicacion AS tourUbicacion, a.nombreComercial AS agenciaNombre, " +

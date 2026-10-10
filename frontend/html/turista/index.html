@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Inicio</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div class="avatar-placeholder"
+                        style="width:44px; height:44px; border-radius:50%; background:#0b1f38; color:#ffc107; display:flex; justify-content:center; align-items:center; font-size:20px; border:2px solid #ffc107; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="index.html" class="active"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <!-- Botones de navegación (Iniciar sesión y Registrarse) -->
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section con etiqueta <img> -->
+        <section class="hero-card-banner">
+            <img src="../../img/fondo1.png" alt="Machu Picchu - Descubre destinos únicos" class="hero-img-bg">
+            <div class="hero-overlay-dark"></div>
+            <div class="hero-content-inner">
+                <h1>Descubre destinos únicos<br>en todo el Perú</h1>
+                <p>Vive experiencias inolvidables con las mejores agencias de turismo.</p>
+
+                <div class="hero-search-box-pill">
+                    <div class="hero-search-input-field">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="busquedaInput" placeholder="¿A dónde quieres ir?">
+                    </div>
+                    <button class="btn-hero-buscar" id="btnBuscarHero" onclick="ejecutarBusquedaHero()">Buscar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Dividida: Destinos destacados y Tours recomendados -->
+        <section class="split-dashboard-section">
+            <!-- Columna Izquierda: Destinos destacados (4 tarjetas verticales) -->
+            <div class="home-section-card">
+                <h2 class="home-section-title">Destinos destacados</h2>
+                <div class="destinos-grid-4">
+                    <a href="experiencias.html?destino=Cusco" class="destino-card-clean">
+                        <img src="../../img/cusco.jpg" alt="Cusco">
+                        <span class="destino-title">Cusco</span>
+                    </a>
+                    <a href="experiencias.html?destino=Arequipa" class="destino-card-clean">
+                        <img src="../../img/arequipa.jpg" alt="Arequipa">
+                        <span class="destino-title">Arequipa</span>
+                    </a>
+                    <a href="experiencias.html?destino=Lima" class="destino-card-clean">
+                        <img src="../../img/ica.jpg" alt="Lima">
+                        <span class="destino-title">Lima</span>
+                    </a>
+                    <a href="experiencias.html?destino=Puno" class="destino-card-clean">
+                        <img src="../../img/puno.jpg" alt="Puno">
+                        <span class="destino-title">Puno</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Tours recomendados (3 tarjetas horizontales) -->
+            <div class="home-section-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="home-section-title" style="margin-bottom: 0;">Tours recomendados</h2>
+                    <a href="experiencias.html"
+                        style="color: #196f3d; font-weight: 700; text-decoration: none; font-size: 14px;">Ver todos
+                        &gt;</a>
+                </div>
+                <div class="tours-recommended-list">
+                    <a href="detalle.html?tour=machu-picchu&from=experiencias" class="tour-item-horizontal">
+                        <img src="../../img/cusco.jpg" alt="Machu Picchu Clásico">
+                        <div class="tour-info">
+                            <h3 class="tour-title">Machu Picchu Clásico</h3>
+                            <div class="tour-agency">Andes Tours</div>
+                            <div class="tour-rating">
+                                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                                <span>4.8</span>
+                                <span style="color: #94a3b8; font-weight: normal;">(120)</span>
+                            </div>
+                        </div>
+                        <div class="tour-price">S/ 350.00</div>
+                    </a>
+
+                    <a href="detalle.html?tour=valle-sagrado&from=experiencias" class="tour-item-horizontal">
+                        <img src="../../img/colca.jpg" alt="Valle Sagrado">
+                        <div class="tour-info">
+                            <h3 class="tour-title">Valle Sagrado</h3>
+                            <div class="tour-agency">Inka Travel</div>
+                            <div class="tour-rating">
+                                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                                <span>4.6</span>
+                                <span style="color: #94a3b8; font-weight: normal;">(98)</span>
+                            </div>
+                        </div>
+                        <div class="tour-price">S/ 280.00</div>
+                    </a>
+
+                    <a href="detalle.html?tour=humantay&from=experiencias" class="tour-item-horizontal">
+                        <img src="../../img/uros.jpg" alt="Laguna Humantay">
+                        <div class="tour-info">
+                            <h3 class="tour-title">Laguna Humantay</h3>
+                            <div class="tour-agency">Aventura Perú</div>
+                            <div class="tour-rating">
+                                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                                <span>4.7</span>
+                                <span style="color: #94a3b8; font-weight: normal;">(95)</span>
+                            </div>
+                        </div>
+                        <div class="tour-price">S/ 150.00</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo" style="height: 38px;">
+                </div>
+                <p style="margin-top: 8px; font-size: 13px; color: #d1e7dd;">Plataforma digital de turismo y
+                    experiencias en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="experiencias.html">Experiencias</a></li>
+                    <li><a href="ofertas.html">Ofertas</a></li>
+                    <li><a href="nosotros.html">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="../../js/navigation.js"></script>
+    <script src="../../js/user_session.js"></script>
+    <script src="../../js/index.js"></script>
+    <script>
+        function ejecutarBusquedaHero() {
+            const query = document.getElementById('busquedaInput').value.trim();
+            if (query) {
+                window.location.href = 'experiencias.html?destino=' + encodeURIComponent(query);
+            } else {
+                window.location.href = 'experiencias.html';
+            }
+        }
+        document.getElementById('busquedaInput')?.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                ejecutarBusquedaHero();
+            }
+        });
+    </script>
+</body>
+
+</html>

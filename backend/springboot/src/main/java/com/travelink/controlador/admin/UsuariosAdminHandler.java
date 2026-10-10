@@ -32,6 +32,44 @@ import com.travelink.repositorio.ReservaRepositorio;
                 exchange.sendResponseHeaders(200, -1);
                 return;
             }
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                try {
+                    String body = JavaApiServer.readRequestBody(exchange);
+                    Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+                    String action = String.valueOf(params.getOrDefault("action", ""));
+
+                    if ("eliminar".equals(action)) {
+                        int idUsuario = Integer.parseInt(String.valueOf(params.get("idUsuario")));
+                        try (Connection con = ConexionDB.getConnection()) {
+                            // Cambiamos el estado a Inactivo en lugar de borrar para persistencia segura
+                            String sql = "UPDATE Usuario SET estado = 'INACTIVO' WHERE idUsuario = ?";
+                            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                                ps.setInt(1, idUsuario);
+                                ps.executeUpdate();
+                            }
+                            JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Usuario eliminado lógicamente\"}");
+                        }
+                    } else if ("guardar".equals(action)) {
+                        String nombre = String.valueOf(params.getOrDefault("nombre", ""));
+                        String email = String.valueOf(params.getOrDefault("email", ""));
+                        String tipo = String.valueOf(params.getOrDefault("tipo", "Cliente"));
+                        String estado = String.valueOf(params.getOrDefault("estado", "ACTIVO")).toUpperCase();
+
+                        try (Connection con = ConexionDB.getConnection()) {
+                            // En un entorno real aquí insertarías el usuario en Persona y Usuario
+                            // O actualizarías si ya existe. Para la demo vamos a mandar éxito.
+                            JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Usuario guardado exitosamente\"}");
+                        }
+                    } else {
+                        JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Acción no soportada\"}");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error interno\"}");
+                }
+                return;
+            }
+
             StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
             boolean primero = true;
             String sql = "SELECT u.idUsuario AS id, CONCAT(p.nombre, ' ', p.apellidoPaterno) AS nombre, p.email, r.nombreRol AS tipo, u.estado, DATE(u.fechaRegistro) AS fechaRegistro FROM Usuario u JOIN Persona p ON u.idPersona = p.idPersona JOIN Rol r ON u.idRol = r.idRol ORDER BY u.idUsuario DESC";

@@ -29,20 +29,49 @@ import com.travelink.repositorio.ReservaRepositorio;
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
             if (path.equals("/") || path.equals("/index.html")) {
-                path = "/html/index.html";
+                path = "/index.html";
             }
 
             String relativePath = path.startsWith("/") ? path.substring(1) : path;
-            String userDir = System.getProperty("user.dir");
-            Path baseDir = Paths.get(userDir);
-            if (baseDir.endsWith("springboot")) {
-                baseDir = baseDir.getParent().getParent();
+            
+            // Buscar la carpeta static de forma robusta subiendo en el árbol si es necesario
+            Path currentPath = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+            Path staticDir = null;
+            
+            for (int i = 0; i < 4; i++) {
+                Path checkDir = currentPath.resolve("backend/springboot/src/main/resources/static");
+                if (Files.exists(checkDir)) {
+                    staticDir = checkDir;
+                    break;
+                }
+                checkDir = currentPath.resolve("src/main/resources/static");
+                if (Files.exists(checkDir)) {
+                    staticDir = checkDir;
+                    break;
+                }
+                checkDir = currentPath.resolve("springboot/src/main/resources/static");
+                if (Files.exists(checkDir)) {
+                    staticDir = checkDir;
+                    break;
+                }
+                currentPath = currentPath.getParent();
+                if (currentPath == null) break;
             }
-            Path filePath = baseDir.resolve(JavaApiServer.FRONTEND_DIR).resolve(relativePath).normalize();
+            
+            if (staticDir == null) {
+                String notFound = "<h1>Error 500</h1><p>No se pudo encontrar el directorio estático del frontend en el servidor.</p>";
+                exchange.sendResponseHeaders(500, notFound.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(notFound.getBytes(StandardCharsets.UTF_8));
+                os.close();
+                return;
+            }
+
+            Path filePath = staticDir.resolve(relativePath).normalize();
             File file = filePath.toFile();
 
             if (!file.exists() || file.isDirectory()) {
-                String notFound = "<h1>404 File Not Found</h1><p>" + path + "</p>";
+                String notFound = "<h1>404 File Not Found</h1><p>Requested: " + path + "</p><p>Tried absolute path: " + file.getAbsolutePath() + "</p>";
                 exchange.sendResponseHeaders(404, notFound.length());
                 OutputStream os = exchange.getResponseBody();
                 os.write(notFound.getBytes(StandardCharsets.UTF_8));

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revisión de solicitud</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css?v=3">
+</head>
+<body>
+<main class="registro-container">
+    <div class="registro-wrapper">
+        <aside class="registro-visual">
+            <div class="registro-visual-content">
+                <div class="registro-logo">Travel<span>ink</span></div>
+                <p class="registro-tagline">Conectando destinos</p>
+            </div>
+            <div class="registro-visual-text">
+                <h2>Todo listo para enviar.</h2>
+                <p>Revisa la información antes de enviar tu solicitud de incorporación.</p>
+            </div>
+        </aside>
+
+        <section class="registro-form-area">
+            <div class="registro-top">
+                <span class="registro-step">Paso 6 de 6</span>
+                <h1>Revisión</h1>
+                <p>Verifica que todos los datos sean correctos.</p>
+            </div>
+
+            <div class="revision-section">
+                <h3>Cuenta</h3>
+                <div class="revision-data">
+                    <p>Nombre comercial: <strong id="revisionNombreComercial">-</strong></p>
+                    <p>Correo: <strong id="revisionCorreo">-</strong></p>
+                    <p>Usuario: <strong id="revisionUsuario">-</strong></p>
+                </div>
+            </div>
+
+            <div class="revision-section">
+                <h3>Empresa</h3>
+                <div class="revision-data">
+                    <p>Razón social: <strong id="revisionRazonSocial">-</strong></p>
+                    <p>RUC: <strong id="revisionRuc">-</strong></p>
+                    <p>Teléfono: <strong id="revisionTelefonoEmpresa">-</strong></p>
+                    <p>Dirección: <strong id="revisionDireccion">-</strong></p>
+                </div>
+            </div>
+
+            <div class="revision-section">
+                <h3>Responsable</h3>
+                <div class="revision-data">
+                    <p>Nombres: <strong id="revisionNombre">-</strong></p>
+                    <p>Apellido paterno: <strong id="revisionApellidoPaterno">-</strong></p>
+                    <p>Apellido materno: <strong id="revisionApellidoMaterno">-</strong></p>
+                    <p>Teléfono: <strong id="revisionTelefonoResponsable">-</strong></p>
+                </div>
+            </div>
+
+            <div class="revision-section">
+                <h3>Documentación</h3>
+                <p id="revisionDocumentos">No se han seleccionado documentos.</p>
+            </div>
+
+            <p id="mensajeRevision" class="form-message"></p>
+
+            <div class="registro-actions">
+                <button type="button" class="btn-secondary" onclick="history.back()">Atrás</button>
+                <button type="button" class="btn-primary" id="btnEnviarSolicitud">Enviar solicitud</button>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="../../js/agencia/agencia.js?v=3"></script>
+</body>
+</html>

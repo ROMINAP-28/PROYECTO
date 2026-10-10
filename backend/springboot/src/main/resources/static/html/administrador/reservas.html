@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Reservas</title>
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css?v=3">
+    <link rel="stylesheet" href="../../css/administrador/reservas.css?v=3">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="./dashboard.html" class="nav-item">
+                <i class="ti ti-smart-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="./usuarios.html" class="nav-item">
+                <i class="ti ti-users"></i>
+                <span>Usuarios</span>
+            </a>
+            <a href="./tours.html" class="nav-item">
+                <i class="ti ti-compass"></i>
+                <span>Tours</span>
+            </a>
+            <a href="./agencias.html" class="nav-item">
+                <i class="ti ti-building-store"></i>
+                <span>Agencias</span>
+            </a>
+            <a href="./reservas.html" class="nav-item active">
+                <i class="ti ti-calendar-event"></i>
+                <span>Reservas</span>
+            </a>
+            <a href="./calidad.html" class="nav-item">
+                <i class="ti ti-shield-check"></i>
+                <span>Calidad</span>
+            </a>
+            <a href="./comisiones.html" class="nav-item">
+                <i class="ti ti-coins"></i>
+                <span>Comisiones</span>
+            </a>
+            <a href="./catalogo.html" class="nav-item">
+                <i class="ti ti-map-pin"></i>
+                <span>Catálogo</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="nav-item-logout" onclick="logoutAdmin()">
+                <i class="ti ti-logout"></i>
+                <span>Cerrar sesión</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button type="button" class="topbar-menu-toggle" onclick="toggleSidebar()">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+                <div class="topbar-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" placeholder="Buscar en el panel..." onkeyup="handleGlobalSearch(event)">
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <button type="button" class="notification-btn" onclick="toggleNotifications(event)" title="Notificaciones">
+                    <i class="ti ti-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <!-- NOTIFICATIONS FLOATING CARD -->
+                <div class="notifications-dropdown-card" id="notificationsDropdownCard">
+                    <div class="notif-header">
+                        <span class="notif-title">Notificaciones</span>
+                        <a href="javascript:void(0)" class="notif-link-all" onclick="marcarTodasLeidas()">Ver todas</a>
+                    </div>
+                    <div class="notif-list">
+                        <div class="notif-item">
+                            <div class="notif-icon-circle green"><i class="ti ti-calendar-event"></i></div>
+                            <div class="notif-content">
+                                <h5>Nueva reserva confirmada</h5>
+                                <p>Se procesó la reserva #R-001245 con éxito.</p>
+                                <span class="notif-time">Hace 5 minutos</span>
+                            </div>
+                            <span class="notif-unread-dot"></span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-mark-all-read" onclick="marcarTodasLeidas()">
+                        <i class="ti ti-check"></i> Marcar todas como leí­das
+                    </button>
+                </div>
+
+                <!-- USER PROFILE -->
+                <div class="user-dropdown-container">
+                    <button type="button" class="user-profile-toggle" onclick="toggleAdminDropdown(event)">
+                        <div class="user-avatar-img" id="adminAvatarLetter">A</div>
+                        <div class="user-info-text">
+                            <span class="user-name" id="adminTopName">Admin</span>
+                            <span class="user-role">Administrador</span>
+                        </div>
+                    </button>
+
+                    <div class="user-dropdown-menu" id="admin-dropdown-menu">
+                        <a href="./dashboard.html" class="dropdown-item-link">
+                            <span><i class="ti ti-smart-home" style="margin-right: 8px; color: #1a73e8;"></i> Dashboard</span>
+                            <i class="ti ti-chevron-right" style="color: #94a3b8; font-size: 12px;"></i>
+                        </a>
+                        <div style="height: 1px; background: #f1f5f9; margin: 6px 0;"></div>
+                        <a href="javascript:void(0)" onclick="logoutAdmin()" class="dropdown-item-link logout">
+                            <span><i class="ti ti-logout" style="margin-right: 8px;"></i> Cerrar sesión</span>
+                            <i class="ti ti-chevron-right" style="font-size: 12px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT SCROLL CONTAINER -->
+        <section class="admin-content">
+            <!-- PAGE TITLE -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gestión de Reservas</h1>
+                    <p class="page-subtitle">Monitorea las reservas globales procesadas a través de la plataforma.</p>
+                </div>
+            </div>
+
+            <!-- SUB TABS -->
+            <div class="sub-tabs-header">
+                <button type="button" class="sub-tab-btn active" onclick="cambiarSubTab('todas', this)">Todas las reservas</button>
+                <button type="button" class="sub-tab-btn" onclick="cambiarSubTab('Confirmada', this)">Confirmadas</button>
+                <button type="button" class="sub-tab-btn" onclick="cambiarSubTab('Pendiente', this)">Pendientes</button>
+                <button type="button" class="sub-tab-btn" onclick="cambiarSubTab('Cancelada', this)">Canceladas</button>
+            </div>
+
+            <!-- COMPACT FILTER BAR WITH FILTRAR & LIMPIAR -->
+            <div class="filter-bar-compact">
+                <div class="filter-input-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" id="filtroBusqueda" placeholder="Buscar código, turista, tour..." onkeyup="if(event.key==='Enter') aplicarFiltros()">
+                </div>
+
+                <select class="filter-select" id="filtroAgencia">
+                    <option value="todos">Agencia: Todas</option>
+                    <option value="Andes Tours">Andes Tours</option>
+                    <option value="Inka Travel">Inka Travel</option>
+                    <option value="Selva Viva">Selva Viva</option>
+                    <option value="Ica Travel">Ica Travel</option>
+                    <option value="Arequipa Tours">Arequipa Tours</option>
+                    <option value="Machupicchu Tours">Machupicchu Tours</option>
+                    <option value="Aventura Perú">Aventura Perú</option>
+                </select>
+
+                <button type="button" class="btn-filter-action apply" onclick="aplicarFiltros()">
+                    <i class="ti ti-filter"></i> Filtrar
+                </button>
+                <button type="button" class="btn-filter-action clear" onclick="limpiarFiltros()">
+                    <i class="ti ti-rotate-2"></i> Limpiar
+                </button>
+
+                <div style="margin-left: auto;">
+                    <button type="button" class="btn-outline" onclick="exportarReservas()">
+                        <i class="ti ti-download"></i> Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESERVAS TABLE (5 PER PAGE) -->
+            <div class="table-card">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Turista</th>
+                            <th>Tour & Agencia</th>
+                            <th>Fecha & Cupos</th>
+                            <th>Total Pagado</th>
+                            <th>Estado</th>
+                            <th style="width: 100px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReservasBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+
+                <!-- PAGINATION BAR -->
+                <div class="table-pagination">
+                    <div class="pagination-info" id="paginacionInfo">Mostrando 1 - 5 de 0 registros</div>
+                    <div class="pagination-controls" id="paginacionControles"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL VOUCHER / DETALLE RESERVA -->
+    <div class="modal-overlay" id="modalVoucher">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h4>Detalle de Reserva</h4>
+                <button type="button" class="btn-close-modal" onclick="closeModal('modalVoucher')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="voucher-modal-grid">
+                    <div class="voucher-info-item">
+                        <label>Código de Reserva</label>
+                        <span id="vCodigo">#R-001245</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Estado</label>
+                        <span id="vEstado" class="badge-status activo" style="display:inline-block; margin-top:2px;">Confirmada</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Turista</label>
+                        <span id="vTurista">Marí­a López</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Correo</label>
+                        <span id="vEmail">maria.l@gmail.com</span>
+                    </div>
+                    <div class="voucher-info-item" style="grid-column: span 2;">
+                        <label>Tour Contratado</label>
+                        <span id="vTour">Machu Picchu Clásico Full Day</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Agencia Operadora</label>
+                        <span id="vAgencia">Andes Tours</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Fecha de Salida</label>
+                        <span id="vFechaTour">28 Abr 2025</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Personas / Cupos</label>
+                        <span id="vCupos">2 personas</span>
+                    </div>
+                    <div class="voucher-info-item">
+                        <label>Total de Reserva</label>
+                        <span id="vTotal" style="color:#1a73e8; font-size: 16px;">S/ 700.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('modalVoucher')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS SCRIPTS -->
+    <script src="../../js/administrador/admin-common.js?v=3"></script>
+    <script src="../../js/administrador/reservas.js?v=3"></script>
+</body>
+</html>

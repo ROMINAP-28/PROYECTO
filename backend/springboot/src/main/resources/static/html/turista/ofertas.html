@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Ofertas</title>
+    <link rel="stylesheet" href="../../css/style.css?v=3">
+    <link rel="stylesheet" href="../../css/turista/ofertas.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css?v=3">
+</head>
+
+<body style="background-color: #f8fafc;">
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:50%; background:#196f3d; color:#fff; display:flex; justify-content:center; align-items:center; font-size:20px; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html" class="active"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">íšnete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="ofertas-container" style="max-width: 1200px; margin: 0 auto; padding: 30px 20px 60px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="ofertas-title" style="margin: 0 0 6px 0; font-size: 28px; color: #0b1f38;">Ofertas Especiales</h1>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Aprovecha descuentos exclusivos y cupos limitados en los mejores tours del Perú.</p>
+            </div>
+        </div>
+
+        <div class="ofertas-grid" id="ofertas-grid-container">
+            <!-- Carga dinámica de ofertas desde la Base de Datos -->
+            <div class="oferta-card-item" data-nombre="Tour Colca" data-categoria="aventura naturaleza" data-destino="arequipa"
+                onclick="location.href='detalle.html?tour=colca&from=ofertas'">
+                <img src="../../img/colca.jpg" alt="Tour Colca" class="oferta-card-img"
+                    onerror="this.onerror=null; this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Tour Colca</h3>
+                            <div class="oferta-card-location">
+                                <span>Arequipa</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 70 de 100 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 160.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 2: Laguna Humantay -->
+            <div class="oferta-card-item" data-nombre="Laguna Humantay" data-categoria="naturaleza aventura" data-destino="cusco"
+                onclick="location.href='detalle.html?tour=humantay&from=ofertas'">
+                <img src="../../img/huaraz.jpg" alt="Laguna Humantay" class="oferta-card-img"
+                    onerror="this.onerror=null; this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Laguna Humantay</h3>
+                            <div class="oferta-card-location">
+                                <span>Cusco</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 25 de 50 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 150.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 3: Cañón de Cotahuasi -->
+            <div class="oferta-card-item" data-nombre="Cañón de Cotahuasi" data-categoria="aventura naturaleza" data-destino="arequipa"
+                onclick="location.href='detalle.html?tour=cotahuasi&from=ofertas'">
+                <img src="../../img/valle.jpg" alt="Cañón de Cotahuasi" class="oferta-card-img"
+                    onerror="this.onerror=null; this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Cañón de Cotahuasi</h3>
+                            <div class="oferta-card-location">
+                                <span>Arequipa</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 18 de 40 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 120.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 4: Selva Amazónica -->
+            <div class="oferta-card-item" data-nombre="Selva Amazónica" data-categoria="naturaleza aventura" data-destino="madre de dios"
+                onclick="location.href='detalle.html?tour=amazonia&from=ofertas'">
+                <img src="../../img/uros.jpg" alt="Selva Amazónica" class="oferta-card-img"
+                    onerror="this.onerror=null; this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Selva Amazónica</h3>
+                            <div class="oferta-card-location">
+                                <span>Puerto Maldonado</span>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Cupos limitados</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 12 de 30 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 250.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 5: Machu Picchu Promocional -->
+            <div class="oferta-card-item" data-nombre="Machu Picchu Promo" data-categoria="cultura historia" data-destino="cusco"
+                onclick="location.href='detalle.html?tour=machu-picchu&from=ofertas'">
+                <img src="../../img/cusco.jpg" alt="Machu Picchu" class="oferta-card-img"
+                    onerror="this.onerror=null; this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Machu Picchu Clásico</h3>
+                            <div class="oferta-card-location">
+                                <span>Cusco</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">Oferta flash</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 8 de 25 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 299.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 6: Huacachina Aventura & Relax -->
+            <div class="oferta-card-item" data-nombre="Huacachina Sandboarding" data-categoria="aventura relax" data-destino="ica"
+                onclick="location.href='detalle.html?tour=huacachina&from=ofertas'">
+                <img src="../../img/ica.jpg" alt="Huacachina" class="oferta-card-img"
+                    onerror="this.onerror=null; this.src='../../img/fondo1.png'">
+                <div class="oferta-card-content">
+                    <div class="oferta-card-top">
+                        <div>
+                            <h3 class="oferta-card-title">Huacachina Oasis</h3>
+                            <div class="oferta-card-location">
+                                <span>Ica</span> <i class="fa-regular fa-compass"></i>
+                            </div>
+                        </div>
+                        <span class="badge-cupos">2x1 Promo</span>
+                    </div>
+                    <div class="oferta-card-seats">Quedan 15 de 40 asientos</div>
+                    <div class="oferta-card-footer">
+                        <span class="oferta-card-price">S/ 99.00</span>
+                        <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje sin resultados ofertas -->
+        <div id="no-ofertas-resultados" style="display: none; text-align: center; padding: 50px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+            <i class="fas fa-tags" style="font-size: 36px; color: #cbd5e1; margin-bottom: 12px;"></i>
+            <h3 style="color: #0b1f38; font-size: 17px; margin: 0 0 6px 0;">No se encontraron ofertas</h3>
+            <p style="color: #64748b; font-size: 13.5px; margin: 0 0 16px 0;">No hay ofertas activas para esta categorí­a o término de búsqueda.</p>
+            <button onclick="limpiarFiltrosOfertas()" style="background: #196f3d; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                Restablecer ofertas
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo">
+                </div>
+                <p style="margin-top: 15px; font-size: 14px; color: #a0aec0;">Plataforma digital de turismo y
+                    Experiencias<br>en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Destinos</a></li>
+                    <li><a href="Experiencias.html">Experiencias</a></li>
+                    <li><a href="#">Ofertas</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Polí­tica de privacidí­ad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Sí­guenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js?v=3"></script>
+    <script src="../../js/turista/navigation.js?v=3"></script>
+    <script src="../../js/agencia/user_session.js?v=3"></script>
+    <script>
+                let categoriaActivaOfertas = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarOfertasDinamicas();
+        });
+
+        async function cargarOfertasDinamicas() {
+            const container = document.getElementById('ofertas-grid-container');
+            if (!container) return;
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+            try {
+                const resp = await fetch('http://localhost:8080/api/agencia/paquetes?idAgencia=0', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+                
+                if (data.status === 'success' && Array.isArray(data.paquetes) && data.paquetes.length > 0) {
+                    // Filtrar estrictamente paquetes con MENOS DE 15 ASIENTOS disponibles
+                    const conPocosCupos = data.paquetes.filter(p => {
+                        const c = p.cuposDisponibles !== undefined ? p.cuposDisponibles : (p.cupoDisponible !== undefined ? p.cupoDisponible : 10);
+                        return c < 15;
+                    });
+                    renderizarOfertasCards(conPocosCupos.length > 0 ? conPocosCupos : data.paquetes);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Backend no disponible para ofertas, usando fallback con < 15 asientos:', e);
+            }
+
+            const fallbackOfertas = [
+                { idPaquete: 1, nombre: 'Tour Cañón del Colca', destino: 'Arequipa', categoria: 'aventura naturaleza', precio: 160.00, cuposDisponibles: 7, cupoTotal: 20, imagen: '../../img/colca.jpg' },
+                { idPaquete: 2, nombre: 'Laguna Humantay Expreso', destino: 'Cusco', categoria: 'naturaleza aventura', precio: 150.00, cuposDisponibles: 5, cupoTotal: 25, imagen: '../../img/huaraz.jpg' },
+                { idPaquete: 3, nombre: 'Oasis Huacachina Sandboarding', destino: 'Ica', categoria: 'aventura relax', precio: 99.00, cuposDisponibles: 4, cupoTotal: 30, imagen: '../../img/ica.jpg' },
+                { idPaquete: 4, nombre: 'Amazonía Profunda Tambopata', destino: 'Madre de Dios', categoria: 'naturaleza aventura', precio: 1450.00, cuposDisponibles: 10, cupoTotal: 15, imagen: '../../img/selva.jpg' }
+            ];
+            renderizarOfertasCards(fallbackOfertas);
+        }
+
+        function renderizarOfertasCards(lista) {
+            const container = document.getElementById('ofertas-grid-container');
+            if (!container) return;
+
+            container.innerHTML = lista.map(p => {
+                const img = p.imagen || p.imagenUrl || '../../img/lima.jpg';
+                const cupos = p.cuposDisponibles !== undefined ? p.cuposDisponibles : (p.cupoDisponible !== undefined ? p.cupoDisponible : 7);
+                const total = p.cupoTotal || 30;
+                const destino = p.destino || p.ubicacion || 'Perú';
+                
+                return `
+                <div class="oferta-card-item" data-nombre="${(p.nombre||'').toLowerCase()}" data-destino="${(p.destino||p.ubicacion||'').toLowerCase()}"
+                    onclick="location.href='detalle.html?tour=${p.idPaquete||p.id}&from=ofertas'">
+                    <img src="${img}" alt="${p.nombre}" class="oferta-card-img"
+                        onerror="this.onerror=null; this.src='../../img/colca.jpg'">
+                    <div class="oferta-card-content">
+                        <div class="oferta-card-top">
+                            <div>
+                                <h3 class="oferta-card-title">${p.nombre}</h3>
+                                <div class="oferta-card-location">
+                                    <span>${destino}</span> <i class="fa-regular fa-compass"></i>
+                                </div>
+                            </div>
+                            <span class="badge-cupos" ${cupos <= 5 ? 'style="background:#ef4444;"' : ''}>
+                                ${cupos <= 5 ? '¡Oferta flash!' : 'Cupos limitados'}
+                            </span>
+                        </div>
+                        <div class="oferta-card-seats">
+                            Quedan ${cupos} de ${total} asientos disponibles
+                        </div>
+                        <div class="oferta-card-footer">
+                            <span class="oferta-card-price">S/ ${parseFloat(p.precio||0).toFixed(2)}</span>
+                            <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

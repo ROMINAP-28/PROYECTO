@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Iniciar sesión Admin</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../css/administrador/login.css?v=3">
+</head>
+
+<body>
+
+    <div class="login-card">
+        <!-- Badge Superior -->
+        <div class="security-badge">
+            <div class="shield-icon-wrapper">
+                <i class="ti ti-shield-lock"></i>
+            </div>
+            <span class="security-text">
+                <span class="green-dot"></span> Sesión segura
+            </span>
+        </div>
+
+        <!-- Encabezado -->
+        <h1 class="login-title">Iniciar sesión</h1>
+        <p class="login-subtitle">Acceso al panel administrativo</p>
+
+        <!-- Formulario -->
+        <form id="formAdminLogin" onsubmit="handleAdminLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="adminUsuario">Usuario</label>
+                <div class="input-wrapper">
+                    <i class="ti ti-user input-icon-left"></i>
+                    <input type="text" id="adminUsuario" class="form-input" placeholder="admin" required
+                        autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="adminPassword">Contraseña</label>
+                <div class="input-wrapper">
+                    <i class="ti ti-lock input-icon-left"></i>
+                    <input type="text" id="adminPassword" class="form-input" placeholder="Ingresa tu contraseña"
+                        required autocomplete="current-password">
+                    <i class="ti ti-eye toggle-password-btn" id="togglePasswordIcon"
+                        onclick="togglePasswordVisibility()"></i>
+                </div>
+            </div>
+
+            <div class="options-row">
+                <label class="remember-checkbox">
+                    <input type="checkbox" id="checkRemember" checked>
+                    <span>Recordarme</span>
+                </label>
+                <a href="javascript:void(0)"
+                    onclick="Swal.fire('Recuperar acceso', 'Contacta al soporte técnico institucional en soporte@travelink.pe', 'info')"
+                    class="forgot-link">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button type="submit" class="btn-login-submit" id="btnSubmitAdmin">
+                <span>Iniciar sesión</span>
+                <i class="ti ti-arrow-right"></i>
+            </button>
+        </form>
+
+        <div class="footer-divider">
+            <span>Acceso exclusivo para administradores</span>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('adminPassword');
+            const icon = document.getElementById('togglePasswordIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'ti ti-eye-off toggle-password-btn';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'ti ti-eye toggle-password-btn';
+            }
+        }
+
+        function getApiUrl(endpoint) {
+            const host = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8080')) 
+                ? 'http://localhost:8080' 
+                : '';
+            return host + endpoint;
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btnSubmitAdmin');
+            const usuario = document.getElementById('adminUsuario').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ti ti-loader ti-spin"></i> Verificando...';
+
+            try {
+                let response;
+                try {
+                    response = await fetch(getApiUrl('/api/login'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuarioCorreo: usuario, password: password })
+                    });
+                } catch (fetchErr) {
+                    // Si falló la primera URL, intentar explí­citamente a http://localhost:8080/api/login
+                    response = await fetch('http://localhost:8080/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuarioCorreo: usuario, password: password })
+                    });
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'success' && data.user) {
+                    if (data.user.idRol === 3 || data.user.idRol === '3') {
+                        localStorage.setItem('admin_user', JSON.stringify(data.user));
+                        localStorage.setItem('travelink_user', JSON.stringify(data.user));
+                        localStorage.setItem('travelink_current_user', JSON.stringify(data.user));
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Acceso Concedido!',
+                            text: 'Bienvenido al panel administrativo de Travelink, ' + (data.user.nombre || 'Administrador'),
+                            timer: 1100,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = 'index.html';
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Acceso Restringido',
+                            text: 'Esta cuenta no posee permisos de Administrador.'
+                        });
+                        btn.disabled = false;
+                        btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de autenticación',
+                        text: data.message || 'Credenciales no válidas.'
+                    });
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor backend en http://localhost:8080.'
+                });
+                btn.disabled = false;
+                btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const admin = localStorage.getItem('admin_user');
+            const travelink = localStorage.getItem('travelink_user');
+            if (admin && travelink) {
+                try {
+                    const u = JSON.parse(admin);
+                    if (u.idRol === 3 || u.idRol === '3') {
+                        window.location.href = 'index.html';
+                    }
+                } catch (e) { }
+            }
+        });
+    </script>
+</body>
+
+</html>

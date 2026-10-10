@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Comisiones</title>
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css?v=3">
+    <link rel="stylesheet" href="../../css/administrador/comisiones.css?v=3">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="./dashboard.html" class="nav-item">
+                <i class="ti ti-smart-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="./usuarios.html" class="nav-item">
+                <i class="ti ti-users"></i>
+                <span>Usuarios</span>
+            </a>
+            <a href="./tours.html" class="nav-item">
+                <i class="ti ti-compass"></i>
+                <span>Tours</span>
+            </a>
+            <a href="./agencias.html" class="nav-item">
+                <i class="ti ti-building-store"></i>
+                <span>Agencias</span>
+            </a>
+            <a href="./reservas.html" class="nav-item">
+                <i class="ti ti-calendar-event"></i>
+                <span>Reservas</span>
+            </a>
+            <a href="./calidad.html" class="nav-item">
+                <i class="ti ti-shield-check"></i>
+                <span>Calidad</span>
+            </a>
+            <a href="./comisiones.html" class="nav-item active">
+                <i class="ti ti-coins"></i>
+                <span>Comisiones</span>
+            </a>
+            <a href="./catalogo.html" class="nav-item">
+                <i class="ti ti-map-pin"></i>
+                <span>Catálogo</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="nav-item-logout" onclick="logoutAdmin()">
+                <i class="ti ti-logout"></i>
+                <span>Cerrar sesión</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div class="topbar-left">
+                <button type="button" class="topbar-menu-toggle" onclick="toggleSidebar()">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+                <div class="topbar-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" placeholder="Buscar en el panel..." onkeyup="handleGlobalSearch(event)">
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <button type="button" class="notification-btn" onclick="toggleNotifications(event)" title="Notificaciones">
+                    <i class="ti ti-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <!-- NOTIFICATIONS FLOATING CARD -->
+                <div class="notifications-dropdown-card" id="notificationsDropdownCard">
+                    <div class="notif-header">
+                        <span class="notif-title">Notificaciones</span>
+                        <a href="javascript:void(0)" class="notif-link-all" onclick="marcarTodasLeidas()">Ver todas</a>
+                    </div>
+                    <div class="notif-list">
+                        <div class="notif-item">
+                            <div class="notif-icon-circle purple"><i class="ti ti-coins"></i></div>
+                            <div class="notif-content">
+                                <h5>Comisión pendiente</h5>
+                                <p>Hay 6 agencias pendientes de liquidación.</p>
+                                <span class="notif-time">Hace 2 horas</span>
+                            </div>
+                            <span class="notif-unread-dot"></span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-mark-all-read" onclick="marcarTodasLeidas()">
+                        <i class="ti ti-check"></i> Marcar todas como leí­das
+                    </button>
+                </div>
+
+                <!-- USER PROFILE -->
+                <div class="user-dropdown-container">
+                    <button type="button" class="user-profile-toggle" onclick="toggleAdminDropdown(event)">
+                        <div class="user-avatar-img" id="adminAvatarLetter">A</div>
+                        <div class="user-info-text">
+                            <span class="user-name" id="adminTopName">Admin</span>
+                            <span class="user-role">Administrador</span>
+                        </div>
+                    </button>
+
+                    <div class="user-dropdown-menu" id="admin-dropdown-menu">
+                        <a href="./dashboard.html" class="dropdown-item-link">
+                            <span><i class="ti ti-smart-home" style="margin-right: 8px; color: #1a73e8;"></i> Dashboard</span>
+                            <i class="ti ti-chevron-right" style="color: #94a3b8; font-size: 12px;"></i>
+                        </a>
+                        <div style="height: 1px; background: #f1f5f9; margin: 6px 0;"></div>
+                        <a href="javascript:void(0)" onclick="logoutAdmin()" class="dropdown-item-link logout">
+                            <span><i class="ti ti-logout" style="margin-right: 8px;"></i> Cerrar sesión</span>
+                            <i class="ti ti-chevron-right" style="font-size: 12px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT SCROLL CONTAINER -->
+        <section class="admin-content">
+            <!-- PAGE TITLE -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Liquidación de Comisiones</h1>
+                    <p class="page-subtitle">Gestiona y procesa los cobros de comisiones de las agencias afiliadas.</p>
+                </div>
+            </div>
+
+            <!-- KPIS GRID -->
+            <div class="comisiones-kpis-grid">
+                <div class="comision-kpi-card">
+                    <div class="kpi-icon-square blue"><i class="ti ti-wallet"></i></div>
+                    <div class="kpi-info-block">
+                        <h3 id="kpiTotalComisiones">S/ 0.00</h3>
+                        <p>Total de comisiones del periodo</p>
+                    </div>
+                </div>
+                <div class="comision-kpi-card">
+                    <div class="kpi-icon-square purple"><i class="ti ti-coins"></i></div>
+                    <div class="kpi-info-block">
+                        <h3 id="kpiMontoPendiente">S/ 0.00</h3>
+                        <p>Pendiente por liquidar</p>
+                    </div>
+                </div>
+                <div class="comision-kpi-card">
+                    <div class="kpi-icon-square amber"><i class="ti ti-building-store"></i></div>
+                    <div class="kpi-info-block">
+                        <h3 id="kpiAgenciasPendientes">0 agencias</h3>
+                        <p>Agencias pendientes de pago</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPACT FILTER BAR WITH FILTRAR & LIMPIAR -->
+            <div class="filter-bar-compact">
+                <div class="filter-input-search">
+                    <i class="ti ti-search"></i>
+                    <input type="text" id="filtroBusqueda" placeholder="Buscar agencia, RUC..." onkeyup="if(event.key==='Enter') aplicarFiltros()">
+                </div>
+
+                <select class="filter-select" id="filtroAgencia">
+                    <option value="todos">Agencia: Todas</option>
+                </select>
+
+                <select class="filter-select" id="filtroEstado">
+                    <option value="todos">Estado: Todos</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Liquidado">Liquidado</option>
+                </select>
+
+                <button type="button" class="btn-filter-action apply" onclick="aplicarFiltros()">
+                    <i class="ti ti-filter"></i> Filtrar
+                </button>
+                <button type="button" class="btn-filter-action clear" onclick="limpiarFiltros()">
+                    <i class="ti ti-rotate-2"></i> Limpiar
+                </button>
+
+                <div style="margin-left: auto;">
+                    <button type="button" class="btn-outline" onclick="exportarComisiones()">
+                        <i class="ti ti-download"></i> Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- COMISIONES TABLE (5 PER PAGE) -->
+            <div class="table-card">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">#</th>
+                            <th>Agencia</th>
+                            <th>Periodo</th>
+                            <th>Ventas Totales</th>
+                            <th>% Comisión</th>
+                            <th>Monto Travelink</th>
+                            <th>Estado</th>
+                            <th style="width: 120px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaComisionesBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+
+                <!-- PAGINATION BAR -->
+                <div class="table-pagination">
+                    <div class="pagination-info" id="paginacionInfo">Mostrando 1 - 5 de 0 registros</div>
+                    <div class="pagination-controls" id="paginacionControles"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JS SCRIPTS -->
+    <script src="../../js/administrador/admin-common.js?v=3"></script>
+    <script src="../../js/administrador/comisiones.js?v=3"></script>
+</body>
+</html>

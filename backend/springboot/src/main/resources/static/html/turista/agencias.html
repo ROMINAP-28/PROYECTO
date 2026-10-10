@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Agencias de turismo</title>
+    <link rel="stylesheet" href="../../css/style.css?v=3">
+    <link rel="stylesheet" href="../../css/turista/agencias.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css?v=3">
+</head>
+
+<body style="background-color: #f8fafc;">
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:50%; background:#196f3d; color:#fff; display:flex; justify-content:center; align-items:center; font-size:20px; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3>briane</h3>
+                        <p>briadayanainfantes@gmail.com</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html" class="active"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">íšnete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="agencias-layout">
+        <!-- Sidebar Filtros -->
+        <aside class="agencias-sidebar" style="height: fit-content;">
+            <h2 class="sidebar-title">Agencias de turismo</h2>
+
+            <div class="filter-group">
+                <label>Buscar agencia</label>
+                <div class="search-box-agency">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="agencia-busqueda" placeholder="Nombre de la agencia..." oninput="aplicarFiltrosAgencias()">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Ubicación</label>
+                <select class="filter-select" id="agencia-ubicacion" onchange="aplicarFiltrosAgencias()">
+                    <option value="">Todas las ubicaciones</option>
+                    <option value="amazonas">Amazonas</option>
+                    <option value="ancash">íncash</option>
+                    <option value="apurimac">Apurí­mac</option>
+                    <option value="arequipa">Arequipa</option>
+                    <option value="ayacucho">Ayacucho</option>
+                    <option value="cajamarca">Cajamarca</option>
+                    <option value="callao">Callao</option>
+                    <option value="cusco">Cusco</option>
+                    <option value="huancavelica">Huancavelica</option>
+                    <option value="huanuco">Huánuco</option>
+                    <option value="ica">Ica</option>
+                    <option value="junin">Juní­n</option>
+                    <option value="la-libertad">La Libertad</option>
+                    <option value="lambayeque">Lambayeque</option>
+                    <option value="lima">Lima</option>
+                    <option value="loreto">Loreto</option>
+                    <option value="madre-de-dios">Madre de Dios</option>
+                    <option value="moquegua">Moquegua</option>
+                    <option value="pasco">Pasco</option>
+                    <option value="piura">Piura</option>
+                    <option value="puno">Puno</option>
+                    <option value="san-martin">San Martí­n</option>
+                    <option value="tacna">Tacna</option>
+                    <option value="tumbes">Tumbes</option>
+                    <option value="ucayali">Ucayali</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Calificación</label>
+                <select id="agencia-calificacion" onchange="aplicarFiltrosAgencias()"
+                    style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+                    <option value="">Todas las calificaciones</option>
+                    <option value="5">â­â­â­â­â­ (5 estrellas)</option>
+                    <option value="4">â­â­â­â­ (4+ estrellas)</option>
+                    <option value="3">â­â­â­ (3+ estrellas)</option>
+                    <option value="2">â­â­ (2+ estrellas)</option>
+                    <option value="1">â­ (1+ estrella)</option>
+                </select>
+            </div>
+
+            <button onclick="aplicarFiltrosAgencias(event)"
+                style="width:100%; background:#196f3d; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-filter"></i> Aplicar filtros
+            </button>
+            <button onclick="limpiarFiltrosAgencias(event)"
+                style="width:100%; background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-sync-alt"></i> Limpiar filtros
+            </button>
+        </aside>
+
+        <!-- Content Lista de Agencias -->
+        <section class="agencias-content">
+            <div style="margin-bottom: 16px; font-size: 14px; color: #64748b; font-weight: 600;" id="contador-agencias">
+                Mostrando agencias
+            </div>
+
+            <div class="agencias-list" id="agencias-container">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: #64748b; font-size: 15px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #196f3d; margin-bottom: 15px;"></i><br>
+                    Cargando agencias de Travelink...
+                </div>
+            </div>
+
+            <!-- Mensaje sin resultados -->
+            <div id="no-agencias-resultados" style="display: none; text-align: center; padding: 60px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+                <i class="fas fa-building" style="font-size: 40px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                <h3 style="color: #0b1f38; font-size: 18px; margin: 0 0 8px 0;">No se encontraron agencias</h3>
+                <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">No encontramos agencias que coincidan con tu búsqueda. Intenta con otros filtros o restablece los criterios.</p>
+                <button onclick="limpiarFiltrosAgencias(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    <i class="fas fa-sync-alt"></i> Limpiar filtros
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img src="../../img/logo.png" alt="Travelink Logo">
+                </div>
+                <p style="margin-top: 15px; font-size: 14px; color: #a0aec0;">Plataforma digital de turismo y
+                    Experiencias<br>en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="experiencias.html">Experiencias</a></li>
+                    <li><a href="agencias.html">Agencias</a></li>
+                    <li><a href="ofertas.html">Ofertas</a></li>
+                    <li><a href="nosotros.html">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Polí­tica de privacidad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Sí­guenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js?v=3"></script>
+    <script src="../../js/turista/navigation.js?v=3"></script>
+    <script src="../../js/agencia/user_session.js?v=3"></script>
+    <script src="../../js/turista/agencias.js?v=3"></script>
+</body>
+
+</html>

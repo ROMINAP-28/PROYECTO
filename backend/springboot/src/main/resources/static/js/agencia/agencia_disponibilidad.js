@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Travelink - Módulo Disponibilidad y Cupos
  */
 (function () {
@@ -95,7 +95,7 @@
 
     async function cargarServiciosAgencia() {
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/servicios?idAgencia=${idAgenciaActual}`);
+            const res = await fetch(`/api/agencia/servicios?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
             if (data.status === "success" && data.servicios) {
                 serviciosAgencia = data.servicios;
@@ -116,7 +116,7 @@
         const timeoutId = setTimeout(() => controller.abort(), 1500);
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/disponibilidad?idAgencia=${idAgenciaActual}`, {
+            const res = await fetch(`/api/agencia/disponibilidad?idAgencia=${idAgenciaActual}`, {
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
@@ -346,7 +346,7 @@
                 params.append("cupoTotal", cupos);
 
                 try {
-                    await fetch("http://localhost:8080/api/agencia/disponibilidad", {
+                    await fetch("/api/agencia/disponibilidad", {
                         method: "POST",
                         headers: { "Content-Type": "application/x-www-form-urlencoded" },
                         body: params.toString()
@@ -449,7 +449,7 @@
             params.append("action", accion);
             params.append("idDisponibilidad", id);
 
-            await fetch("http://localhost:8080/api/agencia/disponibilidad", {
+            await fetch("/api/agencia/disponibilidad", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: params.toString()
@@ -470,7 +470,7 @@
             params.append("action", "eliminar");
             params.append("idDisponibilidad", id);
 
-            await fetch("http://localhost:8080/api/agencia/disponibilidad", {
+            await fetch("/api/agencia/disponibilidad", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: params.toString()

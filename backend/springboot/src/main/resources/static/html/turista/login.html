@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -126,7 +126,7 @@
                 return;
             }
 
-            fetch('http://localhost:8080/api/login', {
+            fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ usuarioCorreo: usuarioCorreo, password: password })

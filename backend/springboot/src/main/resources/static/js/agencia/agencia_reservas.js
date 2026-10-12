@@ -1,4 +1,4 @@
-?/**
+﻿?/**
  * Travelink - Módulo Reservas Agencia
  */
 (function () {
@@ -96,7 +96,7 @@
         if (!tablaReservas) return;
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/reservas?idAgencia=${idAgenciaActual}`);
+            const res = await fetch(`/api/agencia/reservas?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
             if (data.status === "success" && Array.isArray(data.reservas)) {
                 todasLasReservas = data.reservas;
@@ -289,7 +289,7 @@
         }
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/reservas", {
+            const res = await fetch("/api/agencia/reservas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "confirmar", idReserva: id, idAgencia: idAgenciaActual })
@@ -313,7 +313,7 @@
         }
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/reservas", {
+            const res = await fetch("/api/agencia/reservas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "cancelar", idReserva: id, idAgencia: idAgenciaActual })
@@ -333,7 +333,7 @@
         aplicarFiltros();
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/reservas", {
+            const res = await fetch("/api/agencia/reservas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "eliminar", idReserva: id, idAgencia: idAgenciaActual })

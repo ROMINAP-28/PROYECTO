@@ -1,4 +1,4 @@
-// Travelink - Form Reserva Controller & Stepper Logic
+﻿// Travelink - Form Reserva Controller & Stepper Logic
 
 $(document).ready(function() {
     if (typeof toastr !== 'undefined') {
@@ -333,7 +333,7 @@ function confirmarReserva() {
     };
 
     // Petición a la base de datos MySQL
-    fetch('http://localhost:8080/api/guardar_reserva', {
+    fetch('/api/guardar_reserva', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

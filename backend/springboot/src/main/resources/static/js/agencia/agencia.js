@@ -1,4 +1,4 @@
-const datosAgencia = JSON.parse(localStorage.getItem("datosAgencia")) || {};
+﻿const datosAgencia = JSON.parse(localStorage.getItem("datosAgencia")) || {};
 
 function guardarDatos(datos) {
     Object.assign(datosAgencia, datos);
@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     mostrarMensaje(mensaje, "Enviando solicitud...", "success");
 
-                    const respuesta = await fetch("http://localhost:8080/api/agencia/registro", {
+                    const respuesta = await fetch("/api/agencia/registro", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 mostrarMensaje(mensaje, "Verificando datos...", "success");
 
-                const respuesta = await fetch("http://localhost:8080/api/agencia/login", {
+                const respuesta = await fetch("/api/agencia/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -430,7 +430,7 @@ async function cargarDestinos() {
     if (!destinoServicio) return;
 
     try {
-        const response = await fetch("http://localhost:8080/api/agencia/destinos");
+        const response = await fetch("/api/agencia/destinos");
         const data = await response.json();
 
         destinoServicio.innerHTML = '<option value="">Seleccionar destino</option>';
@@ -456,7 +456,7 @@ async function cargarServicios() {
 
     try {
         const response = await fetch(
-            `http://localhost:8080/api/agencia/servicios?idAgencia=${ID_AGENCIA_PRUEBA}`
+            `/api/agencia/servicios?idAgencia=${ID_AGENCIA_PRUEBA}`
         );
 
         const data = await response.json();
@@ -636,7 +636,7 @@ if (formServicioBD) {
             // ==============================
 
             const response = await fetch(
-                "http://localhost:8080/api/agencia/servicios",
+                "/api/agencia/servicios",
                 {
                     method: "POST",
                     headers: {
@@ -720,7 +720,7 @@ if (formServicioBD) {
                 }
 
                 const responseDisponibilidad = await fetch(
-                    "http://localhost:8080/api/agencia/disponibilidad",
+                    "/api/agencia/disponibilidad",
                     {
                         method: "POST",
                         headers: {
@@ -833,7 +833,7 @@ async function editarServicio(idServicio) {
     // Consultar disponibilidades de la agencia
     try {
         const response = await fetch(
-            `http://localhost:8080/api/agencia/disponibilidad?idAgencia=${ID_AGENCIA_PRUEBA}`
+            `/api/agencia/disponibilidad?idAgencia=${ID_AGENCIA_PRUEBA}`
         );
 
         if (!response.ok) {
@@ -920,7 +920,7 @@ async function cargarDisponibilidades() {
         `;
 
         const response = await fetch(
-            `http://localhost:8080/api/agencia/disponibilidad?idAgencia=${ID_AGENCIA_PRUEBA}`
+            `/api/agencia/disponibilidad?idAgencia=${ID_AGENCIA_PRUEBA}`
         );
 
         const data = await response.json();
@@ -1136,7 +1136,7 @@ const ID_AGENCIA_RESERVAS =
     ID_AGENCIA_RESERVAS_PRUEBA;
 
 const API_RESERVAS =
-    `http://localhost:8080/api/agencia/reservas?idAgencia=${ID_AGENCIA_RESERVAS}`;
+    `/api/agencia/reservas?idAgencia=${ID_AGENCIA_RESERVAS}`;
 
 // Elementos HTML de Reservas
 const tablaReservas = document.getElementById("tablaReservas");
@@ -1415,7 +1415,7 @@ async function confirmarReserva(idReserva) {
     if (!confirm("¿Deseas confirmar esta reserva? El pago asociado pasará a estado COMPLETADO.")) return;
     try {
         const idAgencia = (typeof ID_AGENCIA_RESERVAS !== "undefined" && ID_AGENCIA_RESERVAS) ? ID_AGENCIA_RESERVAS : 1;
-        const res = await fetch("http://localhost:8080/api/agencia/reservas", {
+        const res = await fetch("/api/agencia/reservas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "confirmar", idReserva: Number(idReserva), idAgencia: idAgencia })
@@ -1437,7 +1437,7 @@ async function cancelarReserva(idReserva) {
     if (!confirm("¿Estás seguro de que deseas cancelar esta reserva? Esta acción cambiará el estado a CANCELADA.")) return;
     try {
         const idAgencia = (typeof ID_AGENCIA_RESERVAS !== "undefined" && ID_AGENCIA_RESERVAS) ? ID_AGENCIA_RESERVAS : 1;
-        const res = await fetch("http://localhost:8080/api/agencia/reservas", {
+        const res = await fetch("/api/agencia/reservas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "cancelar", idReserva: Number(idReserva), idAgencia: idAgencia })
@@ -1654,7 +1654,7 @@ if (tablaReservas) {
     // Solo se ejecuta en la página de pagos
     if (!tablaPagos || !tablaLiquidaciones) return;
 
-    const API_PAGOS = "http://localhost:8080/api/agencia/pagos";
+    const API_PAGOS = "/api/agencia/pagos";
 
     let pagos = [];
     let liquidaciones = [];
@@ -1989,7 +1989,7 @@ async function cargarDashboardAgencia() {
     if(nombre) nombre.textContent = sesión.nombreComercial;
 
     try {
-        const res = await fetch(`http://localhost:8080/api/agencia/dashboard?idAgencia=${sesión.idAgencia}`);
+        const res = await fetch(`/api/agencia/dashboard?idAgencia=${sesión.idAgencia}`);
         const data = await res.json();
         if (data.status === "success") {
             // Indicadores

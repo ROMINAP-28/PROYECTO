@@ -1,4 +1,4 @@
-?/**
+﻿?/**
  * Travelink - Módulo Paquetes Turísticos
  */
 (function () {
@@ -93,7 +93,7 @@
         if (!gridPaquetes) return;
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/paquetes?idAgencia=${idAgenciaActual}`);
+            const res = await fetch(`/api/agencia/paquetes?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
             if (data.status === "success" && Array.isArray(data.paquetes)) {
                 todosLosPaquetes = data.paquetes;
@@ -485,7 +485,7 @@
                 cerrarModal(modalPaquete);
 
                 try {
-                    const res = await fetch("http://localhost:8080/api/agencia/paquetes", {
+                    const res = await fetch("/api/agencia/paquetes", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload)
@@ -622,7 +622,7 @@
         }
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/paquetes", {
+            const res = await fetch("/api/agencia/paquetes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -648,7 +648,7 @@
         aplicarFiltros();
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/paquetes", {
+            const res = await fetch("/api/agencia/paquetes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -1,10 +1,10 @@
-?/**
+﻿?/**
  * Travelink Admin Common Helpers
  * Session check, sidebar, notifications card, profile menu, and dynamic paginator (5 items/page)
  */
 
 const API_SERVER = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8080')) 
-    ? 'http://localhost:8080' 
+    ? '' 
     : '';
 const API_BASE = `${API_SERVER}/api/admin`;
 

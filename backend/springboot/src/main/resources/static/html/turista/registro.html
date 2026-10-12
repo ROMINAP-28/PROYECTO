@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -203,7 +203,7 @@
                 idRol: 2
             };
 
-            fetch('http://localhost:8080/api/registro', {
+            fetch('/api/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

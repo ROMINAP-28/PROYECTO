@@ -1,4 +1,4 @@
-// Travelink - Lógica de Experiencias y Filtros
+﻿// Travelink - Lógica de Experiencias y Filtros
 
 function normalizarTexto(str) {
     if (!str) return '';
@@ -178,7 +178,7 @@ window.cargarPaquetesDinamicos = async function() {
     const timeoutId = setTimeout(() => controller.abort(), 1500);
 
     try {
-        const resp = await fetch(`http://localhost:8080/api/agencia/paquetes?idAgencia=${idAgenciaParam}`, { signal: controller.signal });
+        const resp = await fetch(`/api/agencia/paquetes?idAgencia=${idAgenciaParam}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         const data = await resp.json();
         

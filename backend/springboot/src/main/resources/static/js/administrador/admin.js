@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Travelink Admin Dashboard & Management System
  * Handles 7 core views: Inicio (Dashboard), Usuarios, Tours, Agencias, Reservas, Reportes, Configuración
  */
 
 const API_SERVER = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8080')) 
-    ? 'http://localhost:8080' 
+    ? '' 
     : '';
 const API_BASE = `${API_SERVER}/api/admin`;
 let chartReservasMesInstance = null;

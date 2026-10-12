@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -88,7 +88,7 @@
 
         function getApiUrl(endpoint) {
             const host = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8080')) 
-                ? 'http://localhost:8080' 
+                ? '' 
                 : '';
             return host + endpoint;
         }
@@ -111,8 +111,8 @@
                         body: JSON.stringify({ usuarioCorreo: usuario, password: password })
                     });
                 } catch (fetchErr) {
-                    // Si falló la primera URL, intentar explí­citamente a http://localhost:8080/api/login
-                    response = await fetch('http://localhost:8080/api/login', {
+                    // Si falló la primera URL, intentar explí­citamente a /api/login
+                    response = await fetch('/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ usuarioCorreo: usuario, password: password })
@@ -159,7 +159,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de conexión',
-                    text: 'No se pudo conectar con el servidor backend en http://localhost:8080.'
+                    text: 'No se pudo conectar con el servidor backend en .'
                 });
                 btn.disabled = false;
                 btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';

@@ -1,4 +1,4 @@
-// Travelink - Reservas Dynamic Management & PDF Voucher Generator (User Scoped)
+﻿// Travelink - Reservas Dynamic Management & PDF Voucher Generator (User Scoped)
 
 const ITEMS_PER_PAGE = 10;
 let currentPage = 1;
@@ -72,7 +72,7 @@ function cargarReservasDesdeDB() {
     const email = user.email || 'briadayanainfantes@gmail.com';
     const key = getUserReservasKey();
 
-    fetch(`http://localhost:8080/api/obtener_reservas?correo=${encodeURIComponent(email)}`)
+    fetch(`/api/obtener_reservas?correo=${encodeURIComponent(email)}`)
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success' && Array.isArray(data.reservas) && data.reservas.length > 0) {

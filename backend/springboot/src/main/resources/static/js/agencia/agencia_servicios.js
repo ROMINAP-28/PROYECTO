@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Travelink - Módulo Servicios Turísticos (Fase 3)
  */
 
@@ -123,7 +123,7 @@
             btnLogout.addEventListener("click", (e) => {
                 e.preventDefault();
                 localStorage.removeItem("agenciaSesion");
-                window.location.href = "http://localhost:8080/html/Agencia/R_agencia_login.html";
+                window.location.href = "/html/Agencia/R_agencia_login.html";
             });
         }
     }
@@ -133,7 +133,7 @@
     // ==========================================
     async function cargarDestinos() {
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/destinos");
+            const res = await fetch("/api/agencia/destinos");
             const data = await res.json();
             if (data.status === "success" && data.destinos) {
                 destinosCargados = data.destinos;
@@ -157,7 +157,7 @@
         if (!tablaServicios) return;
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/servicios?idAgencia=${idAgenciaActual}`);
+            const res = await fetch(`/api/agencia/servicios?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
 
             if (data.status === "success" && Array.isArray(data.servicios)) {
@@ -758,7 +758,7 @@
         mensajeServicio.textContent = "Guardando servicio turístico...";
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/servicios", {
+            const res = await fetch("/api/agencia/servicios", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -794,7 +794,7 @@
         if (!confirm(`¿Estás seguro de que deseas ${accionTexto} este servicio?`)) return;
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/servicios", {
+            const res = await fetch("/api/agencia/servicios", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -830,7 +830,7 @@
         }
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/servicios", {
+            const res = await fetch("/api/agencia/servicios", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -909,7 +909,7 @@
                 };
 
                 try {
-                    const res = await fetch("http://localhost:8080/api/agencia/tipos", {
+                    const res = await fetch("/api/agencia/tipos", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload)
@@ -961,7 +961,7 @@
         tablaTiposBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">Cargando tipos...</td></tr>`;
 
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/tipos");
+            const res = await fetch("/api/agencia/tipos");
             const data = await res.json();
             if (data.status === "success" && data.tipos) {
                 tiposDisponibles = data.tipos;
@@ -1011,7 +1011,7 @@
     window.eliminarTipo = async function (id, nombre) {
         if (!confirm(`¿Eliminar el tipo "${nombre}"?`)) return;
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/tipos", {
+            const res = await fetch("/api/agencia/tipos", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "eliminar", idTipo: id })
@@ -1031,7 +1031,7 @@
 
     async function cargarTiposDropdown() {
         try {
-            const res = await fetch("http://localhost:8080/api/agencia/tipos");
+            const res = await fetch("/api/agencia/tipos");
             const data = await res.json();
             if (data.status === "success" && data.tipos) {
                 tiposDisponibles = data.tipos;

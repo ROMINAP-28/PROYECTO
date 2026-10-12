@@ -1,4 +1,4 @@
-?/**
+﻿?/**
  * Travelink - Módulo Pagos y Liquidaciones Agencia
  */
 (function () {
@@ -85,7 +85,7 @@
         const timeoutId = setTimeout(() => controller.abort(), 1500);
 
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/pagos?idAgencia=${idAgenciaActual}`, {
+            const res = await fetch(`/api/agencia/pagos?idAgencia=${idAgenciaActual}`, {
                 signal: controller.signal
             });
             clearTimeout(timeoutId);

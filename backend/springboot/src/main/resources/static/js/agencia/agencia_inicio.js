@@ -1,4 +1,4 @@
-?/**
+﻿?/**
  * Travelink - Panel Inicio Agencia Dashboard
  */
 (function () {
@@ -89,7 +89,7 @@
 
     async function cargarDashboard() {
         try {
-            const res = await fetch(`http://localhost:8080/api/agencia/dashboard?idAgencia=${idAgenciaActual}`);
+            const res = await fetch(`/api/agencia/dashboard?idAgencia=${idAgenciaActual}`);
             const data = await res.json();
             if (data.status === "success") {
                 renderizarDashboard(data);

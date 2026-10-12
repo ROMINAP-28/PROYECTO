@@ -1,4 +1,4 @@
-// Travelink - Lógica de Agencias y Filtros
+﻿// Travelink - Lógica de Agencias y Filtros
 
 function normalizarTexto(str) {
     if (!str) return '';
@@ -90,7 +90,7 @@ window.cargarAgenciasDinamicas = async function() {
     const timeoutId = setTimeout(() => controller.abort(), 1500);
 
     try {
-        const resp = await fetch('http://localhost:8080/api/admin/agencias', { signal: controller.signal });
+        const resp = await fetch('/api/admin/agencias', { signal: controller.signal });
         clearTimeout(timeoutId);
         const data = await resp.json();
         const lista = (data && data.data && Array.isArray(data.data.agencias)) ? data.data.agencias : [];

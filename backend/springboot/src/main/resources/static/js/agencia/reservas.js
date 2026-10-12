@@ -1,4 +1,4 @@
-﻿// Travelink - Reservas Dynamic Management & PDF Voucher Generator (User Scoped)
+// Travelink - Reservas Dynamic Management & PDF Voucher Generator (User Scoped)
 
 const ITEMS_PER_PAGE = 5;
 let currentPage = 1;
@@ -617,7 +617,10 @@ window.actualizarContadorModal = function(textarea) {
     }
 };
 
+let enviandoCalificacionLock = false;
 window.enviarCalificacion = function() {
+    if (enviandoCalificacionLock) return;
+
     if (currentSelectedRating === 0) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({
@@ -645,11 +648,19 @@ window.enviarCalificacion = function() {
         comentario: comentario
     };
 
+    enviandoCalificacionLock = true;
+    const btnSubmit = document.querySelector('.btn-modal-submit');
+    if (btnSubmit) { btnSubmit.disabled = true; btnSubmit.innerText = 'Enviando...'; }
+
     // Make the API call to save to database
     fetch('/api/calificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
+    })
+    .finally(() => {
+        enviandoCalificacionLock = false;
+        if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerText = 'Enviar calificación'; }
     })
     .then(response => response.json())
     .then(data => {

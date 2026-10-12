@@ -47,7 +47,7 @@
         </nav>
 
         <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">íšnete como agencia</a>
+            <a href="../Agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
               <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
             <a href="registro.html" class="btn-auth-register">Registrarse</a>
         </div>
@@ -71,8 +71,8 @@
                 <select class="filter-select" id="agencia-ubicacion" onchange="aplicarFiltrosAgencias()">
                     <option value="">Todas las ubicaciones</option>
                     <option value="amazonas">Amazonas</option>
-                    <option value="ancash">íncash</option>
-                    <option value="apurimac">Apurí­mac</option>
+                    <option value="ancash">Áncash</option>
+                    <option value="apurimac">Apurímac</option>
                     <option value="arequipa">Arequipa</option>
                     <option value="ayacucho">Ayacucho</option>
                     <option value="cajamarca">Cajamarca</option>
@@ -81,7 +81,7 @@
                     <option value="huancavelica">Huancavelica</option>
                     <option value="huanuco">Huánuco</option>
                     <option value="ica">Ica</option>
-                    <option value="junin">Juní­n</option>
+                    <option value="junin">Junín</option>
                     <option value="la-libertad">La Libertad</option>
                     <option value="lambayeque">Lambayeque</option>
                     <option value="lima">Lima</option>
@@ -91,7 +91,7 @@
                     <option value="pasco">Pasco</option>
                     <option value="piura">Piura</option>
                     <option value="puno">Puno</option>
-                    <option value="san-martin">San Martí­n</option>
+                    <option value="san-martin">San Martín</option>
                     <option value="tacna">Tacna</option>
                     <option value="tumbes">Tumbes</option>
                     <option value="ucayali">Ucayali</option>
@@ -103,19 +103,19 @@
                 <select id="agencia-calificacion" onchange="aplicarFiltrosAgencias()"
                     style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                     <option value="">Todas las calificaciones</option>
-                    <option value="5">â­â­â­â­â­ (5 estrellas)</option>
-                    <option value="4">â­â­â­â­ (4+ estrellas)</option>
-                    <option value="3">â­â­â­ (3+ estrellas)</option>
-                    <option value="2">â­â­ (2+ estrellas)</option>
-                    <option value="1">â­ (1+ estrella)</option>
+                    <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                    <option value="4">⭐⭐⭐⭐ (4+ estrellas)</option>
+                    <option value="3">⭐⭐⭐ (3+ estrellas)</option>
+                    <option value="2">⭐⭐ (2+ estrellas)</option>
+                    <option value="1">⭐ (1+ estrella)</option>
                 </select>
             </div>
 
-            <button onclick="aplicarFiltrosAgencias(event)"
+            <button type="button" id="btn-aplicar-filtros" onclick="aplicarFiltrosAgencias(event)"
                 style="width:100%; background:#196f3d; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
                 <i class="fas fa-filter"></i> Aplicar filtros
             </button>
-            <button onclick="limpiarFiltrosAgencias(event)"
+            <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltrosAgencias(event)"
                 style="width:100%; background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
                 <i class="fas fa-sync-alt"></i> Limpiar filtros
             </button>
@@ -139,7 +139,7 @@
                 <i class="fas fa-building" style="font-size: 40px; color: #cbd5e1; margin-bottom: 16px;"></i>
                 <h3 style="color: #0b1f38; font-size: 18px; margin: 0 0 8px 0;">No se encontraron agencias</h3>
                 <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">No encontramos agencias que coincidan con tu búsqueda. Intenta con otros filtros o restablece los criterios.</p>
-                <button onclick="limpiarFiltrosAgencias(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltrosAgencias(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
                     <i class="fas fa-sync-alt"></i> Limpiar filtros
                 </button>
             </div>

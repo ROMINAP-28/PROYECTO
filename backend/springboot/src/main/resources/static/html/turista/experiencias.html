@@ -135,22 +135,22 @@
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Calificaciones</h4>
-                    <select id="calificacion" onchange="aplicarFiltrosExperiencias()"
+                                        <select id="calificacion" onchange="aplicarFiltrosExperiencias()"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Todas las calificaciones</option>
-                        <option value="5">????? (5 estrellas)</option>
-                        <option value="4">???? (4+ estrellas)</option>
-                        <option value="3">??? (3+ estrellas)</option>
-                        <option value="2">?? (2+ estrellas)</option>
-                        <option value="1">? (1+ estrella)</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                        <option value="4">⭐⭐⭐⭐ (4+ estrellas)</option>
+                        <option value="3">⭐⭐⭐ (3+ estrellas)</option>
+                        <option value="2">⭐⭐ (2+ estrellas)</option>
+                        <option value="1">⭐ (1+ estrella)</option>
                     </select>
                 </div>
 
-                <button id="btn-aplicar-filtros" onclick="aplicarFiltrosExperiencias(event)"
+                <button type="button" id="btn-aplicar-filtros" onclick="aplicarFiltrosExperiencias(event)"
                     style="width:100%; background:#196f3d; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
                     <i class="fas fa-filter"></i> Aplicar filtros
                 </button>
-                <button onclick="limpiarFiltros(event)"
+                <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltros(event)"
                     style="width:100%; background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:12px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
                     <i class="fas fa-sync-alt"></i> Limpiar filtros
                 </button>
@@ -189,7 +189,7 @@
                     <i class="fas fa-search" style="font-size: 40px; color: #cbd5e1; margin-bottom: 16px;"></i>
                     <h3 style="color: #0b1f38; font-size: 18px; margin: 0 0 8px 0;">No se encontraron experiencias</h3>
                     <p style="color: #64748b; font-size: 14px; margin: 0 0 20px 0;">No hay tours que coincidan con tus filtros actuales. Prueba cambiando los criterios o restablece los filtros.</p>
-                    <button onclick="limpiarFiltros(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltros(event)" style="background: #196f3d; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">
                         <i class="fas fa-sync-alt"></i> Limpiar filtros
                     </button>
                 </div>

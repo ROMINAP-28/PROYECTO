@@ -1,4 +1,4 @@
-﻿const datosAgencia = JSON.parse(localStorage.getItem("datosAgencia")) || {};
+const datosAgencia = JSON.parse(localStorage.getItem("datosAgencia")) || {};
 
 function guardarDatos(datos) {
     Object.assign(datosAgencia, datos);

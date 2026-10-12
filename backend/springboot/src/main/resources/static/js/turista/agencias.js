@@ -1,4 +1,4 @@
-﻿// Travelink - Lógica de Agencias y Filtros
+// Travelink - Lógica de Agencias y Filtros
 
 function normalizarTexto(str) {
     if (!str) return '';
@@ -81,7 +81,10 @@ window.cargarAgenciasDinamicas = async function() {
         { id: 3, idUsuario: 5, nombre: 'AGENCIA ALEGRIA S.A', ciudad: 'Cusco', ruc: '10721439114', rating: 4.8, descripcion: 'Excursiones y viajes inolvidables en los mejores destinos turísticos.' },
         { id: 5, idUsuario: 8, nombre: 'AGENCIA SELVA S.A', ciudad: 'Madre de Dios', ruc: '10721439116', rating: 4.8, descripcion: 'Explora la Amazonía peruana, flora y fauna silvestre.' },
         { id: 6, idUsuario: 9, nombre: 'TOUR AREQUIPA S.A.S', ciudad: 'Arequipa', ruc: '10721439118', rating: 4.9, descripcion: 'Rutas guiadas por la Ciudad Blanca y el Cañón del Colca.' },
-        { id: 7, idUsuario: 10, nombre: 'TOUR LIMA S.A', ciudad: 'Lima', ruc: '10721439113', rating: 4.8, descripcion: 'Tours urbanos, centro histórico colonial y gastronomía en Lima.' }
+        { id: 7, idUsuario: 10, nombre: 'TOUR LIMA S.A', ciudad: 'Lima', ruc: '10721439113', rating: 4.8, descripcion: 'Tours urbanos, centro histórico colonial y gastronomía en Lima.' },
+        { id: 8, idUsuario: 11, nombre: 'HUASCARÁN EXPEDITIONS S.A.C.', ciudad: 'Áncash', ruc: '20601239999', rating: 4.8, descripcion: 'Trekking en la Cordillera Blanca, Laguna 69, Pastoruri y expediciones en Huaraz.' },
+        { id: 9, idUsuario: 12, nombre: 'TITICACA EXPLORER S.R.L.', ciudad: 'Puno', ruc: '20601238888', rating: 4.7, descripcion: 'Navegación en el Lago Titicaca, islas flotantes de los Uros, Taquile y Amantaní.' },
+        { id: 10, idUsuario: 13, nombre: 'OASIS AVENTURA ICA S.A.C.', ciudad: 'Ica', ruc: '20601237777', rating: 4.6, descripcion: 'Tours a Huacachina, tubulares por las dunas, sandboarding y ruta del Pisco.' }
     ];
 
     let agenciasFinales = fallbackAgencias;

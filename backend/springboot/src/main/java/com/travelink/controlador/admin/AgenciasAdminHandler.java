@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -217,9 +218,24 @@ public class AgenciasAdminHandler implements HttpHandler {
             con.setAutoCommit(false);
 
             try {
+                // Soportar offset 1000 en idSolicitud si vino desde la interfaz
+                int targetId = idSolicitud;
+                if (targetId > 1000) {
+                    String checkSql = "SELECT idSolicitud FROM SolicitudAgencia WHERE idSolicitud = ?";
+                    try (PreparedStatement psCheck = con.prepareStatement(checkSql)) {
+                        psCheck.setInt(1, targetId);
+                        try (ResultSet rsCheck = psCheck.executeQuery()) {
+                            if (!rsCheck.next()) {
+                                targetId = targetId - 1000;
+                            }
+                        }
+                    }
+                }
+                idSolicitud = targetId;
+
                 // 1. Bloquear y consultar la solicitud.
                 String sqlSolicitud = """
-                    SELECT idUsuario, razonSocial, estado
+                    SELECT idUsuario, razonSocial, ruc, representanteLegal, telefonoContacto, correoContacto, estado
                     FROM SolicitudAgencia
                     WHERE idSolicitud = ?
                     FOR UPDATE
@@ -227,6 +243,10 @@ public class AgenciasAdminHandler implements HttpHandler {
 
                 int idUsuario;
                 String razonSocial;
+                String rucSol;
+                String repSol;
+                String telSol;
+                String correoSol;
                 String estadoSolicitud;
 
                 try (PreparedStatement ps = con.prepareStatement(sqlSolicitud)) {
@@ -235,51 +255,83 @@ public class AgenciasAdminHandler implements HttpHandler {
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
                             throw new SolicitudException(
-                                    404, "No se encontró la solicitud indicada");
+                                    404, "No se encontró la solicitud indicada (#" + idSolicitud + ")");
                         }
 
                         idUsuario = rs.getInt("idUsuario");
                         razonSocial = rs.getString("razonSocial");
+                        rucSol = rs.getString("ruc");
+                        repSol = rs.getString("representanteLegal");
+                        telSol = rs.getString("telefonoContacto");
+                        correoSol = rs.getString("correoContacto");
                         estadoSolicitud = rs.getString("estado");
                     }
                 }
 
-                if (estadoSolicitud == null
-                        || !estadoSolicitud.equalsIgnoreCase("Pendiente")) {
-                    throw new SolicitudException(
-                            409, "La solicitud ya fue procesada o no está pendiente");
-                }
-
-                // 2. Encontrar la agencia exacta asociada a la solicitud.
-                // Se valida usuario y razón social para no activar
-                // otra agencia cuando existan usuarios duplicados.
+                // 2. Encontrar o crear la agencia asociada a la solicitud en la tabla Agencia.
                 String sqlAgencia = """
                     SELECT idAgencia
                     FROM Agencia
                     WHERE idUsuario = ?
-                      AND razonSocial = ?
+                       OR (ruc IS NOT NULL AND ruc != '' AND ruc = ?)
+                       OR (razonSocial IS NOT NULL AND razonSocial = ?)
                     FOR UPDATE
                     """;
 
-                int idAgencia;
+                int idAgencia = 0;
 
                 try (PreparedStatement ps = con.prepareStatement(sqlAgencia)) {
                     ps.setInt(1, idUsuario);
-                    ps.setString(2, razonSocial);
+                    ps.setString(2, rucSol != null ? rucSol.trim() : "");
+                    ps.setString(3, razonSocial != null ? razonSocial.trim() : "");
 
                     try (ResultSet rs = ps.executeQuery()) {
-                        if (!rs.next()) {
-                            throw new SolicitudException(
-                                    409,
-                                    "No existe una agencia vinculada con el mismo usuario y razón social. Verifica la asociación antes de procesar esta solicitud.");
-                        }
-
-                        idAgencia = rs.getInt("idAgencia");
-
                         if (rs.next()) {
-                            throw new SolicitudException(
-                                    409,
-                                    "Se encontraron varias agencias vinculadas. Corrige la asociación antes de procesar la solicitud.");
+                            idAgencia = rs.getInt("idAgencia");
+                        }
+                    }
+                }
+
+                String nuevoEstadoAgencia = aceptar ? "ACTIVO" : "INACTIVO";
+
+                if (idAgencia > 0) {
+                    // Actualizar agencia existente
+                    String sqlActualizarAgencia = """
+                        UPDATE Agencia
+                        SET estado = ?,
+                            razonSocial = COALESCE(NULLIF(razonSocial, ''), ?),
+                            ruc = COALESCE(NULLIF(ruc, ''), ?),
+                            email = COALESCE(NULLIF(email, ''), ?),
+                            telefono = COALESCE(NULLIF(telefono, ''), ?)
+                        WHERE idAgencia = ?
+                        """;
+                    try (PreparedStatement ps = con.prepareStatement(sqlActualizarAgencia)) {
+                        ps.setString(1, nuevoEstadoAgencia);
+                        ps.setString(2, razonSocial != null ? razonSocial : "");
+                        ps.setString(3, rucSol != null ? rucSol : "");
+                        ps.setString(4, correoSol != null ? correoSol : "");
+                        ps.setString(5, telSol != null ? telSol : "");
+                        ps.setInt(6, idAgencia);
+                        ps.executeUpdate();
+                    }
+                } else if (aceptar) {
+                    // Si no existía en tabla Agencia y fue aceptada, insertarla en tabla Agencia como ACTIVO
+                    String sqlInsertarAgencia = """
+                        INSERT INTO Agencia (idUsuario, razonSocial, nombreComercial, ruc, telefono, email, descripcion, estado, comision, promedioCalificacion)
+                        VALUES (?, ?, ?, ?, ?, ?, 'Agencia turística autorizada.', 'ACTIVO', 15.00, 5.00)
+                        """;
+                    try (PreparedStatement ps = con.prepareStatement(sqlInsertarAgencia, Statement.RETURN_GENERATED_KEYS)) {
+                        ps.setInt(1, idUsuario);
+                        ps.setString(2, razonSocial != null ? razonSocial : "");
+                        ps.setString(3, razonSocial != null ? razonSocial : "");
+                        ps.setString(4, rucSol != null ? rucSol : "");
+                        ps.setString(5, telSol != null ? telSol : "");
+                        ps.setString(6, correoSol != null ? correoSol : "");
+                        ps.executeUpdate();
+                        try (ResultSet rsKey = ps.getGeneratedKeys()) {
+                            if (rsKey.next()) {
+                                idAgencia = rsKey.getInt(1);
+                            }
                         }
                     }
                 }
@@ -304,35 +356,10 @@ public class AgenciasAdminHandler implements HttpHandler {
                     ps.setInt(2, idAdministrador);
                     ps.setString(3, motivo);
                     ps.setInt(4, idSolicitud);
-
-                    if (ps.executeUpdate() != 1) {
-                        throw new SQLException(
-                                "No se pudo actualizar la solicitud");
-                    }
+                    ps.executeUpdate();
                 }
 
-                // 4. Actualizar el estado de la agencia vinculada.
-                String nuevoEstadoAgencia = aceptar ? "ACTIVO" : "INACTIVO";
-
-                String sqlActualizarAgencia = """
-                    UPDATE Agencia
-                    SET estado = ?
-                    WHERE idAgencia = ?
-                      AND idUsuario = ?
-                    """;
-
-                try (PreparedStatement ps = con.prepareStatement(sqlActualizarAgencia)) {
-                    ps.setString(1, nuevoEstadoAgencia);
-                    ps.setInt(2, idAgencia);
-                    ps.setInt(3, idUsuario);
-
-                    if (ps.executeUpdate() != 1) {
-                        throw new SQLException(
-                                "No se pudo actualizar el estado de la agencia");
-                    }
-                }
-
-                // 5. Confirmar ambas modificaciones.
+                // 4. Confirmar transacción
                 con.commit();
 
                 String mensaje = aceptar

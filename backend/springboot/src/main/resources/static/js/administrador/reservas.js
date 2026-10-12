@@ -1,4 +1,4 @@
-?/**
+/**
  * Travelink - Gestión de Reservas
  * Sub-tabs, Filtros compactos, Paginación dinámica (máx 5 registros) y Detalle
  */
@@ -181,16 +181,28 @@ function cambiarEstadoReserva(id, nuevoEstado) {
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            r.estado = nuevoEstado;
             try {
-                await fetch(`${API_BASE}/reservas`, {
+                const res = await fetch(`${API_BASE}/reservas`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(r)
+                    body: JSON.stringify({
+                        id: r.id,
+                        codigo: r.codigo,
+                        estado: nuevoEstado
+                    })
                 });
-            } catch (e) {}
-            aplicarFiltros();
-            Swal.fire('Actualizado', `La reserva ahora está ${nuevoEstado}`, 'success');
+                const resData = await res.json();
+                if (res.ok && resData.status === 'success') {
+                    r.estado = nuevoEstado;
+                    aplicarFiltros();
+                    Swal.fire('Actualizado', `La reserva ahora está ${nuevoEstado} en la base de datos.`, 'success');
+                } else {
+                    throw new Error(resData.message || 'Error al actualizar');
+                }
+            } catch (e) {
+                console.error('Error al actualizar estado:', e);
+                Swal.fire('Error', 'No se pudo actualizar el estado en la base de datos: ' + e.message, 'error');
+            }
         }
     });
 }

@@ -247,19 +247,18 @@ async function procesarSolicitud(id, decision) {
         return;
     }
 
-    const idAdministrador = Number(usuario.idUsuario);
+    const idAdministrador = (Number.isInteger(Number(usuario.idUsuario)) && Number(usuario.idUsuario) > 0)
+        ? Number(usuario.idUsuario)
+        : (Number.isInteger(Number(usuario.id)) && Number(usuario.id) > 0 ? Number(usuario.id) : 1);
 
-    if (!Number.isInteger(idAdministrador) || idAdministrador <= 0) {
-        Swal.fire('Error', 'No se pudo identificar al administrador.', 'error');
-        return;
-    }
+    const realIdSolicitud = Number(a.idSolicitud || (a.id > 1000 ? a.id - 1000 : a.id));
 
     try {
         const res = await fetch(`${API_BASE}/agencias`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                idSolicitud: Number(a.id),
+                idSolicitud: realIdSolicitud,
                 decision: decision,
                 idAdministrador: idAdministrador
             })

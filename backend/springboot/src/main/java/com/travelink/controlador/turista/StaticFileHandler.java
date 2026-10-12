@@ -28,7 +28,7 @@ import com.travelink.repositorio.ReservaRepositorio;
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
-            if (path.equals("/") || path.equals("/index.html")) {
+            if (path.equals("/") || path.equals("/index.html") || path.equals("/html/index.html")) {
                 path = "/index.html";
             }
 

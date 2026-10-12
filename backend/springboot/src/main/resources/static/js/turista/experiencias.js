@@ -1,4 +1,4 @@
-﻿// Travelink - Lógica de Experiencias y Filtros
+// Travelink - Lógica de Experiencias y Filtros
 
 function normalizarTexto(str) {
     if (!str) return '';
@@ -34,8 +34,8 @@ window.aplicarFiltrosExperiencias = function(e) {
         const cardNombre = normalizarTexto(card.getAttribute('data-nombre') || '');
         const cardText = normalizarTexto(card.innerText || '');
 
-        let matchesDestino = !destino || cardDestino.includes(destino) || destino.includes(cardDestino);
-        let matchesCategoria = !categoria || cardCategoria.includes(categoria);
+        let matchesDestino = !destino || cardDestino.includes(destino) || cardNombre.includes(destino) || cardText.includes(destino);
+        let matchesCategoria = !categoria || cardCategoria.includes(categoria) || cardNombre.includes(categoria) || cardText.includes(categoria);
         let matchesCalificacion = isNaN(calificacionMin) || calificacionMin === 0 || cardRating >= calificacionMin;
         
         let matchesBusqueda = true;

@@ -1,4 +1,4 @@
-﻿// Travelink - Form Reserva Controller & Stepper Logic
+// Travelink - Form Reserva Controller & Stepper Logic
 
 $(document).ready(function() {
     if (typeof toastr !== 'undefined') {

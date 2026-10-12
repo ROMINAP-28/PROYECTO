@@ -13,6 +13,31 @@ public class CalificacionPersistencia implements CalificacionRepositorio {
 
     @Override
     public Calificacion guardar(Calificacion calificacion) {
+        if (calificacion == null) return null;
+
+        // 1. Verificar si ya existe una calificación para esta reserva
+        if (calificacion.getIdReserva() > 0) {
+            Optional<Calificacion> existente = buscarPorReserva(calificacion.getIdReserva());
+            if (existente.isPresent()) {
+                Calificacion c = existente.get();
+                String updateSql = "UPDATE Calificacion SET estrellas = ?, comentario = ?, fechaCalificacion = NOW() WHERE idCalificacion = ?";
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement(updateSql)) {
+                    ps.setInt(1, calificacion.getEstrellas());
+                    ps.setString(2, calificacion.getComentario());
+                    ps.setInt(3, c.getIdCalificacion());
+                    ps.executeUpdate();
+                    c.setEstrellas(calificacion.getEstrellas());
+                    c.setComentario(calificacion.getComentario());
+                    return c;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        // 2. Si no existe, insertar nueva calificación
         String sql = "INSERT INTO Calificacion (idUsuario, idAgencia, idReserva, estrellas, comentario, fechaCalificacion) VALUES (?, ?, ?, ?, ?, NOW())";
         try (Connection con = ConexionDB.getConnection()) {
             try (Statement st = con.createStatement()) {

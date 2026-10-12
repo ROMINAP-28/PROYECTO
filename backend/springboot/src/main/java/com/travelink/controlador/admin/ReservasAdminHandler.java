@@ -32,6 +32,41 @@ import com.travelink.repositorio.ReservaRepositorio;
                 exchange.sendResponseHeaders(200, -1);
                 return;
             }
+
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                String body = JavaApiServer.readRequestBody(exchange);
+                Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+
+                int idReserva = 0;
+                try { idReserva = Integer.parseInt(String.valueOf(params.getOrDefault("id", "0"))); } catch (Exception ignored) {}
+                String codigo = String.valueOf(params.getOrDefault("codigo", "")).trim();
+                String nuevoEstado = String.valueOf(params.getOrDefault("estado", "")).trim();
+
+                if (nuevoEstado.isEmpty()) {
+                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Estado inválido\"}");
+                    return;
+                }
+
+                String sqlUpdate = "UPDATE Reserva SET estado = ? WHERE idReserva = ? OR (codigoReserva = ? AND ? != '')";
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement(sqlUpdate)) {
+                    ps.setString(1, nuevoEstado);
+                    ps.setInt(2, idReserva);
+                    ps.setString(3, codigo);
+                    ps.setString(4, codigo);
+                    int filas = ps.executeUpdate();
+                    if (filas > 0) {
+                        JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Estado de reserva actualizado a " + nuevoEstado + "\"}");
+                    } else {
+                        JavaApiServer.sendJsonResponse(exchange, 404, "{\"status\":\"error\",\"message\":\"No se encontró la reserva con ID " + idReserva + " o código " + codigo + "\"}");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al actualizar estado en BD: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
+                }
+                return;
+            }
+
             StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
             boolean primero = true;
             String sql = "SELECT r.idReserva AS id, r.codigoReserva AS codigo, CONCAT(p.nombre, ' ', p.apellidoPaterno) AS turista, p.email, COALESCE(r.nombreTour, 'Tour Turístico') AS tour, a.razonSocial AS agencia, r.fechaInicio AS fechaTour, (COALESCE(dr.cantAdultos, 1) + COALESCE(dr.cantNinos, 0)) AS cupos, r.total, r.estado, DATE(r.fechaRegistro) AS fechaReserva FROM Reserva r JOIN Usuario u ON r.idUsuario = u.idUsuario JOIN Persona p ON u.idPersona = p.idPersona JOIN Agencia a ON r.idAgencia = a.idAgencia LEFT JOIN DetalleReserva dr ON r.idReserva = dr.idReserva ORDER BY r.idReserva DESC";

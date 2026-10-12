@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Travelink - Módulo Disponibilidad y Cupos
  */
 (function () {

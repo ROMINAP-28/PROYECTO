@@ -7,7 +7,7 @@ public class CheckColumnsDB {
     public static void main(String[] args) {
         try (Connection con = ConexionDB.getConnection()) {
             DatabaseMetaData meta = con.getMetaData();
-            String[] tables = {"Calificacion", "Comision", "Liquidacion", "Notificacion", "Persona", "Usuario", "Reserva", "Tour", "Agencia"};
+            String[] tables = {"MetodoPago", "Pago", "DetalleReserva", "Pasajero", "TourFecha", "PaqueteTuristico", "ServicioTuristico"};
             for (String t : tables) {
                 System.out.println("=== TABLA: " + t + " ===");
                 try (ResultSet rs = meta.getColumns(null, null, t, null)) {

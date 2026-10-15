@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../js/comun/config.js"></script>
+    <script src="../../js/comun/api.js"></script>
+    <script src="../../js/comun/user_session.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Iniciar sesión</title>
+    <link rel="stylesheet" href="../../css/turista/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="auth-page">
+    <div class="auth-container-fullscreen">
+        <!-- Left Hero Column -->
+        <div class="auth-hero-col">
+            <div>
+                <a href="/index.html" class="auth-hero-logo">
+                    <img loading="lazy" src="../../img/logo.png" alt="Travelink Logo">
+                </a>
+                <h1 class="auth-hero-title">Explora el mundo<br>vive nuevas experiencias</h1>
+            </div>
+
+            <!-- Bottom Left Feature Badges -->
+            <div class="auth-hero-features">
+                <div class="feature-pill">
+                    <div class="feature-pill-icon">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <span>Tours confiables</span>
+                </div>
+                <div class="feature-pill">
+                    <div class="feature-pill-icon">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <span>Varias agencias</span>
+                </div>
+                <div class="feature-pill">
+                    <div class="feature-pill-icon">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <span>Atención 24/7</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Form Card -->
+        <div class="auth-card-wrap login-card-wrap">
+            <div class="auth-card">
+                <h2 class="auth-card-title">¡Bienvenido de nuevo!</h2>
+                <p class="auth-card-subtitle">Inicia sesión y continúa explorando el Perú</p>
+
+                <form id="formLogin" class="auth-form">
+                    <div class="form-group">
+                        <label for="usuarioCorreo">Usuario o Correo</label>
+                        <input type="text" id="usuarioCorreo" placeholder="Usuario o Correo electrónico" required maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="input-password-wrap">
+                            <input type="password" id="password" placeholder="Contraseña" required>
+                            <i class="fa-regular fa-eye eye-icon" onclick="togglePassword(this, 'password')"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-green-submit" id="btnSubmitLogin">
+                        <span>Iniciar sesión</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <div class="forgot-password-wrap">
+                        <a href="#" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
+                    </div>
+                </form>
+
+                <div class="auth-card-divider">
+                    <span>o</span>
+                </div>
+
+                <div class="auth-card-footer">
+                    ¿No tienes una cuenta? <a href="registro.html">Regístrate</a>
+                </div>
+
+                <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 13px; color: #64748b; display: flex; justify-content: center; align-items: center; gap: 14px;">
+                    <a href="../../index.html" style="color: #196f3d; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-house"></i> Inicio</a>
+                    <span>•</span>
+                    <a href="../agencia/R_agencia_login.html" style="color: #2563eb; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-building"></i> Soy una agencia</a>
+                    <span>•</span>
+                    <a href="../administrador/login.html" style="color: #d97706; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Acceso Admin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.js"></script>
+    <script src="../../js/validador.js"></script>
+
+    <script>
+        function togglePassword(iconEl, inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                iconEl.classList.remove('fa-eye', 'fa-regular');
+                iconEl.classList.add('fa-eye-slash', 'fa-regular');
+            } else {
+                input.type = 'password';
+                iconEl.classList.remove('fa-eye-slash', 'fa-regular');
+                iconEl.classList.add('fa-eye', 'fa-regular');
+            }
+        }
+
+        $(document).ready(function () {
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    positionClass: 'toast-top-right',
+                    timeOut: 3000,
+                    closeButton: true,
+                    progressBar: true
+                };
+            }
+        });
+
+        document.getElementById('formLogin').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const usuarioCorreo = document.getElementById('usuarioCorreo').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const btn = document.getElementById('btnSubmitLogin');
+
+            if (!usuarioCorreo || !password) {
+                if (typeof toastr !== 'undefined') toastr.warning('Ingresa tu usuario/correo y contraseña.', 'Campos requeridos');
+                return;
+            }
+
+            const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+            const targetUrl = redirectParam ? decodeURIComponent(redirectParam) : '/index.html';
+
+            btn.disabled = true;
+
+            try {
+                const res = await window.apiFetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: usuarioCorreo, clave: password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.idUsuario) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success('¡Bienvenido, ' + data.nombre + '!', 'Inicio de sesión exitoso');
+                    }
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 500);
+                } else {
+                    btn.disabled = false;
+                    const msg = data.message || data.error || 'Credenciales no válidas.';
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(msg, 'Error de autenticación');
+                    } else {
+                        alert(msg);
+                    }
+                }
+            } catch (err) {
+                btn.disabled = false;
+                console.error('Error durante login:', err);
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('No se pudo conectar con el servidor.', 'Error de red');
+                } else {
+                    alert('Error de conexión.');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
+

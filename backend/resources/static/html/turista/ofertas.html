@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="../../js/comun/config.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Ofertas</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/turista/ofertas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body style="background-color: #f8fafc;">
+    <header class="navbar navbar-home-clean"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 14px 40px; background-color: #ffffff; border-bottom: 1px solid #eef2f6;">
+        <div class="logo">
+            <a href="/index.html" style="display:flex; align-items:center; text-decoration:none;">
+                <img loading="lazy" src="../../img/logoverde.png" alt="Travelink Logo" style="height: 40px;"
+                    onerror="this.onerror=null; this.src='../../img/logo.png';">
+            </a>
+        </div>
+
+        <i class="fas fa-bars menu-toggle" id="menu-toggle-btn" style="color: #0b1f38;"></i>
+
+        <nav class="nav-links" style="display: flex; gap: 28px; align-items: center;">
+            <div class="mobile-menu-header hide-on-desktop">
+                <div class="mobile-menu-user" style="display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:50%; background:#196f3d; color:#fff; display:flex; justify-content:center; align-items:center; font-size:20px; flex-shrink:0;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="mobile-menu-info">
+                        <h3></h3>
+                        <p></p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-menu-btn" title="Cerrar menú"></i>
+            </div>
+            <a href="/index.html"><i class="fa-solid fa-house hide-on-desktop"></i> Inicio</a>
+            <a href="experiencias.html"><i class="fa-regular fa-compass hide-on-desktop"></i> Experiencias</a>
+            <a href="agencias.html"><i class="fa-solid fa-building hide-on-desktop"></i> Agencias</a>
+            <a href="ofertas.html" class="active"><i class="fa-solid fa-tags hide-on-desktop"></i> Ofertas</a>
+            <a href="nosotros.html"><i class="fa-solid fa-users hide-on-desktop"></i> Sobre nosotros</a>
+            <div class="menu-divider hide-on-desktop"></div>
+            <a href="login.html" class="hide-on-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i> Iniciar
+                sesión</a>
+        </nav>
+
+        <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="../agencia/R_agencia_login.html" class="btn-unirse-agencia">Únete como agencia</a>
+              <a href="login.html" class="btn-auth-login">Iniciar sesión</a>
+            <a href="registro.html" class="btn-auth-register">Registrarse</a>
+        </div>
+    </header>
+
+    <main class="ofertas-container" style="max-width: 1200px; margin: 0 auto; padding: 30px 20px 60px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 class="ofertas-title" style="margin: 0 0 6px 0; font-size: 28px; color: #0b1f38;">Ofertas Especiales</h1>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Aprovecha descuentos exclusivos y cupos limitados en los mejores tours del Perú.</p>
+            </div>
+        </div>
+
+        <div class="ofertas-grid" id="ofertas-grid-container">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #64748b;">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #196f3d;"></i>
+                <p style="margin-top: 12px; font-weight: 600;">Cargando ofertas disponibles...</p>
+            </div>
+        </div>
+
+        <!-- Mensaje sin resultados ofertas -->
+        <div id="no-ofertas-resultados" style="display: none; text-align: center; padding: 50px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+            <i class="fas fa-tags" style="font-size: 36px; color: #cbd5e1; margin-bottom: 12px;"></i>
+            <h3 style="color: #0b1f38; font-size: 17px; margin: 0 0 6px 0;">No se encontraron ofertas</h3>
+            <p style="color: #64748b; font-size: 13.5px; margin: 0 0 16px 0;">No hay ofertas activas para esta categoríÂ­a o término de búsqueda.</p>
+            <button onclick="limpiarFiltrosOfertas()" style="background: #196f3d; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                Restablecer ofertas
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <img loading="lazy" src="../../img/logo.png" alt="Travelink Logo">
+                </div>
+                <p style="margin-top: 15px; font-size: 14px; color: #a0aec0;">Plataforma digital de turismo y
+                    Experiencias<br>en todo el Perú.</p>
+            </div>
+            <div>
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Destinos</a></li>
+                    <li><a href="Experiencias.html">Experiencias</a></li>
+                    <li><a href="#">Ofertas</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Ayuda</h4>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">PolíÂ­tica de privacidíÂ­ad</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>SíÂ­guenos</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../js/turista/navigation.js"></script>
+    <script src="../../js/comun/api.js"></script>
+    <script src="../../js/comun/user_session.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarOfertasDinamicas();
+        });
+
+        async function cargarOfertasDinamicas() {
+            const container = document.getElementById('ofertas-grid-container');
+            const noRes = document.getElementById('no-ofertas-resultados');
+            if (!container) return;
+
+            try {
+                // Requerimiento 5: Salidas de TourFecha con cupoDisponible <= minAsientosOferta del tour O descuento > 0
+                const resp = await fetch('/api/tours?ofertas=true');
+                if (!resp.ok) throw new Error('Error al cargar ofertas');
+                const data = await resp.json();
+                
+                const ofertas = (data && data.status === 'success' && Array.isArray(data.data)) ? data.data : [];
+
+                if (ofertas.length === 0) {
+                    container.style.display = 'none';
+                    if (noRes) noRes.style.display = 'block';
+                    return;
+                }
+
+                container.style.display = 'grid';
+                if (noRes) noRes.style.display = 'none';
+
+                container.innerHTML = ofertas.map(p => {
+                    const img = p.imagenPrincipal || p.imagen || '../../img/colca.jpg';
+                    const cupos = p.cuposDisponibles !== undefined ? p.cuposDisponibles : 5;
+                    const total = p.cupoTotal || 20;
+                    const destino = p.destino || p.ubicacion || 'Perú';
+                    const minOferta = p.minAsientosOferta || 5;
+                    const pAdulto = parseFloat(p.precioAdulto || p.precio || 0);
+                    const desc = parseFloat(p.descuento || 0);
+
+                    let precioFinal = pAdulto;
+                    let badgeDescHtml = '';
+                    let precioOriginalHtml = '';
+
+                    if (desc > 0) {
+                        precioFinal = pAdulto * (1 - (desc / 100));
+                        badgeDescHtml = `<span style="background:#ef4444; color:white; font-size:11px; font-weight:bold; padding:4px 8px; border-radius:12px; margin-left:6px;">-${desc}%</span>`;
+                        precioOriginalHtml = `<span style="text-decoration:line-through; color:#94a3b8; font-size:12px; display:block;">S/ ${pAdulto.toFixed(2)}</span>`;
+                    }
+
+                    const badgeCupos = cupos <= minOferta
+                        ? `<span class="badge-cupos" style="background:#ef4444; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">¡ÚLTIMOS ${cupos} ESPACIOS!</span>`
+                        : `<span class="badge-cupos" style="background:#f59e0b; color:white; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:20px;">Oferta especial</span>`;
+
+                    const ratingVal = parseFloat(p.calificacionPromedio || p.calificacion || 0);
+                    const totalCalif = parseInt(p.totalCalificaciones || 0);
+                    const ratingHtml = (totalCalif > 0 && ratingVal > 0)
+                        ? `<span style="color:#f59e0b; font-size:12px; font-weight:700;"><i class="fas fa-star"></i> ${ratingVal.toFixed(1)}</span>`
+                        : '';
+
+                    return `
+                    <div class="oferta-card-item" data-nombre="${(p.nombre||'').toLowerCase()}" data-destino="${destino.toLowerCase()}"
+                        onclick="location.href='detalle.html?tour=${p.idTour || p.id}&from=ofertas'" style="cursor:pointer;">
+                        <img loading="lazy" src="${img}" alt="${p.nombre}" class="oferta-card-img"
+                            onerror="this.onerror=null; this.src='../../img/colca.jpg'">
+                        <div class="oferta-card-content">
+                            <div class="oferta-card-top">
+                                <div>
+                                    <h3 class="oferta-card-title">${p.nombre}</h3>
+                                    <div class="oferta-card-location">
+                                        <span><i class="fa-solid fa-location-dot" style="color:#196f3d;"></i> ${destino}</span>
+                                        ${ratingHtml}
+                                    </div>
+                                    <div style="font-size:12px; color:#64748b; margin-top:2px;">
+                                        <i class="fas fa-building" style="width:14px;"></i> ${p.agencia || 'Agencia Travelink'}
+                                    </div>
+                                </div>
+                                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                                    ${badgeCupos}
+                                    ${badgeDescHtml}
+                                </div>
+                            </div>
+                            <div class="oferta-card-seats" style="font-size:12.5px; color:#475569; margin: 10px 0;">
+                                <i class="fa-solid fa-users" style="color:#64748b; margin-right:4px;"></i> Quedan <strong>${cupos}</strong> de ${total} asientos disponibles
+                            </div>
+                            <div class="oferta-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    ${precioOriginalHtml}
+                                    <span style="font-size:11px; color:#64748b;">Desde</span>
+                                    <span class="oferta-card-price" style="font-size:18px; font-weight:800; color:#0b1f38;">S/ ${precioFinal.toFixed(2)}</span>
+                                </div>
+                                <div class="oferta-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                console.error('Error al cargar ofertas:', err);
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: #ef4444; background: #fef2f2; border-radius: 12px; border: 1px solid #fee2e2;">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x" style="margin-bottom: 10px;"></i>
+                        <p style="margin: 0; font-weight: 600;">No se pudieron cargar las ofertas en este momento.</p>
+                    </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

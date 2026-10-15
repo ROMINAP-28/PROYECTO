@@ -5,24 +5,19 @@
 target/
 bin/
 out/
-backend/springboot/target/
-backend/springboot/bin/
-backend/springboot/sources.txt
+backend/bin/
+backend/target/
+.maven/
 
-# IntelliJ IDEA
+# IDE files
 .idea/
 *.iml
 *.iws
 *.ipr
-
-# Eclipse
 .project
 .classpath
 .settings/
-
-# VS Code (except settings if shared, but keep user local configs ignored)
-.vscode/launch.json
-.vscode/*.log
+.vscode/
 
 # Logs & Temp files
 *.log
@@ -33,3 +28,9 @@ replay_pid*
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Spring Local Configuration & Secrets
+application-local.properties
+application-*.properties
+!application.properties
+!application-dev.properties

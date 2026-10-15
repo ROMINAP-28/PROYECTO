@@ -7,7 +7,7 @@ echo ===================================================
 cd /d "%~dp0"
 
 echo Iniciando Travelink con Maven Wrapper (perfil dev)...
-call mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=dev
+call mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Error durante la ejecucion de la aplicacion.
     pause

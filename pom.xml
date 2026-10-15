@@ -70,10 +70,10 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>backend/src</sourceDirectory>
+        <sourceDirectory>Springboot/src</sourceDirectory>
         <resources>
             <resource>
-                <directory>backend/resources</directory>
+                <directory>Springboot/resources</directory>
             </resource>
         </resources>
 

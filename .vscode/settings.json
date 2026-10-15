@@ -1,11 +1,8 @@
 {
     "java.project.sourcePaths": [
-        "backend/springboot/src/main/java"
+        "Springboot/src"
     ],
-    "java.project.referencedLibraries": [
-        "backend/springboot/lib/**/*.jar"
-    ],
-    "java.project.outputPath": "backend/springboot/bin",
+    "java.project.outputPath": "target/classes",
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx16G -Xms100m -Xlog:disable",

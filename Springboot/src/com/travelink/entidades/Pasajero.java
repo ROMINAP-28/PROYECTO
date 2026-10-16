@@ -17,9 +17,6 @@ public class Pasajero {
     @Column(name = "nroDocumento", nullable = false, length = 20)
     private String nroDocumento;
 
-    @Column(name = "telefono", length = 20)
-    private String telefono;
-
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
@@ -29,17 +26,11 @@ public class Pasajero {
     @Column(name = "apellidoMaterno", length = 100)
     private String apellidoMaterno;
 
-    @Column(name = "apellidos", nullable = false, length = 200)
-    private String apellidos;
-
     @Column(name = "esTitular")
     private Boolean esTitular = false;
 
     @Column(name = "tipo", length = 20)
     private String tipo = "ADULTO";
-
-    @Column(name = "edad")
-    private Integer edad;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,12 +42,13 @@ public class Pasajero {
         this.tipo = "ADULTO";
     }
 
-    public Pasajero(Integer idPasajero, Integer idReserva, String nroDocumento, String nombre, String apellidos, Boolean esTitular) {
+    public Pasajero(Integer idPasajero, Integer idReserva, String nroDocumento, String nombre, String apellidoPaterno, String apellidoMaterno, Boolean esTitular) {
         this.idPasajero = idPasajero;
         this.idReserva = idReserva;
         this.nroDocumento = nroDocumento;
         this.nombre = nombre;
-        this.apellidos = apellidos;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
         this.esTitular = esTitular;
     }
 
@@ -71,9 +63,6 @@ public class Pasajero {
     public String getNroDocumento() { return nroDocumento; }
     public void setNroDocumento(String nroDocumento) { this.nroDocumento = nroDocumento; }
 
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
@@ -83,8 +72,18 @@ public class Pasajero {
     public String getApellidoMaterno() { return apellidoMaterno; }
     public void setApellidoMaterno(String apellidoMaterno) { this.apellidoMaterno = apellidoMaterno; }
 
-    public String getApellidos() { return apellidos; }
-    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+    public String getApellidos() {
+        return ((apellidoPaterno != null ? apellidoPaterno : "") + " " + (apellidoMaterno != null ? apellidoMaterno : "")).trim();
+    }
+    public void setApellidos(String apellidos) {
+        if (apellidos != null && (apellidoPaterno == null || apellidoPaterno.isEmpty())) {
+            String[] parts = apellidos.trim().split(" ");
+            this.apellidoPaterno = parts[0];
+            if (parts.length > 1) {
+                this.apellidoMaterno = apellidos.trim().substring(parts[0].length()).trim();
+            }
+        }
+    }
 
     public Boolean getEsTitular() { return esTitular != null ? esTitular : false; }
     public void setEsTitular(Boolean esTitular) { this.esTitular = esTitular; }
@@ -93,9 +92,6 @@ public class Pasajero {
     public String getTipo() { return tipo != null ? tipo : "ADULTO"; }
     public void setTipo(String tipo) { this.tipo = tipo; }
 
-    public Integer getEdad() { return edad; }
-    public void setEdad(Integer edad) { this.edad = edad; }
-
     public Reserva getReserva() { return reserva; }
     public void setReserva(Reserva reserva) {
         this.reserva = reserva;
@@ -103,6 +99,7 @@ public class Pasajero {
     }
 
     public String getNombreCompleto() {
-        return (nombre != null ? nombre : "") + " " + (apellidos != null ? apellidos : "").trim();
+        String ape = getApellidos();
+        return ((nombre != null ? nombre : "") + " " + ape).trim();
     }
 }

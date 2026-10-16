@@ -60,9 +60,30 @@ public class AuthResponse {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
+    private String nombres;
+    private String apellidoPaterno;
+    private String apellidoMaterno;
     private String nroDocumento;
     private String telefono;
     private String apellidos;
+
+    public String getNombres() { return nombres; }
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+        if (this.user != null) this.user.put("nombres", nombres);
+    }
+
+    public String getApellidoPaterno() { return apellidoPaterno; }
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+        if (this.user != null) this.user.put("apellidoPaterno", apellidoPaterno);
+    }
+
+    public String getApellidoMaterno() { return apellidoMaterno; }
+    public void setApellidoMaterno(String apellidoMaterno) {
+        this.apellidoMaterno = apellidoMaterno;
+        if (this.user != null) this.user.put("apellidoMaterno", apellidoMaterno);
+    }
 
     public String getNroDocumento() { return nroDocumento; }
     public void setNroDocumento(String nroDocumento) {

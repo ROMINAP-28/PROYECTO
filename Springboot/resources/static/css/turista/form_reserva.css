@@ -361,6 +361,20 @@ body {
     cursor: pointer;
 }
 
+.passenger-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.input-field-block input[readonly] {
+    background-color: #f1f5f9;
+    color: #334155;
+    cursor: not-allowed;
+    border-color: #cbd5e1;
+    font-weight: 500;
+}
+
 .passenger-grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -625,7 +639,7 @@ body {
     .tour-table-header, .tour-table-body {
         grid-template-columns: 1fr;
     }
-    .counters-row-3, .passenger-grid-3, .summary-cards-3grid {
+    .counters-row-3, .passenger-grid-3, .passenger-grid-4, .summary-cards-3grid {
         grid-template-columns: 1fr;
     }
 }

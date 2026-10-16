@@ -182,8 +182,11 @@ public class AuthApiController {
         );
 
         if (usuario.getPersona() != null) {
+            authResponse.setNombres(usuario.getPersona().getNombre());
             String pat = usuario.getPersona().getApellidoPaterno();
             String mat = usuario.getPersona().getApellidoMaterno();
+            authResponse.setApellidoPaterno(pat != null ? pat : "");
+            authResponse.setApellidoMaterno(mat != null ? mat : "");
             String ape = ((pat != null ? pat : "") + " " + (mat != null ? mat : "")).trim();
             authResponse.setApellidos(ape);
             authResponse.setNroDocumento(usuario.getPersona().getNroDocumento());
@@ -258,8 +261,11 @@ public class AuthApiController {
         );
 
         if (usuario.getPersona() != null) {
+            authResponse.setNombres(usuario.getPersona().getNombre());
             String pat = usuario.getPersona().getApellidoPaterno();
             String mat = usuario.getPersona().getApellidoMaterno();
+            authResponse.setApellidoPaterno(pat != null ? pat : "");
+            authResponse.setApellidoMaterno(mat != null ? mat : "");
             String ape = ((pat != null ? pat : "") + " " + (mat != null ? mat : "")).trim();
             authResponse.setApellidos(ape);
             authResponse.setNroDocumento(usuario.getPersona().getNroDocumento());

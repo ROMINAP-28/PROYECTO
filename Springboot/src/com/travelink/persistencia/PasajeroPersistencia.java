@@ -11,15 +11,16 @@ import java.util.Optional;
 
 public class PasajeroPersistencia {
     public Pasajero guardar(Pasajero pasajero) {
-        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, esTitular) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidoPaterno, apellidoMaterno, esTitular) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, pasajero.getIdReserva());
             ps.setString(2, pasajero.getNroDocumento());
             ps.setString(3, pasajero.getNombre());
-            ps.setString(4, pasajero.getApellidos());
-            ps.setBoolean(5, pasajero.isEsTitular());
+            ps.setString(4, pasajero.getApellidoPaterno());
+            ps.setString(5, pasajero.getApellidoMaterno());
+            ps.setBoolean(6, pasajero.isEsTitular());
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -37,7 +38,7 @@ public class PasajeroPersistencia {
         List<Pasajero> guardados = new ArrayList<>();
         if (pasajeros == null || pasajeros.isEmpty()) return guardados;
 
-        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, esTitular) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidoPaterno, apellidoMaterno, esTitular) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -45,8 +46,9 @@ public class PasajeroPersistencia {
                 ps.setInt(1, p.getIdReserva());
                 ps.setString(2, p.getNroDocumento());
                 ps.setString(3, p.getNombre());
-                ps.setString(4, p.getApellidos());
-                ps.setBoolean(5, p.isEsTitular());
+                ps.setString(4, p.getApellidoPaterno());
+                ps.setString(5, p.getApellidoMaterno());
+                ps.setBoolean(6, p.isEsTitular());
                 ps.addBatch();
             }
 
@@ -113,8 +115,10 @@ public class PasajeroPersistencia {
         p.setIdReserva(rs.getInt("idReserva"));
         p.setNroDocumento(rs.getString("nroDocumento"));
         p.setNombre(rs.getString("nombre"));
-        p.setApellidos(rs.getString("apellidos"));
+        p.setApellidoPaterno(rs.getString("apellidoPaterno"));
+        p.setApellidoMaterno(rs.getString("apellidoMaterno"));
         p.setEsTitular(rs.getBoolean("esTitular"));
+        try { p.setTipo(rs.getString("tipo")); } catch (Exception ignored) {}
         return p;
     }
 }

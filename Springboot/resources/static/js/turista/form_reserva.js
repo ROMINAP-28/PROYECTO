@@ -307,10 +307,28 @@ function renderizarFormularioPasajeros() {
     let html = '';
 
     // Pasajero 1: Titular
-    const nombreTitular = user && user.nombre ? user.nombre : '';
-    const apellidosTitular = user && user.apellidos ? user.apellidos : '';
+    let soloNombre = (user && user.nombres) ? user.nombres.trim() : '';
+    if (!soloNombre && user && user.nombre) {
+        let full = user.nombre.trim();
+        let ape = (user.apellidos || '').trim();
+        if (ape && full.toLowerCase().endsWith(ape.toLowerCase())) {
+            soloNombre = full.substring(0, full.length - ape.length).trim();
+        } else {
+            soloNombre = full.split(' ')[0] || full;
+        }
+    }
+    let titularApePat = user && user.apellidoPaterno ? user.apellidoPaterno : '';
+    let titularApeMat = user && user.apellidoMaterno ? user.apellidoMaterno : '';
+    if (!titularApePat && user && user.apellidos) {
+        const parts = user.apellidos.trim().split(' ');
+        titularApePat = parts[0] || '';
+        if (parts.length > 1) {
+            titularApeMat = user.apellidos.trim().substring(parts[0].length).trim();
+        }
+    }
     const dniTitular = user && user.nroDocumento ? user.nroDocumento : '';
     const telTitular = user && user.telefono ? user.telefono : '';
+    const emailTitular = user && (user.email || user.correo) ? (user.email || user.correo) : '';
 
     html += `
         <div class="passenger-card-box" data-tipo="ADULTO" data-index="1">
@@ -320,24 +338,28 @@ function renderizarFormularioPasajeros() {
             </div>
             <div class="passenger-grid-3">
                 <div class="input-field-block">
-                    <label>Nombres *</label>
-                    <input type="text" id="pNombre_1" value="${nombreTitular}" placeholder="Nombres del titular">
+                    <label>Nombres * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
+                    <input type="text" id="pNombre_1" value="${soloNombre}" placeholder="Nombres del titular" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
                 </div>
                 <div class="input-field-block">
-                    <label>Apellidos *</label>
-                    <input type="text" id="pApellidos_1" value="${apellidosTitular}" placeholder="Apellidos completos">
+                    <label>Apellido Paterno * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
+                    <input type="text" id="pApePat_1" value="${titularApePat}" placeholder="Apellido paterno" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
                 </div>
                 <div class="input-field-block">
-                    <label>DNI / Documento *</label>
-                    <input type="text" id="pDoc_1" value="${dniTitular}" maxlength="12" placeholder="Nro de documento">
+                    <label>Apellido Materno * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
+                    <input type="text" id="pApeMat_1" value="${titularApeMat}" placeholder="Apellido materno" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
                 </div>
                 <div class="input-field-block">
-                    <label>Teléfono *</label>
-                    <input type="tel" id="pTel_1" value="${telTitular}" maxlength="12" placeholder="Nro de teléfono">
+                    <label>DNI / Documento * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
+                    <input type="text" id="pDoc_1" value="${dniTitular}" maxlength="12" placeholder="Nro de documento" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
                 </div>
                 <div class="input-field-block">
-                    <label>Edad (Años)</label>
-                    <input type="number" id="pEdad_1" value="30" min="18" max="100">
+                    <label>Teléfono * <span style="font-size:11px; color:#16a34a; font-weight:600;"><i class="fa-solid fa-pen-to-square"></i> Editable</span></label>
+                    <input type="tel" id="pTel_1" value="${telTitular}" maxlength="15" placeholder="Nro de teléfono" style="border-color:#16a34a;" title="Puede editar su teléfono y se actualizará en su perfil">
+                </div>
+                <div class="input-field-block">
+                    <label>Email / Correo Electrónico * <span style="font-size:11px; color:#16a34a; font-weight:600;"><i class="fa-solid fa-pen-to-square"></i> Editable</span></label>
+                    <input type="email" id="pEmail_1" value="${emailTitular}" placeholder="correo@ejemplo.com" style="border-color:#16a34a;" title="Puede editar su correo y se actualizará en su perfil">
                 </div>
             </div>
         </div>
@@ -352,22 +374,22 @@ function renderizarFormularioPasajeros() {
                 <div class="passenger-card-header">
                     <h3>Pasajero ${pIndex} <span style="font-size:12px; color:#475569; font-weight:600;">(Adulto)</span></h3>
                 </div>
-                <div class="passenger-grid-3">
+                <div class="passenger-grid-4">
                     <div class="input-field-block">
                         <label>Nombres *</label>
                         <input type="text" id="pNombre_${pIndex}" placeholder="Nombres del adulto">
                     </div>
                     <div class="input-field-block">
-                        <label>Apellidos *</label>
-                        <input type="text" id="pApellidos_${pIndex}" placeholder="Apellidos del adulto">
+                        <label>Apellido Paterno *</label>
+                        <input type="text" id="pApePat_${pIndex}" placeholder="Apellido paterno">
+                    </div>
+                    <div class="input-field-block">
+                        <label>Apellido Materno *</label>
+                        <input type="text" id="pApeMat_${pIndex}" placeholder="Apellido materno">
                     </div>
                     <div class="input-field-block">
                         <label>DNI / Documento *</label>
                         <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="Nro de documento">
-                    </div>
-                    <div class="input-field-block">
-                        <label>Edad (Años)</label>
-                        <input type="number" id="pEdad_${pIndex}" value="28" min="18" max="100">
                     </div>
                 </div>
             </div>
@@ -380,24 +402,24 @@ function renderizarFormularioPasajeros() {
         html += `
             <div class="passenger-card-box" data-tipo="NINO" data-index="${pIndex}" style="border-left: 4px solid #0284c7;">
                 <div class="passenger-card-header">
-                    <h3>Pasajero ${pIndex} <span style="font-size:12px; color:#0284c7; font-weight:600;">(Niño - Máx. ${tourInfo.edadMaxNino} años)</span></h3>
+                    <h3>Pasajero ${pIndex} <span style="font-size:12px; color:#0284c7; font-weight:600;">(Niño)</span></h3>
                 </div>
-                <div class="passenger-grid-3">
+                <div class="passenger-grid-4">
                     <div class="input-field-block">
                         <label>Nombres *</label>
                         <input type="text" id="pNombre_${pIndex}" placeholder="Nombres del niño(a)">
                     </div>
                     <div class="input-field-block">
-                        <label>Apellidos *</label>
-                        <input type="text" id="pApellidos_${pIndex}" placeholder="Apellidos del niño(a)">
+                        <label>Apellido Paterno *</label>
+                        <input type="text" id="pApePat_${pIndex}" placeholder="Apellido paterno">
                     </div>
                     <div class="input-field-block">
-                        <label>DNI / Documento</label>
-                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="DNI">
+                        <label>Apellido Materno *</label>
+                        <input type="text" id="pApeMat_${pIndex}" placeholder="Apellido materno">
                     </div>
                     <div class="input-field-block">
-                        <label>Edad (Máx. ${tourInfo.edadMaxNino} años) *</label>
-                        <input type="number" id="pEdad_${pIndex}" value="${Math.min(8, tourInfo.edadMaxNino)}" min="3" max="${tourInfo.edadMaxNino}">
+                        <label>DNI / Documento *</label>
+                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="DNI / Documento">
                     </div>
                 </div>
             </div>
@@ -410,24 +432,24 @@ function renderizarFormularioPasajeros() {
         html += `
             <div class="passenger-card-box" data-tipo="BEBE" data-index="${pIndex}" style="border-left: 4px solid #f59e0b;">
                 <div class="passenger-card-header">
-                    <h3>Pasajero ${pIndex} <span style="font-size:12px; color:#d97706; font-weight:600;">(Bebé - Máx. ${tourInfo.edadMaxBebe} años)</span></h3>
+                    <h3>Pasajero ${pIndex} <span style="font-size:12px; color:#d97706; font-weight:600;">(Bebé)</span></h3>
                 </div>
-                <div class="passenger-grid-3">
+                <div class="passenger-grid-4">
                     <div class="input-field-block">
                         <label>Nombres *</label>
                         <input type="text" id="pNombre_${pIndex}" placeholder="Nombres del bebé">
                     </div>
                     <div class="input-field-block">
-                        <label>Apellidos *</label>
-                        <input type="text" id="pApellidos_${pIndex}" placeholder="Apellidos del bebé">
+                        <label>Apellido Paterno *</label>
+                        <input type="text" id="pApePat_${pIndex}" placeholder="Apellido paterno">
                     </div>
                     <div class="input-field-block">
-                        <label>DNI / Documento</label>
-                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="DNI">
+                        <label>Apellido Materno *</label>
+                        <input type="text" id="pApeMat_${pIndex}" placeholder="Apellido materno">
                     </div>
                     <div class="input-field-block">
-                        <label>Edad (Máx. ${tourInfo.edadMaxBebe} años) *</label>
-                        <input type="number" id="pEdad_${pIndex}" value="${Math.min(1, tourInfo.edadMaxBebe)}" min="0" max="${tourInfo.edadMaxBebe}">
+                        <label>DNI / Documento *</label>
+                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="DNI / Documento">
                     </div>
                 </div>
             </div>
@@ -442,34 +464,39 @@ function validarPasoDatos() {
     const pBoxes = document.querySelectorAll('#contenedorPasajeros .passenger-card-box');
     for (const box of pBoxes) {
         const idx = box.getAttribute('data-index');
-        const tipo = box.getAttribute('data-tipo');
 
         const nom = document.getElementById(`pNombre_${idx}`)?.value.trim();
-        const ape = document.getElementById(`pApellidos_${idx}`)?.value.trim();
+        const apePat = document.getElementById(`pApePat_${idx}`)?.value.trim();
+        const apeMat = document.getElementById(`pApeMat_${idx}`)?.value.trim();
         const doc = document.getElementById(`pDoc_${idx}`)?.value.trim();
-        const edad = parseInt(document.getElementById(`pEdad_${idx}`)?.value || '0');
 
         if (!nom) {
             alert(`Por favor ingresa los nombres del Pasajero ${idx}.`);
             return false;
         }
-        if (!ape) {
-            alert(`Por favor ingresa los apellidos del Pasajero ${idx}.`);
+        if (!apePat) {
+            alert(`Por favor ingresa el apellido paterno del Pasajero ${idx}.`);
             return false;
         }
-        if (idx === '1' && !doc) {
-            alert(`El documento del titular es obligatorio.`);
+        if (!apeMat) {
+            alert(`Por favor ingresa el apellido materno del Pasajero ${idx}.`);
             return false;
         }
-
-        // Validación de edad según tipo
-        if (tipo === 'NINO' && edad > tourInfo.edadMaxNino) {
-            alert(`La edad del niño (Pasajero ${idx}) no puede ser mayor a ${tourInfo.edadMaxNino} años.`);
+        if (!doc) {
+            alert(`Por favor ingresa el documento del Pasajero ${idx}.`);
             return false;
         }
-        if (tipo === 'BEBE' && edad > tourInfo.edadMaxBebe) {
-            alert(`La edad del bebé (Pasajero ${idx}) no puede ser mayor a ${tourInfo.edadMaxBebe} años.`);
-            return false;
+        if (idx === '1') {
+            const tel = document.getElementById('pTel_1')?.value.trim();
+            const email = document.getElementById('pEmail_1')?.value.trim();
+            if (!tel) {
+                alert('El teléfono de contacto del titular es obligatorio.');
+                return false;
+            }
+            if (!email) {
+                alert('El correo electrónico de contacto del titular es obligatorio.');
+                return false;
+            }
         }
     }
 
@@ -485,11 +512,14 @@ function mostrarPaso(n) {
         actualizarTotales();
 
         const p1Nom = document.getElementById('pNombre_1')?.value.trim() || 'Titular';
-        const p1Ape = document.getElementById('pApellidos_1')?.value.trim() || '';
+        const p1Pat = document.getElementById('pApePat_1')?.value.trim() || '';
+        const p1Mat = document.getElementById('pApeMat_1')?.value.trim() || '';
         const p1Doc = document.getElementById('pDoc_1')?.value.trim() || '12345678';
+        const p1Tel = document.getElementById('pTel_1')?.value.trim() || '';
+        const p1Email = document.getElementById('pEmail_1')?.value.trim() || '';
 
         const elTit = document.getElementById('rTitularNombre');
-        if (elTit) elTit.textContent = `${p1Nom} ${p1Ape}`.trim();
+        if (elTit) elTit.textContent = `${p1Nom} ${p1Pat} ${p1Mat}`.trim();
 
         const elDni = document.getElementById('rTitularDNI');
         if (elDni) elDni.textContent = p1Doc;
@@ -500,8 +530,8 @@ function mostrarPaso(n) {
             let resHtml = `
                 <div class="passenger-summary-item">
                     <h5>Pasajero 1 <span class="badge-titular">(Titular)</span></h5>
-                    <p class="p-name">${p1Nom} ${p1Ape}</p>
-                    <p class="p-info">DNI: ${p1Doc}</p>
+                    <p class="p-name">${p1Nom} ${p1Pat} ${p1Mat}`.trim() + `</p>
+                    <p class="p-info">Doc: ${p1Doc}${p1Tel ? ' | Tel: ' + p1Tel : ''}${p1Email ? ' | Email: ' + p1Email : ''}</p>
                 </div>
             `;
             const pBoxes = document.querySelectorAll('#contenedorPasajeros .passenger-card-box');
@@ -510,15 +540,15 @@ function mostrarPaso(n) {
                 if (idx === '1') return;
                 const tipo = box.getAttribute('data-tipo');
                 const nom = document.getElementById(`pNombre_${idx}`)?.value.trim() || `Pasajero ${idx}`;
-                const ape = document.getElementById(`pApellidos_${idx}`)?.value.trim() || '';
+                const apePat = document.getElementById(`pApePat_${idx}`)?.value.trim() || '';
+                const apeMat = document.getElementById(`pApeMat_${idx}`)?.value.trim() || '';
                 const doc = document.getElementById(`pDoc_${idx}`)?.value.trim() || '-';
-                const edad = document.getElementById(`pEdad_${idx}`)?.value.trim() || '';
 
                 resHtml += `
                     <div class="passenger-summary-item" style="margin-top:10px; padding-top:8px; border-top:1px dashed #e2e8f0;">
                         <h5>Pasajero ${idx} <span style="font-size:11px; color:#64748b;">(${tipo})</span></h5>
-                        <p class="p-name">${nom} ${ape}</p>
-                        <p class="p-info">${doc !== '-' ? 'Doc: ' + doc + ' | ' : ''}${edad ? edad + ' años' : ''}</p>
+                        <p class="p-name">${nom} ${apePat} ${apeMat}`.trim() + `</p>
+                        <p class="p-info">${doc !== '-' ? 'Doc: ' + doc : ''}</p>
                     </div>
                 `;
             });
@@ -683,26 +713,27 @@ function confirmarReserva() {
     const tipoPagoNombre = nombresMetodo[metodoPagoActual] || 'Tarjeta';
 
     // Recopilar lista de pasajeros
+    const telTitularVal = document.getElementById('pTel_1')?.value.trim() || user?.telefono || '';
+    const emailTitularVal = document.getElementById('pEmail_1')?.value.trim() || user?.email || user?.correo || '';
     const listaPasajeros = [];
     const pBoxes = document.querySelectorAll('#contenedorPasajeros .passenger-card-box');
     pBoxes.forEach(box => {
         const idx = box.getAttribute('data-index');
         const tipo = box.getAttribute('data-tipo');
         const esTitular = idx === '1';
-        const nom = document.getElementById(`pNombre_${idx}`)?.value.trim() || (esTitular ? (user?.nombre || 'Titular') : `Pasajero ${idx}`);
-        const ape = document.getElementById(`pApellidos_${idx}`)?.value.trim() || (user?.apellidos || 'Travelink');
+        const nom = document.getElementById(`pNombre_${idx}`)?.value.trim() || (esTitular ? (user?.nombres || user?.nombre || 'Titular') : `Pasajero ${idx}`);
+        const apePat = document.getElementById(`pApePat_${idx}`)?.value.trim() || (esTitular ? (user?.apellidoPaterno || '') : '');
+        const apeMat = document.getElementById(`pApeMat_${idx}`)?.value.trim() || (esTitular ? (user?.apellidoMaterno || '') : '');
         const doc = document.getElementById(`pDoc_${idx}`)?.value.trim() || (user?.nroDocumento || '12345678');
-        const tel = document.getElementById(`pTel_${idx}`)?.value.trim() || (user?.telefono || '');
-        const edad = parseInt(document.getElementById(`pEdad_${idx}`)?.value || (tipo === 'ADULTO' ? '30' : (tipo === 'NINO' ? '8' : '1')));
 
         listaPasajeros.push({
             esTitular: esTitular,
             tipo: tipo,
             nombre: nom,
-            apellidos: ape,
-            nroDocumento: doc,
-            telefono: tel,
-            edad: edad
+            apellidoPaterno: apePat,
+            apellidoMaterno: apeMat,
+            apellidos: `${apePat} ${apeMat}`.trim(),
+            nroDocumento: doc
         });
     });
 
@@ -732,7 +763,10 @@ function confirmarReserva() {
         marcaTarjeta: marca,
         ultimosDigitos: ult4,
         idUsuario: user.idUsuario,
-        email: user.email || user.correo || '',
+        email: emailTitularVal,
+        titularEmail: emailTitularVal,
+        telefono: telTitularVal,
+        titularTelefono: telTitularVal,
         pasajeros: listaPasajeros
     };
 
@@ -755,6 +789,11 @@ function confirmarReserva() {
     })
     .then(data => {
         const d = data.data || {};
+        if (user) {
+            if (telTitularVal) user.telefono = telTitularVal;
+            if (emailTitularVal) { user.email = emailTitularVal; user.correo = emailTitularVal; }
+            try { sessionStorage.setItem('travelink_auth_cache', JSON.stringify(user)); } catch (e) {}
+        }
         const cod = d.codigo || ('TRK-' + Math.floor(100 + Math.random() * 900));
 
         // Guardar en caché local para visualización offline

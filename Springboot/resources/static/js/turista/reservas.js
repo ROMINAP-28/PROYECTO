@@ -1,4 +1,4 @@
-﻿// Travelink - Reservas Dynamic Management & PDF Voucher Generator (User Scoped)
+// Travelink - Reservas Dynamic Management & PDF Voucher Generator (User Scoped)
 
 const ITEMS_PER_PAGE = 5;
 let currentPage = 1;
@@ -6,13 +6,14 @@ let currentPage = 1;
 // Default initial reservations list for default user
 
 
-function getUserReservasKey() {
-    const user = window.getCurrentUser ? window.getCurrentUser() : null;
-    return 'travelink_reservas_' + (user.email || '');
+function getUserReservasKey(user) {
+    user = user || (window.getCurrentUser ? window.getCurrentUser() : null);
+    const identifier = user ? (user.idUsuario || user.id || user.email || user.correo || 'anon') : 'anon';
+    return 'travelink_reservas_' + identifier;
 }
 
-function getReservasData() {
-    const key = getUserReservasKey();
+function getReservasData(user) {
+    const key = getUserReservasKey(user);
     const stored = localStorage.getItem(key);
 
     if (!stored) {
@@ -27,41 +28,53 @@ function getReservasData() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    cargarReservasDesdeDB();
+    // Escuchar cuando la sesión esté lista para cargar las reservas del usuario autenticado
+    if (window.onSessionReady) {
+        window.onSessionReady((user) => {
+            cargarReservasDesdeDB(user);
+        });
+    } else if (window.sessionReadyPromise) {
+        window.sessionReadyPromise.then((user) => {
+            cargarReservasDesdeDB(user);
+        });
+    } else {
+        cargarReservasDesdeDB();
+    }
 });
 
-function cargarReservasDesdeDB() {
-    const user = window.getCurrentUser ? window.getCurrentUser() : null;
-    const email = user.email || '';
-    const key = getUserReservasKey();
+function cargarReservasDesdeDB(user) {
+    user = user || (window.getCurrentUser ? window.getCurrentUser() : null);
+    const email = user ? (user.email || user.correo || '') : '';
+    const idUsuario = user ? (user.idUsuario || user.id || '') : '';
+    const key = getUserReservasKey(user);
 
-    fetch(`/api/obtener_reservas?correo=${encodeURIComponent(email)}`)
+    const listContainer = document.querySelector('.lista-reservas');
+    if (listContainer && (!listContainer.innerHTML || listContainer.innerHTML.trim() === '')) {
+        listContainer.innerHTML = `
+            <div style="text-align:center; padding: 50px 20px; background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 10px;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; color: #196f3d; margin-bottom: 15px;"></i>
+                <h4 style="color: #0b1f38; margin: 0 0 6px 0; font-size: 16px;">Cargando tus reservas...</h4>
+                <p style="color: #64748b; font-size: 14px; margin: 0;">Estamos sincronizando tu información.</p>
+            </div>
+        `;
+    }
+
+    const fetchFn = window.apiFetch || fetch;
+    const url = `/api/obtener_reservas?correo=${encodeURIComponent(email)}&idUsuario=${encodeURIComponent(idUsuario)}`;
+
+    fetchFn(url, { credentials: 'include' })
         .then(res => res.json())
         .then(data => {
-            if (data.status === 'success' && Array.isArray(data.reservas) && data.reservas.length > 0) {
-                let localList = [];
-                try {
-                    localList = JSON.parse(localStorage.getItem(key) || '[]');
-                } catch(e) { localList = []; }
-
-                // Fusionar reservas de la DB con las locales sin duplicar
-                const dbReservas = data.reservas;
-                const existingCodes = new Set(dbReservas.map(r => r.codigo));
-                
-                localList.forEach(loc => {
-                    if (!existingCodes.has(loc.codigo)) {
-                        dbReservas.push(loc);
-                    }
-                });
-
-                localStorage.setItem(key, JSON.stringify(dbReservas));
+            if (data && data.status === 'success' && Array.isArray(data.reservas)) {
+                // Guardar reservas reales asociadas al usuario autenticado
+                localStorage.setItem(key, JSON.stringify(data.reservas));
             }
         })
         .catch(err => {
             console.warn('No se pudieron cargar reservas desde la DB:', err);
         })
         .finally(() => {
-            renderReservasPage();
+            renderReservasPage(user);
         });
 }
 
@@ -141,9 +154,9 @@ function injectReservasCSS() {
     document.head.appendChild(style);
 }
 
-function renderReservasPage() {
+function renderReservasPage(user) {
     injectReservasCSS();
-    const allReservas = getReservasData();
+    const allReservas = getReservasData(user);
     const listContainer = document.querySelector('.lista-reservas');
 
     if (!listContainer) return;
@@ -259,8 +272,10 @@ function renderReservasPage() {
 
 // Nueva función de Modal Detalle de Reserva
 window.abrirDetalleNuevo = function(codigo) {
-    const list = getReservasData();
-    const user = window.getCurrentUser ? window.getCurrentUser() : { username: 'Ana Garcia', email: 'ana@gmail.com' };
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const userName = user ? (user.nombre || user.usuario || 'Turista') : 'Turista';
+    const userDoc = user ? (user.nroDocumento || '---') : '---';
+    const list = getReservasData(user);
     const reserva = list.find(r => r.codigo === codigo) || list[0];
 
     if (!reserva) return;
@@ -333,16 +348,16 @@ window.abrirDetalleNuevo = function(codigo) {
                                 <th>#</th>
                                 <th>Nombre completo</th>
                                 <th>Documento</th>
-                                <th>Fecha de nacimiento</th>
+                                <th>Tipo</th>
                                 <th>Nacionalidad</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td>${user.username || 'Ana Garcia'}</td>
-                                <td>12345678</td>
-                                <td>15/05/1995</td>
+                                <td>${userName}</td>
+                                <td>${userDoc}</td>
+                                <td>Titular</td>
                                 <td>Peruana</td>
                             </tr>
                             ${parseInt(reserva.personas) > 1 ? `

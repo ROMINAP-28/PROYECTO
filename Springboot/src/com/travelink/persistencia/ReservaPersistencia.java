@@ -95,7 +95,8 @@ public class ReservaPersistencia {
 
             // Obtener datos del titular desde la base de datos (inmutable frente a spoofing del navegador)
             String titularNombre = "Turista";
-            String titularApellidos = "Travelink";
+            String titularApePaterno = "";
+            String titularApeMaterno = "";
             String titularDoc = "12345678";
             String titularTel = "987654321";
             String titularEmail = correo;
@@ -107,15 +108,62 @@ public class ReservaPersistencia {
                 try (ResultSet rsTit = psTit.executeQuery()) {
                     if (rsTit.next()) {
                         titularNombre = rsTit.getString("nombre");
-                        String pat = rsTit.getString("apellidoPaterno");
-                        String mat = rsTit.getString("apellidoMaterno");
-                        titularApellidos = (pat != null ? pat : "") + (mat != null && !mat.trim().isEmpty() ? " " + mat : "");
-                        if (titularApellidos.trim().isEmpty()) titularApellidos = "Turista";
+                        titularApePaterno = rsTit.getString("apellidoPaterno");
+                        titularApeMaterno = rsTit.getString("apellidoMaterno");
+                        if (titularApePaterno == null) titularApePaterno = "";
+                        if (titularApeMaterno == null) titularApeMaterno = "";
                         titularDoc = rsTit.getString("nroDocumento");
                         titularTel = rsTit.getString("telefono");
                         titularEmail = rsTit.getString("email");
                     }
                 }
+            }
+
+            // Permitir editar y actualizar el teléfono y el correo electrónico del titular en la base de datos (tabla Persona)
+            String nuevoTel = null;
+            if (reqData.containsKey("telefono") && reqData.get("telefono") != null) {
+                nuevoTel = String.valueOf(reqData.get("telefono")).trim();
+            } else if (reqData.containsKey("titularTelefono") && reqData.get("titularTelefono") != null) {
+                nuevoTel = String.valueOf(reqData.get("titularTelefono")).trim();
+            }
+
+            String nuevoEmail = null;
+            if (reqData.containsKey("email") && reqData.get("email") != null) {
+                nuevoEmail = String.valueOf(reqData.get("email")).trim();
+            } else if (reqData.containsKey("titularEmail") && reqData.get("titularEmail") != null) {
+                nuevoEmail = String.valueOf(reqData.get("titularEmail")).trim();
+            }
+
+            if (reqData.containsKey("pasajeros")) {
+                Object pListObj = reqData.get("pasajeros");
+                if (pListObj instanceof List) {
+                    List<?> pList = (List<?>) pListObj;
+                    if (!pList.isEmpty() && pList.get(0) instanceof Map) {
+                        Map<?, ?> p0 = (Map<?, ?>) pList.get(0);
+                        if ((nuevoTel == null || nuevoTel.isEmpty() || "null".equalsIgnoreCase(nuevoTel)) && p0.get("telefono") != null) {
+                            nuevoTel = String.valueOf(p0.get("telefono")).trim();
+                        }
+                        if ((nuevoEmail == null || nuevoEmail.isEmpty() || "null".equalsIgnoreCase(nuevoEmail)) && p0.get("email") != null) {
+                            nuevoEmail = String.valueOf(p0.get("email")).trim();
+                        }
+                    }
+                }
+            }
+
+            if (nuevoTel != null && !nuevoTel.isEmpty() && !"null".equalsIgnoreCase(nuevoTel)) {
+                titularTel = nuevoTel;
+            }
+            if (nuevoEmail != null && !nuevoEmail.isEmpty() && !"null".equalsIgnoreCase(nuevoEmail)) {
+                titularEmail = nuevoEmail;
+            }
+
+            // Actualizar datos de contacto (telefono, email) del titular en Persona
+            String sqlUpdPersona = "UPDATE Persona p INNER JOIN Usuario u ON p.idPersona = u.idPersona SET p.telefono = ?, p.email = ? WHERE u.idUsuario = ?";
+            try (PreparedStatement psUpd = con.prepareStatement(sqlUpdPersona)) {
+                psUpd.setString(1, titularTel);
+                psUpd.setString(2, titularEmail);
+                psUpd.setInt(3, idUsuario);
+                psUpd.executeUpdate();
             }
 
             // 2. Resolver TourFecha e idTour
@@ -248,7 +296,7 @@ public class ReservaPersistencia {
                 return response;
             }
 
-            // 4. Validar edades de lista de pasajeros si viene en el payload
+            // 4. Validar edades de lista de pasajeros si viene en el payload (solo si se proporciona edad > 0)
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> pasajerosReq = (List<Map<String, Object>>) reqData.get("pasajeros");
             if (pasajerosReq != null) {
@@ -257,16 +305,14 @@ public class ReservaPersistencia {
                     int edadP = 0;
                     try { edadP = Integer.parseInt(String.valueOf(pMap.getOrDefault("edad", "0"))); } catch (Exception ignored) {}
 
-                    if ("NINO".equals(tipoP) || "NIÑO".equals(tipoP)) {
-                        if (edadP > edadMaxNino) {
+                    if (edadP > 0) {
+                        if (("NINO".equals(tipoP) || "NIÑO".equals(tipoP)) && edadP > edadMaxNino) {
                             con.rollback();
                             response.put("status", "error");
                             response.put("code", "EDAD_INVALIDA");
                             response.put("message", "La edad del niño (" + edadP + " años) excede el máximo permitido para este tour (" + edadMaxNino + " años).");
                             return response;
-                        }
-                    } else if ("BEBE".equals(tipoP) || "BEBÉ".equals(tipoP)) {
-                        if (edadP > edadMaxBebe) {
+                        } else if (("BEBE".equals(tipoP) || "BEBÉ".equals(tipoP)) && edadP > edadMaxBebe) {
                             con.rollback();
                             response.put("status", "error");
                             response.put("code", "EDAD_INVALIDA");
@@ -393,18 +439,17 @@ public class ReservaPersistencia {
                 }
             }
 
-            // 9. Insertar Pasajeros (Titular y Acompañantes con tipo y edad)
-            String sqlPasajero = "INSERT INTO Pasajero (idReserva, nroDocumento, telefono, nombre, apellidos, esTitular, tipo, edad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            // 9. Insertar Pasajeros (Titular y Acompañantes) - Con apellidoPaterno y apellidoMaterno (sin telefono ni edad ni apellidos en Pasajero)
+            String sqlPasajero = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidoPaterno, apellidoMaterno, esTitular, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement psP = con.prepareStatement(sqlPasajero)) {
                 // Pasajero Titular
                 psP.setInt(1, idReservaGenerada);
                 psP.setString(2, titularDoc);
-                psP.setString(3, titularTel);
-                psP.setString(4, titularNombre);
-                psP.setString(5, titularApellidos);
+                psP.setString(3, titularNombre);
+                psP.setString(4, titularApePaterno);
+                psP.setString(5, titularApeMaterno);
                 psP.setBoolean(6, true);
                 psP.setString(7, "ADULTO");
-                psP.setInt(8, 30);
                 psP.executeUpdate();
 
                 // Pasajeros adicionales especificados en payload o automáticos
@@ -415,21 +460,26 @@ public class ReservaPersistencia {
                         if (titularCheck) continue; // ya insertado
 
                         String pNom = String.valueOf(pMap.getOrDefault("nombre", "Pasajero " + index));
-                        String pApe = String.valueOf(pMap.getOrDefault("apellidos", "Acompañante"));
+                        String pApePat = String.valueOf(pMap.getOrDefault("apellidoPaterno", ""));
+                        String pApeMat = String.valueOf(pMap.getOrDefault("apellidoMaterno", ""));
+                        if (pApePat.isEmpty() && pApeMat.isEmpty() && pMap.containsKey("apellidos")) {
+                            String fullApe = String.valueOf(pMap.get("apellidos")).trim();
+                            String[] parts = fullApe.split(" ");
+                            pApePat = parts[0];
+                            if (parts.length > 1) {
+                                pApeMat = fullApe.substring(parts[0].length()).trim();
+                            }
+                        }
                         String pDoc = String.valueOf(pMap.getOrDefault("nroDocumento", String.valueOf(pMap.getOrDefault("dni", "8765432" + index))));
-                        String pTel = String.valueOf(pMap.getOrDefault("telefono", "91234567" + index));
                         String pTipo = String.valueOf(pMap.getOrDefault("tipo", "ADULTO")).toUpperCase();
-                        int pEdad = 0;
-                        try { pEdad = Integer.parseInt(String.valueOf(pMap.getOrDefault("edad", "25"))); } catch (Exception ignored) {}
 
                         psP.setInt(1, idReservaGenerada);
                         psP.setString(2, pDoc);
-                        psP.setString(3, pTel);
-                        psP.setString(4, pNom);
-                        psP.setString(5, pApe);
+                        psP.setString(3, pNom);
+                        psP.setString(4, pApePat);
+                        psP.setString(5, pApeMat);
                         psP.setBoolean(6, false);
                         psP.setString(7, pTipo);
-                        psP.setInt(8, pEdad);
                         psP.executeUpdate();
                         index++;
                     }
@@ -438,36 +488,33 @@ public class ReservaPersistencia {
                     for (int i = 1; i < cantAdultos; i++) {
                         psP.setInt(1, idReservaGenerada);
                         psP.setString(2, "8765432" + index);
-                        psP.setString(3, "91234567" + index);
-                        psP.setString(4, "Acompañante Adulto " + i);
-                        psP.setString(5, titularApellidos);
+                        psP.setString(3, "Acompañante Adulto " + i);
+                        psP.setString(4, titularApePaterno);
+                        psP.setString(5, titularApeMaterno);
                         psP.setBoolean(6, false);
                         psP.setString(7, "ADULTO");
-                        psP.setInt(8, 28);
                         psP.executeUpdate();
                         index++;
                     }
                     for (int i = 0; i < cantNinos; i++) {
                         psP.setInt(1, idReservaGenerada);
                         psP.setString(2, "7165432" + index);
-                        psP.setString(3, "91234567" + index);
-                        psP.setString(4, "Niño " + (i + 1));
-                        psP.setString(5, titularApellidos);
+                        psP.setString(3, "Niño " + (i + 1));
+                        psP.setString(4, titularApePaterno);
+                        psP.setString(5, titularApeMaterno);
                         psP.setBoolean(6, false);
                         psP.setString(7, "NINO");
-                        psP.setInt(8, Math.min(8, edadMaxNino));
                         psP.executeUpdate();
                         index++;
                     }
                     for (int i = 0; i < cantBebes; i++) {
                         psP.setInt(1, idReservaGenerada);
                         psP.setString(2, "6165432" + index);
-                        psP.setString(3, "91234567" + index);
-                        psP.setString(4, "Bebé " + (i + 1));
-                        psP.setString(5, titularApellidos);
+                        psP.setString(3, "Bebé " + (i + 1));
+                        psP.setString(4, titularApePaterno);
+                        psP.setString(5, titularApeMaterno);
                         psP.setBoolean(6, false);
                         psP.setString(7, "BEBE");
-                        psP.setInt(8, Math.min(1, edadMaxBebe));
                         psP.executeUpdate();
                         index++;
                     }

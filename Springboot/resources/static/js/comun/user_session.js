@@ -18,9 +18,34 @@
         try { localStorage.removeItem(key); } catch (e) {}
     });
 
-    // Estado de sesión en memoria
+    const SESSION_CACHE_KEY = 'travelink_auth_cache';
     let currentUser = null;
     let sessionInitialized = false;
+    let sessionReadyResolve;
+
+    // 0. Recuperar sesión previa de la pestaña actual (0ms de latencia, navegación instantánea)
+    try {
+        const cached = sessionStorage.getItem(SESSION_CACHE_KEY);
+        if (cached && cached !== 'guest') {
+            currentUser = JSON.parse(cached);
+        }
+    } catch (e) {
+        currentUser = null;
+    }
+
+    window.sessionReadyPromise = new Promise(resolve => {
+        sessionReadyResolve = resolve;
+    });
+
+    window.onSessionReady = function (callback) {
+        if (sessionInitialized && currentUser !== undefined) {
+            callback(currentUser);
+        } else if (currentUser) {
+            callback(currentUser);
+        } else {
+            window.sessionReadyPromise.then(callback);
+        }
+    };
 
     window.getCurrentUser = function () {
         return currentUser;
@@ -43,7 +68,10 @@
             console.warn('Error cerrando sesión:', err);
         }
         currentUser = null;
-        sessionStorage.clear();
+        try {
+            sessionStorage.removeItem(SESSION_CACHE_KEY);
+            sessionStorage.clear();
+        } catch (e) {}
         obsoleteKeys.forEach(key => {
             try { localStorage.removeItem(key); } catch (ex) {}
         });
@@ -139,7 +167,15 @@
                     <a href="${pathAgencia}" class="btn-unirse-agencia">Únete como agencia</a>
                     <a href="${pathLogin}" class="btn-auth-login">Iniciar sesión</a>
                     <a href="${pathRegistro}" class="btn-auth-register">Registrarse</a>
+                    ${!isTuristaFolder ? `
+                        <a href="html/administrador/login.html" class="btn-admin-nav" title="Acceso de Administrador"
+                           style="background:#0b1f38; color:#f59e0b; padding:8px 12px; border-radius:8px; font-size:12.5px; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                           <i class="fa-solid fa-shield-halved"></i> Admin
+                        </a>
+                    ` : ''}
                 `;
+                actions.style.visibility = 'visible';
+                actions.style.opacity = '1';
             });
 
             // Menú móvil sin datos inventados
@@ -201,6 +237,8 @@
                     window.cerrarSesion(e);
                 });
             }
+            actions.style.visibility = 'visible';
+            actions.style.opacity = '1';
         });
 
         // Menú móvil con datos reales
@@ -234,11 +272,37 @@
             if (res.ok) {
                 const data = await res.json();
                 if (data && data.idUsuario) {
+                    // Obtener primer nombre limpio
+                    let soloNombre = data.nombres || '';
+                    if (!soloNombre && data.nombre) {
+                        let nom = data.nombre.trim();
+                        let ape = (data.apellidos || '').trim();
+                        if (ape && nom.toLowerCase().endsWith(ape.toLowerCase())) {
+                            soloNombre = nom.substring(0, nom.length - ape.length).trim();
+                        } else {
+                            soloNombre = nom.split(' ')[0] || nom;
+                        }
+                    }
+
+                    let apePaterno = data.apellidoPaterno || (data.user && data.user.apellidoPaterno) || '';
+                    let apeMaterno = data.apellidoMaterno || (data.user && data.user.apellidoMaterno) || '';
+                    if (!apePaterno && (data.apellidos || (data.user && data.user.apellidos))) {
+                        const fullApe = (data.apellidos || (data.user && data.user.apellidos) || '').trim();
+                        const parts = fullApe.split(' ');
+                        apePaterno = parts[0] || '';
+                        if (parts.length > 1) {
+                            apeMaterno = fullApe.substring(parts[0].length).trim();
+                        }
+                    }
+
                     currentUser = {
                         id: data.idUsuario,
                         idUsuario: data.idUsuario,
                         usuario: data.nombre,
                         nombre: data.nombre,
+                        nombres: soloNombre,
+                        apellidoPaterno: apePaterno,
+                        apellidoMaterno: apeMaterno,
                         correo: data.correo || '',
                         email: data.correo || '',
                         rol: data.rol, // ROLE_TURISTA, ROLE_AGENCIA, ROLE_ADMIN
@@ -247,23 +311,38 @@
                         telefono: data.telefono || (data.user && data.user.telefono) || '',
                         apellidos: data.apellidos || (data.user && data.user.apellidos) || ''
                     };
+                    try { sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(currentUser)); } catch (e) {}
                 } else {
                     currentUser = null;
+                    try { sessionStorage.setItem(SESSION_CACHE_KEY, 'guest'); } catch (e) {}
                 }
             } else {
                 currentUser = null;
+                try { sessionStorage.setItem(SESSION_CACHE_KEY, 'guest'); } catch (e) {}
             }
         } catch (err) {
-            currentUser = null;
+            // Error de red
         }
 
         window.validarRutaProtegida();
         window.renderUserProfile();
+        if (sessionReadyResolve) sessionReadyResolve(currentUser);
+        window.dispatchEvent(new CustomEvent('sessionReady', { detail: currentUser }));
+    }
+
+    function renderImmediate() {
+        if (currentUser || sessionStorage.getItem(SESSION_CACHE_KEY) === 'guest') {
+            window.renderUserProfile();
+        }
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', inicializarSesion);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderImmediate();
+            inicializarSesion();
+        });
     } else {
+        renderImmediate();
         inicializarSesion();
     }
 })();

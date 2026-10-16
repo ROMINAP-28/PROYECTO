@@ -158,6 +158,45 @@
                 const data = await res.json();
 
                 if (res.ok && data.idUsuario) {
+                    try {
+                        let soloNombre = data.nombres || '';
+                        if (!soloNombre && data.nombre) {
+                            let nom = data.nombre.trim();
+                            let ape = (data.apellidos || '').trim();
+                            if (ape && nom.toLowerCase().endsWith(ape.toLowerCase())) {
+                                soloNombre = nom.substring(0, nom.length - ape.length).trim();
+                            } else {
+                                soloNombre = nom.split(' ')[0] || nom;
+                            }
+                        }
+
+                        let apePaterno = data.apellidoPaterno || '';
+                        let apeMaterno = data.apellidoMaterno || '';
+                        if (!apePaterno && data.apellidos) {
+                            const parts = data.apellidos.trim().split(' ');
+                            apePaterno = parts[0] || '';
+                            if (parts.length > 1) {
+                                apeMaterno = data.apellidos.trim().substring(parts[0].length).trim();
+                            }
+                        }
+
+                        sessionStorage.setItem('travelink_auth_cache', JSON.stringify({
+                            id: data.idUsuario,
+                            idUsuario: data.idUsuario,
+                            usuario: data.nombre,
+                            nombre: data.nombre,
+                            nombres: soloNombre,
+                            apellidoPaterno: apePaterno,
+                            apellidoMaterno: apeMaterno,
+                            correo: data.correo || '',
+                            email: data.correo || '',
+                            rol: data.rol,
+                            idAgencia: data.idAgencia || null,
+                            nroDocumento: data.nroDocumento || '',
+                            telefono: data.telefono || '',
+                            apellidos: data.apellidos || ''
+                        }));
+                    } catch (e) {}
                     if (typeof toastr !== 'undefined') {
                         toastr.success('¡Bienvenido, ' + data.nombre + '!', 'Inicio de sesión exitoso');
                     }

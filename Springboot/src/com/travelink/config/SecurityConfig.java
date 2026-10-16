@@ -119,7 +119,7 @@ public class SecurityConfig {
                     "/html/turista/form_reserva.html"
                 ).permitAll()
 
-                // 4. APIs públicas sin sesión (GET de tours, destinos, calificaciones, solicitudes)
+                // 4. APIs públicas sin sesión (GET de tours, destinos, calificaciones, solicitudes y endpoint de reservas que maneja su propia validación de sesión/identidad)
                 .requestMatchers(
                     "/api/auth/**",
                     "/api/login",
@@ -127,7 +127,13 @@ public class SecurityConfig {
                     "/api/agencia/login",
                     "/api/agencia/registro",
                     "/api/admin/login",
-                    "/api/solicitudes/**"
+                    "/api/solicitudes/**",
+                    "/api/guardar_reserva",
+                    "/api/turista/reservas",
+                    "/api/reservas",
+                    "/api/reservas/**",
+                    "/api/obtener_reservas",
+                    "/api/cancelar_reserva"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET,
                     "/api/destinos/**",
@@ -149,18 +155,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/agencia/**").hasRole("AGENCIA")
                 .requestMatchers("/html/agencia/**").hasRole("AGENCIA")
 
-                // 7. Área protegida de Turista y Reservas (Cada usuario gestiona sus reservas de forma independiente)
+                // 7. Área protegida de Turista y Comprobantes
                 .requestMatchers(
                     "/api/turista/reservas/*/comprobante.pdf",
                     "/api/turista/reservas/comprobante.pdf",
                     "/api/reservas/*/comprobante.pdf"
-                ).hasAnyRole("TURISTA", "AGENCIA", "ADMIN")
-                .requestMatchers(
-                    "/api/guardar_reserva",
-                    "/api/reservas",
-                    "/api/reservas/**",
-                    "/api/obtener_reservas",
-                    "/api/cancelar_reserva"
                 ).hasAnyRole("TURISTA", "AGENCIA", "ADMIN")
                 .requestMatchers("/html/turista/reservas.html").hasRole("TURISTA")
                 .requestMatchers("/api/turista/**").hasRole("TURISTA")

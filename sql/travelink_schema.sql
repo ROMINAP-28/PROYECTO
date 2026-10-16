@@ -213,12 +213,11 @@ CREATE TABLE Pasajero (
     idPasajero INT AUTO_INCREMENT PRIMARY KEY,
     idReserva INT NOT NULL,
     nroDocumento VARCHAR(15) NOT NULL,
-    telefono VARCHAR(15) NULL,
     nombre VARCHAR(50) NOT NULL,
     apellidoPaterno VARCHAR(50) NULL,
     apellidoMaterno VARCHAR(50) NULL,
-    apellidos VARCHAR(100) NOT NULL,
     esTitular BOOLEAN NOT NULL DEFAULT FALSE,
+    tipo VARCHAR(20) NOT NULL DEFAULT 'ADULTO',
     CONSTRAINT fk_pasajero_reserva FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

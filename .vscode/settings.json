@@ -1,8 +1,4 @@
 {
-    "java.project.sourcePaths": [
-        "Springboot/src"
-    ],
-    "java.project.outputPath": "target/classes",
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx16G -Xms100m -Xlog:disable",

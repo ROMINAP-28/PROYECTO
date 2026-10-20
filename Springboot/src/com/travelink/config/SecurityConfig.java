@@ -155,14 +155,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/agencia/**").hasRole("AGENCIA")
                 .requestMatchers("/html/agencia/**").hasRole("AGENCIA")
 
-                // 7. Área protegida de Turista y Comprobantes
+                // 7. Área protegida de Turista, Reservas y Comprobantes (accesible por cualquier usuario autenticado)
                 .requestMatchers(
                     "/api/turista/reservas/*/comprobante.pdf",
                     "/api/turista/reservas/comprobante.pdf",
                     "/api/reservas/*/comprobante.pdf"
                 ).hasAnyRole("TURISTA", "AGENCIA", "ADMIN")
-                .requestMatchers("/html/turista/reservas.html").hasRole("TURISTA")
-                .requestMatchers("/api/turista/**").hasRole("TURISTA")
+                .requestMatchers("/html/turista/reservas.html").authenticated()
+                .requestMatchers("/api/turista/**").authenticated()
 
                 // 8. Cualquier otra petición debe estar autenticada
                 .anyRequest().authenticated()

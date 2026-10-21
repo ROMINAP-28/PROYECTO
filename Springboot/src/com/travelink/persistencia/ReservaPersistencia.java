@@ -12,6 +12,11 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * ROL: Consulta Especializada (JDBC)
+ * Responsabilidad: Transacciones atómicas multi-tabla (Reserva, DetalleReserva, Pasajeros, Pagos, Fechas),
+ * lógica de rollback, cálculo de cupos y desgloses complejos.
+ */
 public class ReservaPersistencia {
 
     public boolean perteneceAUsuario(int idReserva, int idUsuario) {
@@ -59,8 +64,8 @@ public class ReservaPersistencia {
             con = ConexionDB.getConnection();
             con.setAutoCommit(false);
 
-            try (Statement st = con.createStatement()) {
-                st.execute("SET FOREIGN_KEY_CHECKS = 0;");
+            try (PreparedStatement psFk = con.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;")) {
+                psFk.execute();
             }
 
             // 1. Identificar Titular de la sesión
@@ -633,8 +638,8 @@ public class ReservaPersistencia {
             } catch (Exception ignored) {}
 
             con.commit();
-            try (Statement st = con.createStatement()) {
-                st.execute("SET FOREIGN_KEY_CHECKS = 1;");
+            try (PreparedStatement psFk = con.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;")) {
+                psFk.execute();
             }
 
             String desgloseTexto = formatDesglose(cantAdultos, precioAdulto, cantNinos, precioNino, cantBebes, precioBebe);
@@ -875,4 +880,105 @@ public class ReservaPersistencia {
             }
         }
     }
+
+    public List<Map<String, Object>> obtenerReservasPorAgencia(int idAgencia) {
+        List<Map<String, Object>> reservas = new ArrayList<>();
+        String sql = """
+            SELECT
+                r.idReserva,
+                r.codigoReserva,
+                r.idUsuario,
+                r.idAgencia,
+                COALESCE(r.nombreTour, 'Tour Turístico') AS nombreTour,
+                COALESCE(DATE_FORMAT(r.fechaRegistro, '%d/%m/%Y'), r.fechaRegistro) AS fechaRegistro,
+                COALESCE(DATE_FORMAT(r.fechaInicio, '%d/%m/%Y'), r.fechaInicio) AS fechaInicio,
+                COALESCE(DATE_FORMAT(r.fechaFin, '%d/%m/%Y'), r.fechaFin) AS fechaFin,
+                tf.fecha AS fechaSalida,
+                TIME_FORMAT(tf.horaInicio, '%H:%i') AS horaSalida,
+                CONCAT(DATE_FORMAT(COALESCE(tf.fecha, r.fechaInicio), '%d/%m/%Y'), ' - ', COALESCE(TIME_FORMAT(tf.horaInicio, '%H:%i'), '08:00')) AS fechaHoraSalida,
+                r.estado,
+                r.motivoCancelacion,
+                r.total,
+                COALESCE(CONCAT(p.nombre, ' ', p.apellidoPaterno), u.nombreUsuario, 'Turista') AS nombreUsuario,
+                COALESCE(dr.cantAdultos, 1) AS cantAdultos,
+                COALESCE(dr.cantNinos, 0) AS cantNinos,
+                COALESCE(dr.cantBebes, 0) AS cantBebes,
+                t.precioAdulto,
+                t.precioNino,
+                t.precioBebe,
+                COALESCE(NULLIF((SELECT COUNT(*) FROM Pasajero ps WHERE ps.idReserva = r.idReserva), 0), 2) AS cantidadPersonas,
+                COALESCE(
+                    (SELECT SUM(pg.monto) FROM Pago pg WHERE pg.idReserva = r.idReserva),
+                    (SELECT SUM(mp.monto) FROM MetodoPago mp WHERE mp.idReserva = r.idReserva),
+                    r.total
+                ) AS totalPagado,
+                COALESCE(
+                    (SELECT pg.estado FROM Pago pg WHERE pg.idReserva = r.idReserva LIMIT 1),
+                    (SELECT mp.estadoPago FROM MetodoPago mp WHERE mp.idReserva = r.idReserva LIMIT 1),
+                    'COMPLETADO'
+                ) AS estadoPago
+            FROM Reserva r
+            LEFT JOIN Usuario u ON u.idUsuario = r.idUsuario
+            LEFT JOIN Persona p ON u.idPersona = p.idPersona
+            LEFT JOIN DetalleReserva dr ON r.idReserva = dr.idReserva AND (dr.tipo IS NULL OR dr.tipo = 'ADULTO')
+            LEFT JOIN TourFecha tf ON r.idTourFecha = tf.idTourFecha
+            LEFT JOIN Tour t ON (r.idTour = t.idTour OR tf.idTour = t.idTour)
+            WHERE r.idAgencia = ?
+            ORDER BY r.fechaRegistro DESC
+            """;
+
+        try (Connection con = ConexionDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idAgencia);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new HashMap<>();
+                    BigDecimal total = rs.getBigDecimal("total");
+                    if (total == null) total = BigDecimal.ZERO;
+                    BigDecimal totalPagado = rs.getBigDecimal("totalPagado");
+                    BigDecimal comision = total.multiply(new BigDecimal("0.15")).setScale(2, java.math.RoundingMode.HALF_UP);
+
+                    int adultos = rs.getInt("cantAdultos");
+                    if (adultos < 1) adultos = 1;
+                    int ninos = rs.getInt("cantNinos");
+                    int bebes = rs.getInt("cantBebes");
+                    BigDecimal pAdulto = rs.getBigDecimal("precioAdulto");
+                    BigDecimal pNino = rs.getBigDecimal("precioNino");
+                    BigDecimal pBebe = rs.getBigDecimal("precioBebe");
+                    String desglose = formatDesglose(adultos, pAdulto, ninos, pNino, bebes, pBebe);
+
+                    map.put("idReserva", rs.getInt("idReserva"));
+                    map.put("codigoReserva", rs.getString("codigoReserva"));
+                    map.put("codigo", rs.getString("codigoReserva"));
+                    map.put("idUsuario", rs.getInt("idUsuario"));
+                    map.put("idAgencia", rs.getInt("idAgencia"));
+                    map.put("nombreCliente", rs.getString("nombreUsuario"));
+                    map.put("nombreTour", rs.getString("nombreTour"));
+                    map.put("fechaRegistro", rs.getString("fechaRegistro"));
+                    map.put("fechaInicio", rs.getString("fechaInicio"));
+                    map.put("fechaFin", rs.getString("fechaFin"));
+                    map.put("fechaSalida", rs.getString("fechaSalida") != null ? rs.getString("fechaSalida") : rs.getString("fechaInicio"));
+                    map.put("horaSalida", rs.getString("horaSalida") != null ? rs.getString("horaSalida") : "08:00");
+                    map.put("fechaHoraSalida", rs.getString("fechaHoraSalida"));
+                    map.put("cantidadPersonas", rs.getInt("cantidadPersonas"));
+                    map.put("cantAdultos", adultos);
+                    map.put("cantNinos", ninos);
+                    map.put("cantBebes", bebes);
+                    map.put("desglose", desglose);
+                    map.put("estado", rs.getString("estado"));
+                    map.put("motivoCancelacion", rs.getString("motivoCancelacion"));
+                    map.put("total", total.doubleValue());
+                    map.put("totalPagado", totalPagado != null ? totalPagado.doubleValue() : 0.0);
+                    map.put("comision", comision.doubleValue());
+                    map.put("estadoPago", rs.getString("estadoPago"));
+
+                    reservas.add(map);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return reservas;
+    }
 }
+

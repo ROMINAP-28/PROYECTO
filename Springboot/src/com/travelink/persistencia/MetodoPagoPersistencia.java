@@ -7,6 +7,10 @@ import com.travelink.repositorio.MetodoPagoRepositorio;
 import java.sql.*;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC) / Compatibilidad transaccional.
+ * NOTA: Operaciones CRUD básicas duplicadas con MetodoPagoRepositorio (DAO Principal JPA).
+ */
 public class MetodoPagoPersistencia {
     public MetodoPago guardar(MetodoPago pago) {
         String sql = "INSERT INTO MetodoPago (idReserva, tipoPago, monto, esAdelanto, estadoPago, numeroOperacion) VALUES (?, ?, ?, ?, ?, ?)";

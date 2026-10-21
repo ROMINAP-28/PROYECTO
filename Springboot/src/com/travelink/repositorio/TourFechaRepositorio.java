@@ -10,9 +10,14 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * ROL: DAO Principal (Spring Data JPA)
+ * Responsabilidad: Operaciones CRUD y actualización de cupos sobre la entidad TourFecha.
+ */
 @Repository
 public interface TourFechaRepositorio extends JpaRepository<TourFecha, Integer> {
     List<TourFecha> findByIdTour(Integer idTour);
+    List<TourFecha> findByIdTourOrderByFechaAsc(Integer idTour);
     List<TourFecha> findByIdTourAndFechaGreaterThanEqual(Integer idTour, Date fecha);
 
     @Modifying

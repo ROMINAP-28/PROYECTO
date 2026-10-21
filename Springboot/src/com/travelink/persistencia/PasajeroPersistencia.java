@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC)
+ * Responsabilidad: Operaciones en lote (batch execute) para inserción masiva de pasajeros en reservas.
+ */
 public class PasajeroPersistencia {
     public Pasajero guardar(Pasajero pasajero) {
         String sql = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidoPaterno, apellidoMaterno, esTitular) VALUES (?, ?, ?, ?, ?, ?)";

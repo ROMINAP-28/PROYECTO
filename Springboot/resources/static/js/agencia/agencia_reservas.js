@@ -11,7 +11,7 @@
     } catch (e) { }
 
     const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : ID_AGENCIA_DEFAULT;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreUsuario) : "ANDES TOURS";
+    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombre || sesion.nombreUsuario) : "Agencia";
 
     let todasLasReservas = [];
     let reservasFiltradas = [];

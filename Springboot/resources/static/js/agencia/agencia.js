@@ -373,6 +373,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
+                    // Guardar datos de la agencia autenticada
+                    try {
+                        localStorage.setItem("agenciaSesion", JSON.stringify(resultado));
+                        localStorage.setItem("agenciasesión", JSON.stringify(resultado));
+                        if (resultado.user) {
+                            localStorage.setItem("travelink_user", JSON.stringify(resultado.user));
+                        }
+                        sessionStorage.setItem("travelink_auth_cache", JSON.stringify(resultado));
+                    } catch (e) {}
+
                     mostrarMensaje(
                         mensaje,
                         "Inicio de sesión correcto. Redirigiendo...",
@@ -1997,18 +2007,40 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function cargarDashboardAgencia() {
-    // Recuperar agencia de la sesión (id 1 por defecto para pruebas si no hay)
-    const sesión = JSON.parse(localStorage.getItem("agenciasesión")) || { idAgencia: 1, nombreComercial: "ANDES TOURS" };
+    let sesión = null;
+    try {
+        const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión") || localStorage.getItem("travelink_user");
+        sesión = JSON.parse(raw || "{}");
+    } catch(e) {}
+
+    try {
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+            const meData = await meRes.json();
+            if (meData && (meData.idAgencia || meData.idUsuario)) {
+                sesión = Object.assign({}, sesión || {}, meData);
+            }
+        }
+    } catch (e) {}
+
+    const nombreAgencia = (sesión && (sesión.nombreComercial || sesión.nombre || sesión.razonSocial)) ? (sesión.nombreComercial || sesión.nombre || sesión.razonSocial) : "Agencia";
+    const idAgencia = (sesión && sesión.idAgencia) ? sesión.idAgencia : 1;
     
     // Saludar
     const bienvenida = document.getElementById("bienvenidaAgencia");
-    if(bienvenida) bienvenida.textContent = sesión.nombreComercial;
+    if (bienvenida) bienvenida.textContent = nombreAgencia;
 
     const nombre = document.getElementById("nombreAgenciaTop");
-    if(nombre) nombre.textContent = sesión.nombreComercial;
+    if (nombre) nombre.textContent = nombreAgencia;
+
+    const dropNombre = document.getElementById("dropdownNombreAgencia");
+    if (dropNombre) dropNombre.textContent = nombreAgencia;
+
+    const avatar = document.getElementById("agencyAvatarLetter");
+    if (avatar) avatar.textContent = nombreAgencia.charAt(0).toUpperCase();
 
     try {
-        const res = await fetch(`/api/agencia/dashboard?idAgencia=${sesión.idAgencia}`);
+        const res = await fetch(`/api/agencia/dashboard?idAgencia=${idAgencia}`, { credentials: 'include' });
         const data = await res.json();
         if (data.status === "success") {
             // Indicadores

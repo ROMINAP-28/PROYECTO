@@ -1,50 +1,27 @@
 package com.travelink.servicio;
 
+import com.travelink.controlador.dto.CalificacionRequest;
 import com.travelink.entidades.Calificacion;
-import com.travelink.repositorio.CalificacionRepositorio;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class CalificacionServicio {
+/**
+ * Interface del Servicio de Calificaciones y Reseñas.
+ * Aplica principios SOLID:
+ * - SRP: Gestión de valoraciones, cálculo de promedios de satisfacción y moderación.
+ * - DIP: Abstracción desacoplada de la capa de persistencia.
+ */
+public interface CalificacionServicio {
 
-    private final CalificacionRepositorio calificacionRepositorio;
+    List<Calificacion> listarPorAgencia(Integer idAgencia);
 
-    public CalificacionServicio(CalificacionRepositorio calificacionRepositorio) {
-        this.calificacionRepositorio = calificacionRepositorio;
-    }
+    List<Calificacion> listarPorUsuario(Integer idUsuario);
 
-    public List<Calificacion> listarPorAgencia(Integer idAgencia) {
-        return calificacionRepositorio.findByIdAgencia(idAgencia);
-    }
+    Double obtenerPromedioAgencia(Integer idAgencia);
 
-    public List<Calificacion> listarPorUsuario(Integer idUsuario) {
-        return calificacionRepositorio.findByIdUsuario(idUsuario);
-    }
+    Calificacion guardar(Calificacion calificacion);
 
-    public Double obtenerPromedioAgencia(Integer idAgencia) {
-        Double avg = calificacionRepositorio.promedioEstrellasPorAgencia(idAgencia);
-        return avg != null ? Math.round(avg * 10.0) / 10.0 : 5.0;
-    }
+    Calificacion registrarCalificacion(CalificacionRequest req, int idUsuario);
 
-    @Transactional
-    public Calificacion guardar(Calificacion calificacion) {
-        return calificacionRepositorio.save(calificacion);
-    }
-
-    @Transactional
-    public boolean marcarEliminado(Integer id, String motivo) {
-        Optional<Calificacion> c = calificacionRepositorio.findById(id);
-        if (c.isPresent()) {
-            Calificacion cal = c.get();
-            cal.setEliminadoPorAdmin(true);
-            cal.setMotivoEliminacion(motivo);
-            calificacionRepositorio.save(cal);
-            return true;
-        }
-        return false;
-    }
+    boolean marcarEliminado(Integer id, String motivo);
 }

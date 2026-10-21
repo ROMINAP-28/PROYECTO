@@ -1,49 +1,35 @@
 package com.travelink.servicio;
 
 import com.travelink.entidades.Tour;
-import com.travelink.repositorio.TourRepositorio;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.travelink.entidades.TourFecha;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class TourServicio {
+/**
+ * Interface del Servicio de Tours y Paquetes Turísticos.
+ * Aplica principios SOLID:
+ * - SRP: Gestión del catálogo de tours, precios, imágenes y fechas disponibles.
+ * - ISP: Interface con métodos específicos para turistas y agencias.
+ * - DIP: Inyección de la abstracción en los controladores.
+ */
+public interface TourServicio {
 
-    private final TourRepositorio tourRepositorio;
+    List<Tour> listarTodos();
 
-    public TourServicio(TourRepositorio tourRepositorio) {
-        this.tourRepositorio = tourRepositorio;
-    }
+    List<Tour> listarPorEstado(String estado);
 
-    public List<Tour> listarTodos() {
-        return tourRepositorio.findAll();
-    }
+    Optional<Tour> buscarPorId(Integer id);
 
-    public List<Tour> listarPorEstado(String estado) {
-        return tourRepositorio.findByEstado(estado);
-    }
+    Optional<Tour> buscarPorSlug(String slug);
 
-    public Optional<Tour> buscarPorId(Integer id) {
-        return tourRepositorio.findById(id);
-    }
+    List<Tour> listarPorAgencia(Integer idAgencia);
 
-    public Optional<Tour> buscarPorSlug(String slug) {
-        return tourRepositorio.findBySlug(slug);
-    }
+    Tour guardar(Tour tour);
 
-    public List<Tour> listarPorAgencia(Integer idAgencia) {
-        return tourRepositorio.findByIdAgencia(idAgencia);
-    }
+    void eliminar(Integer id);
 
-    @Transactional
-    public Tour guardar(Tour tour) {
-        return tourRepositorio.save(tour);
-    }
+    List<TourFecha> listarFechasPorTour(Integer idTour);
 
-    @Transactional
-    public void eliminar(Integer id) {
-        tourRepositorio.deleteById(id);
-    }
+    TourFecha guardarFecha(TourFecha fecha);
 }

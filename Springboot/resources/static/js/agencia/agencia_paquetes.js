@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TRAVELINK - MÓDULO UNIFICADO DE PAQUETES TURÍSTICOS (AGENCIA)
  * Fase 5: Vista unificada de gestión de paquetes, salidas y cupos
  */
@@ -205,16 +205,12 @@
     // 4. FILTROS Y BÚSQUEDA
     function setupFiltros() {
         if (buscarPaquete) {
-            buscarPaquete.addEventListener("input", aplicarFiltros);
-        }
-        if (filtroDestinoPaquete) {
-            filtroDestinoPaquete.addEventListener("change", aplicarFiltros);
-        }
-        if (filtroEstadoPaquete) {
-            filtroEstadoPaquete.addEventListener("change", aplicarFiltros);
+            buscarPaquete.addEventListener("keyup", (e) => {
+                if (e.key === "Enter") aplicarFiltros(e);
+            });
         }
         if (btnAplicarFiltros) {
-            btnAplicarFiltros.addEventListener("click", aplicarFiltros);
+            btnAplicarFiltros.addEventListener("click", (e) => aplicarFiltros(e));
         }
         if (btnLimpiarFiltros) {
             btnLimpiarFiltros.addEventListener("click", () => {
@@ -247,6 +243,14 @@
         });
 
         renderizarGrid();
+
+        if (btnAplicarFiltros && e && (e.type === 'click' || (e.key && e.key === 'Enter'))) {
+            const originalHtml = btnAplicarFiltros.innerHTML;
+            btnAplicarFiltros.innerHTML = '<i class="ti ti-check"></i> ¡Filtros aplicados!';
+            setTimeout(() => {
+                btnAplicarFiltros.innerHTML = originalHtml;
+            }, 800);
+        }
     }
 
     // 5. RENDERIZAR GRID DE TARJETAS

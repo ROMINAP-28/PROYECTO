@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Controlador REST para el Portal Público y Turistas.
+ * Atiende el registro de turistas, consulta de catálogo de destinos y tours,
+ * creación y cancelación de reservas, y registro de calificaciones con reseñas.
+ */
 @RestController
 public class PublicApiController {
 

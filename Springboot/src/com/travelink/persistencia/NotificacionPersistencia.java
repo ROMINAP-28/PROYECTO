@@ -4,6 +4,10 @@ import com.travelink.config.ConexionDB;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * ROL: Consulta Especializada (JDBC)
+ * Responsabilidad: Inserción directa y rápida de notificaciones para administradores y usuarios.
+ */
 public class NotificacionPersistencia {
 
     /**

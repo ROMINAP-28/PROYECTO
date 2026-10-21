@@ -1,36 +1,23 @@
 package com.travelink.servicio;
 
 import com.travelink.entidades.Destino;
-import com.travelink.repositorio.DestinoRepositorio;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class DestinoServicio {
+/**
+ * Interface del Servicio de Destinos Turísticos.
+ * Aplica principios SOLID:
+ * - SRP: Catálogo de regiones y destinos disponibles en el Perú.
+ * - DIP: Abstracción inyectable en controladores.
+ */
+public interface DestinoServicio {
 
-    private final DestinoRepositorio destinoRepositorio;
+    List<Destino> listarTodos();
 
-    public DestinoServicio(DestinoRepositorio destinoRepositorio) {
-        this.destinoRepositorio = destinoRepositorio;
-    }
+    List<Destino> listarActivos();
 
-    public List<Destino> listarTodos() {
-        return destinoRepositorio.findAll();
-    }
+    Optional<Destino> buscarPorId(Integer id);
 
-    public List<Destino> listarActivos() {
-        return destinoRepositorio.findByEstado("ACTIVO");
-    }
-
-    public Optional<Destino> buscarPorId(Integer id) {
-        return destinoRepositorio.findById(id);
-    }
-
-    @Transactional
-    public Destino guardar(Destino destino) {
-        return destinoRepositorio.save(destino);
-    }
+    Destino guardar(Destino destino);
 }

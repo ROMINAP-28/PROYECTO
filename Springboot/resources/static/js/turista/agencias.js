@@ -54,6 +54,17 @@ window.aplicarFiltrosAgencias = function(e) {
     if (noResultados) {
         noResultados.style.display = (visibleCount === 0) ? 'block' : 'none';
     }
+
+    const btn = document.getElementById('btn-aplicar-filtros');
+    if (btn && e && (e.type === 'click' || (e.key && e.key === 'Enter'))) {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> ¡Filtros aplicados!';
+        btn.style.background = '#15803d';
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.style.background = '#196f3d';
+        }, 800);
+    }
 };
 
 window.limpiarFiltrosAgencias = function(e) {
@@ -153,19 +164,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const busqueda = document.getElementById('agencia-busqueda');
     if (busqueda) {
-        busqueda.addEventListener('input', () => aplicarFiltrosAgencias());
         busqueda.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') aplicarFiltrosAgencias();
+            if (e.key === 'Enter') aplicarFiltrosAgencias(e);
         });
     }
 
-    const ubicacion = document.getElementById('agencia-ubicacion');
-    if (ubicacion) {
-        ubicacion.addEventListener('change', () => aplicarFiltrosAgencias());
+    const btnAplicar = document.getElementById('btn-aplicar-filtros');
+    if (btnAplicar) {
+        btnAplicar.addEventListener('click', (e) => aplicarFiltrosAgencias(e));
     }
 
-    const calificacion = document.getElementById('agencia-calificacion');
-    if (calificacion) {
-        calificacion.addEventListener('change', () => aplicarFiltrosAgencias());
+    const btnLimpiar = document.getElementById('btn-limpiar-filtros');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', (e) => limpiarFiltrosAgencias(e));
     }
 });

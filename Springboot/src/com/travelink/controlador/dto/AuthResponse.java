@@ -42,20 +42,53 @@ public class AuthResponse {
         this.user = u;
     }
 
+    private String nombreComercial;
+    private String razonSocial;
+
     public Integer getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+        if (this.user != null) this.user.put("idUsuario", idUsuario);
+    }
 
     public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+        if (this.user != null) this.user.put("nombre", nombre);
+    }
 
     public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
+    public void setCorreo(String correo) {
+        this.correo = correo;
+        if (this.user != null) {
+            this.user.put("correo", correo);
+            this.user.put("email", correo);
+        }
+    }
 
     public String getRol() { return rol; }
-    public void setRol(String rol) { this.rol = rol; }
+    public void setRol(String rol) {
+        this.rol = rol;
+        if (this.user != null) this.user.put("rol", rol);
+    }
 
     public Integer getIdAgencia() { return idAgencia; }
-    public void setIdAgencia(Integer idAgencia) { this.idAgencia = idAgencia; }
+    public void setIdAgencia(Integer idAgencia) {
+        this.idAgencia = idAgencia;
+        if (this.user != null && idAgencia != null) this.user.put("idAgencia", idAgencia);
+    }
+
+    public String getNombreComercial() { return nombreComercial; }
+    public void setNombreComercial(String nombreComercial) {
+        this.nombreComercial = nombreComercial;
+        if (this.user != null) this.user.put("nombreComercial", nombreComercial);
+    }
+
+    public String getRazonSocial() { return razonSocial; }
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+        if (this.user != null) this.user.put("razonSocial", razonSocial);
+    }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

@@ -185,9 +185,14 @@
                         <p style="margin:0; font-size:14px; color:#64748b;">Gestiona tus paquetes turísticos, salidas programadas, cupos e itinerarios en una sola pantalla.</p>
                     </div>
 
-                    <button class="btn-nuevo-paquete" id="btnNuevoPaquete" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.2);">
-                        <i class="ti ti-plus"></i> Agregar paquete
-                    </button>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button type="button" class="btn-importar-fechas" id="btnAbrirModalImportar" style="background:#0284c7; color:white; border:none; padding:10px 18px; border-radius:8px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(2,132,199,0.2);">
+                            <i class="ti ti-upload"></i> Importar disponibilidad
+                        </button>
+                        <button class="btn-nuevo-paquete" id="btnNuevoPaquete" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.2);">
+                            <i class="ti ti-plus"></i> Agregar paquete
+                        </button>
+                    </div>
                 </section>
 
                 <!-- FILTROS Y BÚSQUEDA -->
@@ -674,9 +679,64 @@
         </div>
     </div>
 
+    <!-- MODAL IMPORTAR DISPONIBILIDAD -->
+    <div class="modal-overlay" id="modalImportar" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px);">
+        <div class="modal-card" style="background:#ffffff; width:92%; max-width:560px; border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.2); padding:24px; position:relative; max-height:90vh; overflow-y:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:38px; height:38px; border-radius:8px; background:#e0f2fe; color:#0284c7; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                        <i class="ti ti-file-upload"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size:18px; font-weight:700; color:#0f172a;">Importar Disponibilidad</h3>
+                        <p style="margin:0; font-size:12px; color:#64748b;">Carga masiva de fechas, horas y cupos desde Excel o CSV</p>
+                    </div>
+                </div>
+                <button type="button" id="btnCerrarModalImportar" style="background:none; border:none; font-size:20px; color:#94a3b8; cursor:pointer;">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+
+            <!-- Instrucciones y descarga de plantilla -->
+            <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px; padding:14px 16px; margin-bottom:18px;">
+                <p style="margin:0 0 8px 0; font-size:13px; color:#334155;">
+                    Descarga la plantilla con el formato requerido (columnas: <strong>ID_TOUR</strong>, <strong>FECHA</strong>, <strong>HORA_INICIO</strong>, <strong>CUPO_TOTAL</strong>):
+                </p>
+                <a href="/api/agencia/plantilla/disponibilidad.xlsx" download="plantilla_disponibilidad_tours.xlsx" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#0284c7; text-decoration:none;">
+                    <i class="ti ti-download"></i> Descargar plantilla oficial (.xlsx)
+                </a>
+            </div>
+
+            <!-- Formulario de carga -->
+            <form id="formImportarDisponibilidad">
+                <div style="margin-bottom:18px;">
+                    <label for="inputArchivoImportar" style="display:block; font-size:13px; font-weight:600; color:#334155; margin-bottom:6px;">
+                        Selecciona el archivo (.xlsx o .csv) - Máx. 5 MB:
+                    </label>
+                    <input type="file" id="inputArchivoImportar" accept=".xlsx,.csv" required
+                           style="width:100%; box-sizing:border-box; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:13px; background:#ffffff;">
+                    <small style="display:block; color:#64748b; font-size:11px; margin-top:4px;">Formatos admitidos: Excel (.xlsx) y texto delimitado por comas (.csv).</small>
+                </div>
+
+                <!-- Contenedor de Resumen de Resultados -->
+                <div id="resultadoImportacion" style="display:none; margin-bottom:18px;"></div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #e2e8f0; padding-top:14px;">
+                    <button type="button" id="btnCancelarImportar" style="background:#f1f5f9; color:#475569; border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnEjecutarImportar" style="background:#0284c7; color:white; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="ti ti-upload"></i> Subir e importar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../../js/comun/api.js"></script>
     <script src="../../js/comun/user_session.js"></script>
     <script src="../../js/agencia/agencia_paquetes.js"></script>
+    <script src="../../js/agencia/agencia_importar.js"></script>
 </body>
 </html>
 

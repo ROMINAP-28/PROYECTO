@@ -8,7 +8,12 @@ import com.travelink.server.JavaApiServer;
 import java.io.IOException;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GuardarReservaHandler implements HttpHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GuardarReservaHandler.class);
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         JavaApiServer.enableCORS(exchange);
@@ -57,12 +62,14 @@ public class GuardarReservaHandler implements HttpHandler {
                         .append("\"horaSalida\":\"").append(d.getOrDefault("horaSalida", "")).append("\",")
                         .append("\"cuposRestantes\":").append(d.getOrDefault("cuposRestantes", 0))
                         .append("}}");
+                log.info("Nueva reserva creada exitosamente. Código: {}, Total: S/ {}", d.get("codigo"), d.get("total"));
                 JavaApiServer.sendJsonResponse(exchange, 200, json.toString());
             } else {
                 int httpCode = 400;
                 String errCode = String.valueOf(res.getOrDefault("code", "ERROR"));
                 if ("UNAUTHORIZED".equalsIgnoreCase(errCode)) httpCode = 401;
 
+                log.warn("Fallo al procesar reserva: [{}] Código: [{}]", res.get("message"), errCode);
                 json.append("{\"status\":\"error\",")
                     .append("\"code\":\"").append(errCode).append("\",")
                     .append("\"message\":\"").append(JavaApiServer.jsonEscape(String.valueOf(res.get("message")))).append("\"}");

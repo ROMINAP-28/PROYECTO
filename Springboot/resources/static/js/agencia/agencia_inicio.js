@@ -34,6 +34,21 @@
 
     async function setupTopBar() {
         try {
+            const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión") || localStorage.getItem("travelink_user");
+            if (raw) {
+                const u = JSON.parse(raw);
+                const n = u.nombreComercial || u.nombre || u.correo || "Agencia";
+                const topNombre = document.getElementById("nombreAgenciaTop");
+                const dropNombre = document.getElementById("dropdownNombreAgencia");
+                const avatarLetter = document.getElementById("agencyAvatarLetter");
+                if (topNombre) topNombre.textContent = n;
+                if (dropNombre) dropNombre.textContent = n;
+                if (avatarLetter) avatarLetter.textContent = n.charAt(0).toUpperCase();
+                if (bienvenidaAgenciaEl) bienvenidaAgenciaEl.textContent = n;
+            }
+        } catch (e) {}
+
+        try {
             const meRes = await fetch(`${API_BASE}/api/auth/me`, { credentials: "include" });
             if (meRes.ok) {
                 const user = await meRes.json();
@@ -114,6 +129,16 @@
     }
 
     function renderizarDashboard(d) {
+        if (d.nombreAgencia && d.nombreAgencia !== "Agencia") {
+            const topNombre = document.getElementById("nombreAgenciaTop");
+            const dropNombre = document.getElementById("dropdownNombreAgencia");
+            const avatarLetter = document.getElementById("agencyAvatarLetter");
+            if (topNombre) topNombre.textContent = d.nombreAgencia;
+            if (dropNombre) dropNombre.textContent = d.nombreAgencia;
+            if (avatarLetter) avatarLetter.textContent = d.nombreAgencia.charAt(0).toUpperCase();
+            if (bienvenidaAgenciaEl) bienvenidaAgenciaEl.textContent = d.nombreAgencia;
+        }
+
         const ind = d.indicadores || {};
         const fin = d.finanzas || {};
 

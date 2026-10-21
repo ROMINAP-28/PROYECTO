@@ -1,99 +1,43 @@
 package com.travelink.servicio;
 
-import com.travelink.entidades.DetalleReserva;
 import com.travelink.entidades.Reserva;
-import com.travelink.repositorio.ReservaJpaRepositorio;
-import com.travelink.repositorio.TourFechaRepositorio;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@Service
-public class ReservaServicio {
+/**
+ * Interface del Servicio de Reservas.
+ * Aplica principios SOLID:
+ * - SRP: Responsabilidad exclusiva sobre reservas, pagos asociados y cupos.
+ * - ISP: Define únicamente operaciones relacionadas al ciclo de vida de la reserva.
+ * - DIP: Desacopla controladores de implementaciones concretas JPA y JDBC.
+ */
+public interface ReservaServicio {
 
-    private final ReservaJpaRepositorio reservaJpaRepositorio;
-    private final TourFechaRepositorio tourFechaRepositorio;
+    List<Reserva> listarTodas();
 
-    public ReservaServicio(ReservaJpaRepositorio reservaJpaRepositorio, TourFechaRepositorio tourFechaRepositorio) {
-        this.reservaJpaRepositorio = reservaJpaRepositorio;
-        this.tourFechaRepositorio = tourFechaRepositorio;
-    }
+    Optional<Reserva> buscarPorId(Integer id);
 
-    public List<Reserva> listarTodas() {
-        return reservaJpaRepositorio.findAll();
-    }
+    Optional<Reserva> buscarPorCodigo(String codigo);
 
-    public Optional<Reserva> buscarPorId(Integer id) {
-        return reservaJpaRepositorio.findById(id);
-    }
+    List<Reserva> listarPorUsuario(Integer idUsuario);
 
-    public Optional<Reserva> buscarPorCodigo(String codigo) {
-        return reservaJpaRepositorio.findByCodigoReserva(codigo);
-    }
+    List<Reserva> listarPorAgencia(Integer idAgencia);
 
-    public List<Reserva> listarPorUsuario(Integer idUsuario) {
-        return reservaJpaRepositorio.findByIdUsuarioOrderByFechaRegistroDesc(idUsuario);
-    }
+    Reserva guardar(Reserva reserva);
 
-    public List<Reserva> listarPorAgencia(Integer idAgencia) {
-        return reservaJpaRepositorio.findByIdAgenciaOrderByFechaRegistroDesc(idAgencia);
-    }
+    int descontarCupoAtomico(Integer idTourFecha, int cuposRequeridos);
 
-    @Transactional
-    public Reserva guardar(Reserva reserva) {
-        return reservaJpaRepositorio.save(reserva);
-    }
+    int devolverCupoAtomico(Integer idTourFecha, int cuposADevolver);
 
-    @Transactional
-    public int descontarCupoAtomico(Integer idTourFecha, int cuposRequeridos) {
-        return tourFechaRepositorio.descontarCupo(idTourFecha, cuposRequeridos);
-    }
+    boolean cancelar(Integer idReserva, String motivo);
 
-    @Transactional
-    public int devolverCupoAtomico(Integer idTourFecha, int cuposADevolver) {
-        return tourFechaRepositorio.devolverCupo(idTourFecha, cuposADevolver);
-    }
+    Map<String, Object> guardarReservaCompleta(Map<String, Object> reqData);
 
-    @Transactional
-    public boolean cancelar(Integer idReserva, String motivo) {
-        Optional<Reserva> r = reservaJpaRepositorio.findById(idReserva);
-        if (r.isPresent()) {
-            Reserva res = r.get();
-            if ("Cancelada".equalsIgnoreCase(res.getEstado())) {
-                return true;
-            }
-            res.setEstado("Cancelada");
-            res.setMotivoCancelacion(motivo);
-            reservaJpaRepositorio.save(res);
+    Map<String, Object> obtenerReservasPorUsuario(String correo, int idUsuario);
 
-            // Devolver cupo atómicamente
-            if (res.getIdTourFecha() != null) {
-                int adultos = 1;
-                int ninos = 0;
-                int bebes = 0;
-                boolean aceptaBebes = false;
-                BigDecimal precioBebe = BigDecimal.ZERO;
+    List<Map<String, Object>> obtenerReservasPorAgencia(int idAgencia);
 
-                if (res.getTour() != null) {
-                    aceptaBebes = Boolean.TRUE.equals(res.getTour().getAceptaBebes());
-                    precioBebe = res.getTour().getPrecioBebe() != null ? res.getTour().getPrecioBebe() : BigDecimal.ZERO;
-                }
-                if (res.getDetalles() != null && !res.getDetalles().isEmpty()) {
-                    for (DetalleReserva d : res.getDetalles()) {
-                        if (d.getCantAdultos() != null && d.getCantAdultos() > 0) adultos = d.getCantAdultos();
-                        if (d.getCantNinos() != null) ninos = d.getCantNinos();
-                        if (d.getCantBebes() != null) bebes = d.getCantBebes();
-                    }
-                }
-                boolean bebeOcupa = aceptaBebes && precioBebe.compareTo(BigDecimal.ZERO) > 0;
-                int cuposADevolver = adultos + ninos + (bebeOcupa ? bebes : 0);
-                tourFechaRepositorio.devolverCupo(res.getIdTourFecha(), cuposADevolver);
-            }
-            return true;
-        }
-        return false;
-    }
+    boolean perteneceAUsuario(int idReserva, int idUsuario);
 }

@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC) / Código de compatibilidad legado.
+ * NOTA: Los métodos CRUD básicos duplican AgenciaRepositorio (DAO Principal JPA).
+ */
 public class AgenciaPersistencia {
     public Agencia guardar(Agencia agencia) {
         String sql = "INSERT INTO Agencia (idUsuario, razonSocial, nombreComercial, ruc, telefono, email, direccion, descripcion, logoUrl, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";

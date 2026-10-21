@@ -203,8 +203,6 @@ function onPeriodoChange() {
     const sel = document.getElementById('filtroPeriodo');
     if (sel && sel.value === 'personalizado') {
         abrirModalCalendario();
-    } else {
-        aplicarFiltrosDashboard();
     }
 }
 

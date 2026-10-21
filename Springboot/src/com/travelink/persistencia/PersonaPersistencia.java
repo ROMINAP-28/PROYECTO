@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC) / Compatibilidad.
+ * NOTA: Métodos CRUD básicos duplicados con PersonaRepositorio (DAO Principal JPA).
+ */
 public class PersonaPersistencia {
     public Persona guardar(Persona persona) {
         String sql = "INSERT INTO Persona (nombre, apellidoPaterno, apellidoMaterno, nroDocumento, telefono, email) VALUES (?, ?, ?, ?, ?, ?)";

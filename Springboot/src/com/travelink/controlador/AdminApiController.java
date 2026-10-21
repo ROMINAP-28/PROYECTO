@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
+/**
+ * Controlador REST para el Panel de Administración del Sistema.
+ * Gestiona la aprobación/rechazo de agencias, liquidación de comisiones de plataforma (15%),
+ * moderación de calidad y reseñas, gestión de usuarios y métricas consolidadas del dashboard.
+ */
 @RestController
 public class AdminApiController {
 

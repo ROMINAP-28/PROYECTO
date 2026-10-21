@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC)
+ * Responsabilidad: Manejo de slugs normalizados, formateo de duraciones, y consultas complejas de tours.
+ */
 public class TourPersistencia {
 
     public static String generarSlug(String nombre) {

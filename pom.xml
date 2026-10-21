@@ -67,10 +67,18 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
         </dependency>
+
+        <!-- Pruebas Unitarias y de Integración -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>Springboot/src</sourceDirectory>
+        <testSourceDirectory>Springboot/test</testSourceDirectory>
         <resources>
             <resource>
                 <directory>Springboot/resources</directory>

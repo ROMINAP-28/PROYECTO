@@ -6,6 +6,10 @@ import com.travelink.persistencia.ReservaPersistencia;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * ROL: Fachada de Persistencia / Compatibilidad de Reservas.
+ * Delega en ReservaPersistencia para transacciones atómicas complejas.
+ */
 public class ReservaRepositorio {
     private final ReservaPersistencia persistencia = new ReservaPersistencia();
 

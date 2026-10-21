@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * ROL: DAO Principal (Spring Data JPA)
+ * Responsabilidad: Operaciones CRUD y consultas simples sobre la entidad Calificacion.
+ */
 @Repository
 public interface CalificacionRepositorio extends JpaRepository<Calificacion, Integer> {
     List<Calificacion> findByIdAgencia(Integer idAgencia);

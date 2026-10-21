@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC)
+ * Responsabilidad: Inserción directa y consultas de reseñas por agencia/turista.
+ */
 public class CalificacionPersistencia {
     public Calificacion guardar(Calificacion calificacion) {
         if (calificacion == null) return null;
@@ -38,8 +42,8 @@ public class CalificacionPersistencia {
         // 2. Si no existe, insertar nueva calificación
         String sql = "INSERT INTO Calificacion (idUsuario, idAgencia, idReserva, estrellas, comentario, fechaCalificacion) VALUES (?, ?, ?, ?, ?, NOW())";
         try (Connection con = ConexionDB.getConnection()) {
-            try (Statement st = con.createStatement()) {
-                st.execute("SET FOREIGN_KEY_CHECKS = 0;");
+            try (PreparedStatement psFk = con.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;")) {
+                psFk.execute();
             }
             try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, calificacion.getIdUsuario());
@@ -55,8 +59,8 @@ public class CalificacionPersistencia {
                     }
                 }
             }
-            try (Statement st = con.createStatement()) {
-                st.execute("SET FOREIGN_KEY_CHECKS = 1;");
+            try (PreparedStatement psFk = con.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;")) {
+                psFk.execute();
             }
             return calificacion;
         } catch (SQLException e) {

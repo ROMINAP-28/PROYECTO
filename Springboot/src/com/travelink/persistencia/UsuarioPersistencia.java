@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: Consulta Especializada (JDBC) / Compatibilidad.
+ * Responsabilidad: Búsquedas directas por JDBC con JOIN de Persona/Rol y autenticación legada.
+ * NOTA: Operaciones CRUD básicas duplicadas con UsuarioRepositorio (DAO Principal JPA).
+ */
 public class UsuarioPersistencia {
     public Usuario guardar(Usuario usuario) {
         Connection con = null;

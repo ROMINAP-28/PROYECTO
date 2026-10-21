@@ -1,64 +1,32 @@
 package com.travelink.servicio;
 
+import com.travelink.controlador.dto.RegistroTuristaRequest;
 import com.travelink.entidades.Usuario;
-import com.travelink.repositorio.UsuarioRepositorio;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class UsuarioServicio {
+/**
+ * Interface del Servicio de Usuarios y Autenticación.
+ * Aplica principios SOLID:
+ * - SRP: Gestión de cuentas de usuario, perfiles y seguridad de contraseñas.
+ * - DIP: Abstracción inyectable en controladores.
+ */
+public interface UsuarioServicio {
 
-    private final UsuarioRepositorio usuarioRepositorio;
-    private final PasswordEncoder passwordEncoder;
+    List<Usuario> listarTodos();
 
-    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio, PasswordEncoder passwordEncoder) {
-        this.usuarioRepositorio = usuarioRepositorio;
-        this.passwordEncoder = passwordEncoder;
-    }
+    Optional<Usuario> buscarPorId(Integer id);
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepositorio.findAll();
-    }
+    Optional<Usuario> buscarPorLogin(String login);
 
-    public Optional<Usuario> buscarPorId(Integer id) {
-        return usuarioRepositorio.findById(id);
-    }
+    Optional<Usuario> buscarPorCorreoOUsuario(String login);
 
-    public Optional<Usuario> buscarPorLogin(String login) {
-        return usuarioRepositorio.buscarPorCorreoOUsuario(login);
-    }
+    Usuario registrar(Usuario usuario);
 
-    @Transactional
-    public Usuario registrar(Usuario usuario) {
-        if (usuario.getContrasena() != null && !usuario.getContrasena().startsWith("$2")) {
-            usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-        }
-        return usuarioRepositorio.save(usuario);
-    }
+    Usuario guardar(Usuario usuario);
 
-    public boolean verificarContrasena(String rawPassword, String encodedPassword) {
-        if (rawPassword == null || encodedPassword == null) return false;
-        String rawTrimmed = rawPassword.trim();
-        String encTrimmed = encodedPassword.trim();
+    Usuario registrarTurista(RegistroTuristaRequest request);
 
-        if (encTrimmed.startsWith("$2")) {
-            if (passwordEncoder.matches(rawPassword, encTrimmed) || passwordEncoder.matches(rawTrimmed, encTrimmed)) {
-                return true;
-            }
-        } else if (encTrimmed.equals(rawPassword) || encTrimmed.equalsIgnoreCase(rawTrimmed)) {
-            return true;
-        }
-
-        // Respaldo para entorno de desarrollo y pruebas locales
-        if ("123456".equals(rawTrimmed) || "12345678".equals(rawTrimmed) || "pass123".equals(rawTrimmed)
-                || "admin".equalsIgnoreCase(rawTrimmed) || "admin123".equalsIgnoreCase(rawTrimmed)) {
-            return true;
-        }
-
-        return false;
-    }
+    boolean verificarContrasena(String rawPassword, String encodedPassword);
 }

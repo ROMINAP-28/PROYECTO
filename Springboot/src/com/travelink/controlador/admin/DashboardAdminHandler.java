@@ -40,16 +40,16 @@ import com.travelink.repositorio.ReservaRepositorio;
 
             try (Connection con = ConexionDB.getConnection()) {
                 if (con != null) {
-                    try (Statement stmt = con.createStatement();
-                         ResultSet rs = stmt.executeQuery("SELECT COALESCE(SUM(total), 0) AS total, COUNT(*) AS cant FROM Reserva WHERE estado = 'CONFIRMADA'")) {
+                    try (PreparedStatement stmt = con.prepareStatement("SELECT COALESCE(SUM(total), 0) AS total, COUNT(*) AS cant FROM Reserva WHERE estado = 'CONFIRMADA'");
+                         ResultSet rs = stmt.executeQuery()) {
                         if (rs.next()) {
                             ventasTotales = rs.getDouble("total");
                             reservasRealizadas = rs.getInt("cant");
                             comisionGenerada = ventasTotales * 0.15;
                         }
                     }
-                    try (Statement stmt = con.createStatement();
-                         ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM Agencia WHERE estado = 'ACTIVO'")) {
+                    try (PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) FROM Agencia WHERE estado = 'ACTIVO'");
+                         ResultSet rs = stmt.executeQuery()) {
                         if (rs.next()) {
                             agenciasActivas = rs.getInt(1);
                         }
@@ -73,8 +73,8 @@ import com.travelink.repositorio.ReservaRepositorio;
                         LEFT JOIN Destino d ON t.idDestino = d.idDestino
                         ORDER BY r.idReserva DESC
                         """;
-                    try (Statement stmt = con.createStatement();
-                         ResultSet rsV = stmt.executeQuery(sqlDetalle)) {
+                    try (PreparedStatement stmt = con.prepareStatement(sqlDetalle);
+                         ResultSet rsV = stmt.executeQuery()) {
                         boolean primero = true;
                         while (rsV.next()) {
                             if (!primero) detalleVentasJson.append(",");

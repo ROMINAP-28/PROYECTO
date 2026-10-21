@@ -4,14 +4,14 @@ import com.travelink.controlador.dto.AuthResponse;
 import com.travelink.entidades.Agencia;
 import com.travelink.entidades.SolicitudAgencia;
 import com.travelink.entidades.Usuario;
-import com.travelink.repositorio.AgenciaRepositorio;
-import com.travelink.repositorio.SolicitudAgenciaRepositorio;
-import com.travelink.repositorio.UsuarioRepositorio;
+import com.travelink.servicio.AgenciaServicio;
 import com.travelink.servicio.LoginAttemptService;
 import com.travelink.servicio.UsuarioServicio;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,27 +26,29 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * Controlador REST para el subsistema de Autenticación y Sesión.
+ * Aplica principios SOLID:
+ * - SRP: Gestiona exclusivamente el ciclo de vida de autenticación, login, logout y perfil (/auth/me).
+ * - DIP: Inyecta abstracciones de servicio (UsuarioServicio, AgenciaServicio) por constructor.
+ */
 @RestController
 @RequestMapping("/api")
 public class AuthApiController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthApiController.class);
+
     private final UsuarioServicio usuarioServicio;
-    private final UsuarioRepositorio usuarioRepositorio;
-    private final AgenciaRepositorio agenciaRepositorio;
-    private final SolicitudAgenciaRepositorio solicitudAgenciaRepositorio;
+    private final AgenciaServicio agenciaServicio;
     private final LoginAttemptService loginAttemptService;
     private final PasswordEncoder passwordEncoder;
 
     public AuthApiController(UsuarioServicio usuarioServicio,
-                             UsuarioRepositorio usuarioRepositorio,
-                             AgenciaRepositorio agenciaRepositorio,
-                             SolicitudAgenciaRepositorio solicitudAgenciaRepositorio,
+                             AgenciaServicio agenciaServicio,
                              LoginAttemptService loginAttemptService,
                              PasswordEncoder passwordEncoder) {
         this.usuarioServicio = usuarioServicio;
-        this.usuarioRepositorio = usuarioRepositorio;
-        this.agenciaRepositorio = agenciaRepositorio;
-        this.solicitudAgenciaRepositorio = solicitudAgenciaRepositorio;
+        this.agenciaServicio = agenciaServicio;
         this.loginAttemptService = loginAttemptService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -79,6 +81,7 @@ public class AuthApiController {
 
         // Verificar si está bloqueado por 5 intentos fallidos
         if (loginAttemptService.isBlocked(lockoutKey)) {
+            log.warn("Bloqueo de seguridad: intento de login rechazado para [{}] por superar 5 intentos fallidos desde IP: {}", login, clientIp);
             return ResponseEntity.status(HttpStatus.LOCKED)
                     .body(Map.of("status", "error", "message", "Cuenta bloqueada temporalmente por 5 intentos fallidos. Intente nuevamente en 15 minutos."));
         }
@@ -87,6 +90,7 @@ public class AuthApiController {
         if (usuarioOpt.isEmpty()) {
             loginAttemptService.loginFailed(lockoutKey);
             int remaining = loginAttemptService.getRemainingAttempts(lockoutKey);
+            log.warn("Intento de login fallido (usuario no encontrado): [{}] desde IP: {}. Intentos restantes: {}", login, clientIp, remaining);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("status", "error", "message", "Usuario o contraseña incorrectos. Intentos restantes: " + remaining));
         }
@@ -98,6 +102,7 @@ public class AuthApiController {
         if (!passwordOk) {
             loginAttemptService.loginFailed(lockoutKey);
             int remaining = loginAttemptService.getRemainingAttempts(lockoutKey);
+            log.warn("Intento de login fallido (contraseña errónea): [{}] desde IP: {}. Intentos restantes: {}", login, clientIp, remaining);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("status", "error", "message", "Usuario o contraseña incorrectos. Intentos restantes: " + remaining));
         }
@@ -105,11 +110,12 @@ public class AuthApiController {
         // Si la contraseña estaba en texto plano o formato antiguo, rehashear automáticamente con BCrypt
         if (usuario.getContrasena() == null || !usuario.getContrasena().startsWith("$2")) {
             usuario.setContrasena(passwordEncoder.encode(rawPassword));
-            usuarioRepositorio.save(usuario);
+            usuarioServicio.guardar(usuario);
         }
 
         // Validar si el usuario está activo
         if (!"ACTIVO".equalsIgnoreCase(usuario.getEstado())) {
+            log.warn("Intento de login con cuenta inactiva: [{}] desde IP: {}", login, clientIp);
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("status", "error", "message", "La cuenta se encuentra inactiva. Contacte al soporte."));
         }
@@ -127,8 +133,8 @@ public class AuthApiController {
         // Para agencias: solo entran si su solicitud fue ACEPTADA por el admin
         Integer idAgencia = null;
         if ("ROLE_AGENCIA".equals(rolName)) {
-            Optional<Agencia> agenciaOpt = agenciaRepositorio.findByIdUsuario(usuario.getIdUsuario());
-            List<SolicitudAgencia> solicitudes = solicitudAgenciaRepositorio.findByIdUsuario(usuario.getIdUsuario());
+            Optional<Agencia> agenciaOpt = agenciaServicio.buscarPorIdUsuario(usuario.getIdUsuario());
+            List<SolicitudAgencia> solicitudes = agenciaServicio.listarSolicitudesPorUsuario(usuario.getIdUsuario());
 
             boolean tieneSolicitudAceptada = solicitudes.stream()
                     .anyMatch(s -> "Aceptado".equalsIgnoreCase(s.getEstado()) || "Aceptada".equalsIgnoreCase(s.getEstado()) || "ACTIVO".equalsIgnoreCase(s.getEstado()));
@@ -136,6 +142,7 @@ public class AuthApiController {
             boolean agenciaActiva = agenciaOpt.isPresent() && "ACTIVO".equalsIgnoreCase(agenciaOpt.get().getEstado());
 
             if (!tieneSolicitudAceptada && !agenciaActiva) {
+                log.warn("Intento de login de agencia no aprobada: [{}] desde IP: {}", login, clientIp);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("status", "error", "message", "Su solicitud de agencia aún no ha sido aprobada por el administrador."));
             }
@@ -147,6 +154,7 @@ public class AuthApiController {
 
         // Éxito: limpiar intentos fallidos
         loginAttemptService.loginSucceeded(lockoutKey);
+        log.info("Login exitoso - Usuario: [{}] (ID: {}), Rol: [{}], IP: {}", usuario.getNombreUsuario(), usuario.getIdUsuario(), rolName, clientIp);
 
         // Configurar contexto de seguridad de Spring Security
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(rolName));
@@ -193,16 +201,38 @@ public class AuthApiController {
             authResponse.setTelefono(usuario.getPersona().getTelefono());
         }
 
+        if ("ROLE_AGENCIA".equals(rolName)) {
+            Optional<Agencia> agOpt = agenciaServicio.buscarPorIdUsuario(usuario.getIdUsuario());
+            if (agOpt.isPresent()) {
+                Agencia ag = agOpt.get();
+                authResponse.setNombreComercial(ag.getNombreComercial());
+                authResponse.setRazonSocial(ag.getRazonSocial());
+                if (ag.getNombreComercial() != null && !ag.getNombreComercial().isBlank()) {
+                    authResponse.setNombre(ag.getNombreComercial());
+                } else if (ag.getRazonSocial() != null && !ag.getRazonSocial().isBlank()) {
+                    authResponse.setNombre(ag.getRazonSocial());
+                }
+                if ((authResponse.getCorreo() == null || authResponse.getCorreo().isBlank()) && ag.getEmail() != null) {
+                    authResponse.setCorreo(ag.getEmail());
+                }
+                if (authResponse.getTelefono() == null && ag.getTelefono() != null) {
+                    authResponse.setTelefono(ag.getTelefono());
+                }
+            }
+        }
+
         return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping({"/auth/logout", "/logout"})
     public ResponseEntity<?> logout(HttpServletRequest request) {
+        String clientIp = getClientIp(request);
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
         SecurityContextHolder.clearContext();
+        log.info("Cierre de sesión ejecutado para IP: {}", clientIp);
         return ResponseEntity.ok(Map.of("ok", true, "message", "Sesión cerrada correctamente"));
     }
 
@@ -220,11 +250,11 @@ public class AuthApiController {
 
         Usuario usuario = null;
         if (idUsuario != null) {
-            usuario = usuarioRepositorio.findById(idUsuario).orElse(null);
+            usuario = usuarioServicio.buscarPorId(idUsuario).orElse(null);
         }
         if (usuario == null) {
             String username = auth.getName();
-            usuario = usuarioRepositorio.buscarPorCorreoOUsuario(username).orElse(null);
+            usuario = usuarioServicio.buscarPorCorreoOUsuario(username).orElse(null);
         }
 
         if (usuario == null) {
@@ -239,7 +269,7 @@ public class AuthApiController {
         }
 
         if ("ROLE_AGENCIA".equals(rolName) && idAgencia == null) {
-            Optional<Agencia> ag = agenciaRepositorio.findByIdUsuario(usuario.getIdUsuario());
+            Optional<Agencia> ag = agenciaServicio.buscarPorIdUsuario(usuario.getIdUsuario());
             if (ag.isPresent()) {
                 idAgencia = ag.get().getIdAgencia();
                 if (session != null) session.setAttribute("ID_AGENCIA", idAgencia);
@@ -270,6 +300,26 @@ public class AuthApiController {
             authResponse.setApellidos(ape);
             authResponse.setNroDocumento(usuario.getPersona().getNroDocumento());
             authResponse.setTelefono(usuario.getPersona().getTelefono());
+        }
+
+        if ("ROLE_AGENCIA".equals(rolName)) {
+            Optional<Agencia> agOpt = agenciaServicio.buscarPorIdUsuario(usuario.getIdUsuario());
+            if (agOpt.isPresent()) {
+                Agencia ag = agOpt.get();
+                authResponse.setNombreComercial(ag.getNombreComercial());
+                authResponse.setRazonSocial(ag.getRazonSocial());
+                if (ag.getNombreComercial() != null && !ag.getNombreComercial().isBlank()) {
+                    authResponse.setNombre(ag.getNombreComercial());
+                } else if (ag.getRazonSocial() != null && !ag.getRazonSocial().isBlank()) {
+                    authResponse.setNombre(ag.getRazonSocial());
+                }
+                if ((authResponse.getCorreo() == null || authResponse.getCorreo().isBlank()) && ag.getEmail() != null) {
+                    authResponse.setCorreo(ag.getEmail());
+                }
+                if (authResponse.getTelefono() == null && ag.getTelefono() != null) {
+                    authResponse.setTelefono(ag.getTelefono());
+                }
+            }
         }
 
         return ResponseEntity.ok(authResponse);

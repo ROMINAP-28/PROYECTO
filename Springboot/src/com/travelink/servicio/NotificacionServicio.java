@@ -1,44 +1,24 @@
 package com.travelink.servicio;
 
 import com.travelink.entidades.Notificacion;
-import com.travelink.repositorio.NotificacionRepositorio;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class NotificacionServicio {
+/**
+ * Interface del Servicio de Notificaciones.
+ * Aplica principios SOLID:
+ * - SRP: Emisión, registro y lectura de notificaciones para los roles del sistema.
+ * - DIP: Abstracción inyectable en controladores y servicios.
+ */
+public interface NotificacionServicio {
 
-    private final NotificacionRepositorio notificacionRepositorio;
+    List<Notificacion> listarPorUsuario(Integer idUsuario);
 
-    public NotificacionServicio(NotificacionRepositorio notificacionRepositorio) {
-        this.notificacionRepositorio = notificacionRepositorio;
-    }
+    List<Notificacion> listarPorRol(String rolTarget);
 
-    public List<Notificacion> listarPorUsuario(Integer idUsuario) {
-        return notificacionRepositorio.findByIdUsuarioOrderByFechaRegistroDesc(idUsuario);
-    }
+    Notificacion crear(Notificacion notificacion);
 
-    public List<Notificacion> listarPorRol(String rolTarget) {
-        return notificacionRepositorio.findByRolTargetOrderByFechaRegistroDesc(rolTarget);
-    }
+    boolean registrarNotificacion(Integer idUsuario, String titulo, String mensaje, String tipo, String icono, String color, String enlace);
 
-    @Transactional
-    public Notificacion crear(Notificacion notificacion) {
-        return notificacionRepositorio.save(notificacion);
-    }
-
-    @Transactional
-    public boolean marcarLeido(Integer id) {
-        Optional<Notificacion> n = notificacionRepositorio.findById(id);
-        if (n.isPresent()) {
-            Notificacion notif = n.get();
-            notif.setLeido(true);
-            notificacionRepositorio.save(notif);
-            return true;
-        }
-        return false;
-    }
+    boolean marcarLeido(Integer id);
 }

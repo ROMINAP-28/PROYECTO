@@ -9,8 +9,8 @@
         sesion = JSON.parse(raw || "{}");
     } catch (e) { }
 
-        const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 1;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "ANDES TOURS";
+    const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 1;
+    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "Agencia";
 
     let todosLosPagos = [];
     let pagosFiltrados = [];

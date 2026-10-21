@@ -17,7 +17,12 @@ import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AgenciasAdminHandler implements HttpHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(AgenciasAdminHandler.class);
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -418,6 +423,7 @@ public class AgenciasAdminHandler implements HttpHandler {
                     ps.setInt(4, idSolicitud);
                     ps.executeUpdate();
                 }
+                log.info("Administrador ID: {} resolvió solicitud de agencia ID: {} con resultado: [{}]", idAdministrador, idSolicitud, nuevoEstado);
 
                 // 3.5. Si se aprueba la solicitud, activar también la cuenta de Usuario correspondiente
                 if (idUsuario > 0) {

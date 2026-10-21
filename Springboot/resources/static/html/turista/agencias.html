@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -65,13 +65,13 @@
                 <label>Buscar agencia</label>
                 <div class="search-box-agency">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="agencia-busqueda" placeholder="Nombre de la agencia..." oninput="aplicarFiltrosAgencias()">
+                    <input type="text" id="agencia-busqueda" placeholder="Nombre de la agencia...">
                 </div>
             </div>
 
             <div class="filter-group">
                 <label>Ubicación</label>
-                <select class="filter-select" id="agencia-ubicacion" onchange="aplicarFiltrosAgencias()">
+                <select class="filter-select" id="agencia-ubicacion">
                     <option value="">Todas las ubicaciones</option>
                     <option value="amazonas">Amazonas</option>
                     <option value="ancash">Áncash</option>
@@ -103,7 +103,7 @@
 
             <div class="filter-group">
                 <label>Calificación</label>
-                <select id="agencia-calificacion" onchange="aplicarFiltrosAgencias()"
+                <select id="agencia-calificacion"
                     style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                     <option value="">Todas las calificaciones</option>
                     <option value="5">★★★★★ (5 estrellas)</option>

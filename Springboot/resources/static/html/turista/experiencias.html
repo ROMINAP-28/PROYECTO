@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -91,7 +91,7 @@
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Destino</h4>
-                    <select id="destino" onchange="aplicarFiltrosExperiencias()"
+                    <select id="destino"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Todos los destinos</option>
                         <option value="amazonas">Amazonas</option>
@@ -124,7 +124,7 @@
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Categoría</h4>
-                    <select id="categoria" onchange="aplicarFiltrosExperiencias()"
+                    <select id="categoria"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Todas las categorías</option>
                         <option value="cultura">Cultura</option>
@@ -138,7 +138,7 @@
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Calificaciones</h4>
-                    <select id="calificacion" onchange="aplicarFiltrosExperiencias()"
+                    <select id="calificacion"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Todas las calificaciones</option>
                         <option value="5">★★★★★ (5 estrellas)</option>
@@ -151,7 +151,7 @@
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Precio máximo</h4>
-                    <select id="precio" onchange="aplicarFiltrosExperiencias()"
+                    <select id="precio"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Cualquier precio</option>
                         <option value="150">Hasta S/ 150</option>
@@ -163,7 +163,7 @@
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Duración</h4>
-                    <select id="duracion" onchange="aplicarFiltrosExperiencias()"
+                    <select id="duracion"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Todas las duraciones</option>
                         <option value="1">1 día / Full day</option>
@@ -190,7 +190,7 @@
                     <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 15px;">
                         <i class="fas fa-search" style="color:#64748b;"></i>
                         <input type="text" id="busqueda-input" placeholder="¿A dónde quieres ir? Busca por destino, categoría o actividad..."
-                            oninput="aplicarFiltrosExperiencias()"
+
                             style="width:100%; border:none; outline:none; font-size:15px; color:#334155;">
                     </div>
                     <button onclick="aplicarFiltrosExperiencias(event)"

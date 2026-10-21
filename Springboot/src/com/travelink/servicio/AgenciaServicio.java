@@ -1,44 +1,38 @@
 package com.travelink.servicio;
 
 import com.travelink.entidades.Agencia;
-import com.travelink.repositorio.AgenciaRepositorio;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.travelink.entidades.SolicitudAgencia;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@Service
-public class AgenciaServicio {
+/**
+ * Interface del Servicio de Agencias.
+ * Aplica principios SOLID:
+ * - SRP: Gestión del ciclo de vida de agencias, registro, dashboard y pagos.
+ * - ISP: Métodos orientados a la operativa de agencias de turismo.
+ * - DIP: Abstracción inyectable en controladores.
+ */
+public interface AgenciaServicio {
 
-    private final AgenciaRepositorio agenciaRepositorio;
+    List<Agencia> listarTodas();
 
-    public AgenciaServicio(AgenciaRepositorio agenciaRepositorio) {
-        this.agenciaRepositorio = agenciaRepositorio;
-    }
+    List<Agencia> listarPorEstado(String estado);
 
-    public List<Agencia> listarTodas() {
-        return agenciaRepositorio.findAll();
-    }
+    Optional<Agencia> buscarPorId(Integer id);
 
-    public List<Agencia> listarPorEstado(String estado) {
-        return agenciaRepositorio.findByEstado(estado);
-    }
+    Optional<Agencia> buscarPorRuc(String ruc);
 
-    public Optional<Agencia> buscarPorId(Integer id) {
-        return agenciaRepositorio.findById(id);
-    }
+    Optional<Agencia> buscarPorIdUsuario(Integer idUsuario);
 
-    public Optional<Agencia> buscarPorRuc(String ruc) {
-        return agenciaRepositorio.findByRuc(ruc);
-    }
+    List<SolicitudAgencia> listarSolicitudesPorUsuario(Integer idUsuario);
 
-    public Optional<Agencia> buscarPorIdUsuario(Integer idUsuario) {
-        return agenciaRepositorio.findByIdUsuario(idUsuario);
-    }
+    Agencia guardar(Agencia agencia);
 
-    @Transactional
-    public Agencia guardar(Agencia agencia) {
-        return agenciaRepositorio.save(agencia);
-    }
+    Map<String, Object> registrarAgencia(Map<String, Object> params);
+
+    Map<String, Object> obtenerDashboardAgencia(int idAgencia);
+
+    List<Map<String, Object>> obtenerPagosAgencia(int idAgencia);
 }

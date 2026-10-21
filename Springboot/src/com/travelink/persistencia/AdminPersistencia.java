@@ -4,6 +4,10 @@ import com.travelink.config.ConexionDB;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * ROL: Consulta Especializada (JDBC)
+ * Responsabilidad: Agregaciones de métricas, estadísticas de dashboard, analítica financiera y reportes de administración.
+ */
 public class AdminPersistencia {
 
     // ==========================================
@@ -41,8 +45,8 @@ public class AdminPersistencia {
                                 "LEFT JOIN Tour t ON tf.idTour = t.idTour " +
                                 "LEFT JOIN Agencia a ON t.idAgencia = a.idAgencia " +
                                 "ORDER BY r.idReserva DESC";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sqlRes)) {
+                try (PreparedStatement ps = con.prepareStatement(sqlRes);
+                     ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         reservasRealizadas++;
                         double total = rs.getDouble("total");
@@ -82,8 +86,8 @@ public class AdminPersistencia {
 
                 // 2. Conteo de Agencias Activas
                 String sqlAg = "SELECT COUNT(*) FROM Agencia WHERE UPPER(estado) = 'ACTIVO'";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sqlAg)) {
+                try (PreparedStatement ps = con.prepareStatement(sqlAg);
+                     ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) agenciasActivas = rs.getInt(1);
                 }
             }
@@ -353,8 +357,8 @@ public class AdminPersistencia {
                 // 1. Solicitudes de Agencia
                 String sqlSol = "SELECT s.idSolicitud, s.razonSocial, s.ruc, s.representanteLegal, s.telefonoContacto, s.correoContacto, s.fechaSolicitud, s.estado " +
                                 "FROM SolicitudAgencia s WHERE UPPER(s.estado) = 'PENDIENTE'";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sqlSol)) {
+                try (PreparedStatement ps = con.prepareStatement(sqlSol);
+                     ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> a = new HashMap<>();
                         int id = rs.getInt("idSolicitud");
@@ -381,8 +385,8 @@ public class AdminPersistencia {
                                "LEFT JOIN Usuario u ON a.idUsuario = u.idUsuario " +
                                "LEFT JOIN Persona p ON u.idPersona = p.idPersona " +
                                "ORDER BY a.idAgencia ASC";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sqlAg)) {
+                try (PreparedStatement ps = con.prepareStatement(sqlAg);
+                     ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> a = new HashMap<>();
                         int id = rs.getInt("idAgencia");
@@ -545,8 +549,8 @@ public class AdminPersistencia {
                                 "LEFT JOIN DetalleReserva dr ON r.idReserva = dr.idReserva " +
                                 "LEFT JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha " +
                                 "LEFT JOIN Tour t ON tf.idTour = t.idTour";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sqlCal)) {
+                try (PreparedStatement ps = con.prepareStatement(sqlCal);
+                     ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> rev = new HashMap<>();
                         rev.put("id", rs.getInt("idCalificacion"));
@@ -569,8 +573,8 @@ public class AdminPersistencia {
                                      "FROM Tour t " +
                                      "JOIN Agencia a ON t.idAgencia = a.idAgencia " +
                                      "ORDER BY t.calificacionPromedio ASC";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sqlToursRev)) {
+                try (PreparedStatement ps = con.prepareStatement(sqlToursRev);
+                     ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> t = new HashMap<>();
                         int id = rs.getInt("idTour");
@@ -699,8 +703,8 @@ public class AdminPersistencia {
                              "FROM Comision c " +
                              "JOIN Agencia a ON c.idAgencia = a.idAgencia " +
                              "ORDER BY c.fechaCalculo DESC, c.idComision DESC";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sql)) {
+                try (PreparedStatement ps = con.prepareStatement(sql);
+                     ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> c = new HashMap<>();
                         int idCom = rs.getInt("idComision");
@@ -776,8 +780,8 @@ public class AdminPersistencia {
         try (Connection con = ConexionDB.getConnection()) {
             if (con != null) {
                 String sql = "SELECT ubicacion, COUNT(*) as toursActivos FROM Tour WHERE UPPER(estado) = 'ACTIVO' GROUP BY ubicacion";
-                try (Statement st = con.createStatement();
-                     ResultSet rs = st.executeQuery(sql)) {
+                try (PreparedStatement ps = con.prepareStatement(sql);
+                     ResultSet rs = ps.executeQuery()) {
                     int id = 1;
                     while (rs.next()) {
                         Map<String, Object> d = new HashMap<>();

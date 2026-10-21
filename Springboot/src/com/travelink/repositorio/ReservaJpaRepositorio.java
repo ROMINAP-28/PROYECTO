@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: DAO Principal (Spring Data JPA)
+ * Responsabilidad: Operaciones CRUD y consultas simples sobre la entidad Reserva.
+ */
 @Repository
 public interface ReservaJpaRepositorio extends JpaRepository<Reserva, Integer> {
     Optional<Reserva> findByCodigoReserva(String codigoReserva);

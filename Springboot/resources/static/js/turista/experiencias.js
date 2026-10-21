@@ -109,6 +109,17 @@ window.aplicarFiltrosExperiencias = function(e) {
     if (noResultados) {
         noResultados.style.display = (visibleCount === 0) ? 'block' : 'none';
     }
+
+    const btn = document.getElementById('btn-aplicar-filtros');
+    if (btn && e && (e.type === 'click' || (e.key && e.key === 'Enter'))) {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> ¡Filtros aplicados!';
+        btn.style.background = '#15803d';
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.style.background = '#196f3d';
+        }, 800);
+    }
 };
 
 // Función para limpiar filtros
@@ -309,16 +320,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([cargarDestinosSelect(), cargarPaquetesDinamicos()]);
     procesarParametrosURL();
 
-    document.querySelectorAll('.filtros-sidebar select').forEach(sel => {
-        sel.addEventListener('change', () => aplicarFiltrosExperiencias());
-    });
-
     const busquedaInput = document.getElementById('busqueda-input');
     if (busquedaInput) {
         busquedaInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') aplicarFiltrosExperiencias();
+            if (e.key === 'Enter') aplicarFiltrosExperiencias(e);
         });
-        busquedaInput.addEventListener('input', () => aplicarFiltrosExperiencias());
+    }
+
+    const btnAplicar = document.getElementById('btn-aplicar-filtros');
+    if (btnAplicar) {
+        btnAplicar.addEventListener('click', (e) => aplicarFiltrosExperiencias(e));
+    }
+
+    const btnLimpiar = document.getElementById('btn-limpiar-filtros');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', (e) => limpiarFiltros(e));
     }
 });
 

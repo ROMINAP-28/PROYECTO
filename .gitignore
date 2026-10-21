@@ -20,6 +20,7 @@ backend/target/
 .vscode/
 
 # Logs & Temp files
+logs/
 *.log
 *.tmp
 hs_err_pid*
@@ -34,3 +35,9 @@ application-local.properties
 application-*.properties
 !application.properties
 !application-dev.properties
+
+# Environment variables & secrets
+.env
+.env.local
+.env.*.local
+!.env.example

@@ -9,6 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * ROL: DAO Principal (Spring Data JPA)
+ * Responsabilidad: Operaciones CRUD y búsqueda por credenciales sobre la entidad Usuario.
+ */
 @Repository
 public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByPersonaEmail(String email);

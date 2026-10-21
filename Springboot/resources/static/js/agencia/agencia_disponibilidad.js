@@ -8,8 +8,8 @@
         sesion = JSON.parse(sesionRaw || "{}");
     } catch (e) { }
 
-        const idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 1;
-    const nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "ANDES TOURS";
+    let idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 1;
+    let nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "Agencia";
 
     let todasDisponibilidades = [];
     let filtradas = [];
@@ -59,6 +59,19 @@
         if (topNombre) topNombre.textContent = nombreAgenciaActual;
         if (dropNombre) dropNombre.textContent = nombreAgenciaActual;
         if (avatarLetter) avatarLetter.textContent = nombreAgenciaActual.charAt(0).toUpperCase();
+
+        fetch('/api/auth/me', { credentials: 'include' })
+            .then(r => r.ok ? r.json() : null)
+            .then(u => {
+                if (u) {
+                    const n = u.nombreComercial || u.nombre || "Agencia";
+                    nombreAgenciaActual = n;
+                    if (u.idAgencia) idAgenciaActual = Number(u.idAgencia);
+                    if (topNombre) topNombre.textContent = n;
+                    if (dropNombre) dropNombre.textContent = n;
+                    if (avatarLetter) avatarLetter.textContent = n.charAt(0).toUpperCase();
+                }
+            }).catch(() => {});
 
         const btnNotif = document.getElementById("btnNotifAgencia");
         const dropNotif = document.getElementById("notifDropdownAgencia");

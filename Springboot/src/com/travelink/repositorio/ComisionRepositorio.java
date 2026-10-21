@@ -6,6 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * ROL: DAO Principal (Spring Data JPA)
+ * Responsabilidad: Operaciones CRUD y consultas simples sobre la entidad Comision.
+ */
 @Repository
 public interface ComisionRepositorio extends JpaRepository<Comision, Integer> {
     List<Comision> findByIdAgencia(Integer idAgencia);

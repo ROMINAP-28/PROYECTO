@@ -32,6 +32,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Configuración central de seguridad Spring Security 6.
+ * Define la cadena de filtros de seguridad, protección CSRF basada en cookies desacopladas,
+ * CORS, control de acceso basado en roles por ruta (RBAC), cabeceras de seguridad HTTP,
+ * y manejadores personalizados de autenticación y acceso denegado.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -172,6 +178,8 @@ public class SecurityConfig {
             )
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
+                .contentTypeOptions(content -> {})
+                .xssProtection(xss -> {})
                 .cacheControl(cache -> cache.disable())
             );
 

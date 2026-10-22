@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Estilos específicos para la vista de Catálogo de Destinos */
+.destino-cell-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.destino-thumb-img {
+  width: 48px;
+  height: 38px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+.destino-cell-meta strong {
+  font-size: 13.5px;
+  color: #1e293b;
+}
+
+.modal-card.modal-large {
+  max-width: 800px;
+}

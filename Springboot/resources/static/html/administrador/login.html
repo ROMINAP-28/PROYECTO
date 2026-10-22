@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../js/comun/config.js"></script>
+    <script src="../../js/comun/api.js"></script>
+    <script src="../../js/comun/user_session.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Iniciar sesión Admin</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../css/administrador/login.css">
+</head>
+
+<body>
+
+    <div class="login-card">
+        <!-- Badge Superior -->
+        <div class="security-badge">
+            <div class="shield-icon-wrapper">
+                <i class="ti ti-shield-lock"></i>
+            </div>
+            <span class="security-text">
+                <span class="green-dot"></span> Sesión segura
+            </span>
+        </div>
+
+        <!-- Encabezado -->
+        <h1 class="login-title">Iniciar sesión</h1>
+        <p class="login-subtitle">Acceso al panel administrativo</p>
+
+        <!-- Formulario -->
+        <form id="formAdminLogin" onsubmit="handleAdminLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="adminUsuario">Usuario o Correo</label>
+                <div class="input-wrapper">
+                    <i class="ti ti-user input-icon-left"></i>
+                    <input type="text" id="adminUsuario" class="form-input" placeholder="admin@travelink.pe" required
+                        autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="adminPassword">Contraseña</label>
+                <div class="input-wrapper">
+                    <i class="ti ti-lock input-icon-left"></i>
+                    <input type="password" id="adminPassword" class="form-input" placeholder="Ingresa tu contraseña"
+                        required autocomplete="current-password">
+                    <i class="ti ti-eye toggle-password-btn" id="togglePasswordIcon"
+                        onclick="togglePasswordVisibility()"></i>
+                </div>
+            </div>
+
+            <div class="options-row">
+                <label class="remember-checkbox">
+                    <input type="checkbox" id="checkRemember" checked>
+                    <span>Recordarme</span>
+                </label>
+                <a href="javascript:void(0)"
+                    onclick="Swal.fire('Recuperar acceso', 'Contacta al soporte técnico institucional en soporte@travelink.pe', 'info')"
+                    class="forgot-link">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button type="submit" class="btn-login-submit" id="btnSubmitAdmin">
+                <span>Iniciar sesión</span>
+                <i class="ti ti-arrow-right"></i>
+            </button>
+        </form>
+
+        <div class="footer-divider">
+            <span>Acceso exclusivo para administradores</span>
+        </div>
+
+        <div style="margin-top: 14px; text-align: center; font-size: 13px; color: #64748b; display: flex; justify-content: center; align-items: center; gap: 14px;">
+            <a href="../../index.html" style="color: #196f3d; text-decoration: none; font-weight: 600;"><i class="ti ti-home"></i> Inicio</a>
+            <span>•</span>
+            <a href="../agencia/R_agencia_login.html" style="color: #2563eb; text-decoration: none; font-weight: 600;"><i class="ti ti-building-store"></i> Portal Agencia</a>
+            <span>•</span>
+            <a href="../turista/login.html" style="color: #475569; text-decoration: none; font-weight: 600;"><i class="ti ti-compass"></i> Portal Turista</a>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('adminPassword');
+            const icon = document.getElementById('togglePasswordIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'ti ti-eye-off toggle-password-btn';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'ti ti-eye toggle-password-btn';
+            }
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btnSubmitAdmin');
+            const usuario = document.getElementById('adminUsuario').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ti ti-loader ti-spin"></i> Verificando...';
+
+            try {
+                const response = await window.apiFetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: usuario, clave: password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.idUsuario) {
+                    if (data.rol === 'ROLE_ADMIN') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Acceso Concedido!',
+                            text: 'Bienvenido al panel administrativo de Travelink, ' + data.nombre,
+                            timer: 900,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = 'dashboard.html';
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Acceso Restringido',
+                            text: 'Esta cuenta no posee permisos de Administrador.'
+                        });
+                        btn.disabled = false;
+                        btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de autenticación',
+                        text: data.message || data.error || 'Credenciales no válidas.'
+                    });
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor backend.'
+                });
+                btn.disabled = false;
+                btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
+            }
+        }
+    </script>
+</body>
+
+</html>

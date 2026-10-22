@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../js/comun/config.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travelink - Paquetes turísticos</title>
+    <link rel="stylesheet" href="../../css/agencia/agencia.css">
+    <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .section-header-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            background: #f1f5f9;
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin: 22px 0 14px 0;
+            border-left: 4px solid #2563eb;
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .passenger-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .salidas-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        .salidas-table th {
+            background: #f1f5f9;
+            color: #475569;
+            text-align: left;
+            padding: 10px 12px;
+            font-weight: 600;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .salidas-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        .salidas-table tr:hover {
+            background: #f8fafc;
+        }
+        .btn-sub {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-sub:hover {
+            background: #dbeafe;
+        }
+        .box-subform {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 12px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="dashboard-page admin-body" style="margin:0; padding:0; height:100vh; overflow:hidden; background:#f8fafc;">
+
+    <div class="dashboard" style="display:flex; width:100vw; height:100vh; overflow:hidden;">
+
+        <!-- SIDEBAR AGENCIA -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header" style="padding: 20px; text-align: center;">
+                <img loading="lazy" src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"
+                    style="max-width: 150px; height: auto;">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="inicio.html" class="nav-item">
+                    <i class="ti ti-smart-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="paquetes.html" class="nav-item active">
+                    <i class="ti ti-package"></i>
+                    <span>Paquetes turísticos</span>
+                </a>
+                <a href="reservas.html" class="nav-item">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="pagos.html" class="nav-item">
+                    <i class="ti ti-coins"></i>
+                    <span>Pagos y liquidaciones</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="ti ti-settings"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <header class="admin-topbar" style="height: 64px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: flex-end; padding: 0 28px; position: sticky; top: 0; z-index: 1000; width: 100%;">
+                <div style="display:flex; align-items:center; gap:16px; position:relative; margin-left:auto;">
+                    <button type="button" class="notification-btn" title="Notificaciones" id="btnNotifAgencia">
+                        <i class="ti ti-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="notifications-dropdown-card" id="notifDropdownAgencia"
+                        style="display:none; position:absolute; top:56px; right:120px; background:white; border:1px solid #e2e8f0; border-radius:10px; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000;">
+                        <div style="padding:15px; border-bottom:1px solid #e2e8f0;">
+                            <span style="font-weight:600; font-size:14px; color:#0f172a;">Notificaciones</span>
+                        </div>
+                        <div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                            <i class="ti ti-bell-off" style="font-size:24px; color:#94a3b8; display:block; margin-bottom:6px;"></i>
+                            No hay notificaciones nuevas.
+                        </div>
+                    </div>
+
+                    <div class="user-dropdown-container" style="position:relative;">
+                        <button type="button" class="user-profile-toggle" id="btnPerfilToggle">
+                            <div class="user-avatar-img" id="agencyAvatarLetter" style="background:#2563eb; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">A</div>
+                            <div class="user-info-text">
+                                <span class="user-name" id="nombreAgenciaTop" style="font-weight:600; color:#0f172a; font-size:14px;">Agencia</span>
+                                <span class="user-role" style="font-size:12px; color:#64748b;">Agencia turística</span>
+                            </div>
+                        </button>
+
+                        <div id="perfilDropdownAgencia"
+                            style="display:none; position:absolute; top:56px; right:0; background:white; border:1px solid #e2e8f0; border-radius:10px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:9999; padding:8px 0;">
+                            <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;" id="dropdownNombreAgencia">Agencia</p>
+                                <p style="margin:0; font-size:12px; color:#64748b;">Panel de Agencia</p>
+                            </div>
+                            <a href="#" id="btnCerrarSesionDropdown" style="display:flex; align-items:center; gap:10px; padding:10px 16px; color:#ef4444; text-decoration:none; font-size:14px;">
+                                <i class="ti ti-logout" style="font-size:17px;"></i> Cerrar sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENIDO PAQUETES -->
+            <div class="content-container">
+
+                <section class="module-toolbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div>
+                        <h2 style="font-size:24px; font-weight:700; color:#0f172a; margin:0 0 4px 0;">Paquetes turísticos</h2>
+                        <p style="margin:0; font-size:14px; color:#64748b;">Gestiona tus paquetes turísticos, salidas programadas, cupos e itinerarios en una sola pantalla.</p>
+                    </div>
+
+                    <button class="btn-nuevo-paquete" id="btnNuevoPaquete" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.2);">
+                        <i class="ti ti-plus"></i> Agregar paquete
+                    </button>
+                </section>
+
+                <!-- FILTROS Y BÚSQUEDA -->
+                <section class="service-filters" style="display:flex; gap:14px; align-items:flex-end; background:#ffffff; padding:16px 20px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:24px; flex-wrap:wrap;">
+                    <div class="form-group" style="flex:1; min-width:220px; margin:0;">
+                        <label for="buscarPaquete" style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Buscar paquete</label>
+                        <input type="text" id="buscarPaquete" placeholder="Nombre o palabra clave..." style="width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px;">
+                    </div>
+
+                    <div class="form-group" style="width:200px; margin:0;">
+                        <label for="filtroDestinoPaquete" style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Destino</label>
+                        <select id="filtroDestinoPaquete" style="width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; background:white;">
+                            <option value="">Todos los destinos</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="width:170px; margin:0;">
+                        <label for="filtroEstadoPaquete" style="display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:4px;">Estado</label>
+                        <select id="filtroEstadoPaquete" style="width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; background:white;">
+                            <option value="">Todos los estados</option>
+                            <option value="PUBLICADO">Publicado</option>
+                            <option value="PAUSADO">Pausado</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex; gap:8px;">
+                        <button type="button" id="btnAplicarFiltros" class="btn-sub" style="padding:9px 16px; background:#2563eb; color:white; border-color:#2563eb;">
+                            <i class="ti ti-filter"></i> Aplicar filtros
+                        </button>
+                        <button type="button" id="btnLimpiarFiltros" class="btn-sub" style="padding:9px 14px; background:#f1f5f9; color:#475569; border-color:#cbd5e1;">
+                            <i class="ti ti-rotate-clockwise"></i> Limpiar
+                        </button>
+                    </div>
+                </section>
+
+                <!-- GRID DE TARJETAS DE PAQUETES -->
+                <div class="paquetes-grid" id="gridPaquetes">
+                    <!-- Tarjetas inyectadas por JS -->
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL AGREGAR / EDITAR PAQUETE -->
+    <div class="modal-overlay" id="modalPaquete" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px);">
+        <div class="modal-box" style="max-width: 820px; width: 94%; max-height: 92vh; overflow-y: auto; padding: 28px; border-radius: 16px; background: #ffffff; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:14px;">
+                <div>
+                    <h3 id="tituloModalPaquete" style="margin:0 0 4px 0; font-size:21px; font-weight:700; color:#0f172a;">Nuevo paquete turístico</h3>
+                    <p style="margin:0; font-size:13px; color:#64748b;">Completa el formulario en el orden establecido para publicar tu paquete turístico.</p>
+                </div>
+                <button type="button" id="cerrarModalPaquete" style="background:none; border:none; font-size:26px; cursor:pointer; color:#64748b; padding:0; line-height:1;">&times;</button>
+            </div>
+
+            <form id="formPaquete">
+                <input type="hidden" id="idPaqueteInput" value="">
+
+                <!-- a) NOMBRE, DESTINO Y CATEGORÍA -->
+                <div class="section-header-pill">
+                    <i class="ti ti-info-circle"></i> a) Nombre, Destino y Categoría
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 14px;">
+                    <label for="nombrePaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Nombre del paquete *</label>
+                    <input type="text" id="nombrePaqueteInput" placeholder="Ej. Aventura en la Montaña de 7 Colores y Valle Sagrado" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group-custom">
+                        <label for="idDestinoInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Destino *</label>
+                        <select id="idDestinoInput" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white;">
+                            <option value="">Selecciona un destino...</option>
+                        </select>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="categoriaPaqueteSelect" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Categoría *</label>
+                        <select id="categoriaPaqueteSelect" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white;">
+                            <option value="Aventura">Aventura</option>
+                            <option value="Cultural" selected>Cultural</option>
+                            <option value="Gastronómico">Gastronómico</option>
+                            <option value="Naturaleza">Naturaleza</option>
+                            <option value="Playa">Playa</option>
+                            <option value="Urbano">Urbano</option>
+                            <option value="Arqueológico">Arqueológico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- b) DESCRIPCIÓN CORTA Y COMPLETA -->
+                <div class="section-header-pill">
+                    <i class="ti ti-file-text"></i> b) Descripción Corta y Descripción Completa
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 14px;">
+                    <label for="descCortaPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Descripción corta (frase atractiva) *</label>
+                    <input type="text" id="descCortaPaqueteInput" maxlength="255" placeholder="Ej. Una de las maravillas de Cusco que no te puedes perder" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 14px;">
+                    <label for="descPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Descripción completa del paquete *</label>
+                    <textarea id="descPaqueteInput" rows="3" placeholder="Detalla la experiencia completa, atractivos principales y contexto general..." required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- c) DURACIÓN E ITINERARIO -->
+                <div class="section-header-pill">
+                    <i class="ti ti-clock"></i> c) Duración e Itinerario
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group-custom">
+                        <label for="diasPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Días</label>
+                        <input type="number" id="diasPaqueteInput" min="0" max="60" value="1" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="horasPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Horas</label>
+                        <input type="number" id="horasPaqueteInput" min="0" max="23" value="4" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 14px;">
+                    <label for="itinerarioPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Itinerario (texto libre: qué harán hora por hora o día por día)</label>
+                    <textarea id="itinerarioPaqueteInput" rows="4" placeholder="Día 1: Recojo en hotel a las 05:00 AM, traslado al punto de inicio, caminata guiada y almuerzo campestre..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <!-- d) PRECIOS: ADULTO, NIÑOS Y BEBÉS -->
+                <div class="section-header-pill">
+                    <i class="ti ti-cash"></i> d) Precios y Rango de Pasajeros
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 16px;">
+                    <label for="precioAdultoInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Precio Adulto (S/) *</label>
+                    <input type="number" step="0.01" min="1" id="precioAdultoInput" placeholder="Ej. 180.00" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                </div>
+
+                <div class="form-row-2">
+                    <!-- Casilla Niños -->
+                    <div class="passenger-card">
+                        <label style="display:flex; align-items:center; gap:8px; font-weight:700; color:#0f172a; margin-bottom:10px; cursor:pointer;">
+                            <input type="checkbox" id="aceptaNinosCheckbox" checked style="width:18px; height:18px; accent-color:#2563eb;">
+                            <span>Se aceptan niños</span>
+                        </label>
+                        <div id="contenedorNinos" style="display:flex; flex-direction:column; gap:8px;">
+                            <div>
+                                <label for="precioNinoInput" style="font-size:12px; font-weight:600; color:#475569;">Precio Niño (S/)</label>
+                                <input type="number" step="0.01" id="precioNinoInput" min="0" placeholder="120.00" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                            </div>
+                            <div>
+                                <label for="edadMaxNinoInput" style="font-size:12px; font-weight:600; color:#475569;">Edad máxima de niño</label>
+                                <input type="number" id="edadMaxNinoInput" min="3" max="17" value="11" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Casilla Bebés -->
+                    <div class="passenger-card">
+                        <label style="display:flex; align-items:center; gap:8px; font-weight:700; color:#0f172a; margin-bottom:10px; cursor:pointer;">
+                            <input type="checkbox" id="aceptaBebesCheckbox" checked style="width:18px; height:18px; accent-color:#2563eb;">
+                            <span>Se aceptan bebés</span>
+                        </label>
+                        <div id="contenedorBebes" style="display:flex; flex-direction:column; gap:8px;">
+                            <div>
+                                <label for="precioBebeInput" style="font-size:12px; font-weight:600; color:#475569;">Precio Bebé (S/ - 0 para gratis)</label>
+                                <input type="number" step="0.01" id="precioBebeInput" min="0" value="0.00" placeholder="0.00" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                            </div>
+                            <div>
+                                <label for="edadMaxBebeInput" style="font-size:12px; font-weight:600; color:#475569;">Edad máxima de bebé</label>
+                                <input type="number" id="edadMaxBebeInput" min="0" max="3" value="2" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- e) INCLUSIONES, CONDICIONES Y DESCUENTO -->
+                <div class="section-header-pill">
+                    <i class="ti ti-list-check"></i> e) Qué incluye, Qué no incluye, Condiciones y Descuento
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group-custom">
+                        <label for="queIncluyeInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Qué incluye (un ítem por línea)</label>
+                        <textarea id="queIncluyeInput" rows="3" placeholder="Transporte turístico ida y vuelta&#10;Guía oficial bilingüe&#10;Almuerzo buffet campestre" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="queNoIncluyeInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Qué no incluye (un ítem por línea)</label>
+                        <textarea id="queNoIncluyeInput" rows="3" placeholder="Propinas opcionales&#10;Bebidas alcohólicas&#10;Seguro de viajes adicional" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group-custom">
+                        <label for="condicionesPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Condiciones y Traslados</label>
+                        <textarea id="condicionesPaqueteInput" rows="2" placeholder="Llevar ropa abrigadora, zapatillas de trekking y DNI original..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="descuentoPaqueteInput" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Descuento (%)</label>
+                        <input type="number" id="descuentoPaqueteInput" min="0" max="90" value="0" placeholder="0" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <!-- f) IMÁGENES (PORTADA Y GALERÍA) -->
+                <div class="section-header-pill">
+                    <i class="ti ti-photo"></i> f) Fotografías del Paquete (Portada + Galería)
+                </div>
+
+                <div class="form-row-3" style="margin-bottom: 18px;">
+                    <!-- Portada -->
+                    <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                        <span style="font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                            1. Portada (Principal) *
+                        </span>
+                        <div style="width: 100%; height: 95px; border-radius: 8px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #e2e8f0;">
+                            <img loading="lazy" id="imgPreviewPortada" src="../../img/machupicchu.png" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <input type="text" id="imagenPaqueteInput" value="img/machupicchu.png" placeholder="img/foto.jpg" style="width:100%; font-size:11px; padding:5px 8px; border:1px solid #cbd5e1; border-radius:4px; margin-bottom:6px;">
+                        <button type="button" onclick="document.getElementById('inputPortFile').click()" class="btn-sub" style="width:100%; justify-content:center; font-size:11px;">
+                            <i class="ti ti-upload"></i> Subir portada
+                        </button>
+                        <input type="file" id="inputPortFile" accept="image/*" style="display: none;" onchange="window.cargarImagenSlot(this, 'imagenPaqueteInput', 'imgPreviewPortada')">
+                    </div>
+
+                    <!-- Galería 1 -->
+                    <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                        <span style="font-size: 11px; font-weight: 700; color: #475569; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                            2. Galería 1
+                        </span>
+                        <div style="width: 100%; height: 95px; border-radius: 8px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #e2e8f0;">
+                            <img loading="lazy" id="imgPreviewGaleria1" src="../../img/cusco.jpg" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <input type="text" id="imgGaleria1" value="img/cusco.jpg" placeholder="img/foto.jpg" style="width:100%; font-size:11px; padding:5px 8px; border:1px solid #cbd5e1; border-radius:4px; margin-bottom:6px;">
+                        <button type="button" onclick="document.getElementById('inputGal1File').click()" class="btn-sub" style="width:100%; justify-content:center; font-size:11px;">
+                            <i class="ti ti-upload"></i> Subir foto 1
+                        </button>
+                        <input type="file" id="inputGal1File" accept="image/*" style="display: none;" onchange="window.cargarImagenSlot(this, 'imgGaleria1', 'imgPreviewGaleria1')">
+                    </div>
+
+                    <!-- Galería 2 -->
+                    <div style="background: white; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                        <span style="font-size: 11px; font-weight: 700; color: #475569; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
+                            3. Galería 2
+                        </span>
+                        <div style="width: 100%; height: 95px; border-radius: 8px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #e2e8f0;">
+                            <img loading="lazy" id="imgPreviewGaleria2" src="../../img/arequipa.jpg" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <input type="text" id="imgGaleria2" value="img/arequipa.jpg" placeholder="img/foto.jpg" style="width:100%; font-size:11px; padding:5px 8px; border:1px solid #cbd5e1; border-radius:4px; margin-bottom:6px;">
+                        <button type="button" onclick="document.getElementById('inputGal2File').click()" class="btn-sub" style="width:100%; justify-content:center; font-size:11px;">
+                            <i class="ti ti-upload"></i> Subir foto 2
+                        </button>
+                        <input type="file" id="inputGal2File" accept="image/*" style="display: none;" onchange="window.cargarImagenSlot(this, 'imgGaleria2', 'imgPreviewGaleria2')">
+                    </div>
+                </div>
+
+                <!-- g) PROGRAMAR SALIDAS (TourFecha) -->
+                <div class="section-header-pill" style="justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <i class="ti ti-calendar-event"></i> g) Programar Salidas y Cupos (TourFecha)
+                    </div>
+                    <span id="badgeContadorSalidas" style="font-size:11px; font-weight:700; background:#dbeafe; color:#1e40af; padding:3px 10px; border-radius:12px;">0 salidas programadas</span>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+                    <button type="button" id="btnToggleSalidaIndividual" class="btn-sub">
+                        <i class="ti ti-plus"></i> Agregar salida individual
+                    </button>
+                    <button type="button" id="btnToggleGeneradorSalidas" class="btn-sub" style="background:#fef3c7; color:#92400e; border-color:#fde68a;">
+                        <i class="ti ti-wand"></i> Atajo: Generar salidas múltiples
+                    </button>
+                </div>
+
+                <!-- Subformulario Agregar Salida Individual -->
+                <div id="boxSalidaIndividual" class="box-subform" style="display:none;">
+                    <h5 style="margin:0 0 10px 0; font-size:13px; color:#1e293b;">Agregar salida individual:</h5>
+                    <div class="form-row-3" style="margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Fecha de salida</label>
+                            <input type="date" id="inputFechaSalida" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Hora de inicio</label>
+                            <input type="time" id="inputHoraSalida" value="08:00" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Cupo total</label>
+                            <input type="number" id="inputCupoSalida" min="1" value="20" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:8px;">
+                        <button type="button" onclick="document.getElementById('boxSalidaIndividual').style.display='none'" class="btn-sub" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">Cancelar</button>
+                        <button type="button" id="btnAgregarSalidaLista" class="btn-sub" style="background:#2563eb; color:white; border-color:#2563eb;">Añadir a la lista</button>
+                    </div>
+                </div>
+
+                <!-- Subformulario Generador Múltiple -->
+                <div id="boxGeneradorSalidas" class="box-subform" style="display:none; background:#fffbeb; border-color:#fde68a;">
+                    <h5 style="margin:0 0 10px 0; font-size:13px; color:#92400e;">⚡ Generador automático de salidas:</h5>
+                    <div class="form-row-2" style="margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Rango: Desde</label>
+                            <input type="date" id="genFechaDesde" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Rango: Hasta</label>
+                            <input type="date" id="genFechaHasta" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">Días de la semana:</label>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:#334155;">
+                            <label><input type="checkbox" class="gen-dia" value="1" checked> Lun</label>
+                            <label><input type="checkbox" class="gen-dia" value="2" checked> Mar</label>
+                            <label><input type="checkbox" class="gen-dia" value="3" checked> Mié</label>
+                            <label><input type="checkbox" class="gen-dia" value="4" checked> Jue</label>
+                            <label><input type="checkbox" class="gen-dia" value="5" checked> Vie</label>
+                            <label><input type="checkbox" class="gen-dia" value="6" checked> Sáb</label>
+                            <label><input type="checkbox" class="gen-dia" value="0" checked> Dom</label>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2" style="margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Hora de inicio</label>
+                            <input type="time" id="genHora" value="08:00" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">Cupo total por salida</label>
+                            <input type="number" id="genCupo" min="1" value="20" style="width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; gap:8px;">
+                        <button type="button" onclick="document.getElementById('boxGeneradorSalidas').style.display='none'" class="btn-sub" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;">Cancelar</button>
+                        <button type="button" id="btnEjecutarGenerador" class="btn-sub" style="background:#d97706; color:white; border-color:#d97706;">Generar y agregar salidas</button>
+                    </div>
+                </div>
+
+                <!-- Tabla de salidas -->
+                <div style="max-height:220px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:18px;">
+                    <table class="salidas-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Cupo total</th>
+                                <th>Estado</th>
+                                <th style="text-align:right;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodySalidasModal">
+                            <tr>
+                                <td colspan="5" style="text-align:center; color:#94a3b8; padding:16px;">No hay salidas registradas. Agrega al menos una salida futura para poder publicar el paquete.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- h) ESTADO PUBLICADO / PAUSADO -->
+                <div class="section-header-pill">
+                    <i class="ti ti-toggle-right"></i> h) Estado del Paquete
+                </div>
+
+                <div class="form-group-custom" style="margin-bottom: 14px;">
+                    <label for="estadoPaqueteSelect" style="font-weight: 600; color: #334155; display: block; margin-bottom: 6px;">Estado inicial de visibilidad *</label>
+                    <select id="estadoPaqueteSelect" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white;">
+                        <option value="PUBLICADO">Publicado (Visible para turistas con salidas activas)</option>
+                        <option value="PAUSADO">Pausado (Oculto temporalmente)</option>
+                    </select>
+                    <small style="color:#64748b; font-size:12px; display:block; margin-top:4px;">
+                        <i class="ti ti-alert-triangle" style="color:#f59e0b;"></i> Regla: Un paquete turístico sin al menos una salida futura activa no puede publicarse.
+                    </small>
+                </div>
+
+                <div id="mensajePaquete" style="padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px; display:none;"></div>
+
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+                    <button type="button" id="btnCancelarPaquete" style="background:#f1f5f9; color:#475569; border:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnGuardarPaqueteSubmit" style="background:#2563eb; color:white; border:none; padding:10px 24px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+                        Guardar paquete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLES DEL PAQUETE -->
+    <div class="modal-overlay" id="modalDetallesPaquete" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px);">
+        <div class="modal-box" style="max-width:680px; width:94%; max-height:90vh; overflow-y:auto; padding:26px; border-radius:16px; background:#ffffff;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+                <div>
+                    <h3 id="detNombrePaquete" style="margin:0 0 4px 0; font-size:20px; font-weight:700; color:#0f172a;">Detalles del paquete</h3>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <span id="detEstadoPaquete" class="paquete-status-badge publicado" style="position:static;">PUBLICADO</span>
+                        <span id="detDestinoPaquete" style="font-size:13px; color:#64748b; font-weight:600;"></span>
+                    </div>
+                </div>
+                <button type="button" id="cerrarModalDetallesX" onclick="window.cerrarModalDetalles()" style="background:none; border:none; font-size:26px; cursor:pointer; color:#64748b;">&times;</button>
+            </div>
+
+            <!-- Galería de imágenes en detalles -->
+            <div id="detGaleriaWrap" style="display:flex; gap:10px; margin-bottom:16px; overflow-x:auto;"></div>
+
+            <div style="display:flex; flex-direction:column; gap:14px; font-size:14px; color:#334155;">
+                <div style="background:#f8fafc; padding:12px 14px; border-radius:8px; border-left:3px solid #2563eb;">
+                    <strong style="color:#0f172a; display:block; margin-bottom:2px; font-size:13px;">Descripción corta:</strong>
+                    <p id="detDescCorta" style="margin:0; color:#475569; font-style:italic; font-size:13px;"></p>
+                </div>
+
+                <div>
+                    <strong style="color:#0f172a; display:block; margin-bottom:4px;">Descripción completa:</strong>
+                    <p id="detDescPaquete" style="margin:0; color:#64748b; line-height:1.5;"></p>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div>
+                        <strong style="color:#64748b; font-size:11px; text-transform:uppercase;">Precio Adulto:</strong>
+                        <div id="detPrecioAdulto" style="font-size:17px; font-weight:800; color:#0f172a;"></div>
+                    </div>
+                    <div>
+                        <strong style="color:#64748b; font-size:11px; text-transform:uppercase;">Precio Niños:</strong>
+                        <div id="detPrecioNino" style="font-size:14px; font-weight:600; color:#2563eb;"></div>
+                    </div>
+                    <div>
+                        <strong style="color:#64748b; font-size:11px; text-transform:uppercase;">Precio Bebés:</strong>
+                        <div id="detPrecioBebe" style="font-size:14px; font-weight:600; color:#059669;"></div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <strong style="color:#0f172a;">Duración:</strong>
+                        <span id="detDuracionPaquete" style="color:#475569;"></span>
+                    </div>
+                    <div>
+                        <strong style="color:#0f172a;">Descuento:</strong>
+                        <span id="detDescuentoPaquete" style="color:#15803d; font-weight:700;"></span>
+                    </div>
+                </div>
+
+                <div id="detBoxItinerario" style="display:none;">
+                    <strong style="color:#0f172a; display:block; margin-bottom:4px;">Itinerario:</strong>
+                    <p id="detItinerario" style="margin:0; color:#64748b; white-space:pre-line;"></p>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div id="detBoxIncluye" style="display:none;">
+                        <strong style="color:#16a34a; display:block; margin-bottom:4px;"><i class="ti ti-check"></i> Qué incluye:</strong>
+                        <ul id="detListaIncluye" style="margin:0; padding-left:18px; color:#475569; font-size:13px;"></ul>
+                    </div>
+                    <div id="detBoxNoIncluye" style="display:none;">
+                        <strong style="color:#dc2626; display:block; margin-bottom:4px;"><i class="ti ti-x"></i> Qué no incluye:</strong>
+                        <ul id="detListaNoIncluye" style="margin:0; padding-left:18px; color:#475569; font-size:13px;"></ul>
+                    </div>
+                </div>
+
+                <!-- Salidas Programadas en Detalles -->
+                <div>
+                    <strong style="color:#0f172a; display:block; margin-bottom:6px;">Salidas programadas y disponibilidad de cupos:</strong>
+                    <div style="max-height:180px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
+                        <table class="salidas-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Cupo total</th>
+                                    <th>Disponibles</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detTbodySalidas"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:14px;">
+                <button type="button" id="btnCerrarModalDetalles" onclick="window.cerrarModalDetalles()" style="background:#2563eb; color:white; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/comun/api.js"></script>
+    <script src="../../js/comun/user_session.js"></script>
+    <script src="../../js/agencia/agencia_paquetes.js"></script>
+</body>
+</html>
+

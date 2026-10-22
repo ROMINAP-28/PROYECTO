@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- ========================================================== -->
+    <!-- 1. PROPIEDADES (properties): Variables reutilizables        -->
+    <!-- ========================================================== -->
+    <property name="LOG_DIR" value="logs" />
+    <property name="APP_NAME" value="travelink" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+    <property name="CONSOLE_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){magenta} %clr(%-5level) %clr(%logger{36}){cyan} - %msg%n" />
+
+    <!-- Conversor de colores para consola de Spring Boot -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+
+    <!-- ========================================================== -->
+    <!-- 2. APPENDERS: Destinos a donde se envían los logs          -->
+    <!-- ========================================================== -->
+
+    <!-- Appender 1: Consola (Terminal) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Appender 2: Archivo con rotación diaria (Rolling File) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Archivo diario comprimido en gz -->
+            <fileNamePattern>${LOG_DIR}/${APP_NAME}-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <!-- Conservar historial por 30 días -->
+            <maxHistory>30</maxHistory>
+            <!-- Tamaño total máximo acumulado en disco -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ========================================================== -->
+    <!-- 3. LOGGERS ESPECÍFICOS Y ROOT LOGGER                       -->
+    <!-- ========================================================== -->
+
+    <!-- Paquete del sistema Travelink: Nivel DEBUG/INFO -->
+    <logger name="com.travelink" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Spring Framework y Tomcat: Nivel WARN para evitar spam -->
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.apache.catalina" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="INFO" />
+
+    <!-- Root Logger principal: recibe todos los eventos -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

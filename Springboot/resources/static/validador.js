@@ -1,3 +1,5 @@
+
+//validadores generales
 // Travelink - Validador de Formularios y Reglas de Negocio
 
 function getError(msg) {

@@ -68,11 +68,23 @@ public class UsuarioControlador {
             return respuesta;
         }
 
+        if (usuarioPersistencia.buscarPorNombreUsuario(nuevoUsuario.getNombreUsuario()).isPresent()) {
+            respuesta.put("status", "error");
+            respuesta.put("message", "El nombre de usuario ya se encuentra registrado");
+            return respuesta;
+        }
+
         // Hash the password using BCrypt
         String hashed = passwordEncoder.encode(nuevoUsuario.getContrasena());
         nuevoUsuario.setContrasena(hashed);
 
         Usuario guardado = usuarioPersistencia.guardar(nuevoUsuario);
+        if (guardado == null) {
+            respuesta.put("status", "error");
+            respuesta.put("message", "Error al guardar el usuario en la base de datos.");
+            return respuesta;
+        }
+
         respuesta.put("status", "success");
         respuesta.put("message", "Usuario registrado exitosamente");
         respuesta.put("user", guardado);

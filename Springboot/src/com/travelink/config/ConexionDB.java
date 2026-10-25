@@ -20,6 +20,12 @@ import java.sql.SQLException;
 public class ConexionDB {
 
     private static final Logger log = LoggerFactory.getLogger(ConexionDB.class);
+    private static volatile javax.sql.DataSource pooledDataSource;
+
+    public static void setDataSource(javax.sql.DataSource ds) {
+        pooledDataSource = ds;
+        log.info("Pool de conexiones DataSource asignado exitosamente a ConexionDB.");
+    }
 
     static {
         cargarVariablesSiEsNecesario();
@@ -105,6 +111,9 @@ public class ConexionDB {
 
     public static Connection getConnection() {
         try {
+            if (pooledDataSource != null) {
+                return pooledDataSource.getConnection();
+            }
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(getUrl(), getUser(), getPassword());
         } catch (ClassNotFoundException e) {

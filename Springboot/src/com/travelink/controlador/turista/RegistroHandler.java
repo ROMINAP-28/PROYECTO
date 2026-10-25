@@ -102,22 +102,23 @@ import com.travelink.repositorio.ReservaRepositorio;
                 Map<String, Object> res = JavaApiServer.usuarioControlador.registrar(u);
                 StringBuilder json = new StringBuilder();
 
-                if ("success".equals(res.get("status"))) {
+                if ("success".equals(res.get("status")) && res.get("user") != null) {
                     Usuario guardado = (Usuario) res.get("user");
 
                     json.append("{\"status\":\"success\",\"message\":\"Registro exitoso\",\"user\":{")
                             .append("\"idUsuario\":").append(guardado.getIdUsuario()).append(",")
-                            .append("\"nombre\":\"").append(guardado.getNombre()).append("\",")
-                            .append("\"nombreUsuario\":\"").append(guardado.getNombreUsuario()).append("\",")
-                            .append("\"apellidoPaterno\":\"").append(guardado.getApellidoPaterno()).append("\",")
-                            .append("\"apellidoMaterno\":\"").append(guardado.getApellidoMaterno()).append("\",")
-                            .append("\"correo\":\"").append(guardado.getCorreo()).append("\",")
-                            .append("\"telefono\":\"").append(guardado.getTelefono()).append("\",")
-                            .append("\"idRol\":").append(guardado.getIdRol())
+                            .append("\"nombre\":\"").append(guardado.getNombre() != null ? guardado.getNombre() : "").append("\",")
+                            .append("\"nombreUsuario\":\"").append(guardado.getNombreUsuario() != null ? guardado.getNombreUsuario() : "").append("\",")
+                            .append("\"apellidoPaterno\":\"").append(guardado.getApellidoPaterno() != null ? guardado.getApellidoPaterno() : "").append("\",")
+                            .append("\"apellidoMaterno\":\"").append(guardado.getApellidoMaterno() != null ? guardado.getApellidoMaterno() : "").append("\",")
+                            .append("\"correo\":\"").append(guardado.getCorreo() != null ? guardado.getCorreo() : "").append("\",")
+                            .append("\"telefono\":\"").append(guardado.getTelefono() != null ? guardado.getTelefono() : "").append("\",")
+                            .append("\"idRol\":").append(guardado.getIdRol() != null ? guardado.getIdRol() : 1)
                             .append("}}");
                 } else {
+                    String msg = String.valueOf(res.getOrDefault("message", "Error al procesar el registro."));
                     json.append("{\"status\":\"error\",\"message\":\"")
-                            .append(res.get("message"))
+                            .append(msg.replace("\"", "\\\""))
                             .append("\"}");
                 }
 

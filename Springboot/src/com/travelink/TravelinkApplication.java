@@ -40,4 +40,12 @@ public class TravelinkApplication {
 
         SpringApplication.run(TravelinkApplication.class, args);
     }
+
+    @org.springframework.context.annotation.Bean
+    public org.springframework.boot.CommandLineRunner initConexionDbDataSource(javax.sql.DataSource ds) {
+        return args -> {
+            ConexionDB.setDataSource(ds);
+            log.info("ConexionDB configurado exitosamente con el pool HikariCP de Spring Boot.");
+        };
+    }
 }

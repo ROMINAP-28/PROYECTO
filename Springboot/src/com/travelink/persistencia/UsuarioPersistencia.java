@@ -21,10 +21,15 @@ public class UsuarioPersistencia {
         Connection con = null;
         try {
             con = ConexionDB.getConnection();
+            if (con == null) {
+                System.err.println("[ERROR] No se pudo obtener conexión a la base de datos en UsuarioPersistencia.guardar");
+                return null;
+            }
             con.setAutoCommit(false);
 
             // 1. Si no tiene idPersona, insertar primero en Persona
-            if (usuario.getIdPersona() <= 0) {
+            Integer idPersona = usuario.getIdPersona();
+            if (idPersona == null || idPersona <= 0) {
                 Persona p = usuario.getPersona();
                 if (p == null) {
                     p = new Persona();
@@ -60,7 +65,8 @@ public class UsuarioPersistencia {
             String sqlUsuario = "INSERT INTO Usuario (idPersona, idRol, nombreUsuario, contrasena, estado) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement psU = con.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
                 psU.setInt(1, usuario.getIdPersona());
-                psU.setInt(2, usuario.getIdRol() > 0 ? usuario.getIdRol() : 1); // 1 = Turista por defecto
+                Integer idRol = usuario.getIdRol();
+                psU.setInt(2, (idRol != null && idRol > 0) ? idRol : 1); // 1 = Turista por defecto
                 psU.setString(3, usuario.getNombreUsuario());
                 psU.setString(4, usuario.getContrasena());
                 psU.setString(5, usuario.getEstado() != null ? usuario.getEstado() : "ACTIVO");
@@ -75,7 +81,7 @@ public class UsuarioPersistencia {
 
             con.commit();
             return usuario;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             if (con != null) {
                 try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             }

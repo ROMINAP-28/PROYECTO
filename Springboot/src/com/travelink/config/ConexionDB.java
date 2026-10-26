@@ -18,7 +18,7 @@ public class ConexionDB {
     }
 
     public static String getUser() {
-        String env = System.getenv("DB_USER");
+        String env = System.getenv("DB_USERNAME");
         return (env != null && !env.isBlank()) ? env : DEFAULT_USER;
     }
 

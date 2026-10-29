@@ -39,7 +39,69 @@ public class JavaApiServer {
     public static final UsuarioControlador usuarioControlador = new UsuarioControlador();
     public static final ReservaRepositorio reservaRepositorio = new ReservaRepositorio();
     public static final CalificacionControlador calificacionControlador = new CalificacionControlador();
-    public static final String FRONTEND_DIR = "backend/resources/static";
+    public static final String FRONTEND_DIR = "frontend";
+
+    public static void main(String[] args) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+
+        System.out.println("========== TRAVELINK ==========");
+        System.out.println("Servidor iniciado");
+        System.out.println("FRONTEND_DIR = " + FRONTEND_DIR);
+
+        // API Endpoints - TURISTA
+        server.createContext("/api/login", new LoginHandler());
+        server.createContext("/api/registro", new RegistroHandler());
+
+
+        // Aquí conserva los demás endpoints existentes
+        server.createContext("/api/guardar_reserva", new GuardarReservaHandler());
+        server.createContext("/api/tour-fechas", new TourFechasHandler());
+        server.createContext("/api/obtener_reservas", new ObtenerReservasHandler());
+        server.createContext("/api/cancelar_reserva", new CancelarReservaHandler());
+        server.createContext("/api/calificar", new CalificarHandler());
+        server.createContext("/api/agencia/destinos", new DestinosAgenciaHandler());
+        server.createContext("/api/agencia/tipos", new TiposAgenciaHandler());
+        server.createContext("/api/agencia/servicios", new ServiciosAgenciaHandler());
+        server.createContext("/api/agencia/registro", new RegistroAgenciaHandler());
+        server.createContext("/api/agencia/disponibilidad", new DisponibilidadAgenciaHandler());
+        server.createContext("/api/agencia/paquetes", new PaquetesAgenciaHandler());
+        server.createContext("/api/agencia/reservas", new ReservasAgenciaHandler());
+        server.createContext("/api/agencia/login", new LoginAgenciaHandler());
+        server.createContext("/api/agencia/pagos", new PagosAgenciaHandler());
+        server.createContext("/api/agencia/dashboard", new DashboardAgenciaHandler());
+
+        //ADMINISTRADOR
+        server.createContext("/api/admin/agencias", new AgenciasAdminHandler());
+        server.createContext("/api/admin/notificaciones", new NotificacionesAdminHandler());
+        server.createContext("/api/admin/destinos", new DestinosAdminHandler());
+        server.createContext("/api/destinos", new DestinosAdminHandler());
+        server.createContext("/api/admin/destinos/tours", new DestinosToursAdminHandler());
+        server.createContext("/api/destinos/tours", new DestinosToursAdminHandler());
+        server.createContext("/api/admin/tours", new ToursAdminHandler());
+        server.createContext("/api/tours", new ToursAdminHandler());
+        server.createContext("/api/admin/usuarios", new UsuariosAdminHandler());
+        server.createContext("/api/usuarios", new UsuariosAdminHandler());
+        server.createContext("/api/admin/reservas", new ReservasAdminHandler());
+        server.createContext("/api/reservas", new ReservasAdminHandler());
+        server.createContext("/api/admin/comisiones", new ComisionesAdminHandler());
+        server.createContext("/api/comisiones", new ComisionesAdminHandler());
+        server.createContext("/api/comision/liquidar", new LiquidarComisionHandler());
+        server.createContext("/api/admin/calidad", new CalidadAdminHandler());
+        server.createContext("/api/calidad", new CalidadAdminHandler());
+        server.createContext("/api/calidad/eliminar", new EliminarResenaHandler());
+        server.createContext("/api/admin/dashboard", new DashboardAdminHandler());
+
+        // Static Files Handler (Serves frontend UI)
+        server.createContext("/", new StaticFileHandler());
+
+        server.setExecutor(null); // Default executor
+        System.out.println("==================================================");
+        System.out.println("Servidor Java iniciado exitosamente!");
+        System.out.println("Servidor Backend API: http://localhost:" + PORT + "/api/");
+        System.out.println("Aplicacion Web Frontend: http://localhost:" + PORT + "/html/index.html");
+        System.out.println("==================================================");
+        server.start();
+    }
 
     public static void enableCORS(HttpExchange exchange) {
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");

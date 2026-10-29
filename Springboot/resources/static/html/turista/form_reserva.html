@@ -116,20 +116,21 @@
                     </div>
                     <div class="tour-table-body">
                         <div class="tour-info-cell">
-                            <img loading="lazy" src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" class="tour-cell-img" onerror="this.onerror=null; this.src=../../img/7colores.jpg">
+                            <img id="reservaTourImagen" src="../../img/lima.jpg" alt="Experiencia seleccionada" class="tour-cell-img" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
                             <div class="tour-cell-text">
-                                <h4>Machu Picchu Clásico</h4>
-                                <p>Andes Tours</p>
+                                <h4 id="reservaTourTitulo">Experiencia seleccionada</h4>
+                                <p id="reservaTourAgencia">Agencia autorizada</p>
                             </div>
                         </div>
                         <div>
-                            <span class="cell-val">12 oct. 2025 - 06:00</span>
+                            <span class="cell-val" id="reservaFechaTexto">Fecha seleccionada</span>
+                            <input type="hidden" id="fechaInicio" value="">
                         </div>
                         <div>
                             <span class="cell-val" id="cellPersonasResumen">Adultos: 2<br>Niños: 1<br>Bebés: 0</span>
                         </div>
                         <div class="price-cell">
-                            <strong class="cell-price" id="precioTotalItem">S/ 1,050.00</strong>
+                            <strong class="cell-price" id="precioTotalItem">S/ 0.00</strong>
                             <button type="button" class="btn-eliminar-item" onclick="if(typeof toastr !== 'undefined') toastr.info('Elemento eliminado');">
                                 <i class="fa-regular fa-trash-can"></i> Eliminar
                             </button>
@@ -186,9 +187,9 @@
             <section class="paso" id="paso2">
                 <h2 class="paso-title-ref">Formulario de Reserva - 4.2 Datos de Pasajeros</h2>
 
-                <div id="contenedorPasajeros">
-                    <!-- Dinámico: Titular precargado desde sesión y acompañantes -->
-                </div>
+                <div id="passengerFormsContainer"></div>
+
+                <p style="font-size:13px;color:#64748b;margin:12px 0;">Los formularios de pasajeros se ajustan automáticamente a las cantidades elegidas en el paso anterior.</p>
 
                 <div class="paso-actions-footer">
                     <button type="button" class="btn-step-volver" onclick="mostrarPaso(1)">Volver</button>
@@ -349,10 +350,10 @@
                     <div class="summary-box-card">
                         <h3>Resumen del tour</h3>
                         <div class="summary-tour-header">
-                            <img loading="lazy" src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" onerror="this.onerror=null; this.src=../../img/7colores.jpg">
+                            <img id="resumenTourImagen" src="../../img/lima.jpg" alt="Experiencia seleccionada" onerror="this.onerror=null; this.src='../../img/lima.jpg'">
                             <div>
-                                <h4>Machu Picchu Clásico</h4>
-                                <p>Andes Tours</p>
+                                <h4 id="resumenTourTitulo">Experiencia seleccionada</h4>
+                                <p id="resumenTourAgencia">Agencia autorizada</p>
                                 <div class="rating-mini"><i class="fa-solid fa-star"></i> <strong>4.8</strong> <span>(120 comentarios)</span></div>
                             </div>
                         </div>
@@ -363,9 +364,9 @@
                                 <span>Precio</span>
                             </div>
                             <div class="summary-row-item bold-vals">
-                                <span id="rFechaHorario">12 oct. 2025 - 08:00</span>
-                                <span id="rTotalPersonas">2 personas</span>
-                                <strong id="rTotalPrecio">S/ 700.00</strong>
+                                <span id="resumenFechaTour">Fecha seleccionada</span>
+                                <span id="rTotalPersonas">1 persona</span>
+                                <strong id="rTotalPrecio">S/ 0.00</strong>
                             </div>
                         </div>
                         <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #cbd5e1; font-size:13px; color:#475569;" id="rDesgloseItem">
@@ -378,13 +379,9 @@
 
                     <!-- Card 2: Datos del pasajero -->
                     <div class="summary-box-card">
-                        <h3>Datos de los pasajeros</h3>
-                        <div id="rResumenPasajerosLista">
-                            <div class="passenger-summary-item">
-                                <h5>Pasajero 1 <span class="badge-titular">(Titular)</span></h5>
-                                <p class="p-name" id="rTitularNombre">Juan Garcia Lopez</p>
-                                <p class="p-info">DNI: <span id="rTitularDNI">12345678</span></p>
-                            </div>
+                        <h3>Datos del pasajero</h3>
+                        <div id="summaryPassengers">
+                            <p style="color:#64748b;font-size:13px;">Completa los datos de los pasajeros en el paso anterior.</p>
                         </div>
                     </div>
 
@@ -468,7 +465,7 @@
     <script src="../../js/comun/api.js"></script>
     <script src="../../js/comun/user_session.js?v=4.0"></script>
     <script src="../../js/validador.js"></script>
-    <script src="../../js/turista/form_reserva.js?v=4.0"></script>
+    <script src="../../js/agencia/form_reserva.js"></script>
 </body>
 
 </html>

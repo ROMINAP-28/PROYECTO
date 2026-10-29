@@ -3,79 +3,76 @@
 const ITEMS_PER_PAGE = 5;
 let currentPage = 1;
 
-// Default initial reservations list for default user
+// Las reservas se cargan desde la API y no se mezclan con datos de demostración.
 
-
-function getUserReservasKey(user) {
-    user = user || (window.getCurrentUser ? window.getCurrentUser() : null);
-    const identifier = user ? (user.idUsuario || user.id || user.email || user.correo || 'anon') : 'anon';
-    return 'travelink_reservas_' + identifier;
+function getUserReservasKey() {
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const email = user && (user.email || user.correo);
+    return 'travelink_reservas_' + (email || 'guest');
 }
 
-function getReservasData(user) {
-    const key = getUserReservasKey(user);
-    const stored = localStorage.getItem(key);
-
-    if (!stored) {
-        return [];
-    }
+function getReservasData() {
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!user || !(user.email || user.correo)) return [];
     try {
-        const parsed = JSON.parse(stored);
+        const parsed = JSON.parse(localStorage.getItem(getUserReservasKey()) || '[]');
         return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
         return [];
     }
 }
 
+let filtroReservasActual = 'activas';
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Escuchar cuando la sesión esté lista para cargar las reservas del usuario autenticado
-    if (window.onSessionReady) {
-        window.onSessionReady((user) => {
-            cargarReservasDesdeDB(user);
+    // Quitar la tarjeta y tabla de pasajeros de ejemplo que venían escritas en el HTML.
+    document.querySelector('.reserva-main-card')?.remove();
+    const tabActivas = document.getElementById('tab-activas');
+    const tabHistorial = document.getElementById('tab-historial');
+    if (tabActivas && tabHistorial) {
+        tabActivas.classList.add('active');
+        tabHistorial.classList.remove('active');
+        tabActivas.style.cursor = tabHistorial.style.cursor = 'pointer';
+        tabActivas.addEventListener('click', () => {
+            filtroReservasActual = 'activas';
+            tabActivas.classList.add('active'); tabHistorial.classList.remove('active');
+            renderReservasPage();
         });
-    } else if (window.sessionReadyPromise) {
-        window.sessionReadyPromise.then((user) => {
-            cargarReservasDesdeDB(user);
+        tabHistorial.addEventListener('click', () => {
+            filtroReservasActual = 'historial';
+            tabHistorial.classList.add('active'); tabActivas.classList.remove('active');
+            renderReservasPage();
         });
-    } else {
-        cargarReservasDesdeDB();
     }
+    cargarReservasDesdeDB();
 });
 
-function cargarReservasDesdeDB(user) {
-    user = user || (window.getCurrentUser ? window.getCurrentUser() : null);
-    const email = user ? (user.email || user.correo || '') : '';
-    const idUsuario = user ? (user.idUsuario || user.id || '') : '';
-    const key = getUserReservasKey(user);
-
-    const listContainer = document.querySelector('.lista-reservas');
-    if (listContainer && (!listContainer.innerHTML || listContainer.innerHTML.trim() === '')) {
-        listContainer.innerHTML = `
-            <div style="text-align:center; padding: 50px 20px; background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin-top: 10px;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; color: #196f3d; margin-bottom: 15px;"></i>
-                <h4 style="color: #0b1f38; margin: 0 0 6px 0; font-size: 16px;">Cargando tus reservas...</h4>
-                <p style="color: #64748b; font-size: 14px; margin: 0;">Estamos sincronizando tu información.</p>
-            </div>
-        `;
+function cargarReservasDesdeDB() {
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const key = getUserReservasKey();
+    if (!user || !(user.email || user.correo)) {
+        localStorage.setItem(key, JSON.stringify([]));
+        renderReservasPage();
+        return;
     }
-
-    const fetchFn = window.apiFetch || fetch;
-    const url = `/api/obtener_reservas?correo=${encodeURIComponent(email)}&idUsuario=${encodeURIComponent(idUsuario)}`;
-
-    fetchFn(url, { credentials: 'include' })
+    const email = user.email || user.correo;
+    const idUsuario = Number(user.idUsuario || user.id || 0);
+    fetch(`http://localhost:8080/api/obtener_reservas?correo=${encodeURIComponent(email)}&idUsuario=${encodeURIComponent(idUsuario)}`)
         .then(res => res.json())
         .then(data => {
-            if (data && data.status === 'success' && Array.isArray(data.reservas)) {
-                // Guardar reservas reales asociadas al usuario autenticado
+            if (data.status === 'success' && Array.isArray(data.reservas)) {
+                // La base de datos es la fuente de verdad; no mezclar datos demo antiguos.
                 localStorage.setItem(key, JSON.stringify(data.reservas));
+            } else {
+                localStorage.setItem(key, JSON.stringify([]));
+                console.error('La API no devolvió las reservas de esta cuenta:', data.message || data);
             }
         })
         .catch(err => {
-            console.warn('No se pudieron cargar reservas desde la DB:', err);
+            localStorage.setItem(key, JSON.stringify([]));
+            console.error('No se pudieron cargar reservas desde la DB:', err);
         })
-        .finally(() => {
-            renderReservasPage(user);
-        });
+        .finally(() => renderReservasPage());
 }
 
 function injectReservasCSS() {
@@ -161,14 +158,19 @@ function renderReservasPage(user) {
 
     if (!listContainer) return;
 
-    const totalItems = allReservas.length;
+    const reservasVisibles = allReservas.filter(r => {
+        const estado = String(r.estado || '').toLowerCase();
+        if (filtroReservasActual === 'activas') return ['pendiente', 'confirmada', 'completada'].includes(estado);
+        return ['finalizada', 'cancelada', 'cancelado'].includes(estado);
+    });
+    const totalItems = reservasVisibles.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
 
     if (currentPage > totalPages) currentPage = totalPages;
     if (currentPage < 1) currentPage = 1;
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const pageItems = allReservas.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const pageItems = reservasVisibles.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     listContainer.innerHTML = '';
 
@@ -176,8 +178,8 @@ function renderReservasPage(user) {
         listContainer.innerHTML = `
             <div style="text-align:center; padding: 50px 20px; background: white; border-radius: 16px; border: 1px solid #e2e8f0;">
                 <i class="fa-regular fa-calendar-xmark" style="font-size: 48px; color: #94a3b8; margin-bottom: 15px;"></i>
-                <h3 style="color: #0b1f38;">No tienes reservas registradas</h3>
-                <p style="color: #64748b;">Explora nuestros tours y realiza tu primera reserva hoy mismo.</p>
+                <h3 style="color: #0b1f38;">${filtroReservasActual === 'activas' ? 'No tienes reservas activas' : 'No tienes reservas en el historial'}</h3>
+                <p style="color: #64748b;">Las reservas que correspondan a esta sección aparecerán aquí cuando se carguen desde la base de datos.</p>
                 <a href="experiencias.html" style="display: inline-block; margin-top: 15px; background: #ffc107; color: #0b1f38; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold;">Explorar Experiencias</a>
             </div>
         `;
@@ -272,13 +274,13 @@ function renderReservasPage(user) {
 
 // Nueva función de Modal Detalle de Reserva
 window.abrirDetalleNuevo = function(codigo) {
-    const user = window.getCurrentUser ? window.getCurrentUser() : null;
-    const userName = user ? (user.nombre || user.usuario || 'Turista') : 'Turista';
-    const userDoc = user ? (user.nroDocumento || '---') : '---';
-    const list = getReservasData(user);
-    const reserva = list.find(r => r.codigo === codigo) || list[0];
+    const list = getReservasData();
+    const reserva = list.find(r => String(r.codigo) === String(codigo));
 
-    if (!reserva) return;
+    if (!reserva) {
+        alert('No se encontró esa reserva en los datos de tu cuenta. Actualiza la página e inténtalo nuevamente.');
+        return;
+    }
 
     let overlay = document.getElementById('modal-detalle-avanzado');
     if (!overlay) {
@@ -307,8 +309,8 @@ window.abrirDetalleNuevo = function(codigo) {
                         <div class="md-main-details">
                             <h3>${reserva.titulo} ${badgeHtml}</h3>
                             <div style="color: #64748b; font-size: 14px; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-location-dot"></i> ${reserva.ubicacion || 'Cusco, Perú'}</div>
-                            <div style="color: #64748b; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-top: 5px;"><i class="fa-regular fa-calendar"></i> <div><span style="font-size:12px; display:block;">Fecha y hora de salida</span><span style="color:#0f172a;">${reserva.fechaSalida ? `${reserva.fechaSalida} - ${reserva.horaSalida || '08:00'}` : (reserva.fechas || 'Próximamente')}</span></div></div>
-                            <div style="color: #64748b; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-top: 5px;"><i class="fa-solid fa-user-group"></i> <div><span style="font-size:12px; display:block;">Pasajeros / Desglose</span><span style="color:#0f172a;">${reserva.desglose || reserva.personas}</span></div></div>
+                            <div style="color: #64748b; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-top: 5px;"><i class="fa-regular fa-calendar"></i> <div><span style="font-size:12px; display:block;">Fecha de reserva</span><span style="color:#0f172a;">${reserva.fechaRegistro || 'No disponible'} - ${(reserva.fechas || '').split(' - ')[1] || (reserva.fechas || 'No disponible')}</span></div></div>
+                            <div style="color: #64748b; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-top: 5px;"><i class="fa-solid fa-user-group"></i> <div><span style="font-size:12px; display:block;">Personas</span><span style="color:#0f172a;">${reserva.personas}</span></div></div>
                         </div>
                     </div>
                     
@@ -349,26 +351,16 @@ window.abrirDetalleNuevo = function(codigo) {
                                 <th>Nombre completo</th>
                                 <th>Documento</th>
                                 <th>Tipo</th>
-                                <th>Nacionalidad</th>
                             </tr>
                         </thead>
                         <tbody>
+                            ${(Array.isArray(reserva.pasajeros) && reserva.pasajeros.length) ? reserva.pasajeros.map((p, i) => `
                             <tr>
-                                <td>1</td>
-                                <td>${userName}</td>
-                                <td>${userDoc}</td>
-                                <td>Titular</td>
-                                <td>Peruana</td>
-                            </tr>
-                            ${parseInt(reserva.personas) > 1 ? `
-                            <tr>
-                                <td>2</td>
-                                <td>Carlos Garcia</td>
-                                <td>87654321</td>
-                                <td>22/08/1992</td>
-                                <td>Peruana</td>
-                            </tr>
-                            ` : ''}
+                                <td>${i + 1}</td>
+                                <td>${[p.nombre, p.apellidos].filter(Boolean).join(' ')}</td>
+                                <td>${p.documento || 'No registrado'}</td>
+                                <td>${p.titular ? 'Titular' : 'Acompañante'}</td>
+                            </tr>`).join('') : '<tr><td colspan="4">No hay datos de pasajeros disponibles para esta reserva.</td></tr>'}
                         </tbody>
                     </table>
                     
@@ -377,11 +369,11 @@ window.abrirDetalleNuevo = function(codigo) {
                         <div class="md-info-grid">
                             <div class="md-info-item">
                                 <i class="fa-regular fa-credit-card"></i>
-                                <div><p>Método de pago</p><span>${reserva.metodoPago || 'Tarjeta de crédito (**** 4587)'}</span></div>
+                                <div><p>Método de pago</p><span>${reserva.metodoPago || 'No registrado'}</span></div>
                             </div>
                             <div class="md-info-item">
                                 <i class="fa-regular fa-calendar"></i>
-                                <div><p>Fecha de viaje</p><span>${reserva.fechas}</span></div>
+                                <div><p>Fecha de viaje</p><span>${reserva.fechas || 'No disponible'}</span></div>
                             </div>
                             <div class="md-info-item">
                                 <i class="fa-solid fa-location-dot"></i>
@@ -447,8 +439,8 @@ function rFormattedTotal(total) {
 // Descargar Voucher PDF generado en el servidor con OpenPDF (FASE 9)
 window.descargarVoucherPDF = function(codigo) {
     const list = getReservasData();
-    const reserva = list.find(r => r.codigo === codigo);
-    const idOrCodigo = reserva && (reserva.id || reserva.idReserva) ? (reserva.id || reserva.idReserva) : codigo;
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const reserva = list.find(r => String(r.codigo) === String(codigo));
 
     if (!idOrCodigo) {
         if (typeof Swal !== 'undefined') {
@@ -459,15 +451,108 @@ window.descargarVoucherPDF = function(codigo) {
         return;
     }
 
-    // Descarga directa del comprobante PDF oficial desde el servidor
-    const url = `/api/turista/reservas/${encodeURIComponent(idOrCodigo)}/comprobante.pdf`;
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.download = `Comprobante_Reserva_${codigo || idOrCodigo}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const pdfWindow = window.open('', '_blank');
+    const voucherContent = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Voucher - ${reserva.codigo}</title>
+            <style>
+                body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #1e293b; background: #fff; }
+                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffc107; padding-bottom: 20px; }
+                .logo { font-size: 28px; font-weight: bold; color: #0b1f38; }
+                .logo span { color: #ffc107; }
+                .voucher-title { text-align: right; }
+                .voucher-title h2 { margin: 0; color: #0b1f38; font-size: 20px; }
+                .badge { background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 12px; font-weight: bold; font-size: 12px; }
+                .section-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-top: 25px; }
+                .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                .field-label { font-size: 12px; color: #64748b; font-weight: bold; text-transform: uppercase; }
+                .field-val { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
+                .table-summary { width: 100%; border-collapse: collapse; margin-top: 25px; }
+                .table-summary th { background: #0b1f38; color: white; padding: 12px; text-align: left; }
+                .table-summary td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+                .footer-stamp { margin-top: 40px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; color: #94a3b8; font-size: 12px; }
+                @media print {
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+                <button onclick="window.print()" style="background: #0b1f38; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Imprimir / Guardar PDF</button>
+            </div>
+            <div class="header">
+                <div class="logo">Travel<span>ink</span></div>
+                <div class="voucher-title">
+                    <h2>VOUCHER DE RESERVA</h2>
+                    <span class="badge">ESTADO: ${reserva.estado.toUpperCase()}</span>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <div class="grid">
+                    <div>
+                        <div class="field-label">Código de Reserva</div>
+                        <div class="field-val" style="color:#0284c7; font-size:18px;">${reserva.codigo}</div>
+                    </div>
+                    <div>
+                        <div class="field-label">Titular de Reserva</div>
+                        <div class="field-val">${user ? (user.username || user.nombre || 'Usuario') + ' (' + (user.email || user.correo || '') + ')' : 'Usuario no identificado'}</div>
+                    </div>
+                    <div>
+                        <div class="field-label">Tour / Experiencia</div>
+                        <div class="field-val">${reserva.titulo}</div>
+                    </div>
+                    <div>
+                        <div class="field-label">Ubicación</div>
+                        <div class="field-val">${reserva.ubicacion || 'Cusco, Perú'}</div>
+                    </div>
+                    <div>
+                        <div class="field-label">Fechas del Viaje</div>
+                        <div class="field-val">${reserva.fechas || 'No disponible'}</div>
+                    </div>
+                    <div>
+                        <div class="field-label">Pasajeros</div>
+                        <div class="field-val">${reserva.personas}</div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table-summary">
+                <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Método de Pago</th>
+                        <th style="text-align:right;">Monto Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Reserva de paquete turístico (${reserva.titulo})</td>
+                        <td>${reserva.metodoPago || 'Yape / Plin'}</td>
+                        <td style="text-align:right; font-weight:bold; font-size:16px;">${rFormattedTotal(reserva.total)}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="footer-stamp">
+                <p>Este voucher sirve como comprobante oficial de reserva emitido por Travelink.</p>
+                <p>2026 Travelink Perú - Todos los derechos reservados.</p>
+            </div>
+
+            <script>
+                window.onload = function() {
+                    setTimeout(function() { window.print(); }, 500);
+                }
+            </script>
+        </body>
+        </html>
+    `;
+
+    pdfWindow.document.write(voucherContent);
+    pdfWindow.document.close();
 };
 
 // ==============================
@@ -608,7 +693,11 @@ window.enviarCalificacion = function() {
     const textarea = document.getElementById('modal-comment-input');
     const comentario = textarea ? textarea.value.trim() : '';
     const user = window.getCurrentUser ? window.getCurrentUser() : null;
-    const idUsuario = user && user.idUsuario ? user.idUsuario : null;
+    const idUsuario = user ? Number(user.idUsuario || user.id || 0) : 0;
+    if (!idUsuario) {
+        alert('No se pudo identificar tu sesión. Cierra sesión e inicia sesión nuevamente antes de calificar.');
+        return;
+    }
 
     const payload = {
         idReserva: calificacionContext.idReserva,

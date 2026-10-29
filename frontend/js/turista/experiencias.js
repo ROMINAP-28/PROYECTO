@@ -172,22 +172,35 @@ window.cargarPaquetesDinamicos = async function() {
         { idPaquete: 703, idAgencia: 7, agencia: 'TOUR LIMA S.A', nombre: 'Sobrevuelo a las Líneas de Nazca & Paracas', descripcion: 'Excursión completa observando los geoglifos de Nazca y las Islas Ballestas.', precio: 690.00, duracion: '1 día', estado: 'PUBLICADO', imagen: '../../img/ica.jpg', cuposDisponibles: 15, cupoTotal: 20 }
     ];
 
-    let listaPaquetes = fallbackPaquetes;
+    let listaPaquetes = [];
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     try {
-        const resp = await fetch(`http://localhost:8080/api/agencia/paquetes?idAgencia=${idAgenciaParam}`, { signal: controller.signal });
+        const resp = await fetch('http://localhost:8080/api/tours', { signal: controller.signal });
         clearTimeout(timeoutId);
         const data = await resp.json();
-        
-        if (data && data.status === 'success' && Array.isArray(data.paquetes) && data.paquetes.length > 0) {
-            listaPaquetes = data.paquetes;
+        if (resp.ok && data && data.status === 'success' && Array.isArray(data.data)) {
+            listaPaquetes = data.data.map(t => ({
+                id: Number(t.id), idTour: Number(t.id), idPaquete: Number(t.id),
+                agencia: t.agencia || 'Agencia autorizada', nombre: t.nombre || 'Experiencia Travelink',
+                descripcion: t.descripcion || `Experiencia turística en ${t.destino || 'Perú'}.`,
+                destino: t.destino || 'Perú', ubicacion: t.destino || 'Perú',
+                precio: Number(t.precio || t.precioAdulto || 0),
+                precioAdulto: Number(t.precioAdulto || t.precio || 0),
+                precioNino: Number(t.precioNino ?? Math.round(Number(t.precio || 0) * 0.7)),
+                precioBebe: Number(t.precioBebe ?? Math.round(Number(t.precio || 0) * 0.3)),
+                duracion: t.duracion || 'Por confirmar', estado: t.estado || 'ACTIVO',
+                imagen: t.imagen || '../../img/lima.jpg', calificacion: Number(t.calificacion || 0)
+            }));
         }
     } catch (e) {
-        console.warn("Fallo fetch paquetes dinámicos, usando fallback de agencias reales:", e);
+        console.error('No se pudo cargar el catálogo real de tours desde /api/tours:', e);
     }
+    // El catálogo real es la fuente de verdad. El fallback solo se usa si la API no responde.
+    if (!listaPaquetes.length) listaPaquetes = fallbackPaquetes;
+
 
     // Filtrar si el usuario especificó idAgencia > 0 o nombre de agencia
     if (idAgenciaParam > 0) {
@@ -196,6 +209,8 @@ window.cargarPaquetesDinamicos = async function() {
         const normAgencia = normalizarTexto(agenciaNombreParam);
         listaPaquetes = listaPaquetes.filter(p => p.agencia && normalizarTexto(p.agencia).includes(normAgencia));
     }
+
+    window.travelinkPaquetes = listaPaquetes;
 
     if (listaPaquetes.length > 0) {
         grid.innerHTML = listaPaquetes.map(p => {
@@ -244,7 +259,14 @@ window.cargarPaquetesDinamicos = async function() {
 };
 
 window.verDetallePaquete = function(idPaquete) {
-    const usuario = localStorage.getItem('usuarioLogueado') || localStorage.getItem('turistaSesion');
+    // Unificar la comprobación con el inicio de sesión de Travelink.
+    let usuario = (typeof window.getCurrentUser === 'function') ? window.getCurrentUser() : null;
+    if (!usuario) {
+        try {
+            const guardado = localStorage.getItem('travelink_current_user');
+            if (guardado && guardado !== 'logout') usuario = JSON.parse(guardado);
+        } catch (e) { usuario = null; }
+    }
     if (!usuario) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({
@@ -267,7 +289,12 @@ window.verDetallePaquete = function(idPaquete) {
         }
         return;
     }
-    window.location.href = `form_reserva.html?idPaquete=${idPaquete}`;
+    const paquete = (window.travelinkPaquetes || []).find(p => String(p.idPaquete || p.id) === String(idPaquete));
+    if (paquete) {
+        try { sessionStorage.setItem('travelink_selected_tour', JSON.stringify(paquete)); } catch (e) {}
+    }
+    const params = new URLSearchParams({ idPaquete: String(idPaquete), from: 'experiencias' });
+    window.location.href = `detalle.html?${params.toString()}`;
 };
 
 document.addEventListener('DOMContentLoaded', () => {

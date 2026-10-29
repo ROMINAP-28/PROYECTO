@@ -54,11 +54,9 @@ $(document).ready(function() {
     }
 });
 
-let precios = {
-    adultos: 120,
-    ninos: 80,
-    bebes: 0
-};
+let precios = { adultos: 120, ninos: 80, bebes: 0 };
+let travelinkSelectedTour = null;
+let travelinkSelectedDate = null;
 
 function actualizarTotales() {
     let elA = document.getElementById('cantAdultos');
@@ -69,8 +67,8 @@ function actualizarTotales() {
     let cantN = elN ? parseInt(elN.value) || 0 : 0;
     let cantB = elB ? parseInt(elB.value) || 0 : 0;
     
-    let totalPersonas = cantA + cantN;
-    let totalCosto = (cantA * precios.adultos) + (cantN * precios.ninos);
+    let totalPersonas = cantA + cantN + cantB;
+    let totalCosto = (cantA * precios.adultos) + (cantN * precios.ninos) + (cantB * precios.bebes);
     
     const elPrice = document.getElementById('precioTotalItem');
     if (elPrice) elPrice.textContent = 'S/ ' + totalCosto.toFixed(2);
@@ -85,9 +83,11 @@ function actualizarTotales() {
     const elRPer = document.getElementById('rTotalPersonas');
     const elRPre = document.getElementById('rTotalPrecio');
     const elSumTotalFinal = document.getElementById('sumTotalFinal');
-    if (elRPer) elRPer.textContent = strPersonas;
+    if (elRPer) elRPer.textContent = (cantA + cantN + cantB) + ((cantA + cantN + cantB) === 1 ? ' persona' : ' personas');
     if (elRPre) elRPre.textContent = 'S/ ' + totalCosto.toFixed(2);
     if (elSumTotalFinal) elSumTotalFinal.textContent = 'S/ ' + totalCosto.toFixed(2);
+    renderPassengerForms();
+    actualizarResumenPasajeros();
 }
 
 function cambiarCantidad(tipo, delta) {
@@ -260,34 +260,24 @@ function cerrarModal() {
     if (modal) modal.style.display = 'none';
 }
 
-function guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodo, codigoPersonalizado) {
-    const user = window.getCurrentUser ? window.getCurrentUser() : { email: 'briadayanainfantes@gmail.com' };
-    const key = 'travelink_reservas_' + (user.email || 'briadayanainfantes@gmail.com');
-
+function guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodo, codigoPersonalizado, tourData, fechaInput) {
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const key = 'travelink_reservas_' + (user?.email || user?.correo || 'guest');
     let list = [];
-    try {
-        list = JSON.parse(localStorage.getItem(key) || '[]');
-    } catch(e) {
-        list = [];
-    }
+    try { list = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { list = []; }
     const nextNum = list.length + 1;
     const codeStr = codigoPersonalizado || ('TRK-' + String(nextNum).padStart(3, '0'));
-    const totalP = cantA + cantN;
-
-    const fechaInput = document.getElementById('fechaInicio') ? document.getElementById('fechaInicio').value : '2026-10-15';
-
+    const totalP = cantA + cantN + cantB;
+    const tour = tourData || {};
     const nueva = {
-        id: nextNum,
-        codigo: codeStr,
-        titulo: 'Tour Cañón del Colca, full day',
-        ubicacion: 'Arequipa, Perú',
-        fechas: fechaInput + ' - ' + fechaInput,
+        id: nextNum, codigo: codeStr,
+        titulo: tour.nombre || tour.title || 'Experiencia Travelink',
+        ubicacion: tour.destino || tour.ubicacion || 'Perú',
+        fechas: fechaInput || 'Fecha seleccionada',
         personas: totalP + (totalP === 1 ? ' persona' : ' personas'),
-        agencia: 'Agencia: Inti Andes Tours',
-        estado: 'Confirmada',
-        total: totalCosto,
-        metodoPago: metodo,
-        imagen: '../../img/colca.jpg',
+        agencia: tour.agencia || 'Agencia autorizada', estado: 'Pendiente',
+        total: totalCosto, metodoPago: metodo,
+        imagen: tour.imagen || tour.imgMain || '../../img/lima.jpg',
         fechaRegistro: new Date().toISOString().split('T')[0]
     };
     list.unshift(nueva);
@@ -297,67 +287,157 @@ function guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodo, codigo
 
 function confirmarReserva() {
     cerrarModal();
-    
-    let elA = document.getElementById('cantAdultos');
-    let elN = document.getElementById('cantNinos');
-    let elB = document.getElementById('cantBebes');
-
-    let cantA = elA ? parseInt(elA.value) || 0 : 1;
-    let cantN = elN ? parseInt(elN.value) || 0 : 0;
-    let cantB = elB ? parseInt(elB.value) || 0 : 0;
-    let totalCosto = (cantA * precios.adultos) + (cantN * precios.ninos);
-    let totalPersonas = cantA + cantN;
-    
-    const fechaInput = document.getElementById('fechaInicio') ? document.getElementById('fechaInicio').value : '2026-10-15';
-    const user = window.getCurrentUser ? window.getCurrentUser() : { email: 'briadayanainfantes@gmail.com' };
-    const randomCode = 'TRK-' + Math.floor(100 + Math.random() * 900);
-
-    const nombresMetodo = {
-        'efectivo': 'Presencial',
-        'yape': 'Yape',
-        'plin': 'Plin',
-        'tarjeta': 'Tarjeta'
-    };
-    const metodoNombre = nombresMetodo[metodoPagoActual] || 'Presencial';
-
-    const payload = {
-        email: user.email || 'briadayanainfantes@gmail.com',
-        idUsuario: user.id || user.idUsuario || 1,
-        fechaServicio: fechaInput,
-        cantidadPersonas: totalPersonas,
-        precioTotal: totalCosto,
-        metodoPago: metodoNombre,
-        observaciones: `Tour Cañón del Colca, full day | Adultos: ${cantA}, Niños: ${cantN}, Bebés: ${cantB}`,
-        codigo: randomCode,
-        titulo: 'Tour Cañón del Colca, full day'
-    };
-
-    // Petición a la base de datos MySQL
-    fetch('http://localhost:8080/api/guardar_reserva', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            console.log('Reserva guardada en la Base de Datos:', data);
-            guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodoNombre, data.data ? data.data.codigo : randomCode);
-        } else {
-            console.warn('Error backend, guardando localmente:', data.message);
-            guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodoNombre, randomCode);
+    const elA = document.getElementById('cantAdultos');
+    const elN = document.getElementById('cantNinos');
+    const elB = document.getElementById('cantBebes');
+    const cantA = elA ? parseInt(elA.value, 10) || 0 : 1;
+    const cantN = elN ? parseInt(elN.value, 10) || 0 : 0;
+    const cantB = elB ? parseInt(elB.value, 10) || 0 : 0;
+    const totalPersonas = cantA + cantN + cantB;
+    const totalCosto = cantA * precios.adultos + cantN * precios.ninos + cantB * precios.bebes;
+    const fechaInput = document.getElementById('fechaInicio')?.value || travelinkSelectedDate?.fecha || '';
+    const idTourFecha = Number(new URLSearchParams(window.location.search).get('idTourFecha') || travelinkSelectedDate?.idTourFecha || 0);
+    const idTour = Number(new URLSearchParams(window.location.search).get('idTour') || travelinkSelectedTour?.idTour || travelinkSelectedTour?.id || 0);
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!user || !(user.idUsuario || user.id)) {
+        alert('No se pudo identificar tu sesión. Cierra sesión e inicia nuevamente antes de reservar.');
+        return;
+    }
+    if (!idTourFecha || !idTour || !fechaInput) {
+        alert('No hay una fecha válida seleccionada. Regresa al detalle de la experiencia y selecciona una fecha disponible.');
+        return;
+    }
+    const nombre = document.getElementById('inputNombre')?.value.trim() || '';
+    const paterno = document.getElementById('inputPaterno')?.value.trim() || '';
+    const materno = document.getElementById('inputMaterno')?.value.trim() || '';
+    const dni = document.getElementById('inputDNI')?.value.trim() || '';
+    if (!nombre || !paterno || !dni) {
+        mostrarPaso(2);
+        alert('Completa nombres, apellido y documento del titular antes de confirmar.');
+        return;
+    }
+    for (let i = 2; i <= totalPersonas; i++) {
+        const n = document.getElementById('pasajero' + i + 'Nombre')?.value.trim() || '';
+        const a = document.getElementById('pasajero' + i + 'Apellidos')?.value.trim() || '';
+        const d = document.getElementById('pasajero' + i + 'Dni')?.value.trim() || '';
+        if (!n || !a || !d) {
+            mostrarPaso(2);
+            alert('Completa nombres, apellidos y documento de cada pasajero seleccionado.');
+            return;
         }
+    }
+    const payload = {
+        email: user.email || user.correo || '', idUsuario: user.idUsuario || user.id,
+        idTour: idTour, idTourFecha: idTourFecha, idPaquete: idTour,
+        fechaInicio: fechaInput, fechaServicio: fechaInput, fechaFin: fechaInput,
+        cantidadPersonas: totalPersonas, cantAdultos: cantA, cantNinos: cantN, cantBebes: cantB,
+        precioTotal: totalCosto, total: totalCosto,
+        metodoPago: ({ efectivo: 'Presencial', yape: 'Yape', plin: 'Plin', tarjeta: 'Tarjeta' })[metodoPagoActual] || 'Presencial',
+        codigo: 'TRK-' + Date.now().toString().slice(-6),
+        titulo: travelinkSelectedTour?.nombre || travelinkSelectedTour?.title || document.getElementById('reservaTourTitulo')?.textContent || 'Experiencia Travelink',
+        nombre: nombre, apellidos: [paterno, materno].filter(Boolean).join(' '), dni: dni,
+        telefono: document.getElementById('inputTelefono')?.value.trim() || ''
+    };
+    for (let i = 2; i <= totalPersonas; i++) {
+        payload['pasajero' + i + 'Nombre'] = document.getElementById('pasajero' + i + 'Nombre')?.value.trim() || '';
+        payload['pasajero' + i + 'Apellidos'] = document.getElementById('pasajero' + i + 'Apellidos')?.value.trim() || '';
+        payload['pasajero' + i + 'Dni'] = document.getElementById('pasajero' + i + 'Dni')?.value.trim() || '';
+    }
+    fetch('http://localhost:8080/api/guardar_reserva', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    })
+    .then(async res => { const data = await res.json(); if (!res.ok) throw new Error(data.message || 'Error al guardar'); return data; })
+    .then(data => {
+        if (data.status !== 'success') throw new Error(data.message || 'El servidor rechazó la reserva.');
+        guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, payload.metodoPago, data.data?.codigo || payload.codigo, travelinkSelectedTour, fechaInput);
+        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'success', title: 'Reserva registrada', text: 'La reserva se guardó en la base de datos.', confirmButtonColor: '#196f3d' }).then(() => { window.location.href = 'reservas.html'; });
+        else { alert('La reserva se guardó en la base de datos.'); window.location.href = 'reservas.html'; }
     })
     .catch(err => {
-        console.error('Error de red al guardar en la base de datos:', err);
-        guardarReservaEnStorage(cantA, cantN, cantB, totalCosto, metodoNombre, randomCode);
-    })
-    .finally(() => {
-        if (typeof toastr !== 'undefined') toastr.success('¡Reserva confirmada y guardada exitosamente en la base de datos!', 'Éxito');
-        else alert('¡Reserva confirmada exitosamente!');
-
-        setTimeout(() => {
-            window.location.href = "reservas.html";
-        }, 1200);
+        console.error('Error al guardar la reserva:', err);
+        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'No se pudo guardar la reserva', text: err.message, confirmButtonColor: '#0b1f38' });
+        else alert('No se pudo guardar la reserva: ' + err.message);
     });
 }
+
+function renderPassengerForms() {
+    const container = document.getElementById('passengerFormsContainer');
+    if (!container) return;
+    const counts = {
+        adultos: Math.max(1, parseInt(document.getElementById('cantAdultos')?.value, 10) || 1),
+        ninos: Math.max(0, parseInt(document.getElementById('cantNinos')?.value, 10) || 0),
+        bebes: Math.max(0, parseInt(document.getElementById('cantBebes')?.value, 10) || 0)
+    };
+    const total = counts.adultos + counts.ninos + counts.bebes;
+    const old = {};
+    container.querySelectorAll('input').forEach(el => { old[el.id] = el.value; });
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const userName = user?.nombres || user?.nombre || user?.username || '';
+    const userSurname = user?.apellidos || '';
+    const specs = [];
+    for (let i = 1; i <= total; i++) {
+        const tipo = i <= counts.adultos ? 'Adulto' : (i <= counts.adultos + counts.ninos ? 'Niño' : 'Bebé');
+        const titular = i === 1;
+        const prefix = titular ? 'input' : 'pasajero' + i;
+        const nombreId = titular ? 'inputNombre' : prefix + 'Nombre';
+        const paternoId = titular ? 'inputPaterno' : prefix + 'Apellidos';
+        const dniId = titular ? 'inputDNI' : prefix + 'Dni';
+        const telefonoId = titular ? 'inputTelefono' : prefix + 'Telefono';
+        const maternoId = titular ? 'inputMaterno' : null;
+        specs.push(`<div class="passenger-card-box" style="margin-bottom:14px"><div class="passenger-card-header"><h3>Pasajero ${i}${titular ? ' <span class="badge-titular">(Titular)</span>' : ''}</h3><span style="font-size:12px;color:#64748b">${tipo}</span></div><div class="passenger-grid-3"><div class="input-field-block"><label>Nombres</label><input type="text" id="${nombreId}" value="${escapeReserva(old[nombreId] || (titular ? userName : ''))}" ${titular ? '' : ''}></div><div class="input-field-block"><label>${titular ? 'Apellido paterno' : 'Apellidos'}</label><input type="text" id="${paternoId}" value="${escapeReserva(old[paternoId] || (titular ? userSurname : ''))}"></div>${titular ? `<div class="input-field-block"><label>Apellido materno</label><input type="text" id="${maternoId}" value="${escapeReserva(old[maternoId] || '')}"></div>` : ''}<div class="input-field-block"><label>DNI / documento</label><input type="text" id="${dniId}" value="${escapeReserva(old[dniId] || (titular ? (user?.dni || user?.documento || '') : ''))}" maxlength="12"></div>${titular ? `<div class="input-field-block"><label>Teléfono</label><input type="tel" id="${telefonoId}" value="${escapeReserva(old[telefonoId] || user?.telefono || '')}" maxlength="15"></div>` : ''}</div></div>`);
+    }
+    container.innerHTML = specs.join('');
+    container.querySelectorAll('input').forEach(el => el.addEventListener('input', actualizarResumenPasajeros));
+    actualizarResumenPasajeros();
+}
+
+function escapeReserva(value) {
+    return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function actualizarResumenPasajeros() {
+    const container = document.getElementById('summaryPassengers');
+    if (!container) return;
+    const cards = [];
+    const total = (parseInt(document.getElementById('cantAdultos')?.value, 10) || 1) + (parseInt(document.getElementById('cantNinos')?.value, 10) || 0) + (parseInt(document.getElementById('cantBebes')?.value, 10) || 0);
+    for (let i = 1; i <= total; i++) {
+        const nombre = document.getElementById(i === 1 ? 'inputNombre' : 'pasajero' + i + 'Nombre')?.value.trim() || 'Datos por completar';
+        const apellidos = document.getElementById(i === 1 ? 'inputPaterno' : 'pasajero' + i + 'Apellidos')?.value.trim() || '';
+        const dni = document.getElementById(i === 1 ? 'inputDNI' : 'pasajero' + i + 'Dni')?.value.trim() || 'Pendiente';
+        cards.push(`<div class="passenger-summary-item"><h5>Pasajero ${i}${i === 1 ? ' (Titular)' : ''}</h5><p class="p-name">${escapeReserva((nombre + ' ' + apellidos).trim())}</p><p class="p-info">Documento: ${escapeReserva(dni)}</p></div>`);
+    }
+    container.innerHTML = cards.join('');
+}
+
+function inicializarReservaSeleccionada() {
+    const params = new URLSearchParams(window.location.search);
+    try { travelinkSelectedTour = JSON.parse(sessionStorage.getItem('travelink_selected_tour') || 'null'); } catch (e) { travelinkSelectedTour = null; }
+    try { travelinkSelectedDate = JSON.parse(sessionStorage.getItem('travelink_selected_date') || 'null'); } catch (e) { travelinkSelectedDate = null; }
+    const tourId = params.get('idTour') || params.get('idPaquete');
+    if (!travelinkSelectedTour || String(travelinkSelectedTour.idTour || travelinkSelectedTour.idPaquete || travelinkSelectedTour.id) !== String(tourId)) {
+        travelinkSelectedTour = { idTour: Number(tourId || 0), nombre: params.get('titulo') || 'Experiencia Travelink', precio: Number(params.get('precio') || 0), precioAdulto: Number(params.get('precio') || 0), agencia: params.get('agencia') || 'Agencia autorizada', imagen: '../../img/lima.jpg', destino: 'Perú' };
+    }
+    const fecha = params.get('fecha') || travelinkSelectedDate?.fecha || '';
+    const fechaInput = document.getElementById('fechaInicio');
+    if (fechaInput) fechaInput.value = fecha;
+    const title = travelinkSelectedTour.nombre || travelinkSelectedTour.title || params.get('titulo') || 'Experiencia Travelink';
+    const agency = travelinkSelectedTour.agencia || params.get('agencia') || 'Agencia autorizada';
+    const image = travelinkSelectedTour.imagen || travelinkSelectedTour.imgMain || '../../img/lima.jpg';
+    ['reservaTourTitulo','resumenTourTitulo'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = title; });
+    ['reservaTourAgencia','resumenTourAgencia'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = agency; });
+    ['reservaTourImagen','resumenTourImagen'].forEach(id => { const el = document.getElementById(id); if (el) el.src = image; });
+    const fechaTexto = document.getElementById('reservaFechaTexto'); if (fechaTexto) fechaTexto.textContent = fecha || 'Fecha no seleccionada';
+    const resumenFecha = document.getElementById('resumenFechaTour'); if (resumenFecha) resumenFecha.textContent = fecha || 'Fecha no seleccionada';
+    precios = {
+        adultos: Number(travelinkSelectedTour.precioAdulto ?? travelinkSelectedTour.precio ?? params.get('precio') ?? 120),
+        ninos: Number(travelinkSelectedTour.precioNino ?? Math.round(Number(travelinkSelectedTour.precio ?? params.get('precio') ?? 120) * 0.7)),
+        bebes: Number(travelinkSelectedTour.precioBebe ?? Math.round(Number(travelinkSelectedTour.precio ?? params.get('precio') ?? 120) * 0.3))
+    };
+    const a = document.getElementById('cantAdultos'); if (a) a.value = '1';
+    const n = document.getElementById('cantNinos'); if (n) n.value = '0';
+    const b = document.getElementById('cantBebes'); if (b) b.value = '0';
+    const rMet = document.getElementById('rMetodoPago'); if (rMet) rMet.textContent = 'Presencial';
+    actualizarTotales();
+}
+
+inicializarReservaSeleccionada();

@@ -23,16 +23,10 @@ async function cargarReservas() {
             throw new Error('Error al conectar a API');
         }
     } catch (e) {
-        console.warn('Cargando datos locales de fallback para reservas...', e);
-        reservasList = [
-            { id: 101, codigo: 'R-001245', turista: 'María López', email: 'maria.l@gmail.com', tour: 'Machu Picchu Clásico Full Day', agencia: 'Andes Tours', fechaTour: '2025-04-28', cupos: 2, total: 700.00, estado: 'Confirmada', fechaReserva: '2025-04-10' },
-            { id: 102, codigo: 'R-001246', turista: 'Carlos Pérez', email: 'carlos.p@gmail.com', tour: 'Montaña de 7 Colores (Vinicunca)', agencia: 'Inka Travel', fechaTour: '2025-04-27', cupos: 1, total: 260.00, estado: 'Confirmada', fechaReserva: '2025-04-11' },
-            { id: 103, codigo: 'R-001247', turista: 'Ana Torres', email: 'ana.t@gmail.com', tour: 'Valle Sagrado & Ollantaytambo', agencia: 'Selva Viva', fechaTour: '2025-04-29', cupos: 3, total: 960.00, estado: 'Pendiente', fechaReserva: '2025-04-12' },
-            { id: 104, codigo: 'R-001248', turista: 'Jorge Ramírez', email: 'jorge.r@gmail.com', tour: 'Tour Islas Ballestas & Huacachina', agencia: 'Ica Travel', fechaTour: '2025-05-01', cupos: 2, total: 580.00, estado: 'Confirmada', fechaReserva: '2025-04-12' },
-            { id: 105, codigo: 'R-001249', turista: 'Lucía Fernández', email: 'lucia.f@hotmail.com', tour: 'Cañón del Colca 2D/1N', agencia: 'Arequipa Tours', fechaTour: '2025-05-03', cupos: 2, total: 760.00, estado: 'Cancelada', fechaReserva: '2025-04-13' },
-            { id: 106, codigo: 'R-001250', turista: 'Roberto Sánchez', email: 'roberto.s@gmail.com', tour: 'Lago Titicaca & Islas Uros', agencia: 'Machupicchu Tours', fechaTour: '2025-05-05', cupos: 4, total: 880.00, estado: 'Pendiente', fechaReserva: '2025-04-14' },
-            { id: 107, codigo: 'R-001251', turista: 'Elena Castillo', email: 'elena.c@gmail.com', tour: 'Amazonía & Reserva Tambopata', agencia: 'Aventura Perú', fechaTour: '2025-05-10', cupos: 2, total: 1360.00, estado: 'Confirmada', fechaReserva: '2025-04-15' }
-        ];
+        console.error('No se pudieron cargar las reservas reales desde la API:', e);
+        reservasList = [];
+        const tbody = document.getElementById('tablaReservasBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#b91c1c">No se pudieron cargar las reservas de la base de datos. Comprueba que el servidor Java esté activo.</td></tr>';
     }
     aplicarFiltros();
 }

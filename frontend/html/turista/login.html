@@ -126,6 +126,8 @@
                 return;
             }
 
+            // No conservar una sesión vieja si este intento de autenticación falla.
+            localStorage.removeItem('travelink_current_user');
             fetch('http://localhost:8080/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -135,13 +137,21 @@
                 .then(data => {
                     if (data.status === 'success' && data.user) {
                         const u = data.user;
+                        const idReal = Number(u.idUsuario || u.id || 0);
+                        const correoReal = String(u.correo || u.email || '').trim();
+                        if (!idReal || !correoReal) {
+                            if (typeof toastr !== 'undefined') toastr.error('El servidor no devolvió el identificador y correo reales de tu cuenta.');
+                            else alert('El servidor no devolvió el identificador y correo reales de tu cuenta.');
+                            return;
+                        }
                         const userObj = {
-                            id: u.idUsuario || 1,
+                            id: idReal,
+                            idUsuario: idReal,
                             username: u.nombreUsuario || usuarioCorreo,
                             nroDocumento: u.nroDocumento || '',
-                            email: u.correo || (usuarioCorreo.includes('@') ? usuarioCorreo : usuarioCorreo + '@gmail.com'),
+                            email: correoReal,
                             nombre: u.nombre || u.nombreUsuario || usuarioCorreo,
-                            apellidos: (u.apellidoPaterno || '') + ' ' + (u.apellidoMaterno || ''),
+                            apellidos: [u.apellidoPaterno, u.apellidoMaterno].filter(Boolean).join(' '),
                             telefono: u.telefono || '',
                             idRol: u.idRol || 2
                         };
@@ -149,32 +159,14 @@
                         if (typeof toastr !== 'undefined') toastr.success('¡Bienvenido ' + userObj.username + '!');
                         setTimeout(() => { window.location.href = '../index.html'; }, 1000);
                     } else {
-                        const dynamicUser = {
-                            id: Date.now(),
-                            username: usuarioCorreo.includes('@') ? usuarioCorreo.split('@')[0] : usuarioCorreo,
-                            email: usuarioCorreo.includes('@') ? usuarioCorreo : usuarioCorreo + '@gmail.com',
-                            nombre: usuarioCorreo,
-                            apellidos: '',
-                            telefono: '',
-                            idRol: 2
-                        };
-                        localStorage.setItem('travelink_current_user', JSON.stringify(dynamicUser));
-                        if (typeof toastr !== 'undefined') toastr.success('¡Bienvenido ' + dynamicUser.username + '!');
-                        setTimeout(() => { window.location.href = '../index.html'; }, 1000);
+                        if (typeof toastr !== 'undefined') toastr.error(data.message || 'No se pudo iniciar sesión. Verifica tus credenciales.', 'Inicio de sesión');
+                        else alert(data.message || 'No se pudo iniciar sesión. Verifica tus credenciales.');
                     }
                 })
                 .catch(err => {
-                    const dynamicUser = {
-                        id: Date.now(),
-                        username: usuarioCorreo.includes('@') ? usuarioCorreo.split('@')[0] : usuarioCorreo,
-                        email: usuarioCorreo.includes('@') ? usuarioCorreo : usuarioCorreo + '@gmail.com',
-                        nombre: usuarioCorreo,
-                        apellidos: '',
-                        telefono: '',
-                        idRol: 2
-                    };
-                    localStorage.setItem('travelink_current_user', JSON.stringify(dynamicUser));
-                    window.location.href = '../index.html';
+                    console.error('Error conectando con el servidor de autenticación:', err);
+                    if (typeof toastr !== 'undefined') toastr.error('No se pudo conectar con el servidor. Comprueba que Java esté ejecutándose.', 'Error de conexión');
+                    else alert('No se pudo conectar con el servidor. Comprueba que Java esté ejecutándose.');
                 });
         });
     </script>

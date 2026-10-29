@@ -34,7 +34,10 @@ import com.travelink.repositorio.ReservaRepositorio;
             }
             StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
             boolean primero = true;
-            String sql = "SELECT t.idTour AS id, t.nombre, a.razonSocial AS agencia, d.nombre AS destino, t.duracion, t.precioAdulto AS precio, t.calificacionPromedio AS calificacion, t.estado, COALESCE(ti.url, '../../img/lima.jpg') AS imagen FROM Tour t JOIN Agencia a ON t.idAgencia = a.idAgencia JOIN Destino d ON t.idDestino = d.idDestino LEFT JOIN TourImagen ti ON t.idTour = ti.idTour AND ti.esPrincipal = 1 ORDER BY t.idTour DESC";
+            String sql = "SELECT t.idTour AS id, t.nombre, t.descripcion, a.razonSocial AS agencia, d.nombre AS destino, t.duracion, " +
+                         "t.precioAdulto AS precio, t.precioAdulto, t.precioNino, t.precioBebe, t.calificacionPromedio AS calificacion, t.estado, " +
+                         "COALESCE(ti.url, '../../img/lima.jpg') AS imagen FROM Tour t JOIN Agencia a ON t.idAgencia = a.idAgencia " +
+                         "JOIN Destino d ON t.idDestino = d.idDestino LEFT JOIN TourImagen ti ON t.idTour = ti.idTour AND ti.esPrincipal = 1 ORDER BY t.idTour DESC";
             try (Connection con = ConexionDB.getConnection();
                  PreparedStatement ps = con.prepareStatement(sql);
                  ResultSet rs = ps.executeQuery()) {
@@ -44,6 +47,10 @@ import com.travelink.repositorio.ReservaRepositorio;
                     json.append("{")
                         .append("\"id\":").append(rs.getInt("id")).append(",")
                         .append("\"nombre\":\"").append(JavaApiServer.jsonEscape(rs.getString("nombre"))).append("\",")
+                        .append("\"descripcion\":\"").append(JavaApiServer.jsonEscape(rs.getString("descripcion"))).append("\",")
+                        .append("\"precioAdulto\":").append(rs.getBigDecimal("precioAdulto")).append(",")
+                        .append("\"precioNino\":").append(rs.getBigDecimal("precioNino")).append(",")
+                        .append("\"precioBebe\":").append(rs.getBigDecimal("precioBebe")).append(",")
                         .append("\"agencia\":\"").append(JavaApiServer.jsonEscape(rs.getString("agencia"))).append("\",")
                         .append("\"destino\":\"").append(JavaApiServer.jsonEscape(rs.getString("destino"))).append("\",")
                         .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(rs.getString("duracion"))).append("\",")

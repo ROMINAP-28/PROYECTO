@@ -59,8 +59,22 @@ import com.travelink.repositorio.ReservaRepositorio;
                             .append("\"total\":").append(r.get("total")).append(",")
                             .append("\"metodoPago\":\"").append(r.get("metodoPago")).append("\",")
                             .append("\"imagen\":\"").append(r.get("imagen")).append("\",")
-                            .append("\"fechaRegistro\":\"").append(r.get("fechaRegistro")).append("\"")
-                            .append("}");
+                            .append("\"fechaRegistro\":\"").append(JavaApiServer.jsonEscape(String.valueOf(r.get("fechaRegistro")))).append("\",")
+                            .append("\"pasajeros\":[");
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> pasajeros = (List<Map<String, Object>>) r.get("pasajeros");
+                    if (pasajeros != null) {
+                        for (int j = 0; j < pasajeros.size(); j++) {
+                            Map<String, Object> p = pasajeros.get(j);
+                            if (j > 0) json.append(",");
+                            json.append("{\"nombre\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("nombre", "")))).append("\",")
+                                .append("\"apellidos\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("apellidos", "")))).append("\",")
+                                .append("\"documento\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("documento", "")))).append("\",")
+                                .append("\"titular\":").append(Boolean.TRUE.equals(p.get("titular")))
+                                .append("}");
+                        }
+                    }
+                    json.append("]}");
 
                     if (i < lista.size() - 1) json.append(",");
                 }

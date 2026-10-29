@@ -40,7 +40,41 @@ public class ReservaPersistencia {
                     }
                 }
             }
-            if (idUsuario <= 0) idUsuario = 1;
+            if (idUsuario <= 0) {
+                response.put("status", "error");
+                response.put("message", "No se pudo identificar al usuario autenticado. Cierra sesión e inicia sesión nuevamente con tu cuenta real.");
+                return response;
+            }
+
+            // Obtener el tour y la agencia desde la fecha seleccionada en la base de datos.
+            int idTourFechaParaReserva = 0;
+            int idTourSolicitadoParaReserva = 0;
+            try { idTourFechaParaReserva = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTourFecha", "0"))); } catch (Exception ignored) {}
+            try { idTourSolicitadoParaReserva = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTour", "0"))); } catch (Exception ignored) {}
+            if (idTourFechaParaReserva <= 0) {
+                response.put("status", "error");
+                response.put("message", "Selecciona una fecha disponible antes de confirmar la reserva.");
+                return response;
+            }
+            String nombreTourSeleccionado = null;
+            int idAgenciaSeleccionada = 0;
+            int idTourValidado = 0;
+            String sqlTourSeleccionado = "SELECT t.idTour, t.nombre, t.idAgencia FROM TourFecha tf INNER JOIN Tour t ON t.idTour = tf.idTour WHERE tf.idTourFecha = ? AND tf.fecha >= CURDATE() AND UPPER(tf.estado) = 'DISPONIBLE' FOR UPDATE";
+            try (PreparedStatement psT = con.prepareStatement(sqlTourSeleccionado)) {
+                psT.setInt(1, idTourFechaParaReserva);
+                try (ResultSet rsT = psT.executeQuery()) {
+                    if (rsT.next()) {
+                        idTourValidado = rsT.getInt("idTour");
+                        nombreTourSeleccionado = rsT.getString("nombre");
+                        idAgenciaSeleccionada = rsT.getInt("idAgencia");
+                    }
+                }
+            }
+            if (idTourValidado <= 0 || (idTourSolicitadoParaReserva > 0 && idTourSolicitadoParaReserva != idTourValidado)) {
+                response.put("status", "error");
+                response.put("message", "El tour o la fecha elegida no está disponible o no coincide con la experiencia seleccionada.");
+                return response;
+            }
 
             String codigoReserva = String.valueOf(reqData.getOrDefault("codigo", "TRK-" + (100 + (int)(Math.random() * 900))));
             String fechaInicioStr = String.valueOf(reqData.getOrDefault("fechaInicio", reqData.getOrDefault("fechaServicio", new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()))));
@@ -53,14 +87,16 @@ public class ReservaPersistencia {
 
             // 2. Insertar Reserva
             int idReservaGenerada = 0;
-            String sqlReserva = "INSERT INTO Reserva (idUsuario, codigoReserva, fechaRegistro, fechaInicio, fechaFin, estado, total) VALUES (?, ?, NOW(), ?, ?, ?, ?)";
+            String sqlReserva = "INSERT INTO Reserva (idUsuario, idAgencia, nombreTour, codigoReserva, fechaRegistro, fechaInicio, fechaFin, estado, total) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?)";
             try (PreparedStatement psR = con.prepareStatement(sqlReserva, Statement.RETURN_GENERATED_KEYS)) {
                 psR.setInt(1, idUsuario);
-                psR.setString(2, codigoReserva);
-                psR.setString(3, fechaInicioStr);
-                psR.setString(4, fechaFinStr);
-                psR.setString(5, estadoReserva);
-                psR.setBigDecimal(6, BigDecimal.valueOf(total));
+                psR.setInt(2, idAgenciaSeleccionada);
+                psR.setString(3, nombreTourSeleccionado);
+                psR.setString(4, codigoReserva);
+                psR.setString(5, fechaInicioStr);
+                psR.setString(6, fechaFinStr);
+                psR.setString(7, estadoReserva);
+                psR.setBigDecimal(8, BigDecimal.valueOf(total));
                 psR.executeUpdate();
 
                 try (ResultSet rsR = psR.getGeneratedKeys()) {
@@ -68,69 +104,64 @@ public class ReservaPersistencia {
                 }
             }
 
-            // 3. Insertar DetalleReserva & Validar/Deducir Disponibilidad
-            int idTourFecha = 1; 
-            try { idTourFecha = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTourFecha", reqData.getOrDefault("idPaquete", "1")))); } catch (Exception ignored) {}
-            int cantAdultos = 2;
-            int cantNinos = 0;
-            int cantBebes = 0;
-            try { cantAdultos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantAdultos", reqData.getOrDefault("adultos", "2")))); } catch (Exception ignored) {}
-            try { cantNinos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantNinos", reqData.getOrDefault("ninos", "0")))); } catch (Exception ignored) {}
-            try { cantBebes = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantBebes", reqData.getOrDefault("bebes", "0")))); } catch (Exception ignored) {}
-            int totalPasajeros = cantAdultos + cantNinos;
-            if (totalPasajeros <= 0) totalPasajeros = 1;
-
-            // Validar cupos en TourFecha o PaqueteTuristico
-            int disponActual = 30;
-            boolean existeFecha = false;
-            String sqlCheckFecha = "SELECT cupoDisponible FROM TourFecha WHERE idTourFecha = ?";
+            // 3. Validar la fecha real seleccionada y reservar cupos de forma transaccional.
+            int idTourFecha = 0;
+            int idTourSolicitado = 0;
+            try { idTourFecha = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTourFecha", "0"))); } catch (Exception ignored) {}
+            try { idTourSolicitado = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTour", "0"))); } catch (Exception ignored) {}
+            if (idTourFecha <= 0) {
+                con.rollback();
+                response.put("status", "error");
+                response.put("message", "Selecciona una fecha disponible para la experiencia antes de confirmar.");
+                return response;
+            }
+            int cantAdultos = 1, cantNinos = 0, cantBebes = 0;
+            try { cantAdultos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantAdultos", "1"))); } catch (Exception ignored) {}
+            try { cantNinos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantNinos", "0"))); } catch (Exception ignored) {}
+            try { cantBebes = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantBebes", "0"))); } catch (Exception ignored) {}
+            int totalPasajeros = cantAdultos + cantNinos + cantBebes;
+            if (cantAdultos < 1 || cantNinos < 0 || cantBebes < 0 || totalPasajeros < 1) {
+                con.rollback();
+                response.put("status", "error");
+                response.put("message", "La cantidad de pasajeros no es válida.");
+                return response;
+            }
+            int disponActual = 0;
+            int idTourFechaReal = 0;
+            String sqlCheckFecha = "SELECT idTour, cupoDisponible FROM TourFecha WHERE idTourFecha = ? AND fecha >= CURDATE() AND UPPER(estado) = 'DISPONIBLE' FOR UPDATE";
             try (PreparedStatement psCF = con.prepareStatement(sqlCheckFecha)) {
                 psCF.setInt(1, idTourFecha);
                 try (ResultSet rsCF = psCF.executeQuery()) {
                     if (rsCF.next()) {
+                        idTourFechaReal = rsCF.getInt("idTour");
                         disponActual = rsCF.getInt("cupoDisponible");
-                        existeFecha = true;
                     }
                 }
             }
-
-            if (existeFecha && disponActual < totalPasajeros) {
+            if (idTourFechaReal <= 0 || (idTourSolicitado > 0 && idTourSolicitado != idTourFechaReal)) {
                 con.rollback();
                 response.put("status", "error");
-                response.put("message", disponActual == 0 ? "El paquete seleccionado está AGOTADO." : "Solo quedan " + disponActual + " espacios disponibles.");
+                response.put("message", "La fecha seleccionada ya no está disponible o no corresponde a esta experiencia. Regresa al detalle y selecciona otra fecha.");
                 return response;
             }
-
-            // Deducir disponibilidad
-            if (existeFecha) {
-                int nuevoCupo = Math.max(0, disponActual - totalPasajeros);
-                String nuevoEstado = nuevoCupo == 0 ? "AGOTADO" : "DISPONIBLE";
-                String sqlUpF = "UPDATE TourFecha SET cupoDisponible = ?, estado = ? WHERE idTourFecha = ?";
-                try (PreparedStatement psUF = con.prepareStatement(sqlUpF)) {
-                    psUF.setInt(1, nuevoCupo);
-                    psUF.setString(2, nuevoEstado);
-                    psUF.setInt(3, idTourFecha);
-                    psUF.executeUpdate();
-                }
+            if (disponActual < totalPasajeros) {
+                con.rollback();
+                response.put("status", "error");
+                response.put("message", "Solo quedan " + disponActual + " cupos disponibles para la fecha seleccionada.");
+                return response;
             }
-
-            // Ensure DB schema supports idPaquete (HACK for missing schema update)
-            try (Statement st = con.createStatement()) {
-                try { st.execute("ALTER TABLE DetalleReserva DROP FOREIGN KEY fk_detalle_tourfecha"); } catch(Exception e) {}
-                try { st.execute("ALTER TABLE DetalleReserva MODIFY idTourFecha INT NULL"); } catch(Exception e) {}
-                try { st.execute("ALTER TABLE DetalleReserva ADD idPaquete INT NULL"); } catch(Exception e) {}
-                try { st.execute("ALTER TABLE DetalleReserva ADD CONSTRAINT fk_detalle_tourfecha FOREIGN KEY (idTourFecha) REFERENCES TourFecha(idTourFecha) ON DELETE RESTRICT ON UPDATE CASCADE"); } catch(Exception e) {}
-            } catch(Exception e) {}
-
-            String sqlDetalle;
-            if (existeFecha) {
-                sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idTourFecha, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
-            } else {
-                sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idPaquete, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
+            String sqlUpF = "UPDATE TourFecha SET cupoDisponible = ?, estado = ? WHERE idTourFecha = ?";
+            try (PreparedStatement psUF = con.prepareStatement(sqlUpF)) {
+                int nuevoCupo = disponActual - totalPasajeros;
+                psUF.setInt(1, nuevoCupo);
+                psUF.setString(2, nuevoCupo == 0 ? "AGOTADO" : "DISPONIBLE");
+                psUF.setInt(3, idTourFecha);
+                psUF.executeUpdate();
             }
+            String sqlDetalle = "INSERT INTO DetalleReserva (idReserva, idTourFecha, cantAdultos, cantNinos, cantBebes, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement psD = con.prepareStatement(sqlDetalle)) {
                 psD.setInt(1, idReservaGenerada);
-                psD.setInt(2, idTourFecha); // Either idTourFecha or idPaquete
+                psD.setInt(2, idTourFecha);
                 psD.setInt(3, cantAdultos);
                 psD.setInt(4, cantNinos);
                 psD.setInt(5, cantBebes);
@@ -138,19 +169,28 @@ public class ReservaPersistencia {
                 psD.executeUpdate();
             }
 
-            // 4. Insertar Pasajero Titular
+            // 4. Insertar titular y pasajeros adicionales que hayan completado sus datos.
             String sqlPasajero = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidos, esTitular) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement psP = con.prepareStatement(sqlPasajero)) {
-                String nroDoc = String.valueOf(reqData.getOrDefault("dni", reqData.getOrDefault("nroDocumento", "74829103")));
-                String nombreP = String.valueOf(reqData.getOrDefault("nombre", "Ana"));
-                String apellidosP = String.valueOf(reqData.getOrDefault("apellidos", "Garcia"));
-
-                psP.setInt(1, idReservaGenerada);
-                psP.setString(2, nroDoc);
-                psP.setString(3, nombreP);
-                psP.setString(4, apellidosP);
-                psP.setBoolean(5, true);
+                String nroDoc = String.valueOf(reqData.getOrDefault("dni", reqData.getOrDefault("nroDocumento", ""))).trim();
+                String nombreP = String.valueOf(reqData.getOrDefault("nombre", "")).trim();
+                String apellidosP = String.valueOf(reqData.getOrDefault("apellidos", "")).trim();
+                if (nombreP.isEmpty() || apellidosP.isEmpty() || nroDoc.isEmpty()) {
+                    throw new SQLException("Completa nombre, apellidos y documento del titular.");
+                }
+                psP.setInt(1, idReservaGenerada); psP.setString(2, nroDoc); psP.setString(3, nombreP); psP.setString(4, apellidosP); psP.setBoolean(5, true);
                 psP.executeUpdate();
+            }
+            for (int i = 2; i <= totalPasajeros; i++) {
+                String nombreExtra = String.valueOf(reqData.getOrDefault("pasajero" + i + "Nombre", "")).trim();
+                String apellidosExtra = String.valueOf(reqData.getOrDefault("pasajero" + i + "Apellidos", "")).trim();
+                String documentoExtra = String.valueOf(reqData.getOrDefault("pasajero" + i + "Dni", "")).trim();
+                if (!nombreExtra.isEmpty() && !apellidosExtra.isEmpty() && !documentoExtra.isEmpty()) {
+                    try (PreparedStatement psExtra = con.prepareStatement(sqlPasajero)) {
+                        psExtra.setInt(1, idReservaGenerada); psExtra.setString(2, documentoExtra); psExtra.setString(3, nombreExtra); psExtra.setString(4, apellidosExtra); psExtra.setBoolean(5, false);
+                        psExtra.executeUpdate();
+                    }
+                }
             }
 
             // 5. Insertar MetodoPago
@@ -240,6 +280,13 @@ public class ReservaPersistencia {
                 }
             }
 
+            if (idUsuario <= 0) {
+                response.put("status", "error");
+                response.put("message", "No se encontró una cuenta para el correo de la sesión. Cierra sesión e inicia sesión con tu cuenta registrada.");
+                response.put("reservas", reservas);
+                return response;
+            }
+
             String query = "SELECT r.idReserva, r.codigoReserva, r.fechaRegistro, r.fechaInicio, r.fechaFin, r.estado, r.total, " +
                            "t.nombre AS tourNombre, t.ubicacion AS tourUbicacion, a.nombreComercial AS agenciaNombre, " +
                            "mp.tipoPago, mp.estadoPago, d.cantAdultos, d.cantNinos, d.cantBebes " +
@@ -269,13 +316,14 @@ public class ReservaPersistencia {
 
                         int adultos = rs.getInt("cantAdultos");
                         int ninos = rs.getInt("cantNinos");
-                        int personasTotales = adultos + ninos;
+                        int bebes = rs.getInt("cantBebes");
+                        int personasTotales = adultos + ninos + bebes;
                         if (personasTotales < 1) personasTotales = 1;
 
                         res.put("id", idRes);
                         res.put("codigo", code != null ? code : String.format("TRK-%03d", idRes));
-                        res.put("titulo", rs.getString("tourNombre") != null ? rs.getString("tourNombre") : "Machu Picchu Clásico");
-                        res.put("ubicacion", rs.getString("tourUbicacion") != null ? rs.getString("tourUbicacion") : "Cusco, Perú");
+                        res.put("titulo", rs.getString("tourNombre") != null ? rs.getString("tourNombre") : "Experiencia sin detalle");
+                        res.put("ubicacion", rs.getString("tourUbicacion") != null ? rs.getString("tourUbicacion") : "Perú");
                         res.put("fechas", fechaFmt);
                         res.put("personas", personasTotales + (personasTotales == 1 ? " persona" : " personas"));
                         res.put("agencia", "Agencia: " + (rs.getString("agenciaNombre") != null ? rs.getString("agenciaNombre") : "Andes Tours"));
@@ -286,6 +334,22 @@ public class ReservaPersistencia {
                         Timestamp fReg = rs.getTimestamp("fechaRegistro");
                         res.put("fechaRegistro", fReg != null ? fReg.toString().substring(0, 10) : "");
 
+                        List<Map<String, Object>> pasajeros = new ArrayList<>();
+                        String sqlPasajeros = "SELECT nombre, apellidos, nroDocumento, esTitular FROM Pasajero WHERE idReserva = ? ORDER BY esTitular DESC, idPasajero ASC";
+                        try (PreparedStatement psPas = con.prepareStatement(sqlPasajeros)) {
+                            psPas.setInt(1, idRes);
+                            try (ResultSet rsPas = psPas.executeQuery()) {
+                                while (rsPas.next()) {
+                                    Map<String, Object> pasajero = new HashMap<>();
+                                    pasajero.put("nombre", rsPas.getString("nombre"));
+                                    pasajero.put("apellidos", rsPas.getString("apellidos"));
+                                    pasajero.put("documento", rsPas.getString("nroDocumento"));
+                                    pasajero.put("titular", rsPas.getBoolean("esTitular"));
+                                    pasajeros.add(pasajero);
+                                }
+                            }
+                        }
+                        res.put("pasajeros", pasajeros);
                         reservas.add(res);
                     }
                 }

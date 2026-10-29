@@ -113,20 +113,21 @@
                     </div>
                     <div class="tour-table-body">
                         <div class="tour-info-cell">
-                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" class="tour-cell-img" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
+                            <img id="reservaTourImagen" src="../../img/lima.jpg" alt="Experiencia seleccionada" class="tour-cell-img" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
                             <div class="tour-cell-text">
-                                <h4>Machu Picchu Clásico</h4>
-                                <p>Andes Tours</p>
+                                <h4 id="reservaTourTitulo">Experiencia seleccionada</h4>
+                                <p id="reservaTourAgencia">Agencia autorizada</p>
                             </div>
                         </div>
                         <div>
-                            <span class="cell-val">12 oct. 2025 - 06:00</span>
+                            <span class="cell-val" id="reservaFechaTexto">Fecha seleccionada</span>
+                            <input type="hidden" id="fechaInicio" value="">
                         </div>
                         <div>
                             <span class="cell-val" id="cellPersonasResumen">Adultos: 2<br>Niños: 1<br>Bebés: 0</span>
                         </div>
                         <div class="price-cell">
-                            <strong class="cell-price" id="precioTotalItem">S/ 1,050.00</strong>
+                            <strong class="cell-price" id="precioTotalItem">S/ 0.00</strong>
                             <button type="button" class="btn-eliminar-item" onclick="if(typeof toastr !== 'undefined') toastr.info('Elemento eliminado');">
                                 <i class="fa-regular fa-trash-can"></i> Eliminar
                             </button>
@@ -140,7 +141,7 @@
                             <div class="counter-input-group">
                                 <label>Adultos</label>
                                 <div class="counter-control-wrap">
-                                    <input type="number" id="cantAdultos" value="2" min="1" readonly>
+                                    <input type="number" id="cantAdultos" value="1" min="1" readonly>
                                     <div class="counter-arrows">
                                         <button type="button" onclick="cambiarCantidad('adultos', 1)"><i class="fa-solid fa-chevron-up"></i></button>
                                         <button type="button" onclick="cambiarCantidad('adultos', -1)"><i class="fa-solid fa-chevron-down"></i></button>
@@ -150,7 +151,7 @@
                             <div class="counter-input-group">
                                 <label>Niños (6-12)</label>
                                 <div class="counter-control-wrap">
-                                    <input type="number" id="cantNinos" value="1" min="0" readonly>
+                                    <input type="number" id="cantNinos" value="0" min="0" readonly>
                                     <div class="counter-arrows">
                                         <button type="button" onclick="cambiarCantidad('ninos', 1)"><i class="fa-solid fa-chevron-up"></i></button>
                                         <button type="button" onclick="cambiarCantidad('ninos', -1)"><i class="fa-solid fa-chevron-down"></i></button>
@@ -181,37 +182,9 @@
             <section class="paso" id="paso2">
                 <h2 class="paso-title-ref">Formulario de Reserva - 4.2 Datos</h2>
 
-                <div class="passenger-card-box">
-                    <div class="passenger-card-header">
-                        <h3>Pasajero 1 <span class="badge-titular">(Titular)</span></h3>
-                        <button type="button" class="btn-trash-icon" title="Eliminar pasajero"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>
-                    <div class="passenger-grid-3">
-                        <div class="input-field-block">
-                            <label>Nombres</label>
-                            <input type="text" id="inputNombre" value="Jane">
-                        </div>
-                        <div class="input-field-block">
-                            <label>Apellido paterno</label>
-                            <input type="text" id="inputPaterno" value="Garcia">
-                        </div>
-                        <div class="input-field-block">
-                            <label>Apellido materno</label>
-                            <input type="text" id="inputMaterno" value="López">
-                        </div>
-                        <div class="input-field-block">
-                            <label>DNI</label>
-                            <input type="text" id="inputDNI" value="12345678" maxlength="8">
-                        </div>
-                        <div class="input-field-block">
-                            <label>Teléfono</label>
-                            <input type="tel" id="inputTelefono" value="987654321" maxlength="9">
-                        </div>
-                        
-                    </div>
-                </div>
+                <div id="passengerFormsContainer"></div>
 
-                <button type="button" class="btn-outline-add-person">+ Agregar persona</button>
+                <p style="font-size:13px;color:#64748b;margin:12px 0;">Los formularios de pasajeros se ajustan automáticamente a las cantidades elegidas en el paso anterior.</p>
 
                 <div class="paso-actions-footer">
                     <button type="button" class="btn-step-volver" onclick="mostrarPaso(1)">Volver</button>
@@ -356,10 +329,10 @@
                     <div class="summary-box-card">
                         <h3>Resumen del tour</h3>
                         <div class="summary-tour-header">
-                            <img src="../../img/machupicchu.jpg" alt="Machu Picchu Clásico" onerror="this.onerror=null; this.src='../../img/7colores.jpg'">
+                            <img id="resumenTourImagen" src="../../img/lima.jpg" alt="Experiencia seleccionada" onerror="this.onerror=null; this.src='../../img/lima.jpg'">
                             <div>
-                                <h4>Machu Picchu Clásico</h4>
-                                <p>Andes Tours</p>
+                                <h4 id="resumenTourTitulo">Experiencia seleccionada</h4>
+                                <p id="resumenTourAgencia">Agencia autorizada</p>
                                 <div class="rating-mini"><i class="fa-solid fa-star"></i> <strong>4.8</strong> <span>(120 comentarios)</span></div>
                             </div>
                         </div>
@@ -370,9 +343,9 @@
                                 <span>Precio</span>
                             </div>
                             <div class="summary-row-item bold-vals">
-                                <span>12 oct. 2025 - 08:00</span>
-                                <span id="rTotalPersonas">2</span>
-                                <strong id="rTotalPrecio">S/ 700.00</strong>
+                                <span id="resumenFechaTour">Fecha seleccionada</span>
+                                <span id="rTotalPersonas">1 persona</span>
+                                <strong id="rTotalPrecio">S/ 0.00</strong>
                             </div>
                         </div>
                     </div>
@@ -380,17 +353,8 @@
                     <!-- Card 2: Datos del pasajero -->
                     <div class="summary-box-card">
                         <h3>Datos del pasajero</h3>
-                        <div class="passenger-summary-item">
-                            <h5>Pasajero 1</h5>
-                            <p class="p-name" id="rTitularNombre">Juan Garcia Lopez</p>
-                            <p class="p-info">DNI: <span id="rTitularDNI">12345678</span></p>
-                            <p class="p-info">12/06/1990</p>
-                        </div>
-                        <div class="passenger-summary-item">
-                            <h5>Pasajero 2</h5>
-                            <p class="p-name">Carlos Perez Rodriguez</p>
-                            <p class="p-info">DNI: 87664321</p>
-                            <p class="p-info">25 años</p>
+                        <div id="summaryPassengers">
+                            <p style="color:#64748b;font-size:13px;">Completa los datos de los pasajeros en el paso anterior.</p>
                         </div>
                     </div>
 
@@ -469,7 +433,7 @@
     <script src="../../js/turista/navigation.js"></script>
     <script src="../../js/agencia/user_session.js"></script>
     <script src="../../js/validador.js"></script>
-    <script src="../../js/form_reserva.js"></script>
+    <script src="../../js/agencia/form_reserva.js"></script>
 </body>
 
 </html>

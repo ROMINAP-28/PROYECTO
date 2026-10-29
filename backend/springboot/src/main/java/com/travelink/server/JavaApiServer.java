@@ -51,6 +51,7 @@ public class JavaApiServer {
 
         // Aquí conserva los demás endpoints existentes
         server.createContext("/api/guardar_reserva", new GuardarReservaHandler());
+        server.createContext("/api/tour-fechas", new TourFechasHandler());
         server.createContext("/api/obtener_reservas", new ObtenerReservasHandler());
         server.createContext("/api/cancelar_reserva", new CancelarReservaHandler());
         server.createContext("/api/calificar", new CalificarHandler());

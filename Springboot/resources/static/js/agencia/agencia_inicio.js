@@ -80,14 +80,39 @@
             if (dropPerfil) dropPerfil.style.display = "none";
         });
         const btnLogout = document.getElementById("btnCerrarSesionDropdown");
+
         if (btnLogout) {
             btnLogout.onclick = async (e) => {
                 e.preventDefault();
+                e.stopPropagation();
+
+                console.log("=== CERRANDO SESIÓN ===");
+
                 try {
-                    await fetch(`${API_BASE}/api/auth/logout`, { method: "POST", credentials: "include" });
-                } catch (ignored) {}
+                    const fetchFn = window.apiFetch || fetch;
+
+                    const logoutRes = await fetchFn(`${API_BASE}/api/auth/logout`, {
+                        method: "POST"
+                    });
+
+                    console.log("Logout HTTP:", logoutRes.status);
+
+                    if (!logoutRes.ok) {
+                        console.error("El servidor no pudo cerrar la sesión.");
+                    }
+
+                } catch (error) {
+                    console.error("Error al cerrar sesión:", error);
+                }
+
+                // Limpiar datos locales
                 localStorage.clear();
-                window.location.href = "R_agencia_login.html";
+                sessionStorage.clear();
+
+                console.log("Sesiones locales limpiadas.");
+
+                // Ir al login sin dejar el dashboard en el historial
+                window.location.replace("R_agencia_login.html");
             };
         }
     }

@@ -303,7 +303,19 @@ function renderizarFormularioPasajeros() {
     const cantN = tourInfo.aceptaNinos ? parseInt(document.getElementById('cantNinos')?.value || '0') : 0;
     const cantB = tourInfo.aceptaBebes ? parseInt(document.getElementById('cantBebes')?.value || '0') : 0;
 
-    const user = window.getCurrentUser ? window.getCurrentUser() : null;
+    let user = window.getCurrentUser ? window.getCurrentUser() : null;
+
+    if (!user) {
+        try {
+            const cache = sessionStorage.getItem('travelink_auth_cache');
+
+            if (cache && cache !== 'guest') {
+                user = JSON.parse(cache);
+            }
+        } catch (error) {
+            console.error('Error recuperando usuario del sessionStorage:', error);
+        }
+    }
     let html = '';
 
     // Pasajero 1: Titular

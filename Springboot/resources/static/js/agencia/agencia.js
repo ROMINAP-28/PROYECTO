@@ -80,8 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 nombreComercial,
                 correo,
                 nombreUsuario,
-                contraseña,
-                contrasena: contraseña
+                contrasena,
+                contrasena: contrasena
             });
 
             siguientePaso("R_agencia_empresa.html");
@@ -1647,8 +1647,21 @@ document.addEventListener("keydown", event => {
 // =====================================================
 
 if (btnCerrarsesiónAgencia) {
-    btnCerrarsesiónAgencia.addEventListener("click", () => {
+    btnCerrarsesiónAgencia.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        try {
+            await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+        } catch (error) {
+            console.error("Error cerrando sesión:", error);
+        }
+
+        sessionStorage.clear();
         localStorage.removeItem("agenciasesión");
+
         window.location.href = "R_agencia_login.html";
     });
 }
@@ -1989,89 +2002,212 @@ if (tablaReservas) {
 // ==========================================
 // MÓDULO: INICIO / DASHBOARD
 // ==========================================
+/*
 document.addEventListener("DOMContentLoaded", () => {
     // Si estamos en inicio.html (donde existen estos id)
     if (document.getElementById("totalServicios")) {
         cargarDashboardAgencia();
     }
-});
+});*/
 
 async function cargarDashboardAgencia() {
-    // Recuperar agencia de la sesión (id 1 por defecto para pruebas si no hay)
-    const sesión = JSON.parse(localStorage.getItem("agenciasesión")) || { idAgencia: 1, nombreComercial: "ANDES TOURS" };
-    
-    // Saludar
-    const bienvenida = document.getElementById("bienvenidaAgencia");
-    if(bienvenida) bienvenida.textContent = sesión.nombreComercial;
-
-    const nombre = document.getElementById("nombreAgenciaTop");
-    if(nombre) nombre.textContent = sesión.nombreComercial;
-
     try {
-        const res = await fetch(`/api/agencia/dashboard?idAgencia=${sesión.idAgencia}`);
-        const data = await res.json();
-        if (data.status === "success") {
-            // Indicadores
-            document.getElementById("totalServicios").textContent = data.indicadores.serviciosActivos;
-            document.getElementById("totalReservas").textContent = data.indicadores.reservasMes;
-            document.getElementById("totalViajeros").textContent = data.indicadores.viajeros;
-            document.getElementById("totalIngresos").textContent = `S/ ${data.indicadores.ingresos.toFixed(2)}`;
+        // =====================================================
+        // OBTENER LA AGENCIA DE LA SESIÓN REAL
+        // =====================================================
+        const meRes = await fetch("/api/auth/me", {
+            credentials: "include"
+        });
 
-            // Reservas Recientes
-            const tbodyReservas = document.getElementById("tablaReservas");
-            if (tbodyReservas) {
-                tbodyReservas.innerHTML = "";
-                if (data.reservasRecientes.length === 0) {
-                    tbodyReservas.innerHTML = `<tr><td colspan="8" class="empty-table">No hay reservas recientes.</td></tr>`;
-                } else {
-                    data.reservasRecientes.forEach(r => {
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
-                            <td>${r.codigo}</td>
-                            <td>${r.cliente}</td>
-                            <td>${r.servicio}</td>
-                            <td>${r.fecha}</td>
-                            <td>${r.personas}</td>
-                            <td>S/ ${r.total.toFixed(2)}</td>
-                            <td><span class="status-badge ${r.estado.toLowerCase()}">${r.estado}</span></td>
-                            <td>
-                                <button type="button" onclick="verDetallesReserva('${r.codigo}', '${r.cliente}', '${r.servicio}', '${r.fecha}', '${r.personas}', '${r.total.toFixed(2)}', '${r.estado}')" class="btn-table" style="background:#2563eb; color:white; padding:5px 10px; border-radius:4px; border:none; cursor:pointer;">Ver detalles</button>
-                            </td>
-                        `;
-                        tbodyReservas.appendChild(tr);
-                    });
-                }
-            }
-
-            // Próximas Salidas
-            const listaDisp = document.getElementById("listaDisponibilidad");
-            if (listaDisp) {
-                listaDisp.innerHTML = "";
-                if (data.proximasSalidas.length === 0) {
-                    listaDisp.innerHTML = `<div class="empty-state"><p>No hay próximas salidas.</p></div>`;
-                } else {
-                    data.proximasSalidas.forEach(s => {
-                        const div = document.createElement("div");
-                        div.className = "upcoming-item"; // Usando clase genérica
-                        div.innerHTML = `
-                            <div style="display:flex; justify-content:space-between; padding: 10px; border-bottom: 1px solid #eee;">
-                                <div><strong>${s.servicio}</strong><br><small>${s.fecha}</small></div>
-                                <div><span style="color: #2563eb; font-weight:600;">Cupos libres: ${s.cupoLibre}</span></div>
-                            </div>
-                        `;
-                        listaDisp.appendChild(div);
-                    });
-                }
-            }
-
-            // Finanzas
-            document.getElementById("pagosRecibidos").textContent = `S/ ${data.finanzas.pagosRecibidos.toFixed(2)}`;
-            document.getElementById("comisiones").textContent = `S/ ${data.finanzas.comisiones.toFixed(2)}`;
-            document.getElementById("liquidacionesPendientes").textContent = `S/ ${data.finanzas.liquidacionesPendientes.toFixed(2)}`;
-            document.getElementById("montoNeto").textContent = `S/ ${data.finanzas.montoNeto.toFixed(2)}`;
+        if (!meRes.ok) {
+            throw new Error("No se pudo obtener la sesión actual.");
         }
+
+        const usuario = await meRes.json();
+
+        if (!usuario.idAgencia) {
+            throw new Error("La sesión no tiene una agencia asociada.");
+        }
+
+        const idAgencia = Number(usuario.idAgencia);
+
+        // El nombre mostrado corresponde al usuario/titular
+        // autenticado, no a una agencia fija o almacenada.
+        const nombreUsuario =
+            usuario.nombre ||
+            usuario.correo ||
+            "Agencia";
+
+        // Saludo
+        const bienvenida = document.getElementById("bienvenidaAgencia");
+        if (bienvenida) {
+            bienvenida.textContent = nombreUsuario;
+        }
+
+        const nombre = document.getElementById("nombreAgenciaTop");
+        if (nombre) {
+            nombre.textContent = nombreUsuario;
+        }
+
+        // =====================================================
+        // OBTENER LOS DATOS DEL DASHBOARD DE ESA AGENCIA
+        // =====================================================
+        const res = await fetch(
+            `/api/agencia/dashboard?idAgencia=${idAgencia}`,
+            {
+                credentials: "include"
+            }
+        );
+
+        if (!res.ok) {
+            throw new Error("HTTP " + res.status);
+        }
+
+        const data = await res.json();
+
+        if (data.status !== "success") {
+            throw new Error(data.message || "Error al obtener datos del dashboard.");
+        }
+
+        // =====================================================
+        // INDICADORES
+        // =====================================================
+        document.getElementById("totalServicios").textContent =
+            data.indicadores.serviciosActivos;
+
+        document.getElementById("totalReservas").textContent =
+            data.indicadores.reservasMes;
+
+        document.getElementById("totalViajeros").textContent =
+            data.indicadores.viajeros;
+
+        document.getElementById("totalIngresos").textContent =
+            `S/ ${Number(data.indicadores.ingresos || 0).toFixed(2)}`;
+
+        // =====================================================
+        // RESERVAS RECIENTES
+        // =====================================================
+        const tbodyReservas = document.getElementById("tablaReservas");
+
+        if (tbodyReservas) {
+            tbodyReservas.innerHTML = "";
+
+            if (!data.reservasRecientes || data.reservasRecientes.length === 0) {
+
+                tbodyReservas.innerHTML =
+                    `<tr>
+                        <td colspan="8" class="empty-table">
+                            No hay reservas recientes.
+                        </td>
+                    </tr>`;
+
+            } else {
+
+                data.reservasRecientes.forEach(r => {
+
+                    const tr = document.createElement("tr");
+
+                    tr.innerHTML = `
+                        <td>${r.codigo}</td>
+                        <td>${r.cliente}</td>
+                        <td>${r.servicio}</td>
+                        <td>${r.fecha}</td>
+                        <td>${r.personas}</td>
+                        <td>S/ ${Number(r.total || 0).toFixed(2)}</td>
+                        <td>
+                            <span class="status-badge ${String(r.estado || "").toLowerCase()}">
+                                ${r.estado}
+                            </span>
+                        </td>
+                        <td>
+                            <button
+                                type="button"
+                                onclick="verDetallesReserva(
+                                    '${r.codigo}',
+                                    '${r.cliente}',
+                                    '${r.servicio}',
+                                    '${r.fecha}',
+                                    '${r.personas}',
+                                    '${Number(r.total || 0).toFixed(2)}',
+                                    '${r.estado}'
+                                )"
+                                class="btn-table"
+                                style="background:#2563eb; color:white; padding:5px 10px; border-radius:4px; border:none; cursor:pointer;"
+                            >
+                                Ver detalles
+                            </button>
+                        </td>
+                    `;
+
+                    tbodyReservas.appendChild(tr);
+                });
+            }
+        }
+
+        // =====================================================
+        // PRÓXIMAS SALIDAS
+        // =====================================================
+        const listaDisp = document.getElementById("listaDisponibilidad");
+
+        if (listaDisp) {
+
+            listaDisp.innerHTML = "";
+
+            if (!data.proximasSalidas || data.proximasSalidas.length === 0) {
+
+                listaDisp.innerHTML =
+                    `<div class="empty-state">
+                        <p>No hay próximas salidas.</p>
+                    </div>`;
+
+            } else {
+
+                data.proximasSalidas.forEach(s => {
+
+                    const div = document.createElement("div");
+
+                    div.className = "upcoming-item";
+
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
+                            <div>
+                                <strong>${s.servicio}</strong>
+                                <br>
+                                <small>${s.fecha}</small>
+                            </div>
+
+                            <div>
+                                <span style="color:#2563eb; font-weight:600;">
+                                    Cupos libres: ${s.cupoDisponible ?? s.cupoLibre ?? 0}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+
+                    listaDisp.appendChild(div);
+                });
+            }
+        }
+
+        // =====================================================
+        // FINANZAS
+        // =====================================================
+        document.getElementById("pagosRecibidos").textContent =
+            `S/ ${Number(data.finanzas.pagosRecibidos || 0).toFixed(2)}`;
+
+        document.getElementById("comisiones").textContent =
+            `S/ ${Number(data.finanzas.comisiones || 0).toFixed(2)}`;
+
+        document.getElementById("liquidacionesPendientes").textContent =
+            `S/ ${Number(data.finanzas.liquidacionesPendientes || 0).toFixed(2)}`;
+
+        document.getElementById("montoNeto").textContent =
+            `S/ ${Number(data.finanzas.montoNeto || 0).toFixed(2)}`;
+
     } catch (e) {
+
         console.error("Error cargando dashboard:", e);
+
     }
 }
 

@@ -21,17 +21,33 @@
     const SESSION_CACHE_KEY = 'travelink_auth_cache';
     let currentUser = null;
     let sessionInitialized = false;
-    let sessionReadyResolve;
 
-    // 0. Recuperar sesión previa de la pestaña actual (0ms de latencia, navegación instantánea)
-    try {
-        const cached = sessionStorage.getItem(SESSION_CACHE_KEY);
-        if (cached && cached !== 'guest') {
-            currentUser = JSON.parse(cached);
+    function getCurrentUser() {
+        // Si ya está cargado en memoria
+        if (currentUser) {
+            return currentUser;
         }
-    } catch (e) {
-        currentUser = null;
+
+        // Si todavía no, recuperar del sessionStorage
+        try {
+            const cache = sessionStorage.getItem('travelink_auth_cache');
+
+            if (cache && cache !== 'guest') {
+                currentUser = JSON.parse(cache);
+                return currentUser;
+            }
+        } catch (error) {
+            console.error('Error recuperando usuario:', error);
+        }
+
+        return null;
     }
+
+    window.getCurrentUser = getCurrentUser;
+
+// No usar el usuario guardado en sessionStorage como identidad inicial.
+// Primero se debe validar la sesión real con /api/auth/me.
+    currentUser = null;
 
     window.sessionReadyPromise = new Promise(resolve => {
         sessionReadyResolve = resolve;
@@ -268,81 +284,138 @@
 
         try {
             const fetchFn = window.apiFetch || fetch;
-            const res = await fetchFn('/api/auth/me', { credentials: 'include' });
+
+            const res = await fetchFn('/api/auth/me', {
+                credentials: 'include'
+            });
+
             if (res.ok) {
                 const data = await res.json();
+
                 if (data && data.idUsuario) {
-                    // Obtener primer nombre limpio
+
                     let soloNombre = data.nombres || '';
+
                     if (!soloNombre && data.nombre) {
                         let nom = data.nombre.trim();
                         let ape = (data.apellidos || '').trim();
+
                         if (ape && nom.toLowerCase().endsWith(ape.toLowerCase())) {
-                            soloNombre = nom.substring(0, nom.length - ape.length).trim();
+                            soloNombre = nom
+                                .substring(0, nom.length - ape.length)
+                                .trim();
                         } else {
                             soloNombre = nom.split(' ')[0] || nom;
                         }
                     }
 
-                    let apePaterno = data.apellidoPaterno || (data.user && data.user.apellidoPaterno) || '';
-                    let apeMaterno = data.apellidoMaterno || (data.user && data.user.apellidoMaterno) || '';
+                    let apePaterno =
+                        data.apellidoPaterno ||
+                        (data.user && data.user.apellidoPaterno) ||
+                        '';
+
+                    let apeMaterno =
+                        data.apellidoMaterno ||
+                        (data.user && data.user.apellidoMaterno) ||
+                        '';
+
                     if (!apePaterno && (data.apellidos || (data.user && data.user.apellidos))) {
-                        const fullApe = (data.apellidos || (data.user && data.user.apellidos) || '').trim();
+
+                        const fullApe =
+                            (data.apellidos ||
+                                (data.user && data.user.apellidos) ||
+                                '').trim();
+
                         const parts = fullApe.split(' ');
+
                         apePaterno = parts[0] || '';
+
                         if (parts.length > 1) {
-                            apeMaterno = fullApe.substring(parts[0].length).trim();
+                            apeMaterno =
+                                fullApe.substring(parts[0].length).trim();
                         }
                     }
 
                     currentUser = {
                         id: data.idUsuario,
                         idUsuario: data.idUsuario,
+
                         usuario: data.nombre,
                         nombre: data.nombre,
                         nombres: soloNombre,
+
                         apellidoPaterno: apePaterno,
                         apellidoMaterno: apeMaterno,
+
                         correo: data.correo || '',
                         email: data.correo || '',
-                        rol: data.rol, // ROLE_TURISTA, ROLE_AGENCIA, ROLE_ADMIN
+
+                        rol: data.rol,
+
                         idAgencia: data.idAgencia || null,
-                        nroDocumento: data.nroDocumento || (data.user && data.user.nroDocumento) || '',
-                        telefono: data.telefono || (data.user && data.user.telefono) || '',
-                        apellidos: data.apellidos || (data.user && data.user.apellidos) || ''
+
+                        nroDocumento:
+                            data.nroDocumento ||
+                            (data.user && data.user.nroDocumento) ||
+                            '',
+
+                        telefono:
+                            data.telefono ||
+                            (data.user && data.user.telefono) ||
+                            '',
+
+                        apellidos:
+                            data.apellidos ||
+                            (data.user && data.user.apellidos) ||
+                            ''
                     };
-                    try { sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(currentUser)); } catch (e) {}
+
+                    try {
+                        sessionStorage.setItem(
+                            SESSION_CACHE_KEY,
+                            JSON.stringify(currentUser)
+                        );
+                    } catch (e) {}
+
                 } else {
                     currentUser = null;
-                    try { sessionStorage.setItem(SESSION_CACHE_KEY, 'guest'); } catch (e) {}
+
+                    try {
+                        sessionStorage.setItem(
+                            SESSION_CACHE_KEY,
+                            'guest'
+                        );
+                    } catch (e) {}
                 }
+
             } else {
                 currentUser = null;
-                try { sessionStorage.setItem(SESSION_CACHE_KEY, 'guest'); } catch (e) {}
-            }
-        } catch (err) {
-            // Error de red
-        }
 
-        window.validarRutaProtegida();
-        window.renderUserProfile();
-        if (sessionReadyResolve) sessionReadyResolve(currentUser);
-        window.dispatchEvent(new CustomEvent('sessionReady', { detail: currentUser }));
+                try {
+                    sessionStorage.setItem(
+                        SESSION_CACHE_KEY,
+                        'guest'
+                    );
+                } catch (e) {}
+            }
+
+        } catch (err) {
+            console.error("Error inicializando sesión:", err);
+        }
     }
 
     function renderImmediate() {
-        if (currentUser || sessionStorage.getItem(SESSION_CACHE_KEY) === 'guest') {
-            window.renderUserProfile();
-        }
+        // No mostrar ningún usuario antes de validar la sesión real.
+        // La identidad se cargará mediante /api/auth/me
     }
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            renderImmediate();
             inicializarSesion();
         });
     } else {
-        renderImmediate();
-        inicializarSesion();
+        inicializarSesion();window.getCurrentUser = function () {
+            return currentUser;
+        };
     }
 })();

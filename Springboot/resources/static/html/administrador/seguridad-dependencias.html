@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travelink - Seguridad de dependencias Java</title>
+  <link rel="stylesheet" href="../../css/administrador/admin-common.css">
+  <link rel="stylesheet" href="../../css/administrador/seguridad-dependencias.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+</head>
+<body>
+  <aside class="admin-sidebar">
+    <div class="sidebar-header"><img src="../../img/logoadmin.png" alt="Travelink Logo" class="sidebar-logo-img"></div>
+    <nav class="sidebar-nav">
+      <a href="./dashboard.html" class="nav-item"><i class="ti ti-smart-home"></i><span>Dashboard</span></a>
+      <a href="./usuarios.html" class="nav-item"><i class="ti ti-users"></i><span>Usuarios</span></a>
+      <a href="./tours.html" class="nav-item"><i class="ti ti-compass"></i><span>Tours</span></a>
+      <a href="./agencias.html" class="nav-item"><i class="ti ti-building-store"></i><span>Agencias</span></a>
+      <a href="./reservas.html" class="nav-item"><i class="ti ti-calendar-event"></i><span>Reservas</span></a>
+      <a href="./calidad.html" class="nav-item"><i class="ti ti-shield-check"></i><span>Calidad</span></a>
+      <a href="./comisiones.html" class="nav-item"><i class="ti ti-coins"></i><span>Comisiones</span></a>
+      <a href="./catalogo.html" class="nav-item"><i class="ti ti-map-pin"></i><span>Catálogo</span></a>
+      <a href="./seguridad-dependencias.html" class="nav-item active"><i class="ti ti-lock-check"></i><span>Seguridad Java</span></a>
+    </nav>
+    <div class="sidebar-footer"><a href="./login.html" class="nav-item-logout" id="logoutLink"><i class="ti ti-logout"></i><span>Cerrar sesión</span></a></div>
+  </aside>
+
+  <main class="admin-main security-main">
+    <header class="admin-topbar security-topbar">
+      <div class="topbar-left">
+        <button type="button" class="topbar-menu-toggle" id="menuToggle" aria-label="Mostrar u ocultar menú"><i class="ti ti-menu-2"></i></button>
+        <div><div class="security-eyebrow">SEGURIDAD · APLICACIONES EN JAVA</div><h1>Checklist para auditar dependencias</h1></div>
+      </div>
+      <div class="security-top-actions">
+        <span class="security-user" id="securityUser">Responsable</span>
+        <button type="button" class="btn-secondary" id="printBtn"><i class="ti ti-printer"></i> Imprimir</button>
+      </div>
+    </header>
+
+    <section class="security-intro">
+      <div><h2>Auditoría de dependencias Java</h2><p>Registra la evidencia de revisión de bibliotecas, versiones, vulnerabilidades, licencias y controles de mantenimiento.</p></div>
+      <div class="security-progress"><div class="progress-label"><span>Avance del checklist</span><strong id="progressText">0 de 17 criterios</strong></div><div class="progress-track"><div id="progressBar"></div></div><small id="progressSub">Completa cada criterio marcando Sí o No.</small></div>
+    </section>
+
+    <form id="securityChecklist" autocomplete="off">
+      <section class="security-meta card-panel">
+        <label>Sector a auditar
+          <select id="sectorAuditoria" name="sectorAuditoria" required>
+            <option value="Marketing">Marketing</option>
+            <option value="Ventas">Ventas</option>
+            <option value="Logistica">Logística</option>
+            <option value="Almacen">Almacén</option>
+            <option value="Produccion">Producción</option>
+            <option value="Operaciones">Operaciones</option>
+            <option value="Direccion">Dirección / Gerencia</option>
+          </select>
+        </label>
+        <label>Responsable
+          <input id="responsable" name="responsable" type="text" placeholder="Apellidos y nombres" required>
+        </label>
+        <label>Fecha
+          <input id="fecha" name="fecha" type="date" required>
+        </label>
+        <label>Versión del checklist
+          <input id="version" name="version" type="text" value="01-2025" maxlength="30" required>
+        </label>
+      </section>
+
+      <section class="security-table-wrap card-panel">
+        <div class="table-heading"><div><h2>Criterios de aceptación</h2><p>Marca una sola respuesta por criterio y añade observaciones o evidencia cuando corresponda.</p></div><span class="table-count">8 ítems · 21 criterios</span></div>
+        <div class="table-scroll">
+          <table class="security-table">
+            <thead><tr><th class="id-col">ID</th><th class="item-col">Ítem</th><th>Criterio de aceptación</th><th class="answer-col">Sí cumple</th><th class="answer-col">No cumple</th><th class="obs-col">Observaciones / evidencia</th></tr></thead>
+            <tbody id="criteriaBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="security-footer card-panel">
+        <div><strong id="resultTitle">Auditoría pendiente</strong><p id="resultText">Selecciona Sí o No para cada criterio. Un criterio sin respuesta no se considera evaluado.</p></div>
+        <div class="security-actions">
+          <button type="button" class="btn-secondary" id="resetBtn"><i class="ti ti-restore"></i> Limpiar checklist</button>
+          <button type="button" class="btn-secondary" id="exportBtn"><i class="ti ti-download"></i> Exportar CSV</button>
+          <button type="submit" class="btn-primary"><i class="ti ti-device-floppy"></i> Guardar auditoría</button>
+        </div>
+      </section>
+      <p class="security-note"><i class="ti ti-info-circle"></i> Los datos se guardan en el navegador de este equipo. Este módulo no escanea automáticamente el código ni sustituye una herramienta de análisis de dependencias.</p>
+      <div id="saveMessage" class="save-message" role="status" aria-live="polite"></div>
+    </form>
+  </main>
+  <script src="../../js/administrador/seguridad-dependencias.js"></script>
+</body>
+</html>

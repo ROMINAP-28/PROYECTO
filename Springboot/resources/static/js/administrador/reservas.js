@@ -28,8 +28,10 @@ async function cargarReservas() {
             throw new Error('Error al conectar a API');
         }
     } catch (e) {
-        console.error('Error al cargar reservas de la BD:', e);
+        console.error('No se pudieron cargar las reservas reales desde la API:', e);
         reservasList = [];
+        const tbody = document.getElementById('tablaReservasBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#b91c1c">No se pudieron cargar las reservas de la base de datos. Comprueba que el servidor Java esté activo.</td></tr>';
     }
     actualizarComboAgencias();
     aplicarFiltros();

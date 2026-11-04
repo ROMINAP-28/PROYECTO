@@ -18,7 +18,7 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByPersonaEmail(String email);
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
 
-    @Query("SELECT u FROM Usuario u WHERE LOWER(TRIM(u.persona.email)) = LOWER(TRIM(:login)) OR LOWER(TRIM(u.nombreUsuario)) = LOWER(TRIM(:login))")
+    @Query("SELECT u FROM Usuario u LEFT JOIN u.persona p WHERE LOWER(TRIM(COALESCE(p.email, ''))) = LOWER(TRIM(:login)) OR LOWER(TRIM(u.nombreUsuario)) = LOWER(TRIM(:login))")
     Optional<Usuario> buscarPorCorreoOUsuario(@Param("login") String login);
 
     List<Usuario> findByIdRol(Integer idRol);

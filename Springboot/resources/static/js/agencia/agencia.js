@@ -89,6 +89,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const formEmpresa = document.getElementById("formAgenciaEmpresa");
+    if (formEmpresa && !datosAgencia.nombreUsuario && !datosAgencia.correo) {
+        window.location.replace("R_agencia_registro.html");
+        return;
+    }
     if (formEmpresa) {
         const datos = datosAgencia;
         if (document.getElementById("razonSocial")) document.getElementById("razonSocial").value = (datos.razonSocial || "").toUpperCase();
@@ -285,7 +289,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     const resultado = await respuesta.json();
 
                                     if (resultado.status === "success") {
-                    const ag = resultado.agencia;
+                    localStorage.removeItem('datosAgencia');
+                    if (window.Swal) {
+                        await Swal.fire({
+                            icon: 'success',
+                            title: '¡Solicitud enviada!',
+                            text: resultado.message || 'Tu solicitud de registro como agencia ha sido recibida y está en proceso de revisión por el administrador.',
+                            confirmButtonColor: '#2563eb',
+                            confirmButtonText: 'Ir a Iniciar Sesión'
+                        });
+                        window.location.href = 'R_agencia_login.html';
+                        return;
+                    } else {
+                        mostrarMensaje(mensaje, resultado.message || 'Solicitud enviada con éxito.', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'R_agencia_login.html';
+                        }, 1200);
+                        return;
+                    }
+                    /* Solicitud registrada y enviada a revisión */
                     const sessionData = {
                         idUsuario: ag.idUsuario,
                         usuario: ag.nombreUsuario || ag.usuario || usuario,
@@ -358,6 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({
                         correo: usuario,
                         usuario: usuario,
+                        rolEsperado: 'AGENCIA',
                         clave: contraseña
                     })
                 });
@@ -375,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Guardar datos de la agencia autenticada
                     try {
-                        localStorage.setItem("agenciaSesion", JSON.stringify(resultado));
+                        sessionStorage.setItem("sesion_agencia", JSON.stringify(resultado));
                         localStorage.setItem("agenciasesión", JSON.stringify(resultado));
                         if (resultado.user) {
                             localStorage.setItem("travelink_user", JSON.stringify(resultado.user));
@@ -1443,7 +1466,7 @@ function mostrarReservas(lista) {
 async function confirmarReserva(idReserva) {
     if (!confirm("¿Deseas confirmar esta reserva? El pago asociado pasará a estado COMPLETADO.")) return;
     try {
-        const idAgencia = (typeof ID_AGENCIA_RESERVAS !== "undefined" && ID_AGENCIA_RESERVAS) ? ID_AGENCIA_RESERVAS : 1;
+        const idAgencia = (typeof ID_AGENCIA_RESERVAS !== "undefined" && ID_AGENCIA_RESERVAS) ? ID_AGENCIA_RESERVAS : 0;
         const res = await fetch("/api/agencia/reservas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1465,7 +1488,7 @@ async function confirmarReserva(idReserva) {
 async function cancelarReserva(idReserva) {
     if (!confirm("¿Estás seguro de que deseas cancelar esta reserva? Esta acción cambiará el estado a CANCELADA.")) return;
     try {
-        const idAgencia = (typeof ID_AGENCIA_RESERVAS !== "undefined" && ID_AGENCIA_RESERVAS) ? ID_AGENCIA_RESERVAS : 1;
+        const idAgencia = (typeof ID_AGENCIA_RESERVAS !== "undefined" && ID_AGENCIA_RESERVAS) ? ID_AGENCIA_RESERVAS : 0;
         const res = await fetch("/api/agencia/reservas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1695,7 +1718,7 @@ if (tablaReservas) {
                 localStorage.getItem("agenciasesión") || "{}"
             );
 
-            return Number(sesión.idAgencia) || 1;
+            return Number(sesión.idAgencia) || 0;
         } catch (error) {
             console.error("No se pudo leer la sesión de agencia:", error);
             return 0;
@@ -2024,7 +2047,7 @@ async function cargarDashboardAgencia() {
     } catch (e) {}
 
     const nombreAgencia = (sesión && (sesión.nombreComercial || sesión.nombre || sesión.razonSocial)) ? (sesión.nombreComercial || sesión.nombre || sesión.razonSocial) : "Agencia";
-    const idAgencia = (sesión && sesión.idAgencia) ? sesión.idAgencia : 1;
+    const idAgencia = (sesión && sesión.idAgencia) ? sesión.idAgencia : 0;
     
     // Saludar
     const bienvenida = document.getElementById("bienvenidaAgencia");

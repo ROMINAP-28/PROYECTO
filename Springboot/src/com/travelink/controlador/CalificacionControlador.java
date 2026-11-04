@@ -1,11 +1,4 @@
 package com.travelink.controlador;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import com.travelink.entidades.Usuario;
 
 import com.travelink.entidades.Calificacion;
 import com.travelink.persistencia.CalificacionPersistencia;
@@ -25,18 +18,18 @@ public class CalificacionControlador {
         Map<String, Object> respuesta = new HashMap<>();
         if (calificacion == null || calificacion.getIdReserva() <= 0) {
             respuesta.put("status", "error");
-            respuesta.put("message", "Datos de calificación inválidos");
+            respuesta.put("message", "Datos de calificaciÃ³n invÃ¡lidos");
             return respuesta;
         }
 
         Calificacion guardada = calificacionPersistencia.guardar(calificacion);
         if (guardada != null) {
             respuesta.put("status", "success");
-            respuesta.put("message", "Calificación registrada con éxito");
+            respuesta.put("message", "CalificaciÃ³n registrada con Ã©xito");
             respuesta.put("calificacion", guardada);
         } else {
             respuesta.put("status", "error");
-            respuesta.put("message", "Error al guardar calificación en base de datos");
+            respuesta.put("message", "Error al guardar calificaciÃ³n en base de datos");
         }
         return respuesta;
     }

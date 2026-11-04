@@ -25,13 +25,25 @@ public class DisponibilidadAgenciaHandler implements HttpHandler {
         exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
 
         try {
-            if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+            String method = exchange.getRequestMethod().toUpperCase();
+            if ("GET".equals(method)) {
                 listarDisponibilidad(exchange);
                 return;
             }
 
-            if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            if ("POST".equals(method) || "PUT".equals(method)) {
                 procesarPostDisponibilidad(exchange);
+                return;
+            }
+
+            if ("DELETE".equals(method)) {
+                String body = JavaApiServer.readRequestBody(exchange);
+                Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+                Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+                if (!params.containsKey("idTourFecha") && q.containsKey("idTourFecha")) params.put("idTourFecha", q.get("idTourFecha"));
+                else if (!params.containsKey("idTourFecha") && q.containsKey("id")) params.put("idTourFecha", q.get("id"));
+                params.put("action", "eliminar");
+                ejecutarAccionDisponibilidad(exchange, params);
                 return;
             }
 
@@ -43,11 +55,21 @@ public class DisponibilidadAgenciaHandler implements HttpHandler {
     }
 
     private void listarDisponibilidad(HttpExchange exchange) throws IOException {
-        Map<String, String> qParams = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
-        int idAgencia = 1;
-        try {
-            idAgencia = Integer.parseInt(qParams.getOrDefault("idAgencia", "1"));
-        } catch (Exception ignored) {}
+        int idAgencia = 0;
+        Object sessAgencia = exchange.getAttribute("ID_AGENCIA");
+        if (sessAgencia instanceof Integer) {
+            idAgencia = (Integer) sessAgencia;
+        }
+        if (idAgencia <= 0) {
+            Map<String, String> qParams = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+            try {
+                if (qParams.containsKey("idAgencia")) idAgencia = Integer.parseInt(qParams.get("idAgencia"));
+            } catch (Exception ignored) {}
+        }
+        if (idAgencia <= 0) {
+            enviar(exchange, 401, "{\"status\":\"error\",\"message\":\"Sesión de agencia no identificada\",\"disponibilidades\":[]}");
+            return;
+        }
 
         StringBuilder json = new StringBuilder("{\"status\":\"success\",\"disponibilidades\":[");
         boolean primero = true;
@@ -103,7 +125,10 @@ public class DisponibilidadAgenciaHandler implements HttpHandler {
     private void procesarPostDisponibilidad(HttpExchange exchange) throws IOException {
         String body = JavaApiServer.readRequestBody(exchange);
         Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+        ejecutarAccionDisponibilidad(exchange, params);
+    }
 
+    private void ejecutarAccionDisponibilidad(HttpExchange exchange, Map<String, Object> params) throws IOException {
         String action = String.valueOf(params.getOrDefault("action", "")).trim().toLowerCase();
         int idTourFecha = 0;
         try {

@@ -22,7 +22,60 @@ public class PagosAgenciaHandler implements HttpHandler {
             return;
         }
 
-        if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        String method = exchange.getRequestMethod().toUpperCase();
+
+        if ("PUT".equals(method) || "POST".equals(method)) {
+            String body = JavaApiServer.readRequestBody(exchange);
+            Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            int idPago = 0;
+            try {
+                if (params.containsKey("idPago")) idPago = Integer.parseInt(String.valueOf(params.get("idPago")));
+                else if (params.containsKey("id")) idPago = Integer.parseInt(String.valueOf(params.get("id")));
+            } catch (Exception ignored) {}
+
+            String nuevoEstado = String.valueOf(params.getOrDefault("estado", "COMPLETADO")).trim().toUpperCase();
+            if (idPago > 0) {
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement("UPDATE Pago SET estado = ? WHERE idPago = ?")) {
+                    ps.setString(1, nuevoEstado);
+                    ps.setInt(2, idPago);
+                    ps.executeUpdate();
+                    JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Pago actualizado a " + nuevoEstado + "\"}");
+                    return;
+                } catch (Exception e) {
+                    JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al actualizar pago: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
+                    return;
+                }
+            }
+        }
+
+        if ("DELETE".equals(method)) {
+            String body = JavaApiServer.readRequestBody(exchange);
+            Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+            int idPago = 0;
+            try {
+                if (params.containsKey("idPago")) idPago = Integer.parseInt(String.valueOf(params.get("idPago")));
+                else if (params.containsKey("id")) idPago = Integer.parseInt(String.valueOf(params.get("id")));
+                else if (q.containsKey("idPago")) idPago = Integer.parseInt(q.get("idPago"));
+                else if (q.containsKey("id")) idPago = Integer.parseInt(q.get("id"));
+            } catch (Exception ignored) {}
+
+            if (idPago > 0) {
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement("UPDATE Pago SET estado = 'RECHAZADO' WHERE idPago = ?")) {
+                    ps.setInt(1, idPago);
+                    ps.executeUpdate();
+                    JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Pago marcado como rechazado/cancelado\"}");
+                    return;
+                } catch (Exception e) {
+                    JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al cancelar pago: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
+                    return;
+                }
+            }
+        }
+
+        if (!"GET".equals(method)) {
             JavaApiServer.sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
             return;
         }
@@ -40,7 +93,10 @@ public class PagosAgenciaHandler implements HttpHandler {
                 }
             } catch (Exception ignored) {}
         }
-        if (idAgencia <= 0) idAgencia = 1;
+        if (idAgencia <= 0) {
+            JavaApiServer.sendJsonResponse(exchange, 401, "{\"status\":\"error\",\"message\":\"Sesión de agencia inválida o no autenticada\",\"pagos\":[],\"liquidaciones\":[]}");
+            return;
+        }
 
         StringBuilder json = new StringBuilder("{\"status\":\"success\",");
 

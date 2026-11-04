@@ -72,12 +72,21 @@ public class SecurityConfig {
                     "/api/agencia/registro",
                     "/api/admin/login",
                     "/api/solicitudes/**",
+                    "/api/eventos/**",
                     "/api/guardar_reserva",
                     "/api/turista/reservas",
                     "/api/reservas",
                     "/api/reservas/**",
                     "/api/obtener_reservas",
-                    "/api/cancelar_reserva"
+                    "/api/cancelar_reserva",
+                    "/api/destinos",
+                    "/api/destinos/**",
+                    "/api/tours",
+                    "/api/tours/**",
+                    "/api/calificar",
+                    "/api/calificar/**",
+                    "/api/admin/**",
+                    "/api/agencia/**"
                 )
             )
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
@@ -127,12 +136,15 @@ public class SecurityConfig {
                 // 4. APIs públicas sin sesión (GET de tours, destinos, calificaciones, solicitudes y endpoint de reservas que maneja su propia validación de sesión/identidad)
                 .requestMatchers(
                     "/api/auth/**",
+                    "/api/eventos",
+                    "/api/eventos/**",
                     "/api/login",
                     "/api/registro",
                     "/api/agencia/login",
                     "/api/agencia/registro",
                     "/api/admin/login",
                     "/api/solicitudes/**",
+                    "/api/eventos/**",
                     "/api/guardar_reserva",
                     "/api/turista/reservas",
                     "/api/reservas",
@@ -140,7 +152,7 @@ public class SecurityConfig {
                     "/api/obtener_reservas",
                     "/api/cancelar_reserva"
                 ).permitAll()
-                .requestMatchers(HttpMethod.GET,
+                .requestMatchers(
                     "/api/destinos/**",
                     "/api/destinos",
                     "/api/tours/**",
@@ -200,7 +212,7 @@ public class SecurityConfig {
                 response.sendRedirect("/html/agencia/R_agencia_login.html");
             } else if (uri.startsWith("/html/turista/reservas.html") || uri.startsWith("/html/turista/form_reserva.html")) {
                 String qs = request.getQueryString() != null ? "?" + request.getQueryString() : "";
-                response.sendRedirect("/html/turista/login.html?redirect=" + java.net.URLEncoder.encode(uri + qs, "UTF-8"));
+                response.sendRedirect("/html/turista/login.html?redirect=" + java.net.URLEncoder.encode(uri + qs, java.nio.charset.StandardCharsets.UTF_8));
             } else {
                 response.sendRedirect("/html/turista/login.html");
             }

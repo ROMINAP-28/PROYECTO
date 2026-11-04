@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.travelink.config.ConexionDB;
 import com.travelink.config.SecurityUtils;
+import com.travelink.persistencia.ReservaPersistencia;
 import com.travelink.server.JavaApiServer;
 
 import java.io.IOException;
@@ -20,24 +21,35 @@ public class CancelarReservaHandler implements HttpHandler {
             exchange.sendResponseHeaders(200, -1);
             return;
         }
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+
+        String method = exchange.getRequestMethod().toUpperCase();
+        if ("POST".equals(method) || "DELETE".equals(method) || "PUT".equals(method)) {
             String body = JavaApiServer.readRequestBody(exchange);
             Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            Map<String, String> queryParams = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
 
             int idReserva = 0;
-            try { idReserva = Integer.parseInt(String.valueOf(params.getOrDefault("idReserva", params.getOrDefault("id", "0")))); } catch (Exception ignored) {}
-
-            if (idReserva <= 0) {
-                String cod = String.valueOf(params.getOrDefault("codigo", params.getOrDefault("codigoReserva", ""))).trim();
-                if (!cod.isEmpty()) {
-                    try (Connection con = ConexionDB.getConnection();
-                         PreparedStatement ps = con.prepareStatement("SELECT idReserva FROM Reserva WHERE codigoReserva = ?")) {
-                        ps.setString(1, cod);
-                        try (ResultSet rs = ps.executeQuery()) {
-                            if (rs.next()) idReserva = rs.getInt(1);
-                        }
-                    } catch (Exception ignored) {}
+            try {
+                if (params.containsKey("idReserva")) {
+                    idReserva = Integer.parseInt(String.valueOf(params.get("idReserva")));
+                } else if (params.containsKey("id")) {
+                    idReserva = Integer.parseInt(String.valueOf(params.get("id")));
+                } else if (queryParams.containsKey("idReserva")) {
+                    idReserva = Integer.parseInt(queryParams.get("idReserva"));
+                } else if (queryParams.containsKey("id")) {
+                    idReserva = Integer.parseInt(queryParams.get("id"));
                 }
+            } catch (Exception ignored) {}
+
+            String cod = String.valueOf(params.getOrDefault("codigo", params.getOrDefault("codigoReserva", queryParams.getOrDefault("codigo", "")))).trim();
+            if (idReserva <= 0 && !cod.isEmpty()) {
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement("SELECT idReserva FROM Reserva WHERE codigoReserva = ?")) {
+                    ps.setString(1, cod);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) idReserva = rs.getInt(1);
+                    }
+                } catch (Exception ignored) {}
             }
 
             if (idReserva <= 0) {
@@ -45,7 +57,11 @@ public class CancelarReservaHandler implements HttpHandler {
                 return;
             }
 
-            String motivo = String.valueOf(params.getOrDefault("motivo", "Cancelación solicitada por el usuario"));
+            String motivo = String.valueOf(params.getOrDefault("motivo", queryParams.getOrDefault("motivo", ""))).trim();
+            if (motivo.isEmpty()) {
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El motivo de cancelación es obligatorio\"}");
+                return;
+            }
 
             // Validación estricta de propiedad si hay sesión autenticada
             Integer sessionUserId = null;
@@ -66,12 +82,10 @@ public class CancelarReservaHandler implements HttpHandler {
                 }
             }
 
-            boolean ok = JavaApiServer.reservaRepositorio.cancelarReserva(idReserva, motivo);
-            if (ok) {
-                JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Reserva cancelada correctamente y cupos restaurados\"}");
-            } else {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"No se pudo cancelar la reserva\"}");
-            }
+            ReservaPersistencia.CancelarResultado resultado = JavaApiServer.reservaRepositorio.cancelarReservaConDetalle(idReserva, motivo);
+            String jsonStatus = resultado.success ? "success" : "error";
+            String jsonResp = "{\"status\":\"" + jsonStatus + "\",\"message\":\"" + JavaApiServer.jsonEscape(resultado.message) + "\"}";
+            JavaApiServer.sendJsonResponse(exchange, resultado.statusCode, jsonResp);
         } else {
             JavaApiServer.sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
         }

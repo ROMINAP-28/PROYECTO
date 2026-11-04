@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 <body>
 <main class="registro-container">
@@ -42,8 +43,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="nroDocumento">DNI (8 dí­gitos)</label>
-                        <input type="text" id="nroDocumento" name="nroDocumento" minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe contener exactamente 8 dí­gitos numéricos" required>
+                        <label for="nroDocumento">DNI (8 díÂ­gitos)</label>
+                        <input type="text" id="nroDocumento" name="nroDocumento" minlength="8" maxlength="8" pattern="^[0-9]{8}$" title="El DNI debe contener exactamente 8 díÂ­gitos numéricos" required>
                     </div>
 
                     <div class="form-group">
@@ -57,8 +58,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="telefonoResponsable">Teléfono (7 a 9 dí­gitos)</label>
-                        <input type="tel" id="telefonoResponsable" name="telefonoResponsable" minlength="7" maxlength="9" pattern="^[0-9]{7,9}$" title="El teléfono debe tener entre 7 y 9 dí­gitos numéricos">
+                        <label for="telefonoResponsable">Teléfono (7 a 9 díÂ­gitos)</label>
+                        <input type="tel" id="telefonoResponsable" name="telefonoResponsable" minlength="7" maxlength="9" pattern="^[0-9]{7,9}$" title="El teléfono debe tener entre 7 y 9 díÂ­gitos numéricos">
                     </div>
                 </div>
 
@@ -74,5 +75,6 @@
 </main>
 
 <script src="../../js/agencia/agencia.js"></script>
+        <script src="/js/validador.js" defer></script>
 </body>
 </html>

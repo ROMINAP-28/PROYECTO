@@ -41,11 +41,42 @@ async function cargarDestinosSelect() {
     }
 }
 
+// Cargar agencias dinámicas desde la BD en el select de filtros
+async function cargarAgenciasSelect() {
+    const agenciaSelect = document.getElementById('agencia');
+    if (!agenciaSelect) return;
+
+    try {
+        const resp = await fetch('/api/agencias');
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const agencias = (data && data.status === 'success' && data.data && Array.isArray(data.data.agencias)) ? data.data.agencias : [];
+
+        if (agencias.length > 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idAgenciaUrl = urlParams.get('idAgencia') || '';
+            const agenciaUrl = urlParams.get('agencia') || '';
+
+            const optionsHtml = ['<option value="">Todas las agencias</option>'];
+            agencias.forEach(a => {
+                const nombreAg = a.nombre || a.razonSocial;
+                const idAg = String(a.id);
+                const sel = (idAgenciaUrl === idAg || (agenciaUrl && normalizarTexto(nombreAg) === normalizarTexto(agenciaUrl))) ? 'selected' : '';
+                optionsHtml.push(`<option value="${idAg}" ${sel}>${nombreAg}</option>`);
+            });
+            agenciaSelect.innerHTML = optionsHtml.join('');
+        }
+    } catch (e) {
+        console.warn('No se pudieron cargar agencias dinámicas:', e);
+    }
+}
+
 // Función principal para aplicar filtros
 window.aplicarFiltrosExperiencias = function(e) {
     if (e && e.preventDefault) e.preventDefault();
 
     const destinoRaw = document.getElementById('destino')?.value || '';
+    const agenciaRaw = document.getElementById('agencia')?.value || '';
     const categoriaRaw = document.getElementById('categoria')?.value || '';
     const calificacionRaw = document.getElementById('calificacion')?.value || '';
     const precioMaxRaw = document.getElementById('precio')?.value || '';
@@ -53,6 +84,7 @@ window.aplicarFiltrosExperiencias = function(e) {
     const busquedaRaw = document.getElementById('busqueda-input')?.value || '';
 
     const destino = normalizarTexto(destinoRaw);
+    const normAgencia = normalizarTexto(agenciaRaw);
     const categoria = normalizarTexto(categoriaRaw);
     const calificacionMin = parseFloat(calificacionRaw || '0');
     const precioMax = parseFloat(precioMaxRaw || '0');
@@ -65,6 +97,8 @@ window.aplicarFiltrosExperiencias = function(e) {
 
     cards.forEach(card => {
         const cardDestino = normalizarTexto(card.getAttribute('data-destino') || '');
+        const cardIdAgencia = card.getAttribute('data-id-agencia') || '';
+        const cardAgencia = normalizarTexto(card.getAttribute('data-agencia') || '');
         const cardCategoria = normalizarTexto(card.getAttribute('data-categoria') || '');
         const cardRating = parseFloat(card.getAttribute('data-rating') || '0');
         const cardPrecio = parseFloat(card.getAttribute('data-precio') || '0');
@@ -73,6 +107,7 @@ window.aplicarFiltrosExperiencias = function(e) {
         const cardText = normalizarTexto(card.innerText || '');
 
         let matchesDestino = !destino || cardDestino.includes(destino) || destino.includes(cardDestino) || cardNombre.includes(destino);
+        let matchesAgencia = !agenciaRaw || cardIdAgencia === agenciaRaw || cardAgencia.includes(normAgencia);
         let matchesCategoria = !categoria || cardCategoria.includes(categoria) || categoria.includes(cardCategoria) || cardNombre.includes(categoria);
         let matchesCalificacion = isNaN(calificacionMin) || calificacionMin === 0 || cardRating >= calificacionMin;
         let matchesPrecio = isNaN(precioMax) || precioMax === 0 || cardPrecio <= precioMax;
@@ -92,7 +127,7 @@ window.aplicarFiltrosExperiencias = function(e) {
                               cardNombre.includes(busqueda);
         }
 
-        if (matchesDestino && matchesCategoria && matchesCalificacion && matchesPrecio && matchesDuracion && matchesBusqueda) {
+        if (matchesDestino && matchesAgencia && matchesCategoria && matchesCalificacion && matchesPrecio && matchesDuracion && matchesBusqueda) {
             card.style.display = 'block';
             visibleCount++;
         } else {
@@ -129,6 +164,9 @@ window.limpiarFiltros = function(e) {
     const destino = document.getElementById('destino');
     if (destino) destino.value = '';
 
+    const agencia = document.getElementById('agencia');
+    if (agencia) agencia.value = '';
+
     const categoria = document.getElementById('categoria');
     if (categoria) categoria.value = '';
 
@@ -155,16 +193,17 @@ function extraerDiasDeDuracion(duracionStr) {
     return 1;
 }
 
-window.cargarPaquetesDinamicos = async function() {
+window.cargarPaquetesDinamicos = async function(mostrarSpinner = true) {
     const grid = document.getElementById('experiencias-grid');
     if (!grid) return;
 
-    grid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #64748b;">
-            <i class="fas fa-spinner fa-spin fa-3x" style="color: #196f3d; margin-bottom: 16px;"></i>
-            <h3 style="color: #0b1f38; font-size: 16px; margin: 0 0 6px 0;">Cargando experiencias turísticas...</h3>
-            <p style="margin: 0; font-size: 13px; color: #64748b;">Obteniendo las mejores opciones en tiempo real</p>
+    if (mostrarSpinner && !grid.children.length) {
+        grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: #64748b;">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #196f3d;"></i>
+            <p style="margin-top: 12px; font-weight: 600;">Cargando experiencias disponibles...</p>
         </div>`;
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const idAgenciaParam = parseInt(urlParams.get('idAgencia') || '0');
@@ -224,6 +263,8 @@ window.cargarPaquetesDinamicos = async function() {
             return `
             <div class="card card-exp"
                 data-destino="${destinoStr.toLowerCase()}"
+                data-id-agencia="${p.idAgencia || ''}"
+                data-agencia="${(p.agencia || '').toLowerCase()}"
                 data-categoria="${(p.categoria || 'cultural').toLowerCase()}"
                 data-rating="${ratingVal}"
                 data-precio="${pAdulto}"
@@ -295,6 +336,21 @@ function procesarParametrosURL() {
         }
     }
 
+    const idAgenciaParam = urlParams.get('idAgencia');
+    const agenciaParam = urlParams.get('agencia');
+    if (idAgenciaParam || agenciaParam) {
+        const agenciaSelect = document.getElementById('agencia');
+        if (agenciaSelect) {
+            for (let i = 0; i < agenciaSelect.options.length; i++) {
+                if ((idAgenciaParam && agenciaSelect.options[i].value === String(idAgenciaParam)) ||
+                    (agenciaParam && normalizarTexto(agenciaSelect.options[i].text).includes(normalizarTexto(agenciaParam)))) {
+                    agenciaSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+
     if (categoriaParam) {
         const categoriaSelect = document.getElementById('categoria');
         if (categoriaSelect) {
@@ -317,8 +373,9 @@ function procesarParametrosURL() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([cargarDestinosSelect(), cargarPaquetesDinamicos()]);
+    await Promise.all([cargarDestinosSelect(), cargarAgenciasSelect(), cargarPaquetesDinamicos()]);
     procesarParametrosURL();
+    aplicarFiltrosExperiencias();
 
     const busquedaInput = document.getElementById('busqueda-input');
     if (busquedaInput) {
@@ -337,4 +394,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnLimpiar.addEventListener('click', (e) => limpiarFiltros(e));
     }
 });
+
+window.cargarPaquetes = window.cargarPaquetesDinamicos;
+window.cargarTours = window.cargarPaquetesDinamicos;
 

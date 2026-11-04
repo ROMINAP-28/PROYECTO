@@ -9,6 +9,7 @@ import com.travelink.config.ConexionDB;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,9 +30,9 @@ public class AgenciasAdminHandler implements HttpHandler {
         exchange.getResponseHeaders().set(
                 "Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set(
-                "Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         exchange.getResponseHeaders().set(
-                "Access-Control-Allow-Headers", "Content-Type");
+                "Access-Control-Allow-Headers", "Content-Type, Authorization, X-XSRF-TOKEN");
 
         String metodo = exchange.getRequestMethod();
 
@@ -42,11 +43,47 @@ public class AgenciasAdminHandler implements HttpHandler {
 
         if ("GET".equalsIgnoreCase(metodo)) {
             consultarAgencias(exchange);
-        } else if ("POST".equalsIgnoreCase(metodo)) {
+        } else if ("POST".equalsIgnoreCase(metodo) || "PUT".equalsIgnoreCase(metodo)) {
             procesarSolicitud(exchange);
+        } else if ("DELETE".equalsIgnoreCase(metodo)) {
+            eliminarAgencia(exchange);
         } else {
             responder(exchange, 405,
                     "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+        }
+    }
+
+    private void eliminarAgencia(HttpExchange exchange) throws IOException {
+        String query = exchange.getRequestURI().getQuery();
+        Map<String, String> qParams = JavaApiServer.parseQueryParams(query);
+        String body = JavaApiServer.readRequestBody(exchange);
+        Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+
+        int idAgencia = 0;
+        try {
+            if (params.containsKey("idAgencia")) idAgencia = Integer.parseInt(String.valueOf(params.get("idAgencia")));
+            else if (params.containsKey("id")) idAgencia = Integer.parseInt(String.valueOf(params.get("id")));
+            else if (qParams.containsKey("idAgencia")) idAgencia = Integer.parseInt(qParams.get("idAgencia"));
+            else if (qParams.containsKey("id")) idAgencia = Integer.parseInt(qParams.get("id"));
+        } catch (Exception ignored) {}
+
+        if (idAgencia <= 0) {
+            responder(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de agencia requerido para desactivar\"}");
+            return;
+        }
+
+        try (Connection con = ConexionDB.getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE Agencia SET estado = 'INACTIVO' WHERE idAgencia = ?")) {
+            ps.setInt(1, idAgencia);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                responder(exchange, 200, "{\"status\":\"success\",\"message\":\"Agencia desactivada lógicamente\"}");
+            } else {
+                responder(exchange, 404, "{\"status\":\"error\",\"message\":\"Agencia no encontrada\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responder(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al desactivar agencia\"}");
         }
     }
 
@@ -536,22 +573,8 @@ public class AgenciasAdminHandler implements HttpHandler {
                 .replace("\t", "\\t");
     }
 
-    private void responder(
-            HttpExchange exchange,
-            int codigo,
-            String respuesta
-    ) throws IOException {
-
-        byte[] bytes = respuesta.getBytes(StandardCharsets.UTF_8);
-
-        exchange.getResponseHeaders().set(
-                "Content-Type", "application/json; charset=UTF-8");
-
-        exchange.sendResponseHeaders(codigo, bytes.length);
-
-        try (var salida = exchange.getResponseBody()) {
-            salida.write(bytes);
-        }
+    private void responder(HttpExchange exchange, int codigo, String respuesta) throws IOException {
+        JavaApiServer.sendJsonResponse(exchange, codigo, respuesta);
     }
 
     private static class SolicitudException extends Exception {

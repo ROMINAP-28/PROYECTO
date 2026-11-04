@@ -14,8 +14,11 @@ import java.util.Arrays;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
+
+    public WebMvcConfig(Environment environment) {
+        this.environment = environment;
+    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

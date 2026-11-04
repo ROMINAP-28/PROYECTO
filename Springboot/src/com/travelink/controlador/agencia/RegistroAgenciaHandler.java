@@ -1,10 +1,4 @@
 package com.travelink.controlador.agencia;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import com.travelink.entidades.Usuario;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -20,9 +14,6 @@ import com.travelink.server.JavaApiServer;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import com.travelink.controlador.UsuarioControlador;
-import com.travelink.controlador.CalificacionControlador;
-import com.travelink.repositorio.ReservaRepositorio;
 
     public class RegistroAgenciaHandler implements HttpHandler {
 
@@ -36,7 +27,7 @@ import com.travelink.repositorio.ReservaRepositorio;
 
             if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
                 JavaApiServer.sendJsonResponse(exchange, 405,
-                        "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+                        "{\"status\":\"error\",\"message\":\"MÃ©todo no permitido\"}");
                 return;
             }
 
@@ -51,7 +42,7 @@ import com.travelink.repositorio.ReservaRepositorio;
             String correo = String.valueOf(params.getOrDefault("correo", "")).trim();
             String contrasena = String.valueOf(
                     params.getOrDefault("contrasena",
-                            params.getOrDefault("contraseña",
+                            params.getOrDefault("contraseÃ±a",
                                     params.getOrDefault("password", "")))
             );
             String telefonoResponsable = String.valueOf(params.getOrDefault("telefonoResponsable", "")).trim();
@@ -85,27 +76,27 @@ import com.travelink.repositorio.ReservaRepositorio;
 
             // Validaciones de formato
             if (!ruc.matches("^[0-9]{11}$")) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El RUC debe tener exactamente 11 dígitos numéricos.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El RUC debe tener exactamente 11 dÃ­gitos numÃ©ricos.\"}");
                 return;
             }
 
             if (!nroDocumento.matches("^[0-9]{8}$")) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El DNI debe tener exactamente 8 dígitos numéricos.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El DNI debe tener exactamente 8 dÃ­gitos numÃ©ricos.\"}");
                 return;
             }
 
             if (!telefonoEmpresa.isEmpty() && !telefonoEmpresa.matches("^[0-9]{7,9}$")) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El teléfono de la empresa debe tener entre 7 y 9 dígitos numéricos.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El telÃ©fono de la empresa debe tener entre 7 y 9 dÃ­gitos numÃ©ricos.\"}");
                 return;
             }
 
             if (!telefonoResponsable.isEmpty() && !telefonoResponsable.matches("^[0-9]{7,9}$")) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El teléfono del responsable debe tener entre 7 y 9 dígitos numéricos.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El telÃ©fono del responsable debe tener entre 7 y 9 dÃ­gitos numÃ©ricos.\"}");
                 return;
             }
 
             if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El correo electrónico ingresado no es válido.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El correo electrÃ³nico ingresado no es vÃ¡lido.\"}");
                 return;
             }
 
@@ -156,7 +147,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                     // 2. USUARIO - Rol 2 = Agencia (inicialmente Pendiente hasta aprobacion admin)
                     String sqlUsuario = "INSERT INTO Usuario "
                             + "(idPersona, idRol, nombreUsuario, contrasena, estado, fechaRegistro) "
-                            + "VALUES (?, 2, ?, ?, 'Pendiente', NOW())";
+                            + "VALUES (?, 2, ?, ?, 'ACTIVO', NOW())";
 
                     int idUsuario;
 
@@ -181,7 +172,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                     String sqlAgencia = "INSERT INTO Agencia "
                             + "(idUsuario, razonSocial, nombreComercial, ruc, telefono, email, "
                             + "direccion, descripcion, estado) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')";
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')";
 
                     int idAgencia;
 
@@ -207,7 +198,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                         }
                     }
 
-                    // 4. SOLICITUD DE INCORPORACIÓN
+                    // 4. SOLICITUD DE INCORPORACIÃ“N
                     // 4. SOLICITUD DE AGENCIA PARA REVISION DEL ADMINISTRADOR
                     String documentoRuc = String.valueOf(
                             params.getOrDefault("documentoRuc", "")
@@ -215,7 +206,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                     String sqlSolicitud = "INSERT INTO SolicitudAgencia "
                             + "(idUsuario, razonSocial, ruc, representanteLegal, "
                             + "telefonoContacto, correoContacto, documentoRuc, estado) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendiente')";
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, 'Aceptada')";
 
                     int idSolicitud;
 
@@ -300,7 +291,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                 e.printStackTrace();
 
                 String mensaje = e.getMessage() == null
-                        ? "Error de conexión."
+                        ? "Error de conexiÃ³n."
                         : e.getMessage()
                         .replace("\\", "\\\\")
                         .replace("\"", "\\\"")

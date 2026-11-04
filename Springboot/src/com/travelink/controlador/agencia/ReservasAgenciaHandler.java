@@ -23,12 +23,39 @@ public class ReservasAgenciaHandler implements HttpHandler {
             return;
         }
 
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+        String method = exchange.getRequestMethod().toUpperCase();
+
+        if ("POST".equals(method) || "PUT".equals(method)) {
             procesarPostReserva(exchange);
             return;
         }
 
-        if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        if ("DELETE".equals(method)) {
+            String body = JavaApiServer.readRequestBody(exchange);
+            Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+            int idReserva = 0;
+            try {
+                if (params.containsKey("idReserva")) idReserva = Integer.parseInt(String.valueOf(params.get("idReserva")));
+                else if (params.containsKey("id")) idReserva = Integer.parseInt(String.valueOf(params.get("id")));
+                else if (q.containsKey("idReserva")) idReserva = Integer.parseInt(q.get("idReserva"));
+                else if (q.containsKey("id")) idReserva = Integer.parseInt(q.get("id"));
+            } catch (Exception ignored) {}
+
+            if (idReserva > 0) {
+                boolean ok = JavaApiServer.reservaRepositorio.cancelarReserva(idReserva, "Cancelado por la agencia");
+                if (ok) {
+                    JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Reserva cancelada exitosamente y cupos devueltos\"}");
+                } else {
+                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"No se pudo cancelar la reserva\"}");
+                }
+            } else {
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de reserva inválido\"}");
+            }
+            return;
+        }
+
+        if (!"GET".equals(method)) {
             JavaApiServer.sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
             return;
         }
@@ -46,7 +73,10 @@ public class ReservasAgenciaHandler implements HttpHandler {
                 }
             } catch (Exception ignored) {}
         }
-        if (idAgencia <= 0) idAgencia = 1;
+        if (idAgencia <= 0) {
+            JavaApiServer.sendJsonResponse(exchange, 401, "{\"status\":\"error\",\"message\":\"Sesión de agencia inválida o no autenticada\",\"reservas\":[]}");
+            return;
+        }
 
         String sql = """
         SELECT
@@ -169,8 +199,18 @@ public class ReservasAgenciaHandler implements HttpHandler {
         String action = String.valueOf(params.getOrDefault("action", "")).trim().toLowerCase();
         int idReserva = 0;
         try { idReserva = Integer.parseInt(String.valueOf(params.getOrDefault("idReserva", "0"))); } catch (Exception ignored) {}
-        int idAgencia = 1;
-        try { idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1"))); } catch (Exception ignored) {}
+        int idAgencia = 0;
+        Object sessAgencia = exchange.getAttribute("ID_AGENCIA");
+        if (sessAgencia instanceof Integer) {
+            idAgencia = (Integer) sessAgencia;
+        }
+        if (idAgencia <= 0 && params.containsKey("idAgencia")) {
+            try { idAgencia = Integer.parseInt(String.valueOf(params.get("idAgencia"))); } catch (Exception ignored) {}
+        }
+        if (idAgencia <= 0) {
+            JavaApiServer.sendJsonResponse(exchange, 401, "{\"status\":\"error\",\"message\":\"Sesión de agencia inválida o no autenticada\"}");
+            return;
+        }
 
         if (idReserva <= 0) {
             JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de reserva inválido\"}");

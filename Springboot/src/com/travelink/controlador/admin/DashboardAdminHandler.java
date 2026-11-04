@@ -1,11 +1,4 @@
 package com.travelink.controlador.admin;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import com.travelink.entidades.Usuario;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -20,9 +13,6 @@ import com.travelink.server.JavaApiServer;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import com.travelink.controlador.UsuarioControlador;
-import com.travelink.controlador.CalificacionControlador;
-import com.travelink.repositorio.ReservaRepositorio;
 
     public class DashboardAdminHandler implements HttpHandler {
         @Override
@@ -60,18 +50,18 @@ import com.travelink.repositorio.ReservaRepositorio;
                         SELECT r.idReserva, r.codigoReserva, DATE(r.fechaRegistro) AS fecha,
                                COALESCE(CONCAT(p.nombre, ' ', p.apellidoPaterno), u.nombreUsuario, 'Turista') AS cliente,
                                COALESCE(d.nombre, 'Cusco') AS destino,
-                               COALESCE(r.nombreTour, 'Tour Turístico') AS tour,
+                               COALESCE(r.nombreTour, 'Tour TurÃ­stico') AS tour,
                                COALESCE(a.razonSocial, a.nombreComercial, 'Agencia Travelink') AS agencia,
                                r.total, (r.total * 0.15) AS comision, r.estado
                         FROM Reserva r
                         JOIN Usuario u ON r.idUsuario = u.idUsuario
                         JOIN Persona p ON u.idPersona = p.idPersona
                         LEFT JOIN Agencia a ON r.idAgencia = a.idAgencia
-                        LEFT JOIN DetalleReserva dr ON r.idReserva = dr.idReserva
-                        LEFT JOIN TourFecha tf ON dr.idTourFecha = tf.idTourFecha
-                        LEFT JOIN Tour t ON tf.idTour = t.idTour
+                        LEFT JOIN Tour t ON r.idTour = t.idTour
+
+
                         LEFT JOIN Destino d ON t.idDestino = d.idDestino
-                        ORDER BY r.idReserva DESC
+                        ORDER BY r.idReserva DESC LIMIT 50
                         """;
                     try (PreparedStatement stmt = con.prepareStatement(sqlDetalle);
                          ResultSet rsV = stmt.executeQuery()) {

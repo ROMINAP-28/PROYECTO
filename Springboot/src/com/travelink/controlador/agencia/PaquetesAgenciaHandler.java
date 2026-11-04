@@ -34,7 +34,27 @@ public class PaquetesAgenciaHandler implements HttpHandler {
             return;
         }
 
-        JavaApiServer.sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+        if ("PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+            String body = JavaApiServer.readRequestBody(exchange);
+            Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            guardarPaquete(exchange, params);
+            return;
+        }
+
+        if ("DELETE".equalsIgnoreCase(exchange.getRequestMethod())) {
+            String body = JavaApiServer.readRequestBody(exchange);
+            Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+            if (!params.containsKey("idTour") && q.containsKey("idTour")) {
+                params.put("idTour", q.get("idTour"));
+            } else if (!params.containsKey("idTour") && q.containsKey("id")) {
+                params.put("idTour", q.get("id"));
+            }
+            eliminarPaquete(exchange, params);
+            return;
+        }
+
+        JavaApiServer.sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"M├®todo no permitido\"}");
     }
 
     private void listarPaquetes(HttpExchange exchange) throws IOException {
@@ -139,7 +159,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
                     int totalCalif = rs.getInt("totalCalif");
                     int totalReservas = rs.getInt("totalReservas");
 
-                    // Imagen principal y galería desde TourImagen
+                    // Imagen principal y galer├¡a desde TourImagen
                     String imagenPrincipal = "img/machupicchu.png";
                     StringBuilder galeriaSb = new StringBuilder("[");
                     boolean primImg = true;
@@ -302,7 +322,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
             int pId = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "0")));
             if (pId > 0) return pId;
         } catch (Exception ignored) {}
-        return 1;
+        return 0;
     }
 
     private void cambiarEstado(HttpExchange exchange, Map<String, Object> params, String nuevoEstado) throws IOException {
@@ -313,7 +333,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         int idAgencia = resolverIdAgencia(exchange, params);
 
         if (idTour <= 0) {
-            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de paquete inválido\"}");
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de paquete inv├ílido\"}");
             return;
         }
 
@@ -374,7 +394,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         int idAgencia = resolverIdAgencia(exchange, params);
 
         if (idTour <= 0) {
-            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de tour inválido\"}");
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de tour inv├ílido\"}");
             return;
         }
 
@@ -453,11 +473,11 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         int idAgencia = resolverIdAgencia(exchange, params);
 
         if (idTourFecha <= 0) {
-            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de salida inválido\"}");
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de salida inv├ílido\"}");
             return;
         }
 
-        // Verificar propiedad a través del tour
+        // Verificar propiedad a trav├®s del tour
         try (Connection con = ConexionDB.getConnection()) {
             try (PreparedStatement psCheck = con.prepareStatement(
                     "SELECT t.idAgencia FROM TourFecha tf JOIN Tour t ON tf.idTour = t.idTour WHERE tf.idTourFecha = ?")) {
@@ -494,7 +514,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         int idAgencia = resolverIdAgencia(exchange, params);
 
         if (idTourFecha <= 0) {
-            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de salida inválido\"}");
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de salida inv├ílido\"}");
             return;
         }
 
@@ -552,17 +572,17 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         } catch (Exception ignored) {}
         int idAgencia = resolverIdAgencia(exchange, params);
 
-        // a) Nombre, destino y categoría
+        // a) Nombre, destino y categor├¡a
         String nombre = String.valueOf(params.getOrDefault("nombre", "")).trim();
         int idDestino = 1;
         try { idDestino = Integer.parseInt(String.valueOf(params.getOrDefault("idDestino", "1"))); } catch (Exception ignored) {}
         String categoria = String.valueOf(params.getOrDefault("categoria", "Cultura")).trim();
 
-        // b) Descripción corta y completa
+        // b) Descripci├│n corta y completa
         String descripcionCorta = String.valueOf(params.getOrDefault("descripcionCorta", "")).trim();
         String descripcion = String.valueOf(params.getOrDefault("descripcion", "")).trim();
 
-        // c) Duración (días y horas) e itinerario
+        // c) Duraci├│n (d├¡as y horas) e itinerario
         int dias = 0;
         try { dias = Integer.parseInt(String.valueOf(params.getOrDefault("dias", "0")).trim()); } catch (Exception ignored) {}
         int horas = 0;
@@ -591,7 +611,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         int edadMaxBebe = 2;
         try { edadMaxBebe = Integer.parseInt(String.valueOf(params.getOrDefault("edadMaxBebe", "2")).trim()); } catch (Exception ignored) {}
 
-        // e) Qué incluye / no incluye, condiciones y descuento
+        // e) Qu├® incluye / no incluye, condiciones y descuento
         String queIncluye = String.valueOf(params.getOrDefault("queIncluye", "")).trim();
         String queNoIncluye = String.valueOf(params.getOrDefault("queNoIncluye", "")).trim();
         String condiciones = String.valueOf(params.getOrDefault("condiciones", "")).trim();
@@ -612,7 +632,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
             return;
         }
         if (idDestino <= 0) {
-            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Debes seleccionar un destino válido\"}");
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Debes seleccionar un destino v├ílido\"}");
             return;
         }
         if (precioAdulto.compareTo(BigDecimal.ZERO) <= 0) {
@@ -621,11 +641,11 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         }
         if (aceptaNinos) {
             if (edadMaxNino <= 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"La edad máxima para niños debe ser mayor a 0\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"La edad m├íxima para ni├▒os debe ser mayor a 0\"}");
                 return;
             }
             if (precioNino.compareTo(BigDecimal.ZERO) < 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El precio de niños no puede ser negativo\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El precio de ni├▒os no puede ser negativo\"}");
                 return;
             }
         } else {
@@ -634,11 +654,11 @@ public class PaquetesAgenciaHandler implements HttpHandler {
 
         if (aceptaBebes) {
             if (edadMaxBebe < 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"La edad máxima para bebés no puede ser negativa\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"La edad m├íxima para beb├®s no puede ser negativa\"}");
                 return;
             }
             if (precioBebe.compareTo(BigDecimal.ZERO) < 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El precio de bebés no puede ser negativo (usa 0 para gratis)\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El precio de beb├®s no puede ser negativo (usa 0 para gratis)\"}");
                 return;
             }
         } else {
@@ -646,7 +666,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         }
 
         if (aceptaNinos && aceptaBebes && edadMaxNino <= edadMaxBebe) {
-            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"La edad máxima de niños (" + edadMaxNino + ") debe ser mayor a la edad máxima de bebés (" + edadMaxBebe + ")\"}");
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"La edad m├íxima de ni├▒os (" + edadMaxNino + ") debe ser mayor a la edad m├íxima de beb├®s (" + edadMaxBebe + ")\"}");
             return;
         }
 
@@ -665,9 +685,11 @@ public class PaquetesAgenciaHandler implements HttpHandler {
         Object rawSalidas = params.get("salidas");
         if (rawSalidas instanceof List) {
             for (Object obj : (List<?>) rawSalidas) {
-                if (obj instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> item = (Map<String, Object>) obj;
+                if (obj instanceof Map<?, ?> mapObj) {
+                    Map<String, Object> item = new HashMap<>();
+                    for (Map.Entry<?, ?> entry : mapObj.entrySet()) {
+                        item.put(String.valueOf(entry.getKey()), entry.getValue());
+                    }
                     salidasRecibidas.add(item);
                 }
             }
@@ -678,7 +700,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
             } catch (Exception ignored) {}
         }
 
-        // Si se editó paquete existente, verificar propiedad
+        // Si se edit├│ paquete existente, verificar propiedad
         if (idTour > 0) {
             try (Connection conOwner = ConexionDB.getConnection();
                  PreparedStatement psOwner = conOwner.prepareStatement("SELECT idAgencia FROM Tour WHERE idTour = ?")) {
@@ -702,7 +724,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
             int cupoTot = 0;
             try { cupoTot = Integer.parseInt(String.valueOf(s.getOrDefault("cupoTotal", "0"))); } catch (Exception ignored) {}
             if (fStr.isEmpty()) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Todas las salidas deben incluir una fecha válida\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Todas las salidas deben incluir una fecha v├ílida\"}");
                 return;
             }
             try {
@@ -712,7 +734,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
                     return;
                 }
             } catch (Exception ex) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Formato de fecha inválido en salidas: " + fStr + "\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Formato de fecha inv├ílido en salidas: " + fStr + "\"}");
                 return;
             }
             if (cupoTot <= 0) {
@@ -820,7 +842,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
                     }
                 }
 
-                // f) Procesar imágenes (TourImagen)
+                // f) Procesar im├ígenes (TourImagen)
                 String imagenPortada = String.valueOf(params.getOrDefault("imagen", params.getOrDefault("imagenPrincipal", ""))).trim();
                 List<String> galeria = new ArrayList<>();
                 Object rawGaleria = params.get("galeria");
@@ -939,7 +961,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
                     }
                 }
 
-                // Validación final de publicación (h):
+                // Validaci├│n final de publicaci├│n (h):
                 if ("PUBLICADO".equalsIgnoreCase(estado)) {
                     int futurasFinal = 0;
                     try (PreparedStatement psChkFut = con.prepareStatement(
@@ -957,7 +979,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
                 }
 
                 con.commit();
-                JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Paquete turístico guardado exitosamente\",\"idTour\":" + idTour + ",\"idPaquete\":" + idTour + "}");
+                JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Paquete tur├¡stico guardado exitosamente\",\"idTour\":" + idTour + ",\"idPaquete\":" + idTour + "}");
             } catch (Exception e) {
                 con.rollback();
                 throw e;

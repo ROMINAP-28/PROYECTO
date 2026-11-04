@@ -108,7 +108,6 @@ public class AuthApiControllerTest {
         when(loginAttemptService.isBlocked(anyString())).thenReturn(false);
         when(usuarioServicio.buscarPorLogin("turista1")).thenReturn(Optional.of(usuarioTurista));
         when(usuarioServicio.verificarContrasena("PasswordErronea", "$2a$10$hashedPasswordSample")).thenReturn(false);
-        when(loginAttemptService.getRemainingAttempts(anyString())).thenReturn(4);
 
         Map<String, String> credentials = new HashMap<>();
         credentials.put("usuario", "turista1");

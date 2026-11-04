@@ -1,11 +1,6 @@
 package com.travelink.controlador.turista;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import com.travelink.entidades.Usuario;
+import com.travelink.controlador.UsuarioControlador;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -20,9 +15,6 @@ import com.travelink.server.JavaApiServer;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import com.travelink.controlador.UsuarioControlador;
-import com.travelink.controlador.CalificacionControlador;
-import com.travelink.repositorio.ReservaRepositorio;
 
     public class RegistroHandler implements HttpHandler {
         @Override
@@ -53,23 +45,23 @@ import com.travelink.repositorio.ReservaRepositorio;
                 String nroDocumento = String.valueOf(params.getOrDefault("nroDocumento", params.getOrDefault("nroDoc", ""))).trim();
 
                 // Validaciones obligatorias
-                if (nombre.isEmpty() || nombreUsuario.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+                if (nombre.isEmpty() || apellidoPaterno.isEmpty() || apellidoMaterno.isEmpty() || nombreUsuario.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
                     JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Completa los campos obligatorios.\"}");
                     return;
                 }
 
                 if (!nroDocumento.isEmpty() && !nroDocumento.matches("^[0-9]{8}$")) {
-                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El DNI debe contener exactamente 8 dígitos numéricos.\"}");
+                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El DNI debe contener exactamente 8 dÃ­gitos numÃ©ricos.\"}");
                     return;
                 }
 
-                if (!telefono.isEmpty() && !telefono.matches("^[0-9]{7,9}$")) {
-                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El teléfono debe contener entre 7 y 9 dígitos numéricos.\"}");
+                if (!telefono.matches("^9\\d{8}$")) {
+                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El telÃ©fono debe contener entre 7 y 9 dÃ­gitos numÃ©ricos.\"}");
                     return;
                 }
 
                 if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El correo electrónico ingresado no es válido.\"}");
+                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El correo electrÃ³nico ingresado no es vÃ¡lido.\"}");
                     return;
                 }
 
@@ -78,7 +70,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                     if (con != null) {
                         String errDup = JavaApiServer.validarDuplicadosTurista(con, nroDocumento, telefono, correo, nombreUsuario);
                         if (errDup != null) {
-                            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"" + errDup.replace("\"", "\\\"") + "\"}");
+                            JavaApiServer.sendJsonResponse(exchange, 409, "{\"status\":\"error\",\"message\":\"" + errDup.replace("\"", "\\\"") + "\"}");
                             return;
                         }
                     }
@@ -125,7 +117,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                 JavaApiServer.sendJsonResponse(exchange, 200, json.toString());
             } else {
                 JavaApiServer.sendJsonResponse(exchange, 405,
-                        "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+                        "{\"status\":\"error\",\"message\":\"MÃ©todo no permitido\"}");
             }
         }
     }

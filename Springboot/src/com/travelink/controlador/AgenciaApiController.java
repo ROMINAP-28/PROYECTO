@@ -144,6 +144,6 @@ public class AgenciaApiController {
             java.util.Optional<com.travelink.entidades.Agencia> ag = agenciaServicio.buscarPorIdUsuario(optUser.get());
             if (ag.isPresent()) return ag.get().getIdAgencia();
         }
-        return 1;
+        return 0;
     }
 }

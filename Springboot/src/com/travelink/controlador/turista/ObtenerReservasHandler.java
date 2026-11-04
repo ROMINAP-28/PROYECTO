@@ -64,8 +64,28 @@ public class ObtenerReservasHandler implements HttpHandler {
                         .append("\"idTour\":").append(r.getOrDefault("idTour", 0)).append(",")
                         .append("\"idAgencia\":").append(r.getOrDefault("idAgencia", 0)).append(",")
                         .append("\"calificada\":").append(Boolean.TRUE.equals(r.get("calificada"))).append(",")
-                        .append("\"fechaRegistro\":\"").append(r.get("fechaRegistro")).append("\"")
-                        .append("}");
+                        .append("\"fechaRegistro\":\"").append(r.get("fechaRegistro")).append("\",")
+                        .append("\"motivoCancelacion\":\"").append(JavaApiServer.jsonEscape(String.valueOf(r.getOrDefault("motivoCancelacion", "")))).append("\",")
+                        .append("\"pasajeros\":[");
+
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> pasajeros = (List<Map<String, Object>>) r.get("pasajeros");
+                if (pasajeros != null) {
+                    for (int pIdx = 0; pIdx < pasajeros.size(); pIdx++) {
+                        Map<String, Object> p = pasajeros.get(pIdx);
+                        json.append("{")
+                                .append("\"idPasajero\":").append(p.get("idPasajero")).append(",")
+                                .append("\"nroDocumento\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("nroDocumento", "")))).append("\",")
+                                .append("\"nombre\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("nombre", "")))).append("\",")
+                                .append("\"apellidoPaterno\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("apellidoPaterno", "")))).append("\",")
+                                .append("\"apellidoMaterno\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("apellidoMaterno", "")))).append("\",")
+                                .append("\"esTitular\":").append(Boolean.TRUE.equals(p.get("esTitular"))).append(",")
+                                .append("\"tipo\":\"").append(JavaApiServer.jsonEscape(String.valueOf(p.getOrDefault("tipo", "ADULTO")))).append("\"")
+                                .append("}");
+                        if (pIdx < pasajeros.size() - 1) json.append(",");
+                    }
+                }
+                json.append("]}");
 
                 if (i < lista.size() - 1) json.append(",");
             }

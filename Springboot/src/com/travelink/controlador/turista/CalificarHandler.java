@@ -25,17 +25,104 @@ public class CalificarHandler implements HttpHandler {
             return;
         }
 
-        if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+        String method = exchange.getRequestMethod().toUpperCase();
+
+        if ("GET".equals(method)) {
             obtenerCalificaciones(exchange);
             return;
         }
 
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+        if ("POST".equals(method)) {
             guardarCalificacion(exchange);
             return;
         }
 
+        if ("PUT".equals(method)) {
+            editarCalificacion(exchange);
+            return;
+        }
+
+        if ("DELETE".equals(method)) {
+            eliminarCalificacion(exchange);
+            return;
+        }
+
         JavaApiServer.sendJsonResponse(exchange, 405, "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+    }
+
+    private void editarCalificacion(HttpExchange exchange) throws IOException {
+        String body = JavaApiServer.readRequestBody(exchange);
+        Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+        Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+
+        int idCalificacion = 0;
+        try {
+            if (params.containsKey("idCalificacion")) idCalificacion = Integer.parseInt(String.valueOf(params.get("idCalificacion")));
+            else if (params.containsKey("id")) idCalificacion = Integer.parseInt(String.valueOf(params.get("id")));
+            else if (q.containsKey("idCalificacion")) idCalificacion = Integer.parseInt(q.get("idCalificacion"));
+            else if (q.containsKey("id")) idCalificacion = Integer.parseInt(q.get("id"));
+        } catch (Exception ignored) {}
+
+        int estrellas = 5;
+        try { estrellas = Integer.parseInt(String.valueOf(params.getOrDefault("estrellas", "5"))); } catch (Exception ignored) {}
+        String comentario = String.valueOf(params.getOrDefault("comentario", "")).trim();
+
+        if (idCalificacion <= 0) {
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de calificación requerido\"}");
+            return;
+        }
+
+        try (Connection con = ConexionDB.getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE Calificacion SET estrellas = ?, comentario = ? WHERE idCalificacion = ?")) {
+            ps.setInt(1, estrellas);
+            ps.setString(2, comentario);
+            ps.setInt(3, idCalificacion);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Calificación actualizada exitosamente\"}");
+            } else {
+                JavaApiServer.sendJsonResponse(exchange, 404, "{\"status\":\"error\",\"message\":\"Calificación no encontrada\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al actualizar calificación: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
+        }
+    }
+
+    private void eliminarCalificacion(HttpExchange exchange) throws IOException {
+        String body = JavaApiServer.readRequestBody(exchange);
+        Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+        Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+
+        int idCalificacion = 0;
+        try {
+            if (params.containsKey("idCalificacion")) idCalificacion = Integer.parseInt(String.valueOf(params.get("idCalificacion")));
+            else if (params.containsKey("id")) idCalificacion = Integer.parseInt(String.valueOf(params.get("id")));
+            else if (q.containsKey("idCalificacion")) idCalificacion = Integer.parseInt(q.get("idCalificacion"));
+            else if (q.containsKey("id")) idCalificacion = Integer.parseInt(q.get("id"));
+        } catch (Exception ignored) {}
+
+        if (idCalificacion <= 0) {
+            JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de calificación requerido\"}");
+            return;
+        }
+
+        try (Connection con = ConexionDB.getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE Calificacion SET eliminadoPorAdmin = 1 WHERE idCalificacion = ?")) {
+            ps.setInt(1, idCalificacion);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                try {
+                    com.travelink.servicio.EventosService.emitir("calificacion_eliminada", Map.of("idCalificacion", idCalificacion));
+                } catch (Exception ignored) {}
+                JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Calificación eliminada exitosamente\"}");
+            } else {
+                JavaApiServer.sendJsonResponse(exchange, 404, "{\"status\":\"error\",\"message\":\"Calificación no encontrada\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al eliminar calificación: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
+        }
     }
 
     private void obtenerCalificaciones(HttpExchange exchange) throws IOException {
@@ -315,6 +402,15 @@ public class CalificarHandler implements HttpHandler {
                     psUA.executeUpdate();
                 }
             }
+
+            try {
+                com.travelink.servicio.EventosService.emitir("calificacion_creada", Map.of(
+                        "idReserva", idReserva,
+                        "idTour", idTour,
+                        "idAgencia", idAgencia,
+                        "estrellas", estrellas
+                ));
+            } catch (Exception ignored) {}
 
             String respJson = String.format(Locale.US,
                     "{\"status\":\"success\",\"message\":\"Calificación registrada exitosamente\",\"promedio\":%.1f,\"total\":%d,\"promedioTour\":%.1f,\"totalTour\":%d,\"promedioAgencia\":%.1f,\"totalAgencia\":%d}",

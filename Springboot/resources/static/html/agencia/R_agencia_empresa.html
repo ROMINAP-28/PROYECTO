@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 <body>
 <main class="registro-container">
@@ -23,7 +24,7 @@
             </div>
             <div class="registro-visual-text">
                 <h2>Conozcamos tu agencia.</h2>
-                <p>Ingresa la información oficial de tu empresa turí­stica.</p>
+                <p>Ingresa la información oficial de tu empresa turíÂ­stica.</p>
             </div>
         </aside>
 
@@ -31,7 +32,7 @@
             <div class="registro-top">
                 <span class="registro-step">Paso 2 de 6</span>
                 <h1>Datos de la empresa</h1>
-                <p>Completa la información de tu agencia turí­stica.</p>
+                <p>Completa la información de tu agencia turíÂ­stica.</p>
             </div>
 
             <form id="formAgenciaEmpresa">
@@ -42,13 +43,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="ruc">RUC (11 dí­gitos)</label>
-                        <input type="text" id="ruc" name="ruc" minlength="11" maxlength="11" pattern="^[0-9]{11}$" title="El RUC debe contener exactamente 11 dí­gitos numéricos" required>
+                        <label for="ruc">RUC (11 díÂ­gitos)</label>
+                        <input type="text" id="ruc" name="ruc" minlength="11" maxlength="11" pattern="^[0-9]{11}$" title="El RUC debe contener exactamente 11 díÂ­gitos numéricos" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="telefonoEmpresa">Teléfono (7 a 9 dí­gitos)</label>
-                        <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa" minlength="7" maxlength="9" pattern="^[0-9]{7,9}$" title="El teléfono debe tener entre 7 y 9 dí­gitos numéricos">
+                        <label for="telefonoEmpresa">Teléfono (7 a 9 díÂ­gitos)</label>
+                        <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa" minlength="7" maxlength="9" pattern="^[0-9]{7,9}$" title="El teléfono debe tener entre 7 y 9 díÂ­gitos numéricos">
                     </div>
 
                     <div class="form-group">
@@ -74,5 +75,6 @@
 </main>
 
 <script src="../../js/agencia/agencia.js"></script>
+        <script src="/js/validador.js" defer></script>
 </body>
 </html>

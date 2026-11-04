@@ -17,6 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 
 <body class="auth-page">
@@ -62,7 +63,7 @@
                 <form id="formLogin" class="auth-form">
                     <div class="form-group">
                         <label for="usuarioCorreo">Usuario o Correo</label>
-                        <input type="text" id="usuarioCorreo" placeholder="Usuario o Correo electrónico" required maxlength="50">
+                        <input type="text" id="usuarioCorreo" data-validar="usuario-correo" placeholder="Usuario o Correo electrónico" required maxlength="50">
                     </div>
 
                     <div class="form-group">
@@ -104,8 +105,6 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.js"></script>
-    <script src="../../js/validador.js"></script>
-
     <script>
         function togglePassword(iconEl, inputId) {
             const input = document.getElementById(inputId);
@@ -152,7 +151,7 @@
                 const res = await window.apiFetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: usuarioCorreo, clave: password })
+                    body: JSON.stringify({ correo: usuarioCorreo, clave: password, rolEsperado: 'TURISTA' })
                 });
 
                 const data = await res.json();
@@ -180,7 +179,7 @@
                             }
                         }
 
-                        sessionStorage.setItem('travelink_auth_cache', JSON.stringify({
+                        const sessionObj = {
                             id: data.idUsuario,
                             idUsuario: data.idUsuario,
                             usuario: data.nombre,
@@ -195,7 +194,9 @@
                             nroDocumento: data.nroDocumento || '',
                             telefono: data.telefono || '',
                             apellidos: data.apellidos || ''
-                        }));
+                        };
+                        sessionStorage.setItem('sesion_turista', JSON.stringify(sessionObj));
+                        sessionStorage.setItem('travelink_auth_cache', JSON.stringify(sessionObj));
                     } catch (e) {}
                     if (typeof toastr !== 'undefined') {
                         toastr.success('¡Bienvenido, ' + data.nombre + '!', 'Inicio de sesión exitoso');
@@ -223,6 +224,7 @@
             }
         });
     </script>
+    <script src="/js/validador.js" defer></script>
 </body>
 
 </html>

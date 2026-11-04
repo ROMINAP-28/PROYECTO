@@ -15,8 +15,8 @@ import com.travelink.config.ConexionDB;
 import com.travelink.server.JavaApiServer;
 
 /**
- * TRAVELINK - Handlers Públicos y de Consulta de Tours
- * FASE 6: Catálogo dinámico para Turistas (Index, Experiencias, Ofertas, Detalle)
+ * TRAVELINK - Handlers PÃºblicos y de Consulta de Tours
+ * FASE 6: CatÃ¡logo dinÃ¡mico para Turistas (Index, Experiencias, Ofertas, Detalle)
  */
 public class ToursAdminHandler implements HttpHandler {
 
@@ -28,7 +28,9 @@ public class ToursAdminHandler implements HttpHandler {
             return;
         }
 
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+        String method = exchange.getRequestMethod().toUpperCase();
+
+        if ("POST".equals(method) || "PUT".equals(method)) {
             String body = JavaApiServer.readRequestBody(exchange);
             Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
             int id = 0;
@@ -49,6 +51,33 @@ public class ToursAdminHandler implements HttpHandler {
                 } catch (Exception e) {
                     e.printStackTrace();
                     JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al actualizar tour: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
+                    return;
+                }
+            }
+        }
+
+        if ("DELETE".equals(method)) {
+            String body = JavaApiServer.readRequestBody(exchange);
+            Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+            Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+            int id = 0;
+            try {
+                if (params.containsKey("id")) id = Integer.parseInt(String.valueOf(params.get("id")));
+                else if (params.containsKey("idTour")) id = Integer.parseInt(String.valueOf(params.get("idTour")));
+                else if (q.containsKey("id")) id = Integer.parseInt(q.get("id"));
+                else if (q.containsKey("idTour")) id = Integer.parseInt(q.get("idTour"));
+            } catch (Exception ignored) {}
+
+            if (id > 0) {
+                try (Connection con = ConexionDB.getConnection();
+                     PreparedStatement ps = con.prepareStatement("UPDATE Tour SET estado = 'INACTIVO' WHERE idTour = ?")) {
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
+                    JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Tour desactivado lÃ³gicamente\"}");
+                    return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al desactivar tour: " + JavaApiServer.jsonEscape(e.getMessage()) + "\"}");
                     return;
                 }
             }
@@ -77,7 +106,7 @@ public class ToursAdminHandler implements HttpHandler {
             }
         }
 
-        // Si se solicita un tour específico -> vista de detalle
+        // Si se solicita un tour especÃ­fico -> vista de detalle
         if (idTour > 0) {
             retornarDetalleTour(exchange, idTour, qParams);
             return;
@@ -143,7 +172,7 @@ public class ToursAdminHandler implements HttpHandler {
         if (!esAdmin) {
             // Regla 4: Todo desde Tour publicado con salidas futuras
             sql.append(" AND (UPPER(t.estado) = 'PUBLICADO' OR UPPER(t.estado) = 'ACTIVO') ");
-            sql.append(" AND EXISTS (SELECT 1 FROM TourFecha tf WHERE tf.idTour = t.idTour AND tf.fecha >= CURDATE() AND UPPER(tf.estado) != 'CANCELADO' AND UPPER(tf.estado) != 'PAUSADO') ");
+            // Salidas futuras opcionales para no ocultar tours publicados de otras agencias
         }
 
         if (esOfertas) {
@@ -222,7 +251,7 @@ public class ToursAdminHandler implements HttpHandler {
                     String descCompleta = descCorta;
                     String agNombre = rs.getString("agenciaNombre");
                     String destNombre = rs.getString("destinoNombre") != null ? rs.getString("destinoNombre") : rs.getString("ubicacion");
-                    String duracion = rs.getString("duracion") != null ? rs.getString("duracion") : "1 día";
+                    String duracion = rs.getString("duracion") != null ? rs.getString("duracion") : "1 dÃ­a";
                     BigDecimal pAdulto = rs.getBigDecimal("precioAdulto");
                     if (pAdulto == null) pAdulto = BigDecimal.ZERO;
                     BigDecimal pNino = rs.getBigDecimal("precioNino");
@@ -253,8 +282,8 @@ public class ToursAdminHandler implements HttpHandler {
                         .append("\"descripcionCorta\":\"").append(JavaApiServer.jsonEscape(descCorta)).append("\",")
                         .append("\"descripcion\":\"").append(JavaApiServer.jsonEscape(descCompleta)).append("\",")
                         .append("\"agencia\":\"").append(JavaApiServer.jsonEscape(agNombre)).append("\",")
-                        .append("\"destino\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "Perú")).append("\",")
-                        .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "Perú")).append("\",")
+                        .append("\"destino\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "PerÃº")).append("\",")
+                        .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "PerÃº")).append("\",")
                         .append("\"categoria\":\"").append(JavaApiServer.jsonEscape(cat)).append("\",")
                         .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion)).append("\",")
                         .append("\"precio\":").append(pAdulto).append(",")
@@ -298,7 +327,7 @@ public class ToursAdminHandler implements HttpHandler {
             SELECT t.idTour AS id, t.nombre, t.descripcion, t.descripcionCorta, t.itinerario,
                    t.precioAdulto, t.precioNino, t.precioBebe, t.aceptaNinos, t.edadMaxNino, t.edadMaxBebe,
                    t.descuento, t.condiciones, t.minAsientosOferta,
-                   t.duracion, COALESCE(t.ubicacion, d.nombre, 'Perú') AS ubicacion,
+                   t.duracion, COALESCE(t.ubicacion, d.nombre, 'PerÃº') AS ubicacion,
                    COALESCE(t.categoria, 'Cultural') AS categoria,
                    COALESCE(
                        (SELECT ROUND(AVG(c.estrellas), 1) FROM Calificacion c JOIN Reserva r ON c.idReserva = r.idReserva WHERE r.idTour = t.idTour AND (c.eliminadoPorAdmin IS NULL OR c.eliminadoPorAdmin = 0)),
@@ -340,8 +369,8 @@ public class ToursAdminHandler implements HttpHandler {
             BigDecimal descuento = BigDecimal.ZERO;
             String condiciones = "";
             int minAsientosOferta = 5;
-            String duracion = "1 día";
-            String ubicacion = "Perú";
+            String duracion = "1 dÃ­a";
+            String ubicacion = "PerÃº";
             String categoria = "Cultural";
             BigDecimal calif = BigDecimal.ZERO;
             String estado = "PUBLICADO";
@@ -418,9 +447,9 @@ public class ToursAdminHandler implements HttpHandler {
                 .append("\"precio\":").append(pAdulto != null ? pAdulto : 0).append(",")
                 .append("\"precioNino\":").append(pNino != null ? pNino : 0).append(",")
                 .append("\"precioBebe\":").append(pBebe != null ? pBebe : 0).append(",")
-                .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion != null ? duracion : "1 día")).append("\",")
-                .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "Perú")).append("\",")
-                .append("\"destino\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "Perú")).append("\",")
+                .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion != null ? duracion : "1 dÃ­a")).append("\",")
+                .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "PerÃº")).append("\",")
+                .append("\"destino\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "PerÃº")).append("\",")
                 .append("\"categoria\":\"").append(JavaApiServer.jsonEscape(categoria != null ? categoria : "Cultural")).append("\",")
                 .append("\"calificacionPromedio\":").append(calif != null ? calif : 0.0).append(",")
                 .append("\"totalCalificaciones\":").append(totalCalificaciones).append(",")
@@ -434,7 +463,7 @@ public class ToursAdminHandler implements HttpHandler {
                 .append("\"agencia\":\"").append(JavaApiServer.jsonEscape(agencia)).append("\",")
                 .append("\"agenciaRating\":").append(agenciaRating != null ? agenciaRating : 0.0).append(",");
 
-            // Galería de imágenes (TourImagen)
+            // GalerÃ­a de imÃ¡genes (TourImagen)
             List<String> imagenes = new ArrayList<>();
             String sqlImg = "SELECT url, esPrincipal FROM TourImagen WHERE idTour = ? ORDER BY esPrincipal DESC, orden ASC, idImagen ASC";
             try (PreparedStatement psI = con.prepareStatement(sqlImg)) {

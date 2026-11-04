@@ -10,6 +10,7 @@ import com.travelink.config.ConexionDB;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,24 +25,27 @@ public class NotificacionesAdminHandler implements HttpHandler {
         exchange.getResponseHeaders().set(
                 "Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set(
-                "Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         exchange.getResponseHeaders().set(
-                "Access-Control-Allow-Headers", "Content-Type");
+                "Access-Control-Allow-Headers", "Content-Type, Authorization, X-XSRF-TOKEN");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(204, -1);
             return;
         }
 
-        String metodo = exchange.getRequestMethod();
+        String metodo = exchange.getRequestMethod().toUpperCase();
         String ruta = exchange.getRequestURI().getPath();
 
         try {
-            if ("GET".equalsIgnoreCase(metodo)) {
+            if ("GET".equals(metodo)) {
                 listarNotificaciones(exchange);
-            } else if ("POST".equalsIgnoreCase(metodo)
-                    && ruta.endsWith("/marcar-leida")) {
+            } else if ("PUT".equals(metodo) || ("POST".equals(metodo) && ruta.endsWith("/marcar-leida"))) {
                 marcarLeida(exchange);
+            } else if ("POST".equals(metodo)) {
+                crearNotificacion(exchange);
+            } else if ("DELETE".equals(metodo)) {
+                eliminarNotificacion(exchange);
             } else {
                 responder(exchange, 405,
                         "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
@@ -50,6 +54,69 @@ public class NotificacionesAdminHandler implements HttpHandler {
             e.printStackTrace();
             responder(exchange, 500,
                     "{\"status\":\"error\",\"message\":\"Error al procesar notificaciones\"}");
+        }
+    }
+
+    private void responder(HttpExchange exchange, int codigo, String respuesta) throws IOException {
+        JavaApiServer.sendJsonResponse(exchange, codigo, respuesta);
+    }
+
+    private void crearNotificacion(HttpExchange exchange) throws IOException {
+        String cuerpo = JavaApiServer.readRequestBody(exchange);
+        Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(cuerpo);
+        String rol = String.valueOf(params.getOrDefault("rolTarget", "AGENCIA")).trim().toUpperCase();
+        String titulo = String.valueOf(params.getOrDefault("titulo", "Notificación")).trim();
+        String mensaje = String.valueOf(params.getOrDefault("mensaje", "")).trim();
+
+        if (mensaje.isEmpty()) {
+            responder(exchange, 400, "{\"status\":\"error\",\"message\":\"Mensaje requerido\"}");
+            return;
+        }
+
+        try (Connection con = ConexionDB.getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO Notificacion (rolTarget, titulo, mensaje) VALUES (?, ?, ?)")) {
+            ps.setString(1, rol);
+            ps.setString(2, titulo);
+            ps.setString(3, mensaje);
+            ps.executeUpdate();
+            responder(exchange, 201, "{\"status\":\"success\",\"message\":\"Notificación creada exitosamente\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responder(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al crear notificación\"}");
+        }
+    }
+
+    private void eliminarNotificacion(HttpExchange exchange) throws IOException {
+        String query = exchange.getRequestURI().getQuery();
+        Map<String, String> qParams = JavaApiServer.parseQueryParams(query);
+        String cuerpo = JavaApiServer.readRequestBody(exchange);
+        Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(cuerpo);
+
+        int id = 0;
+        try {
+            if (params.containsKey("idNotificacion")) id = Integer.parseInt(String.valueOf(params.get("idNotificacion")));
+            else if (params.containsKey("id")) id = Integer.parseInt(String.valueOf(params.get("id")));
+            else if (qParams.containsKey("idNotificacion")) id = Integer.parseInt(qParams.get("idNotificacion"));
+            else if (qParams.containsKey("id")) id = Integer.parseInt(qParams.get("id"));
+        } catch (Exception ignored) {}
+
+        if (id <= 0) {
+            responder(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de notificación requerido\"}");
+            return;
+        }
+
+        try (Connection con = ConexionDB.getConnection();
+             PreparedStatement ps = con.prepareStatement("DELETE FROM Notificacion WHERE idNotificacion = ?")) {
+            ps.setInt(1, id);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                responder(exchange, 200, "{\"status\":\"success\",\"message\":\"Notificación eliminada exitosamente\"}");
+            } else {
+                responder(exchange, 404, "{\"status\":\"error\",\"message\":\"Notificación no encontrada\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responder(exchange, 500, "{\"status\":\"error\",\"message\":\"Error al eliminar notificación\"}");
         }
     }
 
@@ -205,16 +272,5 @@ public class NotificacionesAdminHandler implements HttpHandler {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
-    }
-
-    private void responder(HttpExchange exchange, int codigo, String respuesta)
-            throws IOException {
-        byte[] bytes = respuesta.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set(
-                "Content-Type", "application/json; charset=UTF-8");
-        exchange.sendResponseHeaders(codigo, bytes.length);
-        try (var salida = exchange.getResponseBody()) {
-            salida.write(bytes);
-        }
     }
 }

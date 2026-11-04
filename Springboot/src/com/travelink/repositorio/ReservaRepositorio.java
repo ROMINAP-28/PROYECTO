@@ -38,6 +38,10 @@ public class ReservaRepositorio {
         return persistencia.cancelarReserva(idReserva, motivo);
     }
 
+    public ReservaPersistencia.CancelarResultado cancelarReservaConDetalle(int idReserva, String motivo) {
+        return persistencia.cancelarReservaConDetalle(idReserva, motivo);
+    }
+
     public boolean perteneceAUsuario(int idReserva, int idUsuario) {
         return persistencia.perteneceAUsuario(idReserva, idUsuario);
     }

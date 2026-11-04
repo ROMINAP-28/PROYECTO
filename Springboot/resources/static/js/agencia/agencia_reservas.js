@@ -3,7 +3,7 @@
  */
 (function () {
     const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : (typeof window !== 'undefined' ? window.location.origin : '');
-    const ID_AGENCIA_DEFAULT = 1;
+    const ID_AGENCIA_DEFAULT = 0;
     let sesion = null;
     try {
         const raw = localStorage.getItem("agenciaSesion") || localStorage.getItem("agenciasesión");

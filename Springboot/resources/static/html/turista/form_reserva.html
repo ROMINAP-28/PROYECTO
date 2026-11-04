@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 
 <body style="background-color: #f8fafc;">
@@ -411,7 +412,7 @@
 
                 <div class="paso-actions-footer">
                     <button type="button" class="btn-step-volver" onclick="mostrarPaso(3)">Volver</button>
-                    <button type="button" class="btn-step-siguiente" onclick="mostrarModal()">Confirmar reserva</button>
+                    <button type="button" class="btn-step-siguiente" id="btnConfirmarPaso4" onclick="mostrarModal()">Confirmar reserva</button>
                 </div>
             </section>
         </div>
@@ -467,8 +468,9 @@
     <script src="../../js/turista/navigation.js"></script>
     <script src="../../js/comun/api.js"></script>
     <script src="../../js/comun/user_session.js?v=4.0"></script>
-    <script src="../../js/validador.js"></script>
+    <script src="../../js/comun/sync.js"></script>
     <script src="../../js/turista/form_reserva.js?v=4.0"></script>
+    <script src="/js/validador.js" defer></script>
 </body>
 
 </html>

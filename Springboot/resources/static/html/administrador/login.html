@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../css/administrador/login.css">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 
 <body>
@@ -41,7 +42,7 @@
                 <label class="form-label" for="adminUsuario">Usuario o Correo</label>
                 <div class="input-wrapper">
                     <i class="ti ti-user input-icon-left"></i>
-                    <input type="text" id="adminUsuario" class="form-input" placeholder="admin@travelink.pe" required
+                    <input type="text" id="adminUsuario" data-validar="usuario-correo" class="form-input" placeholder="admin@travelink.pe" required
                         autocomplete="username">
                 </div>
             </div>
@@ -112,13 +113,15 @@
                 const response = await window.apiFetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: usuario, clave: password })
+                    body: JSON.stringify({ correo: usuario, clave: password, rolEsperado: 'ADMINISTRADOR' })
                 });
 
                 const data = await response.json();
 
                 if (response.ok && data.idUsuario) {
                     if (data.rol === 'ROLE_ADMIN') {
+                        sessionStorage.setItem('sesion_admin', JSON.stringify(data));
+                        sessionStorage.setItem('travelink_auth_cache', JSON.stringify(data));
                         Swal.fire({
                             icon: 'success',
                             title: '¡Acceso Concedido!',
@@ -132,7 +135,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Acceso Restringido',
-                            text: 'Esta cuenta no posee permisos de Administrador.'
+                            text: 'No tienes acceso a este portal.'
                         });
                         btn.disabled = false;
                         btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
@@ -140,8 +143,8 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error de autenticación',
-                        text: data.message || data.error || 'Credenciales no válidas.'
+                        title: 'Credenciales incorrectas',
+                        text: data.message || 'Credenciales incorrectas'
                     });
                     btn.disabled = false;
                     btn.innerHTML = '<span>Iniciar sesión</span> <i class="ti ti-arrow-right"></i>';
@@ -158,6 +161,7 @@
             }
         }
     </script>
+        <script src="/js/validador.js" defer></script>
 </body>
 
 </html>

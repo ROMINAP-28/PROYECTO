@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 <body>
 <main class="registro-container">
@@ -53,7 +54,7 @@
                 <div class="form-group">
                     <label for="contrasena">Contraseña</label>
                     <div class="password-field">
-                        <input type="password" id="contrasena" name="contrasena" minlength="8" maxlength="255" title="Mí­nimo 8 caracteres" required>
+                        <input type="password" id="contrasena" name="contrasena" minlength="8" maxlength="255" title="MíÂ­nimo 8 caracteres" required>
                         <button type="button" class="password-toggle" data-target="contrasena">👁</button>
                     </div>
                 </div>
@@ -61,7 +62,7 @@
                 <div class="form-group">
                     <label for="confirmarContrasena">Confirmar contraseña</label>
                     <div class="password-field">
-                        <input type="password" id="confirmarContrasena" name="confirmarContrasena" minlength="8" maxlength="255" title="Mí­nimo 8 caracteres" required>
+                        <input type="password" id="confirmarContrasena" name="confirmarContrasena" minlength="8" maxlength="255" title="MíÂ­nimo 8 caracteres" required>
                         <button type="button" class="password-toggle" data-target="confirmarContrasena">👁</button>
                     </div>
                 </div>
@@ -79,5 +80,6 @@
 </main>
 
 <script src="../../js/agencia/agencia.js"></script>
+        <script src="/js/validador.js" defer></script>
 </body>
 </html>

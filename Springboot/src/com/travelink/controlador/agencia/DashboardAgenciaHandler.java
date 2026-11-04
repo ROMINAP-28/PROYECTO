@@ -40,7 +40,10 @@ public class DashboardAgenciaHandler implements HttpHandler {
                 }
             } catch (Exception ignored) {}
         }
-        if (idAgencia <= 0) idAgencia = 1;
+        if (idAgencia <= 0) {
+            JavaApiServer.sendJsonResponse(exchange, 401, "{\"status\":\"error\",\"message\":\"Sesión de agencia inválida o no autenticada\"}");
+            return;
+        }
 
         StringBuilder json = new StringBuilder("{");
         json.append("\"status\":\"success\",");

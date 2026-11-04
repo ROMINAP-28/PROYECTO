@@ -53,7 +53,7 @@ public class AuthApiController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping({"/api/login", "/auth/login", "/login", "/agencia/login", "/admin/login"})
+    @PostMapping({"/api/auth/login", "/api/login", "/auth/login", "/login", "/agencia/login", "/admin/login", "/api/admin/login", "/api/agencia/login"})
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials,
                                   HttpServletRequest request,
                                   HttpServletResponse response) {
@@ -89,10 +89,9 @@ public class AuthApiController {
         Optional<Usuario> usuarioOpt = usuarioServicio.buscarPorLogin(login);
         if (usuarioOpt.isEmpty()) {
             loginAttemptService.loginFailed(lockoutKey);
-            int remaining = loginAttemptService.getRemainingAttempts(lockoutKey);
-            log.warn("Intento de login fallido (usuario no encontrado): [{}] desde IP: {}. Intentos restantes: {}", login, clientIp, remaining);
+            log.warn("Intento de login fallido (usuario no encontrado): [{}] desde IP: {}", login, clientIp);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("status", "error", "message", "Usuario o contraseña incorrectos. Intentos restantes: " + remaining));
+                    .body(Map.of("status", "error", "message", "Credenciales incorrectas"));
         }
 
         Usuario usuario = usuarioOpt.get();
@@ -101,10 +100,9 @@ public class AuthApiController {
         boolean passwordOk = usuarioServicio.verificarContrasena(rawPassword, usuario.getContrasena());
         if (!passwordOk) {
             loginAttemptService.loginFailed(lockoutKey);
-            int remaining = loginAttemptService.getRemainingAttempts(lockoutKey);
-            log.warn("Intento de login fallido (contraseña errónea): [{}] desde IP: {}. Intentos restantes: {}", login, clientIp, remaining);
+            log.warn("Intento de login fallido (contraseña errónea): [{}] desde IP: {}", login, clientIp);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("status", "error", "message", "Usuario o contraseña incorrectos. Intentos restantes: " + remaining));
+                    .body(Map.of("status", "error", "message", "Credenciales incorrectas"));
         }
 
         // Si la contraseña estaba en texto plano o formato antiguo, rehashear automáticamente con BCrypt
@@ -127,6 +125,31 @@ public class AuthApiController {
                 rolName = "ROLE_ADMIN";
             } else if (usuario.getIdRol() == 2) {
                 rolName = "ROLE_AGENCIA";
+            }
+        }
+
+        // Validar el portal/rol esperado para evitar accesos cruzados
+        String uri = request.getRequestURI() != null ? request.getRequestURI().toLowerCase() : "";
+        String rolEsperado = credentials.getOrDefault("rolEsperado",
+                credentials.getOrDefault("rol", credentials.getOrDefault("portal", ""))).trim().toUpperCase();
+
+        if (uri.contains("admin") || "ADMIN".equals(rolEsperado) || "ADMINISTRADOR".equals(rolEsperado) || "ROLE_ADMIN".equals(rolEsperado)) {
+            if (!"ROLE_ADMIN".equals(rolName)) {
+                log.warn("Acceso denegado: usuario [{}] con rol [{}] intentó acceder al portal de Administrador", login, rolName);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("status", "error", "message", "No tienes acceso a este portal"));
+            }
+        } else if (uri.contains("agencia") || "AGENCIA".equals(rolEsperado) || "ROLE_AGENCIA".equals(rolEsperado)) {
+            if (!"ROLE_AGENCIA".equals(rolName)) {
+                log.warn("Acceso denegado: usuario [{}] con rol [{}] intentó acceder al portal de Agencia", login, rolName);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("status", "error", "message", "No tienes acceso a este portal"));
+            }
+        } else if ("TURISTA".equals(rolEsperado) || "ROLE_TURISTA".equals(rolEsperado)) {
+            if (!"ROLE_TURISTA".equals(rolName)) {
+                log.warn("Acceso denegado: usuario [{}] con rol [{}] intentó acceder al portal de Turista", login, rolName);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("status", "error", "message", "No tienes acceso a este portal"));
             }
         }
 
@@ -171,6 +194,7 @@ public class AuthApiController {
         session.setAttribute("ID_USUARIO", usuario.getIdUsuario());
         session.setAttribute("USUARIO_NOMBRE", usuario.getNombreUsuario());
         session.setAttribute("ROL", rolName);
+        session.removeAttribute("ID_AGENCIA");
         if (idAgencia != null) {
             session.setAttribute("ID_AGENCIA", idAgencia);
         }
@@ -274,6 +298,9 @@ public class AuthApiController {
                 idAgencia = ag.get().getIdAgencia();
                 if (session != null) session.setAttribute("ID_AGENCIA", idAgencia);
             }
+        } else if (!"ROLE_AGENCIA".equals(rolName) && idAgencia != null) {
+            idAgencia = null;
+            if (session != null) session.removeAttribute("ID_AGENCIA");
         }
 
         String nombreCompleto = usuario.getPersona() != null && usuario.getPersona().getNombre() != null && !usuario.getPersona().getNombre().isEmpty()

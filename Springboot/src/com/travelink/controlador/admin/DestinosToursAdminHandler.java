@@ -1,11 +1,4 @@
 package com.travelink.controlador.admin;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import com.travelink.entidades.Usuario;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -20,9 +13,6 @@ import com.travelink.server.JavaApiServer;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import com.travelink.controlador.UsuarioControlador;
-import com.travelink.controlador.CalificacionControlador;
-import com.travelink.repositorio.ReservaRepositorio;
 
     public class DestinosToursAdminHandler implements HttpHandler {
         @Override

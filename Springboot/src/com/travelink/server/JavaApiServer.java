@@ -1,21 +1,19 @@
-
 package com.travelink.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.travelink.config.ConexionDB;
-
-import com.travelink.controlador.CalificacionControlador;
-import com.travelink.controlador.UsuarioControlador;
 import com.travelink.entidades.Usuario;
-import com.travelink.repositorio.ReservaRepositorio;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.nio.charset.StandardCharsets;
+import com.travelink.controlador.UsuarioControlador;
+import com.travelink.controlador.CalificacionControlador;
 
 import com.travelink.controlador.admin.*;
 import com.travelink.controlador.agencia.*;
@@ -24,10 +22,6 @@ import com.travelink.controlador.turista.*;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -37,7 +31,7 @@ import java.util.*;
 public class JavaApiServer {
     public static final int PORT = 8080;
     public static final UsuarioControlador usuarioControlador = new UsuarioControlador();
-    public static final ReservaRepositorio reservaRepositorio = new ReservaRepositorio();
+    public static final com.travelink.persistencia.ReservaPersistencia reservaRepositorio = new com.travelink.persistencia.ReservaPersistencia();
     public static final CalificacionControlador calificacionControlador = new CalificacionControlador();
     public static final String FRONTEND_DIR = "backend/resources/static";
 
@@ -48,30 +42,46 @@ public class JavaApiServer {
                 "Content-Type, Authorization, X-Requested-With");
     }
 
+    public static void responder(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
+        sendJsonResponse(exchange, statusCode, jsonResponse);
+    }
+
+    public static String jsonEscape(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
     public static void sendJsonResponse(HttpExchange exchange, int statusCode, String jsonResponse) throws IOException {
         enableCORS(exchange);
         byte[] bytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
         exchange.sendResponseHeaders(statusCode, bytes.length);
-        OutputStream os = exchange.getResponseBody();
-        os.write(bytes);
-        os.close();
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(bytes);
+        }
     }
 
     public static String readRequestBody(HttpExchange exchange) throws IOException {
-        InputStream is = exchange.getRequestBody();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            bos.write(buffer, 0, len);
+        try (InputStream is = exchange.getRequestBody();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toString(StandardCharsets.UTF_8);
         }
-        return bos.toString(StandardCharsets.UTF_8);
     }
 
     public static Map<String, String> parseQueryParams(String query) {
         Map<String, String> map = new HashMap<>();
-        if (query == null || query.isEmpty())
+        if (query == null || query.trim().isEmpty())
             return map;
         for (String param : query.split("&")) {
             String[] pair = param.split("=");
@@ -130,28 +140,35 @@ public class JavaApiServer {
                 ps.setString(1, ruc);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next() && rs.getInt(1) > 0)
-                        return "El RUC '" + ruc + "' ya se encuentra registrado en el sistema.";
+                        return "El RUC '" + ruc + "' ya se encuentra registrado.";
                 }
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE ruc = ?")) {
+            try (PreparedStatement ps = con
+                    .prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE ruc = ? AND estado = 'PENDIENTE'")) {
                 ps.setString(1, ruc);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next() && rs.getInt(1) > 0)
-                        return "El RUC '" + ruc + "' ya se encuentra registrado en una solicitud de agencia.";
+                        return "El RUC '" + ruc + "' ya cuenta con una solicitud pendiente.";
                 }
             }
         }
-
         if (nroDocumento != null && !nroDocumento.isBlank()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE nroDocumento = ?")) {
                 ps.setString(1, nroDocumento);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next() && rs.getInt(1) > 0)
-                        return "El DNI / documento '" + nroDocumento + "' ya se encuentra registrado en el sistema.";
+                        return "El documento '" + nroDocumento + "' ya se encuentra registrado.";
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement(
+                    "SELECT COUNT(*) FROM SolicitudAgencia WHERE dniRepresentante = ? AND estado = 'PENDIENTE'")) {
+                ps.setString(1, nroDocumento);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0)
+                        return "El documento '" + nroDocumento + "' ya cuenta con una solicitud pendiente.";
                 }
             }
         }
-
         for (String tel : new String[] { telefonoEmpresa, telefonoResponsable }) {
             if (tel != null && !tel.isBlank()) {
                 try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE telefono = ?")) {
@@ -169,7 +186,7 @@ public class JavaApiServer {
                     }
                 }
                 try (PreparedStatement ps = con
-                        .prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE telefonoContacto = ?")) {
+                        .prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE telefono = ? AND estado = 'PENDIENTE'")) {
                     ps.setString(1, tel);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next() && rs.getInt(1) > 0)
@@ -178,7 +195,6 @@ public class JavaApiServer {
                 }
             }
         }
-
         if (correo != null && !correo.isBlank()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Persona WHERE email = ?")) {
                 ps.setString(1, correo);
@@ -195,7 +211,7 @@ public class JavaApiServer {
                 }
             }
             try (PreparedStatement ps = con
-                    .prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE correoContacto = ?")) {
+                    .prepareStatement("SELECT COUNT(*) FROM SolicitudAgencia WHERE email = ? AND estado = 'PENDIENTE'")) {
                 ps.setString(1, correo);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next() && rs.getInt(1) > 0)
@@ -203,7 +219,6 @@ public class JavaApiServer {
                 }
             }
         }
-
         if (nombreUsuario != null && !nombreUsuario.isBlank()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM Usuario WHERE nombreUsuario = ?")) {
                 ps.setString(1, nombreUsuario);
@@ -212,8 +227,15 @@ public class JavaApiServer {
                         return "El nombre de usuario '" + nombreUsuario + "' ya se encuentra registrado.";
                 }
             }
+            try (PreparedStatement ps = con.prepareStatement(
+                    "SELECT COUNT(*) FROM SolicitudAgencia WHERE nombreUsuario = ? AND estado = 'PENDIENTE'")) {
+                ps.setString(1, nombreUsuario);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0)
+                        return "El nombre de usuario '" + nombreUsuario + "' ya cuenta con una solicitud pendiente.";
+                }
+            }
         }
-
         return null;
     }
 
@@ -224,7 +246,7 @@ public class JavaApiServer {
                 ps.setString(1, nroDocumento);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next() && rs.getInt(1) > 0)
-                        return "El DNI / documento '" + nroDocumento + "' ya se encuentra registrado.";
+                        return "El documento '" + nroDocumento + "' ya se encuentra registrado.";
                 }
             }
         }
@@ -257,123 +279,4 @@ public class JavaApiServer {
         }
         return null;
     }
-
-    // 1. LOGIN HANDLER
-
-    // 2. REGISTRO HANDLER - TURISTA
-
-    // LOGIN - AGENCIA
-
-    // 3. REGISTRO HANDLER - AGENCIA
-
-    // 3. GUARDAR RESERVA HANDLER
-
-    // 4. OBTENER RESERVAS HANDLER
-
-    // 5. CANCELAR RESERVA HANDLER
-
-    // 6. CALIFICAR HANDLER
-
-    public static String jsonEscape(String value) {
-
-        if (value == null) {
-            return "";
-        }
-
-        return value
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\r", "\\r")
-                .replace("\n", "\\n");
-    }
-
-    // 7. STATIC FILES HANDLER (Serves HTML, CSS, JS, Images)
-
-    public static String obtenerJson(String json, String clave) {
-        String buscar = "\"" + clave + "\"";
-        int inicio = json.indexOf(buscar);
-
-        if (inicio == -1)
-            return "";
-
-        inicio = json.indexOf(":", inicio);
-
-        if (inicio == -1)
-            return "";
-
-        inicio++;
-
-        while (inicio < json.length() &&
-                Character.isWhitespace(json.charAt(inicio))) {
-            inicio++;
-        }
-
-        if (inicio < json.length() && json.charAt(inicio) == '"') {
-
-            inicio++;
-
-            int fin = json.indexOf("\"", inicio);
-
-            if (fin == -1)
-                return "";
-
-            return json.substring(inicio, fin);
-        }
-
-        int fin = json.indexOf(",", inicio);
-
-        if (fin == -1) {
-            fin = json.indexOf("}", inicio);
-        }
-
-        if (fin == -1)
-            return "";
-
-        return json.substring(inicio, fin).trim();
-    }
-
-    public static String obtenerParametroFormulario(String body, String parametro) {
-
-        if (body == null || body.isEmpty()) {
-            return "";
-        }
-
-        String[] partes = body.split("&");
-
-        for (String parte : partes) {
-
-            String[] claveValor = parte.split("=", 2);
-
-            if (claveValor.length == 2 && claveValor[0].equals(parametro)) {
-
-                try {
-                    return java.net.URLDecoder.decode(
-                            claveValor[1],
-                            java.nio.charset.StandardCharsets.UTF_8);
-                } catch (Exception e) {
-                    return claveValor[1];
-                }
-            }
-        }
-
-        return "";
-    }
-
-    public static String obtenerParametro(String body, String parametro) {
-
-        if (body == null || body.trim().isEmpty()) {
-            return "";
-        }
-
-        body = body.trim();
-
-        // Si viene como JSON
-        if (body.startsWith("{")) {
-            return obtenerJson(body, parametro);
-        }
-
-        // Si viene como formulario
-        return obtenerParametroFormulario(body, parametro);
-    }
-
 }

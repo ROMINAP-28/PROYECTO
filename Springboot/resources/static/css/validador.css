@@ -1,0 +1,101 @@
+/* ==========================================================
+   TRAVELINK - SISTEMA GLOBAL DE VALIDACIONES VISUALES
+   validador.css: Estilos unificados para los 3 roles
+   ========================================================== */
+
+/* 1. Campos Inválidos (Rojo) */
+.validador-invalido,
+input.validador-invalido,
+select.validador-invalido,
+textarea.validador-invalido,
+.novalido {
+    border-color: #ef4444 !important;
+    background-color: #fffcfc !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18) !important;
+    outline: none !important;
+}
+
+/* 2. Campos Vacíos Obligatorios (Amarillo) */
+.campo-vacio,
+input.campo-vacio,
+select.campo-vacio,
+textarea.campo-vacio {
+    border-color: #f59e0b !important;
+    background-color: #fffbeb !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18) !important;
+    outline: none !important;
+}
+
+/* 3. Campos Válidos (Verde) */
+.validador-valido,
+input.validador-valido,
+select.validador-valido,
+textarea.validador-valido,
+.valido {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12) !important;
+}
+
+/* 4. Mensajes de Error bajo el campo */
+.form-group, .auth-field, .input-box {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+}
+
+.input-wrapper, .input-password-wrap, .password-field, .input-group {
+    width: 100% !important;
+}
+
+.validador-error-msg,
+.error-msg {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: #dc2626 !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    margin-top: 6px !important;
+    margin-bottom: 2px !important;
+    line-height: 1.3 !important;
+    width: 100% !important;
+    flex-basis: 100% !important;
+    position: static !important;
+    order: 999 !important;
+    clear: both !important;
+    animation: validadorFadeIn 0.2s ease-in-out;
+}
+
+.validador-error-msg.msg-vacio {
+    color: #d97706 !important;
+}
+
+.validador-error-msg i,
+.error-msg i {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* 5. Estado de Botón Procesando */
+.btn-procesando,
+button.btn-procesando,
+input[type="submit"].btn-procesando {
+    opacity: 0.75 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    position: relative;
+}
+
+@keyframes validadorFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

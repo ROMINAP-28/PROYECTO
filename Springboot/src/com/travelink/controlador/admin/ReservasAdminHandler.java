@@ -25,8 +25,8 @@ public class ReservasAdminHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         String method = exchange.getRequestMethod();
 
-        // 1. GESTION DE ELIMINACION / ACTUALIZACION
-        if ("POST".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method)) {
+        // 1. GESTION DE ELIMINACION / ACTUALIZACION (POST / PUT / DELETE)
+        if ("POST".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
             String body = JavaApiServer.readRequestBody(exchange);
             Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
             Map<String, String> queryParams = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());

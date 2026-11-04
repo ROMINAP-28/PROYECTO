@@ -1,7 +1,7 @@
 ﻿/**
  * Travelink - Control de Calidad
- * Sub-tabs: Calificaciones Flaggeadas & Tours en Revisión
- * Filtros compactos, Paginación dinámica (máx 5 registros)
+ * Sub-tabs: Calificaciones Flaggeadas & Tours en RevisiÃ³n
+ * Filtros compactos, PaginaciÃ³n dinÃ¡mica (mÃ¡x 5 registros)
  */
 
 let tabActivo = 'flagged';
@@ -15,6 +15,7 @@ const ITEMS_POR_PAGINA = 5;
 document.addEventListener('DOMContentLoaded', () => {
     cargarCombosAgenciasCalidad();
     cargarDatosCalidad();
+    window.cargarCalidad = cargarDatosCalidad;
 });
 
 async function cargarCombosAgenciasCalidad() {
@@ -37,7 +38,7 @@ async function cargarCombosAgenciasCalidad() {
             });
         }
     } catch (e) {
-        console.warn('No se pudo cargar agencias dinámicas:', e);
+        console.warn('No se pudo cargar agencias dinÃ¡micas:', e);
     }
 }
 
@@ -188,7 +189,7 @@ function renderizarTabla() {
         renderPaginator(reviewsFiltrados.length, paginaActual, ITEMS_POR_PAGINA, 'paginacionControles', 'paginacionInfo', cambiarPaginaCalidad);
     } else {
         if (toursRevisionFiltrados.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 24px; color:#94a3b8;">No hay tours en revisión.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 24px; color:#94a3b8;">No hay tours en revisiÃ³n.</td></tr>`;
             renderPaginator(0, 1, ITEMS_POR_PAGINA, 'paginacionControles', 'paginacionInfo', cambiarPaginaCalidad);
             return;
         }
@@ -245,12 +246,12 @@ function verDetalleResena(id) {
     if (!r) return;
 
     Swal.fire({
-        title: `Reseña de ${r.usuario}`,
+        title: `ReseÃ±a de ${r.usuario}`,
         html: `
             <div style="text-align:left; font-size:13.5px; color:#334155; line-height: 1.6;">
                 <p><strong>Tour:</strong> ${r.tour}</p>
                 <p><strong>Agencia:</strong> ${r.agencia}</p>
-                <p><strong>Calificación:</strong> ★ ${r.estrellas} / 5.0</p>
+                <p><strong>CalificaciÃ³n:</strong> â˜…Â ${r.estrellas} / 5.0</p>
                 <p><strong>Fecha:</strong> ${r.fecha}</p>
                 <hr style="margin: 10px 0; border: 0; border-top: 1px solid #e2e8f0;">
                 <p><strong>Comentario reportado:</strong></p>
@@ -267,13 +268,13 @@ function verDetalleResena(id) {
 
 function eliminarResena(id) {
     Swal.fire({
-        title: '¿Eliminar reseña reportada?',
-        text: 'La calificación se eliminará de la base de datos.',
+        title: 'Â¿Eliminar reseÃ±a reportada?',
+        text: 'La calificaciÃ³n se eliminarÃ¡ de la base de datos.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
         cancelButtonColor: '#94a3b8',
-        confirmButtonText: 'Sí, eliminar',
+        confirmButtonText: 'SÃ­, eliminar',
         cancelButtonText: 'Cancelar'
     }).then(async result => {
         if (result.isConfirmed) {
@@ -282,7 +283,7 @@ function eliminarResena(id) {
             } catch (e) {}
             reviewsList = reviewsList.filter(r => r.id !== id);
             aplicarFiltros();
-            Swal.fire('Eliminada', 'La reseña ha sido retirada del sistema y actualizada en la base de datos.', 'success');
+            Swal.fire('Eliminada', 'La reseÃ±a ha sido retirada del sistema y actualizada en la base de datos.', 'success');
         }
     });
 }
@@ -293,8 +294,8 @@ function moderarTour(id, accion) {
 
     const texto = accion === 'desactivar' ? 'desactivar y pausar ventas de' : 'mantener activo';
     Swal.fire({
-        title: `¿Confirmar acción?`,
-        text: `Se procederá a ${texto} "${t.tour}".`,
+        title: `Â¿Confirmar acciÃ³n?`,
+        text: `Se procederÃ¡ a ${texto} "${t.tour}".`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: accion === 'desactivar' ? '#ef4444' : '#16a34a',

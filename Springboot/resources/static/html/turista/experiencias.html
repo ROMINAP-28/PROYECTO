@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -17,6 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/validador.css">
 </head>
 
 <body>
@@ -123,6 +124,14 @@
                 </div>
 
                 <div class="filtro-grupo" style="margin-bottom: 20px;">
+    <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Agencia</h4>
+    <select id="agencia"
+        style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
+        <option value="">Todas las agencias</option>
+    </select>
+</div>
+
+<div class="filtro-grupo" style="margin-bottom: 20px;">
                     <h4 style="font-size:13px; color:#64748b; margin-bottom:8px; font-weight:600;">Categoría</h4>
                     <select id="categoria"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
@@ -141,11 +150,11 @@
                     <select id="calificacion"
                         style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; outline:none; color:#334155;">
                         <option value="">Todas las calificaciones</option>
-                        <option value="5">★★★★★ (5 estrellas)</option>
-                        <option value="4">★★★★ (4+ estrellas)</option>
-                        <option value="3">★★★ (3+ estrellas)</option>
-                        <option value="2">★★ (2+ estrellas)</option>
-                        <option value="1">★ (1+ estrella)</option>
+                        <option value="5">â˜…Ââ˜…Ââ˜…Ââ˜…Ââ˜…Â (5 estrellas)</option>
+                        <option value="4">â˜…Ââ˜…Ââ˜…Ââ˜…Â (4+ estrellas)</option>
+                        <option value="3">â˜…Ââ˜…Ââ˜…Â (3+ estrellas)</option>
+                        <option value="2">â˜…Ââ˜…Â (2+ estrellas)</option>
+                        <option value="1">â˜…Â (1+ estrella)</option>
                     </select>
                 </div>
 
@@ -268,6 +277,8 @@
     <script src="../../js/comun/api.js"></script>
     <script src="../../js/comun/user_session.js"></script>
     <script src="../../js/turista/experiencias.js"></script>
+    <script src="../../js/comun/sync.js"></script>
+    <script src="/js/validador.js" defer></script>
 </body>
 
 </html>

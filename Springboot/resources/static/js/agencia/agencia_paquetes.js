@@ -3,6 +3,7 @@
  * Fase 5: Vista unificada de gestión de paquetes, salidas y cupos
  */
 (function () {
+    const apiFetch = window.apiFetch || fetch;
     let todosLosPaquetes = [];
     let paquetesFiltrados = [];
     let listaDestinos = [];
@@ -97,15 +98,25 @@
         const dropNombre = document.getElementById("dropdownNombreAgencia");
         const avatarLetter = document.getElementById("agencyAvatarLetter");
 
-        // Intentar actualizar con el usuario autenticado real
+        const actualizarTopBar = (nombre) => {
+            if (!nombre) return;
+            if (topNombre) topNombre.textContent = nombre;
+            if (dropNombre) dropNombre.textContent = nombre;
+            if (avatarLetter) avatarLetter.textContent = nombre.charAt(0).toUpperCase();
+        };
+
+        const uCache = window.getCurrentUser ? window.getCurrentUser() : null;
+        if (uCache) {
+            actualizarTopBar(uCache.nombreComercial || uCache.nombre || uCache.usuario);
+        }
+
+        // Sincronizar con el usuario autenticado real
         apiFetch("/api/auth/me")
             .then(res => res.json())
             .then(data => {
-                if (data.status === "success" && data.usuario) {
-                    const nombre = data.usuario.nombre || data.usuario.nombreComercial || data.usuario.username || "Agencia";
-                    if (topNombre) topNombre.textContent = nombre;
-                    if (dropNombre) dropNombre.textContent = nombre;
-                    if (avatarLetter) avatarLetter.textContent = nombre.charAt(0).toUpperCase();
+                if (data && data.idUsuario) {
+                    const nombre = data.nombreComercial || data.nombre || (data.user && (data.user.nombreComercial || data.user.nombre)) || (data.usuario && (data.usuario.nombre || data.usuario.nombreComercial)) || "Andes Tours";
+                    actualizarTopBar(nombre);
                 }
             })
             .catch(() => {});
@@ -222,7 +233,7 @@
         }
     }
 
-    function aplicarFiltros() {
+    function aplicarFiltros(evt) {
         const query = (buscarPaquete ? buscarPaquete.value : "").trim().toLowerCase();
         const dest = (filtroDestinoPaquete ? filtroDestinoPaquete.value : "").trim().toLowerCase();
         const est = (filtroEstadoPaquete ? filtroEstadoPaquete.value : "").trim().toUpperCase();
@@ -244,7 +255,7 @@
 
         renderizarGrid();
 
-        if (btnAplicarFiltros && e && (e.type === 'click' || (e.key && e.key === 'Enter'))) {
+        if (btnAplicarFiltros && evt && (evt.type === 'click' || (evt.key && evt.key === 'Enter'))) {
             const originalHtml = btnAplicarFiltros.innerHTML;
             btnAplicarFiltros.innerHTML = '<i class="ti ti-check"></i> ¡Filtros aplicados!';
             setTimeout(() => {
@@ -281,7 +292,7 @@
             }
 
             // Imagen
-            let imgUrl = "../../img/machupicchu.png";
+            let imgUrl = "../../img/machupicchu.jpg";
             if (p.imagenPrincipal && p.imagenPrincipal.trim() !== "") {
                 imgUrl = normalizarUrlImagen(p.imagenPrincipal);
             } else if (p.imagen && p.imagen.trim() !== "") {
@@ -331,7 +342,7 @@
             return `
                 <div class="paquete-card" style="background:white; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 4px 12px rgba(0,0,0,0.03); transition:transform 0.2s, box-shadow 0.2s;">
                     <div class="paquete-img-wrap" style="position:relative; width:100%; height:180px; overflow:hidden; background:#f1f5f9;">
-                        <img loading="lazy" src="${imgUrl}" alt="${escapeHtml(p.nombre)}" class="paquete-card-img" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='../../img/machupicchu.png';">
+                        <img loading="lazy" src="${imgUrl}" alt="${escapeHtml(p.nombre)}" class="paquete-card-img" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='../../img/machupicchu.jpg';">
                         <span class="paquete-status-badge ${badgeClass}" style="position:absolute; top:12px; left:12px;">
                             ${badgeIcon} ${estado}
                         </span>
@@ -763,7 +774,7 @@
                 const condiciones = condicionesPaqueteInput.value.trim();
                 const descuento = parseFloat(descuentoPaqueteInput.value || "0");
 
-                const imagenPortada = imagenPaqueteInput.value.trim() || "img/machupicchu.png";
+                const imagenPortada = imagenPaqueteInput.value.trim() || "img/machupicchu.jpg";
                 const gal1 = imgGaleria1 ? imgGaleria1.value.trim() : "";
                 const gal2 = imgGaleria2 ? imgGaleria2.value.trim() : "";
                 const estado = estadoPaqueteSelect.value || "PUBLICADO";
@@ -890,17 +901,67 @@
         }
     }
 
+    const SVG_PLACEHOLDER = "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22120%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20120%22%3E%3Crect%20fill%3D%22%23f1f5f9%22%20width%3D%22200%22%20height%3D%22120%22%2F%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M70%2045a10%2010%200%201%200%200-20%2010%2010%200%200%200%200%2020zm-35%2050h130l-40-52-30%2038-20-24z%22%2F%3E%3C%2Fsvg%3E";
+
     // Slot de imagen upload helper
     window.cargarImagenSlot = function (fileInput, targetInputId, imgPreviewId) {
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
         const file = fileInput.files[0];
+
+        // Validar formato con Validador si está cargado
+        if (window.Validador && !window.Validador.validarCampo(fileInput)) {
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
-            const dataUrl = e.target.result;
-            const targetInput = document.getElementById(targetInputId);
-            const imgPreview = document.getElementById(imgPreviewId);
-            if (targetInput) targetInput.value = dataUrl;
-            if (imgPreview) imgPreview.src = dataUrl;
+            const img = new Image();
+            img.onload = () => {
+                const maxDim = 1200;
+                let w = img.width;
+                let h = img.height;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) {
+                        h = Math.round((h * maxDim) / w);
+                        w = maxDim;
+                    } else {
+                        w = Math.round((w * maxDim) / h);
+                        h = maxDim;
+                    }
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, w, h);
+                const isPng = (file.type || "").toLowerCase().includes("png");
+                const dataUrl = canvas.toDataURL(isPng ? "image/png" : "image/jpeg", 0.85);
+
+                const targetInput = document.getElementById(targetInputId);
+                const imgPreview = document.getElementById(imgPreviewId);
+                if (targetInput) {
+                    targetInput.value = dataUrl;
+                    if (window.Validador) {
+                        window.Validador.limpiar(targetInput.parentElement || targetInput);
+                        targetInput.classList.remove("novalido", "validador-invalido");
+                    }
+                }
+                if (imgPreview) {
+                    imgPreview.src = dataUrl;
+                }
+                if (window.Validador) {
+                    window.Validador.limpiar(fileInput.parentElement || fileInput);
+                    fileInput.classList.remove("novalido", "validador-invalido");
+                }
+            };
+            img.onerror = () => {
+                const dataUrl = e.target.result;
+                const targetInput = document.getElementById(targetInputId);
+                const imgPreview = document.getElementById(imgPreviewId);
+                if (targetInput) targetInput.value = dataUrl;
+                if (imgPreview) imgPreview.src = dataUrl;
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     };
@@ -939,12 +1000,26 @@
         if (condicionesPaqueteInput) condicionesPaqueteInput.value = "";
         if (descuentoPaqueteInput) descuentoPaqueteInput.value = "0";
 
-        if (imagenPaqueteInput) imagenPaqueteInput.value = "img/machupicchu.png";
-        if (imgPreviewPortada) imgPreviewPortada.src = "../../img/machupicchu.png";
-        if (imgGaleria1) imgGaleria1.value = "img/cusco.jpg";
-        if (imgPreviewGaleria1) imgPreviewGaleria1.src = "../../img/cusco.jpg";
-        if (imgGaleria2) imgGaleria2.value = "img/arequipa.jpg";
-        if (imgPreviewGaleria2) imgPreviewGaleria2.src = "../../img/arequipa.jpg";
+        // Dejar campos de imágenes totalmente limpios
+        if (imagenPaqueteInput) imagenPaqueteInput.value = "";
+        if (imgPreviewPortada) imgPreviewPortada.src = SVG_PLACEHOLDER;
+        if (imgGaleria1) imgGaleria1.value = "";
+        if (imgPreviewGaleria1) imgPreviewGaleria1.src = SVG_PLACEHOLDER;
+        if (imgGaleria2) imgGaleria2.value = "";
+        if (imgPreviewGaleria2) imgPreviewGaleria2.src = SVG_PLACEHOLDER;
+
+        // Resetear inputs tipo file
+        const fPort = document.getElementById("inputPortFile");
+        if (fPort) fPort.value = "";
+        const fGal1 = document.getElementById("inputGal1File");
+        if (fGal1) fGal1.value = "";
+        const fGal2 = document.getElementById("inputGal2File");
+        if (fGal2) fGal2.value = "";
+
+        // Limpiar errores del validador si existieran
+        if (formPaquete && window.Validador) {
+            window.Validador.limpiar(formPaquete);
+        }
 
         if (estadoPaqueteSelect) estadoPaqueteSelect.value = "PUBLICADO";
         if (mensajePaquete) mensajePaquete.style.display = "none";
@@ -1007,18 +1082,18 @@
         condicionesPaqueteInput.value = p.condiciones || "";
         descuentoPaqueteInput.value = p.descuento || 0;
 
-        const imgPort = p.imagenPrincipal || p.imagen || "img/machupicchu.png";
+        const imgPort = p.imagenPrincipal || p.imagen || "";
         imagenPaqueteInput.value = imgPort;
-        if (imgPreviewPortada) imgPreviewPortada.src = normalizarUrlImagen(imgPort);
+        if (imgPreviewPortada) imgPreviewPortada.src = imgPort ? normalizarUrlImagen(imgPort) : SVG_PLACEHOLDER;
 
         const gal = Array.isArray(p.galeria) ? p.galeria : [];
         if (imgGaleria1) {
             imgGaleria1.value = gal[0] || "";
-            if (imgPreviewGaleria1) imgPreviewGaleria1.src = gal[0] ? normalizarUrlImagen(gal[0]) : "../../img/cusco.jpg";
+            if (imgPreviewGaleria1) imgPreviewGaleria1.src = gal[0] ? normalizarUrlImagen(gal[0]) : SVG_PLACEHOLDER;
         }
         if (imgGaleria2) {
             imgGaleria2.value = gal[1] || "";
-            if (imgPreviewGaleria2) imgPreviewGaleria2.src = gal[1] ? normalizarUrlImagen(gal[1]) : "../../img/arequipa.jpg";
+            if (imgPreviewGaleria2) imgPreviewGaleria2.src = gal[1] ? normalizarUrlImagen(gal[1]) : SVG_PLACEHOLDER;
         }
 
         estadoPaqueteSelect.value = String(p.estado || "PUBLICADO").toUpperCase();
@@ -1058,7 +1133,7 @@
                 p.galeria.forEach(g => { if (g && !fotos.includes(g)) fotos.push(g); });
             }
             galWrap.innerHTML = fotos.map(f => `
-                <img loading="lazy" src="${normalizarUrlImagen(f)}" style="width:120px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1; flex-shrink:0;" onerror="this.onerror=null; this.src='../../img/machupicchu.png';">
+                <img loading="lazy" src="${normalizarUrlImagen(f)}" style="width:120px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1; flex-shrink:0;" onerror="this.onerror=null; this.src='../../img/machupicchu.jpg';">
             `).join("");
         }
 
@@ -1232,7 +1307,7 @@
     }
 
     function normalizarUrlImagen(url) {
-        if (!url || typeof url !== "string") return "../../img/machupicchu.png";
+        if (!url || typeof url !== "string" || url.trim() === "") return SVG_PLACEHOLDER;
         const t = url.trim();
         if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("data:") || t.startsWith("/")) return t;
         if (t.startsWith("../")) return t;

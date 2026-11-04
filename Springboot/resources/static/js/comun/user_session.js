@@ -23,9 +23,26 @@
     let sessionInitialized = false;
     let sessionReadyResolve;
 
-    // 0. Recuperar sesión previa de la pestaña actual (0ms de latencia, navegación instantánea)
+    function getSessionKeyForCurrentPath() {
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('/administrador/')) return 'sesion_admin';
+        if (path.includes('/agencia/')) return 'sesion_agencia';
+        return 'sesion_turista';
+    }
+
+    function getSessionKeyForRole(rol) {
+        if (rol === 'ROLE_ADMIN') return 'sesion_admin';
+        if (rol === 'ROLE_AGENCIA') return 'sesion_agencia';
+        return 'sesion_turista';
+    }
+
+    // 0. Recuperar sesión previa del rol correspondiente a la pestaña actual (0ms de latencia)
     try {
-        const cached = sessionStorage.getItem(SESSION_CACHE_KEY);
+        const roleKey = getSessionKeyForCurrentPath();
+        let cached = sessionStorage.getItem(roleKey);
+        if (!cached || cached === 'guest') {
+            cached = null;
+        }
         if (cached && cached !== 'guest') {
             currentUser = JSON.parse(cached);
         }
@@ -45,6 +62,65 @@
         } else {
             window.sessionReadyPromise.then(callback);
         }
+    };
+
+    window.fetchFreshUser = async function () {
+        try {
+            const fetchFn = window.apiFetch || fetch;
+            const res = await fetchFn('/api/auth/me', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.idUsuario) {
+                    let soloNombre = data.nombres || '';
+                    if (!soloNombre && data.nombre) {
+                        let nom = data.nombre.trim();
+                        let ape = (data.apellidos || '').trim();
+                        if (ape && nom.toLowerCase().endsWith(ape.toLowerCase())) {
+                            soloNombre = nom.substring(0, nom.length - ape.length).trim();
+                        } else {
+                            soloNombre = nom.split(' ')[0] || nom;
+                        }
+                    }
+
+                    let apePaterno = data.apellidoPaterno || (data.user && data.user.apellidoPaterno) || '';
+                    let apeMaterno = data.apellidoMaterno || (data.user && data.user.apellidoMaterno) || '';
+                    if (!apePaterno && (data.apellidos || (data.user && data.user.apellidos))) {
+                        const fullApe = (data.apellidos || (data.user && data.user.apellidos) || '').trim();
+                        const parts = fullApe.split(' ');
+                        apePaterno = parts[0] || '';
+                        if (parts.length > 1) {
+                            apeMaterno = fullApe.substring(parts[0].length).trim();
+                        }
+                    }
+
+                    currentUser = {
+                        id: data.idUsuario,
+                        idUsuario: data.idUsuario,
+                        usuario: data.nombre,
+                        nombre: data.nombre,
+                        nombreComercial: data.nombreComercial || (data.user && data.user.nombreComercial) || '',
+                        razonSocial: data.razonSocial || (data.user && data.user.razonSocial) || '',
+                        nombres: soloNombre,
+                        apellidoPaterno: apePaterno,
+                        apellidoMaterno: apeMaterno,
+                        correo: data.correo || '',
+                        email: data.correo || '',
+                        rol: data.rol,
+                        idAgencia: data.idAgencia || null,
+                        nroDocumento: data.nroDocumento || (data.user && data.user.nroDocumento) || '',
+                        telefono: data.telefono || (data.user && data.user.telefono) || '',
+                        apellidos: data.apellidos || (data.user && data.user.apellidos) || ''
+                    };
+                    try {
+                        const rKey = getSessionKeyForRole(data.rol);
+                        sessionStorage.setItem(rKey, JSON.stringify(currentUser));
+                        sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(currentUser));
+                    } catch (e) {}
+                    return currentUser;
+                }
+            }
+        } catch (e) {}
+        return currentUser;
     };
 
     window.getCurrentUser = function () {
@@ -69,6 +145,9 @@
         }
         currentUser = null;
         try {
+            sessionStorage.removeItem('sesion_admin');
+            sessionStorage.removeItem('sesion_agencia');
+            sessionStorage.removeItem('sesion_turista');
             sessionStorage.removeItem(SESSION_CACHE_KEY);
             sessionStorage.clear();
         } catch (e) {}
@@ -259,6 +338,19 @@
         const inputCorreo = document.getElementById('inputCorreo');
         if (inputNombre && !inputNombre.value) inputNombre.value = realName;
         if (inputCorreo && !inputCorreo.value) inputCorreo.value = realEmail;
+
+        // Actualizar datos del topbar en panel de Agencia
+        const agencyDisplayName = user.nombreComercial || user.razonSocial || user.nombre || user.usuario || 'Mi Agencia';
+        const elAgencyTop = document.getElementById('nombreAgenciaTop');
+        if (elAgencyTop) elAgencyTop.textContent = agencyDisplayName;
+        const elAgencyDrop = document.getElementById('dropdownNombreAgencia');
+        if (elAgencyDrop) elAgencyDrop.textContent = agencyDisplayName;
+        const elAgencyAvatar = document.getElementById('agencyAvatarLetter');
+        if (elAgencyAvatar) elAgencyAvatar.textContent = agencyDisplayName.charAt(0).toUpperCase();
+
+        // Actualizar datos del topbar en panel de Administrador
+        const elAdminTop = document.getElementById('adminTopName') || document.getElementById('adminProfileName');
+        if (elAdminTop) elAdminTop.textContent = user.nombre || user.usuario || 'Administrador';
     };
 
     // 5. Consultar /api/auth/me una vez por página
@@ -300,6 +392,8 @@
                         idUsuario: data.idUsuario,
                         usuario: data.nombre,
                         nombre: data.nombre,
+                        nombreComercial: data.nombreComercial || (data.user && data.user.nombreComercial) || '',
+                        razonSocial: data.razonSocial || (data.user && data.user.razonSocial) || '',
                         nombres: soloNombre,
                         apellidoPaterno: apePaterno,
                         apellidoMaterno: apeMaterno,
@@ -311,7 +405,11 @@
                         telefono: data.telefono || (data.user && data.user.telefono) || '',
                         apellidos: data.apellidos || (data.user && data.user.apellidos) || ''
                     };
-                    try { sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(currentUser)); } catch (e) {}
+                    try {
+                        const rKey = getSessionKeyForRole(data.rol);
+                        sessionStorage.setItem(rKey, JSON.stringify(currentUser));
+                        sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(currentUser));
+                    } catch (e) {}
                 } else {
                     currentUser = null;
                     try { sessionStorage.setItem(SESSION_CACHE_KEY, 'guest'); } catch (e) {}

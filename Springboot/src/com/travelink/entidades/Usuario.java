@@ -58,7 +58,14 @@ public class Usuario {
     public void setIdPersona(Integer idPersona) { this.idPersona = idPersona; }
 
     public Integer getIdRol() { return idRol != null ? idRol : (rol != null ? rol.getIdRol() : null); }
-    public void setIdRol(Integer idRol) { this.idRol = idRol; }
+    public void setIdRol(Integer idRol) { 
+        this.idRol = idRol; 
+        if (idRol != null && (this.rol == null || !idRol.equals(this.rol.getIdRol()))) {
+            Rol r = new Rol();
+            r.setIdRol(idRol);
+            this.rol = r;
+        }
+    }
 
     public String getNombreUsuario() { return nombreUsuario; }
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }

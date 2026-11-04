@@ -295,15 +295,20 @@ function actualizarTotales() {
     if (elSaldoPresencial) elSaldoPresencial.textContent = 'S/ ' + saldo85;
 }
 
-function renderizarFormularioPasajeros() {
+async function renderizarFormularioPasajeros() {
     const cont = document.getElementById('contenedorPasajeros');
     if (!cont) return;
+
+    // Obtener datos frescos de sesión garantizados
+    let user = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!user && window.fetchFreshUser) {
+        user = await window.fetchFreshUser();
+    }
 
     const cantA = Math.max(1, parseInt(document.getElementById('cantAdultos')?.value || '1'));
     const cantN = tourInfo.aceptaNinos ? parseInt(document.getElementById('cantNinos')?.value || '0') : 0;
     const cantB = tourInfo.aceptaBebes ? parseInt(document.getElementById('cantBebes')?.value || '0') : 0;
 
-    const user = window.getCurrentUser ? window.getCurrentUser() : null;
     let html = '';
 
     // Pasajero 1: Titular
@@ -317,8 +322,8 @@ function renderizarFormularioPasajeros() {
             soloNombre = full.split(' ')[0] || full;
         }
     }
-    let titularApePat = user && user.apellidoPaterno ? user.apellidoPaterno : '';
-    let titularApeMat = user && user.apellidoMaterno ? user.apellidoMaterno : '';
+    let titularApePat = user && user.apellidoPaterno ? user.apellidoPaterno.trim() : '';
+    let titularApeMat = user && user.apellidoMaterno ? user.apellidoMaterno.trim() : '';
     if (!titularApePat && user && user.apellidos) {
         const parts = user.apellidos.trim().split(' ');
         titularApePat = parts[0] || '';
@@ -326,9 +331,35 @@ function renderizarFormularioPasajeros() {
             titularApeMat = user.apellidos.trim().substring(parts[0].length).trim();
         }
     }
-    const dniTitular = user && user.nroDocumento ? user.nroDocumento : '';
-    const telTitular = user && user.telefono ? user.telefono : '';
-    const emailTitular = user && (user.email || user.correo) ? (user.email || user.correo) : '';
+    const dniTitular = user && (user.nroDocumento || user.dni) ? String(user.nroDocumento || user.dni).trim() : '';
+    const telTitular = user && user.telefono ? String(user.telefono).trim() : '';
+    const emailTitular = user && (user.email || user.correo) ? String(user.email || user.correo).trim() : '';
+
+    // Regla: si el titular tiene datos registrados, quedan bloqueados (no editables).
+    // Si algún dato falta en la BD, NO dejar bloqueado y vacío: mostrar como editable y marcado en amarillo (.campo-vacio)
+    const nombreEditable = !soloNombre;
+    const apePatEditable = !titularApePat;
+    const apeMatEditable = !titularApeMat;
+    const docEditable = !dniTitular;
+
+    const p1NomAttr = nombreEditable
+        ? 'placeholder="Ingresa tus nombres (titular)" class="campo-vacio" style="border-color:#ca8a04; background-color:#fef9c3;"'
+        : `value="${soloNombre}" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)"`;
+
+    const p1ApePatAttr = apePatEditable
+        ? 'placeholder="Ingresa apellido paterno" class="campo-vacio" style="border-color:#ca8a04; background-color:#fef9c3;"'
+        : `value="${titularApePat}" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)"`;
+
+    const p1ApeMatAttr = apeMatEditable
+        ? 'placeholder="Ingresa apellido materno" class="campo-vacio" style="border-color:#ca8a04; background-color:#fef9c3;"'
+        : `value="${titularApeMat}" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)"`;
+
+    const p1DocAttr = docEditable
+        ? 'placeholder="DNI (8 dígitos)" class="campo-vacio" maxlength="8" style="border-color:#ca8a04; background-color:#fef9c3;"'
+        : `value="${dniTitular}" readonly maxlength="12" style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)"`;
+
+    const telStyle = !telTitular ? 'border-color:#ca8a04; background-color:#fef9c3;' : 'border-color:#16a34a;';
+    const emailStyle = !emailTitular ? 'border-color:#ca8a04; background-color:#fef9c3;' : 'border-color:#16a34a;';
 
     html += `
         <div class="passenger-card-box" data-tipo="ADULTO" data-index="1">
@@ -338,28 +369,28 @@ function renderizarFormularioPasajeros() {
             </div>
             <div class="passenger-grid-3">
                 <div class="input-field-block">
-                    <label>Nombres * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
-                    <input type="text" id="pNombre_1" value="${soloNombre}" placeholder="Nombres del titular" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
+                    <label>Nombres * <span style="font-size:11px; color:${nombreEditable ? '#ca8a04' : '#64748b'}; font-weight:${nombreEditable ? 'bold' : 'normal'};">(${nombreEditable ? 'Completar' : 'No editable'})</span></label>
+                    <input type="text" id="pNombre_1" ${p1NomAttr}>
                 </div>
                 <div class="input-field-block">
-                    <label>Apellido Paterno * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
-                    <input type="text" id="pApePat_1" value="${titularApePat}" placeholder="Apellido paterno" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
+                    <label>Apellido Paterno * <span style="font-size:11px; color:${apePatEditable ? '#ca8a04' : '#64748b'}; font-weight:${apePatEditable ? 'bold' : 'normal'};">(${apePatEditable ? 'Completar' : 'No editable'})</span></label>
+                    <input type="text" id="pApePat_1" ${p1ApePatAttr}>
                 </div>
                 <div class="input-field-block">
-                    <label>Apellido Materno * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
-                    <input type="text" id="pApeMat_1" value="${titularApeMat}" placeholder="Apellido materno" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
+                    <label>Apellido Materno * <span style="font-size:11px; color:${apeMatEditable ? '#ca8a04' : '#64748b'}; font-weight:${apeMatEditable ? 'bold' : 'normal'};">(${apeMatEditable ? 'Completar' : 'No editable'})</span></label>
+                    <input type="text" id="pApeMat_1" ${p1ApeMatAttr}>
                 </div>
                 <div class="input-field-block">
-                    <label>DNI / Documento * <span style="font-size:11px; color:#64748b; font-weight:normal;">(No editable)</span></label>
-                    <input type="text" id="pDoc_1" value="${dniTitular}" maxlength="12" placeholder="Nro de documento" readonly style="background-color:#f1f5f9; color:#334155; cursor:not-allowed;" title="Dato registrado del titular (no editable)">
+                    <label>DNI / Documento * <span style="font-size:11px; color:${docEditable ? '#ca8a04' : '#64748b'}; font-weight:${docEditable ? 'bold' : 'normal'};">(${docEditable ? 'Completar' : 'No editable'})</span></label>
+                    <input type="text" id="pDoc_1" ${p1DocAttr}>
                 </div>
                 <div class="input-field-block">
                     <label>Teléfono * <span style="font-size:11px; color:#16a34a; font-weight:600;"><i class="fa-solid fa-pen-to-square"></i> Editable</span></label>
-                    <input type="tel" id="pTel_1" value="${telTitular}" maxlength="15" placeholder="Nro de teléfono" style="border-color:#16a34a;" title="Puede editar su teléfono y se actualizará en su perfil">
+                    <input type="tel" id="pTel_1" value="${telTitular}" maxlength="15" placeholder="Ej: 987654321" class="${!telTitular ? 'campo-vacio' : ''}" style="${telStyle}" title="Puede editar su teléfono y se actualizará en su perfil">
                 </div>
                 <div class="input-field-block">
                     <label>Email / Correo Electrónico * <span style="font-size:11px; color:#16a34a; font-weight:600;"><i class="fa-solid fa-pen-to-square"></i> Editable</span></label>
-                    <input type="email" id="pEmail_1" value="${emailTitular}" placeholder="correo@ejemplo.com" style="border-color:#16a34a;" title="Puede editar su correo y se actualizará en su perfil">
+                    <input type="email" id="pEmail_1" value="${emailTitular}" placeholder="correo@ejemplo.com" class="${!emailTitular ? 'campo-vacio' : ''}" style="${emailStyle}" title="Puede editar su correo y se actualizará en su perfil">
                 </div>
             </div>
         </div>
@@ -367,7 +398,7 @@ function renderizarFormularioPasajeros() {
 
     let pIndex = 2;
 
-    // Acompañantes adultos
+    // Acompañantes adultos (desde adulto 2)
     for (let i = 2; i <= cantA; i++) {
         html += `
             <div class="passenger-card-box" data-tipo="ADULTO" data-index="${pIndex}">
@@ -389,7 +420,7 @@ function renderizarFormularioPasajeros() {
                     </div>
                     <div class="input-field-block">
                         <label>DNI / Documento *</label>
-                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="Nro de documento">
+                        <input type="text" id="pDoc_${pIndex}" maxlength="8" placeholder="DNI (8 dígitos)">
                     </div>
                 </div>
             </div>
@@ -419,7 +450,7 @@ function renderizarFormularioPasajeros() {
                     </div>
                     <div class="input-field-block">
                         <label>DNI / Documento *</label>
-                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="DNI / Documento">
+                        <input type="text" id="pDoc_${pIndex}" maxlength="8" placeholder="DNI (8 dígitos)">
                     </div>
                 </div>
             </div>
@@ -449,7 +480,7 @@ function renderizarFormularioPasajeros() {
                     </div>
                     <div class="input-field-block">
                         <label>DNI / Documento *</label>
-                        <input type="text" id="pDoc_${pIndex}" maxlength="12" placeholder="DNI / Documento">
+                        <input type="text" id="pDoc_${pIndex}" maxlength="8" placeholder="DNI (8 dígitos)">
                     </div>
                 </div>
             </div>
@@ -461,42 +492,133 @@ function renderizarFormularioPasajeros() {
 }
 
 function validarPasoDatos() {
+    // 1. Limpiar estados previos
+    document.querySelectorAll('#contenedorPasajeros input').forEach(inp => {
+        inp.classList.remove('novalido', 'campo-vacio', 'valido');
+    });
+
     const pBoxes = document.querySelectorAll('#contenedorPasajeros .passenger-card-box');
+    const dnisVistos = new Map(); // DNI -> idx de pasajero
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const regexDni = /^\d{8}$/;
+
     for (const box of pBoxes) {
         const idx = box.getAttribute('data-index');
+        const tipo = box.getAttribute('data-tipo');
+        const esTitular = idx === '1';
 
-        const nom = document.getElementById(`pNombre_${idx}`)?.value.trim();
-        const apePat = document.getElementById(`pApePat_${idx}`)?.value.trim();
-        const apeMat = document.getElementById(`pApeMat_${idx}`)?.value.trim();
-        const doc = document.getElementById(`pDoc_${idx}`)?.value.trim();
+        const elNom = document.getElementById(`pNombre_${idx}`);
+        const elPat = document.getElementById(`pApePat_${idx}`);
+        const elMat = document.getElementById(`pApeMat_${idx}`);
+        const elDoc = document.getElementById(`pDoc_${idx}`);
+
+        const nom = elNom?.value.trim() || '';
+        const apePat = elPat?.value.trim() || '';
+        const apeMat = elMat?.value.trim() || '';
+        const doc = elDoc?.value.trim() || '';
 
         if (!nom) {
-            alert(`Por favor ingresa los nombres del Pasajero ${idx}.`);
+            if (elNom) elNom.classList.add('campo-vacio');
+            alert(`Por favor ingresa los nombres del Pasajero ${idx} (${esTitular ? 'Titular' : tipo}).`);
+            if (elNom) elNom.focus();
             return false;
         }
+        if (!regexLetras.test(nom)) {
+            if (elNom) elNom.classList.add('novalido');
+            alert(`Los nombres del Pasajero ${idx} deben contener solo letras.`);
+            if (elNom) elNom.focus();
+            return false;
+        }
+        if (elNom) elNom.classList.add('valido');
+
         if (!apePat) {
+            if (elPat) elPat.classList.add('campo-vacio');
             alert(`Por favor ingresa el apellido paterno del Pasajero ${idx}.`);
+            if (elPat) elPat.focus();
             return false;
         }
+        if (!regexLetras.test(apePat)) {
+            if (elPat) elPat.classList.add('novalido');
+            alert(`El apellido paterno del Pasajero ${idx} debe contener solo letras.`);
+            if (elPat) elPat.focus();
+            return false;
+        }
+        if (elPat) elPat.classList.add('valido');
+
         if (!apeMat) {
+            if (elMat) elMat.classList.add('campo-vacio');
             alert(`Por favor ingresa el apellido materno del Pasajero ${idx}.`);
+            if (elMat) elMat.focus();
             return false;
         }
+        if (!regexLetras.test(apeMat)) {
+            if (elMat) elMat.classList.add('novalido');
+            alert(`El apellido materno del Pasajero ${idx} debe contener solo letras.`);
+            if (elMat) elMat.focus();
+            return false;
+        }
+        if (elMat) elMat.classList.add('valido');
+
         if (!doc) {
-            alert(`Por favor ingresa el documento del Pasajero ${idx}.`);
+            if (elDoc) elDoc.classList.add('campo-vacio');
+            alert(`Por favor ingresa el DNI del Pasajero ${idx}.`);
+            if (elDoc) elDoc.focus();
             return false;
         }
-        if (idx === '1') {
-            const tel = document.getElementById('pTel_1')?.value.trim();
-            const email = document.getElementById('pEmail_1')?.value.trim();
+        if (!regexDni.test(doc)) {
+            if (elDoc) elDoc.classList.add('novalido');
+            alert(`El DNI del Pasajero ${idx} debe contener exactamente 8 dígitos numéricos.`);
+            if (elDoc) elDoc.focus();
+            return false;
+        }
+
+        // Validación de unicidad de DNI entre pasajeros de la misma reserva
+        if (dnisVistos.has(doc)) {
+            if (elDoc) elDoc.classList.add('novalido');
+            const previoIdx = dnisVistos.get(doc);
+            alert(`El DNI ${doc} del Pasajero ${idx} ya fue registrado para el Pasajero ${previoIdx}. Cada pasajero de la reserva debe tener un DNI único.`);
+            if (elDoc) elDoc.focus();
+            return false;
+        }
+        dnisVistos.set(doc, idx);
+        if (elDoc) elDoc.classList.add('valido');
+
+        // Validaciones del Titular (Pasajero 1)
+        if (esTitular) {
+            const elTel = document.getElementById('pTel_1');
+            const elEmail = document.getElementById('pEmail_1');
+            const tel = elTel?.value.trim() || '';
+            const email = elEmail?.value.trim() || '';
+
             if (!tel) {
+                if (elTel) elTel.classList.add('campo-vacio');
                 alert('El teléfono de contacto del titular es obligatorio.');
+                if (elTel) elTel.focus();
                 return false;
             }
+            const regexTel = /^9\d{8}$/;
+            if (!regexTel.test(tel)) {
+                if (elTel) elTel.classList.add('novalido');
+                alert('El teléfono debe tener 9 dígitos y comenzar con 9 (formato Perú: 9XXXXXXXX).');
+                if (elTel) elTel.focus();
+                return false;
+            }
+            if (elTel) elTel.classList.add('valido');
+
             if (!email) {
+                if (elEmail) elEmail.classList.add('campo-vacio');
                 alert('El correo electrónico de contacto del titular es obligatorio.');
+                if (elEmail) elEmail.focus();
                 return false;
             }
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(email)) {
+                if (elEmail) elEmail.classList.add('novalido');
+                alert('Ingresa un correo electrónico válido (ejemplo: usuario@dominio.com).');
+                if (elEmail) elEmail.focus();
+                return false;
+            }
+            if (elEmail) elEmail.classList.add('valido');
         }
     }
 
@@ -504,19 +626,25 @@ function validarPasoDatos() {
     return true;
 }
 
-function mostrarPaso(n) {
+async function mostrarPaso(n) {
     if (n === 2) {
-        renderizarFormularioPasajeros();
+        if (window.fetchFreshUser) {
+            await window.fetchFreshUser();
+        } else if (window.onSessionReady) {
+            await new Promise(resolve => window.onSessionReady(resolve));
+        }
+        await renderizarFormularioPasajeros();
     } else if (n === 4) {
         // Actualizar Resumen en Paso 4
         actualizarTotales();
 
-        const p1Nom = document.getElementById('pNombre_1')?.value.trim() || 'Titular';
-        const p1Pat = document.getElementById('pApePat_1')?.value.trim() || '';
-        const p1Mat = document.getElementById('pApeMat_1')?.value.trim() || '';
-        const p1Doc = document.getElementById('pDoc_1')?.value.trim() || '12345678';
-        const p1Tel = document.getElementById('pTel_1')?.value.trim() || '';
-        const p1Email = document.getElementById('pEmail_1')?.value.trim() || '';
+        const user = window.getCurrentUser ? window.getCurrentUser() : null;
+        const p1Nom = document.getElementById('pNombre_1')?.value.trim() || user?.nombres || user?.nombre || 'Titular';
+        const p1Pat = document.getElementById('pApePat_1')?.value.trim() || user?.apellidoPaterno || '';
+        const p1Mat = document.getElementById('pApeMat_1')?.value.trim() || user?.apellidoMaterno || '';
+        const p1Doc = document.getElementById('pDoc_1')?.value.trim() || user?.nroDocumento || '';
+        const p1Tel = document.getElementById('pTel_1')?.value.trim() || user?.telefono || '';
+        const p1Email = document.getElementById('pEmail_1')?.value.trim() || user?.email || user?.correo || '';
 
         const elTit = document.getElementById('rTitularNombre');
         if (elTit) elTit.textContent = `${p1Nom} ${p1Pat} ${p1Mat}`.trim();
@@ -678,6 +806,12 @@ function cerrarModal() {
 function confirmarReserva() {
     cerrarModal();
 
+    const btnPaso4 = document.getElementById('btnConfirmarPaso4');
+    if (btnPaso4) {
+        btnPaso4.disabled = true;
+        btnPaso4.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando reserva...';
+    }
+
     const cantA = Math.max(1, parseInt(document.getElementById('cantAdultos')?.value || '1'));
     const cantN = tourInfo.aceptaNinos ? parseInt(document.getElementById('cantNinos')?.value || '0') : 0;
     const cantB = tourInfo.aceptaBebes ? parseInt(document.getElementById('cantBebes')?.value || '0') : 0;
@@ -799,24 +933,34 @@ function confirmarReserva() {
         // Guardar en caché local para visualización offline
         guardarReservaEnStorage(cantA, cantN, cantB, d.total || 700, tipoPagoNombre, cod, d.desglose);
 
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: '¡Reserva Confirmada!',
-                html: `<p>Tu reserva <strong>${cod}</strong> ha sido procesada con éxito.</p>
-                       <p style="font-size:13px; color:#475569; margin-top:8px;">${d.desglose || ''}</p>
-                       <p style="font-size:14px; color:#196f3d; font-weight:bold; margin-top:10px;">Total: S/ ${Number(d.total || 0).toFixed(2)}</p>`,
-                icon: 'success',
-                confirmButtonColor: '#196f3d',
-                confirmButtonText: 'Ver mis reservas'
-            }).then(() => {
-                window.location.href = "reservas.html";
-            });
-        } else {
-            alert('¡Reserva confirmada exitosamente! Código: ' + cod);
-            window.location.href = "reservas.html";
+        // Guardar detalles de la reserva recién creada para mostrarlos automáticamente en el modal de Mis Reservas
+        const infoReservaExitosa = {
+            codigo: cod,
+            total: d.total || 0,
+            desglose: d.desglose || '',
+            titulo: tourInfo.titulo || 'Tour',
+            fecha: tourInfo.fecha || '',
+            horario: tourInfo.horario || '',
+            metodoPago: tipoPagoNombre
+        };
+        try {
+            sessionStorage.setItem('reserva_recien_creada', JSON.stringify(infoReservaExitosa));
+        } catch (_) {}
+
+        if (typeof toastr !== 'undefined') {
+            toastr.success('¡Reserva registrada con éxito! Abriendo Mis Reservas...', '¡Confirmada!', { timeOut: 2000 });
         }
+
+        // Redirigir AUTOMÁTICAMENTE a Mis Reservas para ver la reserva y el modal
+        setTimeout(() => {
+            window.location.href = `reservas.html?nuevaReserva=${encodeURIComponent(cod)}`;
+        }, 300);
     })
     .catch(err => {
+        if (btnPaso4) {
+            btnPaso4.disabled = false;
+            btnPaso4.innerHTML = 'Confirmar reserva';
+        }
         console.error('Error al guardar reserva:', err);
         const errMsg = err.message || 'Error al procesar reserva';
         const isAuthError = errMsg.toLowerCase().includes('iniciar sesión') || 

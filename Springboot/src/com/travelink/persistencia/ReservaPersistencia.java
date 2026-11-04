@@ -1,24 +1,22 @@
 package com.travelink.persistencia;
-
 import com.travelink.config.ConexionDB;
 import com.travelink.entidades.DetalleReserva;
 import com.travelink.entidades.MetodoPago;
 import com.travelink.entidades.Pasajero;
 import com.travelink.entidades.Reserva;
-
+import com.travelink.servicio.EventosService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 /**
  * ROL: Consulta Especializada (JDBC)
  * Responsabilidad: Transacciones atómicas multi-tabla (Reserva, DetalleReserva, Pasajeros, Pagos, Fechas),
  * lógica de rollback, cálculo de cupos y desgloses complejos.
  */
 public class ReservaPersistencia {
-
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ReservaPersistencia.class);
     public boolean perteneceAUsuario(int idReserva, int idUsuario) {
         String sql = "SELECT COUNT(*) FROM Reserva WHERE idReserva = ? AND idUsuario = ?";
         try (Connection con = ConexionDB.getConnection();
@@ -35,7 +33,6 @@ public class ReservaPersistencia {
         }
         return false;
     }
-
     public static String formatDesglose(int cantAdultos, BigDecimal precioAdulto, int cantNinos, BigDecimal precioNino, int cantBebes, BigDecimal precioBebe) {
         List<String> partes = new ArrayList<>();
         if (cantAdultos > 0) {
@@ -55,19 +52,26 @@ public class ReservaPersistencia {
         }
         return partes.isEmpty() ? "1 adulto" : String.join(" + ", partes);
     }
-
     public Map<String, Object> guardarReservaCompleta(Map<String, Object> reqData) {
         Map<String, Object> response = new HashMap<>();
         Connection con = null;
-
         try {
             con = ConexionDB.getConnection();
+            if (con == null) {
+                log.warn("No se pudo obtener conexión en primer intento. Reintentando...");
+                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+                con = ConexionDB.getConnection();
+            }
+            if (con == null) {
+                log.error("Error crítico: no se pudo establecer conexión con la base de datos.");
+                response.put("status", "error");
+                response.put("message", "Error de conexión con la base de datos");
+                return response;
+            }
             con.setAutoCommit(false);
-
             try (PreparedStatement psFk = con.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;")) {
                 psFk.execute();
             }
-
             // 1. Identificar Titular de la sesión
             int idUsuario = 0;
             try {
@@ -77,7 +81,6 @@ public class ReservaPersistencia {
                     idUsuario = Integer.parseInt(String.valueOf(reqData.get("idUsuario")));
                 }
             } catch (Exception ignored) {}
-
             String correo = String.valueOf(reqData.getOrDefault("email", reqData.getOrDefault("correo", "")));
             if (idUsuario <= 0 && !correo.trim().isEmpty()) {
                 String sqlU = "SELECT u.idUsuario FROM Usuario u INNER JOIN Persona p ON u.idPersona = p.idPersona WHERE p.email = ? OR u.nombreUsuario = ?";
@@ -89,7 +92,6 @@ public class ReservaPersistencia {
                     }
                 }
             }
-
             if (idUsuario <= 0) {
                 con.rollback();
                 response.put("status", "error");
@@ -97,7 +99,6 @@ public class ReservaPersistencia {
                 response.put("message", "Debe iniciar sesión para realizar una reserva.");
                 return response;
             }
-
             // Obtener datos del titular desde la base de datos (inmutable frente a spoofing del navegador)
             String titularNombre = "Turista";
             String titularApePaterno = "";
@@ -105,7 +106,6 @@ public class ReservaPersistencia {
             String titularDoc = "12345678";
             String titularTel = "987654321";
             String titularEmail = correo;
-
             String sqlTitular = "SELECT p.nombre, p.apellidoPaterno, p.apellidoMaterno, p.nroDocumento, p.telefono, p.email " +
                                 "FROM Usuario u JOIN Persona p ON u.idPersona = p.idPersona WHERE u.idUsuario = ?";
             try (PreparedStatement psTit = con.prepareStatement(sqlTitular)) {
@@ -123,7 +123,6 @@ public class ReservaPersistencia {
                     }
                 }
             }
-
             // Permitir editar y actualizar el teléfono y el correo electrónico del titular en la base de datos (tabla Persona)
             String nuevoTel = null;
             if (reqData.containsKey("telefono") && reqData.get("telefono") != null) {
@@ -131,14 +130,16 @@ public class ReservaPersistencia {
             } else if (reqData.containsKey("titularTelefono") && reqData.get("titularTelefono") != null) {
                 nuevoTel = String.valueOf(reqData.get("titularTelefono")).trim();
             }
-
             String nuevoEmail = null;
             if (reqData.containsKey("email") && reqData.get("email") != null) {
                 nuevoEmail = String.valueOf(reqData.get("email")).trim();
             } else if (reqData.containsKey("titularEmail") && reqData.get("titularEmail") != null) {
                 nuevoEmail = String.valueOf(reqData.get("titularEmail")).trim();
             }
-
+            String nuevoNom = null;
+            String nuevoPat = null;
+            String nuevoMat = null;
+            String nuevoDoc = null;
             if (reqData.containsKey("pasajeros")) {
                 Object pListObj = reqData.get("pasajeros");
                 if (pListObj instanceof List) {
@@ -151,33 +152,55 @@ public class ReservaPersistencia {
                         if ((nuevoEmail == null || nuevoEmail.isEmpty() || "null".equalsIgnoreCase(nuevoEmail)) && p0.get("email") != null) {
                             nuevoEmail = String.valueOf(p0.get("email")).trim();
                         }
+                        if (p0.get("nombre") != null) nuevoNom = String.valueOf(p0.get("nombre")).trim();
+                        if (p0.get("apellidoPaterno") != null) nuevoPat = String.valueOf(p0.get("apellidoPaterno")).trim();
+                        if (p0.get("apellidoMaterno") != null) nuevoMat = String.valueOf(p0.get("apellidoMaterno")).trim();
+                        if (p0.get("nroDocumento") != null) nuevoDoc = String.valueOf(p0.get("nroDocumento")).trim();
                     }
                 }
             }
-
             if (nuevoTel != null && !nuevoTel.isEmpty() && !"null".equalsIgnoreCase(nuevoTel)) {
                 titularTel = nuevoTel;
             }
             if (nuevoEmail != null && !nuevoEmail.isEmpty() && !"null".equalsIgnoreCase(nuevoEmail)) {
                 titularEmail = nuevoEmail;
             }
-
-            // Actualizar datos de contacto (telefono, email) del titular en Persona
-            String sqlUpdPersona = "UPDATE Persona p INNER JOIN Usuario u ON p.idPersona = u.idPersona SET p.telefono = ?, p.email = ? WHERE u.idUsuario = ?";
+            if (nuevoNom != null && !nuevoNom.isEmpty() && (titularNombre == null || titularNombre.isBlank() || "Turista".equalsIgnoreCase(titularNombre))) {
+                titularNombre = nuevoNom;
+            }
+            if (nuevoPat != null && !nuevoPat.isEmpty() && (titularApePaterno == null || titularApePaterno.isBlank())) {
+                titularApePaterno = nuevoPat;
+            }
+            if (nuevoMat != null && !nuevoMat.isEmpty() && (titularApeMaterno == null || titularApeMaterno.isBlank())) {
+                titularApeMaterno = nuevoMat;
+            }
+            if (nuevoDoc != null && !nuevoDoc.isEmpty() && (titularDoc == null || titularDoc.isBlank() || "12345678".equals(titularDoc) || "00000000".equals(titularDoc))) {
+                titularDoc = nuevoDoc;
+            }
+            // Actualizar datos de contacto (telefono, email) y completar datos de Persona si estaban vacíos
+            String sqlUpdPersona = "UPDATE Persona p INNER JOIN Usuario u ON p.idPersona = u.idPersona " +
+                                   "SET p.telefono = ?, p.email = ?, " +
+                                   "p.nombre = COALESCE(NULLIF(p.nombre, ''), ?), " +
+                                   "p.apellidoPaterno = COALESCE(NULLIF(p.apellidoPaterno, ''), ?), " +
+                                   "p.apellidoMaterno = COALESCE(NULLIF(p.apellidoMaterno, ''), ?), " +
+                                   "p.nroDocumento = COALESCE(NULLIF(p.nroDocumento, ''), ?) " +
+                                   "WHERE u.idUsuario = ?";
             try (PreparedStatement psUpd = con.prepareStatement(sqlUpdPersona)) {
                 psUpd.setString(1, titularTel);
                 psUpd.setString(2, titularEmail);
-                psUpd.setInt(3, idUsuario);
+                psUpd.setString(3, titularNombre != null ? titularNombre : "");
+                psUpd.setString(4, titularApePaterno != null ? titularApePaterno : "");
+                psUpd.setString(5, titularApeMaterno != null ? titularApeMaterno : "");
+                psUpd.setString(6, titularDoc != null ? titularDoc : "");
+                psUpd.setInt(7, idUsuario);
                 psUpd.executeUpdate();
             }
-
             // 2. Resolver TourFecha e idTour
             int idTourFecha = 0;
             try { idTourFecha = Integer.parseInt(String.valueOf(reqData.getOrDefault("idTourFecha", reqData.getOrDefault("tourFechaId", "0")))); } catch (Exception ignored) {}
             if (idTourFecha <= 0) {
                 try { idTourFecha = Integer.parseInt(String.valueOf(reqData.getOrDefault("idPaquete", reqData.getOrDefault("tour", "0")))); } catch (Exception ignored) {}
             }
-
             if (idTourFecha <= 0) {
                 con.rollback();
                 response.put("status", "error");
@@ -185,7 +208,6 @@ public class ReservaPersistencia {
                 response.put("message", "Debe seleccionar una salida válida para este tour.");
                 return response;
             }
-
             // Consultar datos reales de TourFecha y Tour en la BD
             int idTour = 0;
             int idAgencia = 1;
@@ -194,7 +216,6 @@ public class ReservaPersistencia {
             java.sql.Time horaInicio = null;
             int cupoDisponible = 0;
             String estadoFecha = "DISPONIBLE";
-
             BigDecimal precioAdulto = BigDecimal.ZERO;
             BigDecimal precioNino = BigDecimal.ZERO;
             BigDecimal precioBebe = BigDecimal.ZERO;
@@ -204,7 +225,6 @@ public class ReservaPersistencia {
             int edadMaxBebe = 2;
             BigDecimal descuentoPct = BigDecimal.ZERO;
             String estadoTour = "ACTIVO";
-
             String sqlCheckTF = "SELECT tf.idTourFecha, tf.idTour, tf.fecha, tf.horaInicio, tf.cupoTotal, tf.cupoDisponible, tf.estado AS estadoFecha, " +
                                 "t.idAgencia, t.nombre AS tourNombre, t.precioAdulto, t.precioNino, t.precioBebe, " +
                                 "t.aceptaNinos, t.edadMaxNino, t.aceptaBebes, t.edadMaxBebe, t.descuento, t.estado AS estadoTour " +
@@ -222,14 +242,12 @@ public class ReservaPersistencia {
                         horaInicio = rsTF.getTime("horaInicio");
                         cupoDisponible = rsTF.getInt("cupoDisponible");
                         estadoFecha = rsTF.getString("estadoFecha");
-
                         precioAdulto = rsTF.getBigDecimal("precioAdulto");
                         if (precioAdulto == null) precioAdulto = BigDecimal.ZERO;
                         precioNino = rsTF.getBigDecimal("precioNino");
                         if (precioNino == null) precioNino = BigDecimal.ZERO;
                         precioBebe = rsTF.getBigDecimal("precioBebe");
                         if (precioBebe == null) precioBebe = BigDecimal.ZERO;
-
                         aceptaNinos = rsTF.getBoolean("aceptaNinos");
                         edadMaxNino = rsTF.getInt("edadMaxNino");
                         aceptaBebes = rsTF.getBoolean("aceptaBebes");
@@ -246,7 +264,6 @@ public class ReservaPersistencia {
                     }
                 }
             }
-
             // Validar estado del tour
             if ("PAUSADO".equalsIgnoreCase(estadoTour) || "INACTIVO".equalsIgnoreCase(estadoTour)) {
                 con.rollback();
@@ -255,7 +272,6 @@ public class ReservaPersistencia {
                 response.put("message", "Paquete no disponible actualmente.");
                 return response;
             }
-
             // Validar que la salida no sea pasada
             java.sql.Date hoy = new java.sql.Date(System.currentTimeMillis());
             if (fechaSalida != null && fechaSalida.before(hoy)) {
@@ -265,7 +281,6 @@ public class ReservaPersistencia {
                 response.put("message", "No se pueden reservar salidas con fecha pasada (" + fechaSalida + ").");
                 return response;
             }
-
             // 3. Cantidad de pasajeros y reglas de tipos permitidos
             int cantAdultos = 1;
             int cantNinos = 0;
@@ -273,7 +288,6 @@ public class ReservaPersistencia {
             try { cantAdultos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantAdultos", reqData.getOrDefault("adultos", "1")))); } catch (Exception ignored) {}
             try { cantNinos = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantNinos", reqData.getOrDefault("ninos", "0")))); } catch (Exception ignored) {}
             try { cantBebes = Integer.parseInt(String.valueOf(reqData.getOrDefault("cantBebes", reqData.getOrDefault("bebes", "0")))); } catch (Exception ignored) {}
-
             // Mínimo 1 adulto
             if (cantAdultos < 1) {
                 con.rollback();
@@ -282,7 +296,6 @@ public class ReservaPersistencia {
                 response.put("message", "Se requiere como mínimo 1 adulto para realizar la reserva.");
                 return response;
             }
-
             // Rechazar si no admite niños
             if (cantNinos > 0 && !aceptaNinos) {
                 con.rollback();
@@ -291,7 +304,6 @@ public class ReservaPersistencia {
                 response.put("message", "Este tour no admite niños.");
                 return response;
             }
-
             // Rechazar si no admite bebés
             if (cantBebes > 0 && !aceptaBebes) {
                 con.rollback();
@@ -300,7 +312,6 @@ public class ReservaPersistencia {
                 response.put("message", "Este tour no admite bebés.");
                 return response;
             }
-
             // 4. Validar edades de lista de pasajeros si viene en el payload (solo si se proporciona edad > 0)
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> pasajerosReq = (List<Map<String, Object>>) reqData.get("pasajeros");
@@ -309,7 +320,6 @@ public class ReservaPersistencia {
                     String tipoP = String.valueOf(pMap.getOrDefault("tipo", "ADULTO")).toUpperCase();
                     int edadP = 0;
                     try { edadP = Integer.parseInt(String.valueOf(pMap.getOrDefault("edad", "0"))); } catch (Exception ignored) {}
-
                     if (edadP > 0) {
                         if (("NINO".equals(tipoP) || "NIÑO".equals(tipoP)) && edadP > edadMaxNino) {
                             con.rollback();
@@ -327,12 +337,10 @@ public class ReservaPersistencia {
                     }
                 }
             }
-
             // 5. Cupo atómico en TourFecha
             // "Adultos y niños ocupan cupo; el bebé solo si aceptaBebes=1 y precioBebe>0."
             boolean bebeOcupaCupo = aceptaBebes && (precioBebe.compareTo(BigDecimal.ZERO) > 0);
             int cuposRequeridos = cantAdultos + cantNinos + (bebeOcupaCupo ? cantBebes : 0);
-
             String sqlUpdateCupo = "UPDATE TourFecha " +
                                   "SET cupoDisponible = cupoDisponible - ?, " +
                                   "    estado = CASE WHEN (cupoDisponible - ?) <= 0 THEN 'AGOTADO' ELSE 'DISPONIBLE' END " +
@@ -345,7 +353,6 @@ public class ReservaPersistencia {
                 psUC.setInt(4, cuposRequeridos);
                 filasActualizadas = psUC.executeUpdate();
             }
-
             if (filasActualizadas == 0) {
                 con.rollback();
                 response.put("status", "error");
@@ -353,25 +360,20 @@ public class ReservaPersistencia {
                 response.put("message", "Sin cupo disponible para esta salida.");
                 return response;
             }
-
             // 6. RECALCULAR TOTAL EN EL SERVIDOR (Nunca confiar en el precio del navegador)
             BigDecimal subtotalAdultos = precioAdulto.multiply(BigDecimal.valueOf(cantAdultos));
             BigDecimal subtotalNinos = precioNino.multiply(BigDecimal.valueOf(cantNinos));
             BigDecimal subtotalBebes = precioBebe.multiply(BigDecimal.valueOf(cantBebes));
             BigDecimal subtotalReal = subtotalAdultos.add(subtotalNinos).add(subtotalBebes);
-
             BigDecimal descuentoMonto = subtotalReal.multiply(descuentoPct).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
             BigDecimal totalReal = subtotalReal.subtract(descuentoMonto).setScale(2, RoundingMode.HALF_UP);
-
             // 7. Insertar Reserva
             String codigoReserva = String.valueOf(reqData.getOrDefault("codigoReserva", reqData.getOrDefault("codigo", "TRK-" + (1000 + (int)(Math.random() * 9000)))));
             String tipoPago = String.valueOf(reqData.getOrDefault("tipoPago", reqData.getOrDefault("metodoPago", "Tarjeta")));
             boolean esEfectivo = "Efectivo".equalsIgnoreCase(tipoPago) || "Presencial".equalsIgnoreCase(tipoPago);
             String estadoReserva = esEfectivo ? "Pendiente" : "Confirmada";
-
             String fechaInicioStr = fechaSalida != null ? fechaSalida.toString() : new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
             String fechaFinStr = fechaInicioStr;
-
             int idReservaGenerada = 0;
             String sqlReserva = "INSERT INTO Reserva (idUsuario, idAgencia, idTour, idTourFecha, nombreTour, codigoReserva, fechaRegistro, fechaInicio, fechaFin, estado, total) " +
                                 "VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)";
@@ -387,17 +389,14 @@ public class ReservaPersistencia {
                 psR.setString(9, estadoReserva);
                 psR.setBigDecimal(10, totalReal);
                 psR.executeUpdate();
-
                 try (ResultSet rsR = psR.getGeneratedKeys()) {
                     if (rsR.next()) idReservaGenerada = rsR.getInt(1);
                 }
             }
-
             // 8. Insertar DetalleReserva (Desglose exacto: tipo, cantidad, precio unitario, subtotal)
             // Fila resumen compatible con frontend antiguo
             String sqlDetalleBase = "INSERT INTO DetalleReserva (idReserva, idTourFecha, cantAdultos, cantNinos, cantBebes, tipo, cantidad, precioUnitario, subtotal) " +
                                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
             // 8.1 Registro para Adultos
             try (PreparedStatement psDA = con.prepareStatement(sqlDetalleBase)) {
                 psDA.setInt(1, idReservaGenerada);
@@ -411,7 +410,6 @@ public class ReservaPersistencia {
                 psDA.setBigDecimal(9, subtotalAdultos);
                 psDA.executeUpdate();
             }
-
             // 8.2 Registro para Niños si aplica
             if (cantNinos > 0) {
                 try (PreparedStatement psDN = con.prepareStatement(sqlDetalleBase)) {
@@ -427,7 +425,6 @@ public class ReservaPersistencia {
                     psDN.executeUpdate();
                 }
             }
-
             // 8.3 Registro para Bebés si aplica
             if (cantBebes > 0) {
                 try (PreparedStatement psDB = con.prepareStatement(sqlDetalleBase)) {
@@ -443,7 +440,6 @@ public class ReservaPersistencia {
                     psDB.executeUpdate();
                 }
             }
-
             // 9. Insertar Pasajeros (Titular y Acompañantes) - Con apellidoPaterno y apellidoMaterno (sin telefono ni edad ni apellidos en Pasajero)
             String sqlPasajero = "INSERT INTO Pasajero (idReserva, nroDocumento, nombre, apellidoPaterno, apellidoMaterno, esTitular, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement psP = con.prepareStatement(sqlPasajero)) {
@@ -456,14 +452,12 @@ public class ReservaPersistencia {
                 psP.setBoolean(6, true);
                 psP.setString(7, "ADULTO");
                 psP.executeUpdate();
-
                 // Pasajeros adicionales especificados en payload o automáticos
                 int index = 2;
                 if (pasajerosReq != null && !pasajerosReq.isEmpty()) {
                     for (Map<String, Object> pMap : pasajerosReq) {
                         boolean titularCheck = Boolean.parseBoolean(String.valueOf(pMap.getOrDefault("esTitular", "false")));
                         if (titularCheck) continue; // ya insertado
-
                         String pNom = String.valueOf(pMap.getOrDefault("nombre", "Pasajero " + index));
                         String pApePat = String.valueOf(pMap.getOrDefault("apellidoPaterno", ""));
                         String pApeMat = String.valueOf(pMap.getOrDefault("apellidoMaterno", ""));
@@ -477,7 +471,6 @@ public class ReservaPersistencia {
                         }
                         String pDoc = String.valueOf(pMap.getOrDefault("nroDocumento", String.valueOf(pMap.getOrDefault("dni", "8765432" + index))));
                         String pTipo = String.valueOf(pMap.getOrDefault("tipo", "ADULTO")).toUpperCase();
-
                         psP.setInt(1, idReservaGenerada);
                         psP.setString(2, pDoc);
                         psP.setString(3, pNom);
@@ -525,7 +518,6 @@ public class ReservaPersistencia {
                     }
                 }
             }
-
             // 10. Método de pago y Pago
             // REGLA DE SEGURIDAD: NUNCA GUARDES NÚMERO COMPLETO DE TARJETA NI CVV. Solo marca y últimos 4 dígitos.
             String marcaTarjeta = null;
@@ -540,7 +532,6 @@ public class ReservaPersistencia {
             if (reqData.containsKey("ultimosDigitos")) {
                 ultimosDigitos = String.valueOf(reqData.get("ultimosDigitos")).trim();
             }
-
             String marcaRaw = String.valueOf(reqData.getOrDefault("marcaTarjeta", reqData.getOrDefault("marca", "")));
             if (!marcaRaw.trim().isEmpty()) {
                 marcaTarjeta = marcaRaw;
@@ -548,7 +539,6 @@ public class ReservaPersistencia {
                 marcaTarjeta = "Visa";
                 if (ultimosDigitos == null) ultimosDigitos = "4587";
             }
-
             BigDecimal montoPago = totalReal;
             boolean esAdelanto = esEfectivo;
             if (esAdelanto) {
@@ -556,10 +546,8 @@ public class ReservaPersistencia {
                 montoPago = totalReal.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
             }
             String estadoPago = esAdelanto ? "Pendiente" : "Completado";
-
             String numOperacion = String.valueOf(reqData.getOrDefault("numeroOperacion", codigoReserva));
             String urlComprobante = String.valueOf(reqData.getOrDefault("urlComprobante", reqData.getOrDefault("comprobante", "")));
-
             int idPagoGenerado = 0;
             String sqlMetodo = "INSERT INTO MetodoPago (idReserva, tipoPago, monto, esAdelanto, estadoPago, numeroOperacion, marcaTarjeta, ultimosDigitos, urlComprobante, fechaPago) " +
                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
@@ -574,12 +562,10 @@ public class ReservaPersistencia {
                 psM.setString(8, ultimosDigitos);
                 psM.setString(9, urlComprobante);
                 psM.executeUpdate();
-
                 try (ResultSet rsM = psM.getGeneratedKeys()) {
                     if (rsM.next()) idPagoGenerado = rsM.getInt(1);
                 }
             }
-
             // Insertar Pago oficial
             try {
                 String sqlPago = "INSERT INTO Pago (monto, fechaPago, metodoPago, estado, numeroOperacion, idReserva) VALUES (?, NOW(), ?, ?, ?, ?)";
@@ -594,13 +580,11 @@ public class ReservaPersistencia {
             } catch (Exception exP) {
                 System.out.println("Aviso Pago: " + exP.getMessage());
             }
-
             // 11. Comisión del 15% sobre el total real
             try {
                 String periodo = new SimpleDateFormat("yyyy-MM").format(new java.util.Date());
                 BigDecimal montoComision = totalReal.multiply(new BigDecimal("0.15")).setScale(2, RoundingMode.HALF_UP);
                 BigDecimal montoAgencia = totalReal.subtract(montoComision).setScale(2, RoundingMode.HALF_UP);
-
                 String sqlComision = "INSERT INTO Comision (porcentaje, montoComision, montoNeto, fechaCalculo, estado, idReserva, idAgencia, subtotal, porcentajeComision, montoAgencia, estadoLiquidacion, periodo, ventasTotales, montoTravelink) " +
                                      "VALUES (15.00, ?, ?, NOW(), 'Pendiente', ?, ?, ?, 15.00, ?, 'Pendiente', ?, ?, ?)";
                 try (PreparedStatement psC = con.prepareStatement(sqlComision)) {
@@ -618,7 +602,6 @@ public class ReservaPersistencia {
             } catch (Exception exCom) {
                 System.out.println("Aviso Comision: " + exCom.getMessage());
             }
-
             // 12. Notificaciones
             try {
                 String sqlNotif = "INSERT INTO Notificacion (idUsuario, titulo, mensaje, tipo) VALUES (?, ?, ?, ?)";
@@ -628,7 +611,6 @@ public class ReservaPersistencia {
                     psN.setString(3, "Tu reserva " + codigoReserva + " ha sido procesada correctamente.");
                     psN.setString(4, "EXITO");
                     psN.executeUpdate();
-
                     psN.setInt(1, 2); // usuario agencia
                     psN.setString(2, "Nueva Reserva");
                     psN.setString(3, "Reserva " + codigoReserva + " recibida por S/ " + totalReal + " (" + cuposRequeridos + " cupos).");
@@ -636,14 +618,22 @@ public class ReservaPersistencia {
                     psN.executeUpdate();
                 }
             } catch (Exception ignored) {}
-
             con.commit();
             try (PreparedStatement psFk = con.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;")) {
                 psFk.execute();
             }
-
+            // Sincronización en tiempo real entre los 3 roles
+            try {
+                com.travelink.servicio.EventosService.emitir("reserva_creada", Map.of(
+                    "idReserva", idReservaGenerada,
+                    "codigo", codigoReserva,
+                    "idAgencia", idAgencia,
+                    "idTour", idTour,
+                    "total", totalReal,
+                    "cuposRequeridos", cuposRequeridos
+                ));
+            } catch (Exception ignored) {}
             String desgloseTexto = formatDesglose(cantAdultos, precioAdulto, cantNinos, precioNino, cantBebes, precioBebe);
-
             Map<String, Object> data = new HashMap<>();
             data.put("idReserva", idReservaGenerada);
             data.put("idPago", idPagoGenerado);
@@ -656,12 +646,10 @@ public class ReservaPersistencia {
             data.put("fechaSalida", fechaSalida != null ? fechaSalida.toString() : fechaInicioStr);
             data.put("horaSalida", horaInicio != null ? horaInicio.toString().substring(0, 5) : "08:00");
             data.put("cuposRestantes", cupoDisponible - cuposRequeridos);
-
             response.put("status", "success");
             response.put("message", "Reserva guardada exitosamente");
             response.put("data", data);
             return response;
-
         } catch (Exception e) {
             if (con != null) {
                 try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
@@ -676,11 +664,9 @@ public class ReservaPersistencia {
             }
         }
     }
-
     public Map<String, Object> obtenerReservasPorUsuario(String correo, int idUsuario) {
         Map<String, Object> response = new HashMap<>();
         List<Map<String, Object>> reservas = new ArrayList<>();
-
         try (Connection con = ConexionDB.getConnection()) {
             if (idUsuario <= 0 && correo != null && !correo.trim().isEmpty()) {
                 String sqlU = "SELECT u.idUsuario FROM Usuario u INNER JOIN Persona p ON u.idPersona = p.idPersona WHERE p.email = ? OR u.nombreUsuario = ?";
@@ -692,8 +678,7 @@ public class ReservaPersistencia {
                     }
                 }
             }
-
-            String query = "SELECT r.idReserva, r.codigoReserva, r.fechaRegistro, r.fechaInicio, r.fechaFin, r.estado, r.total, " +
+            String query = "SELECT r.idReserva, r.codigoReserva, r.fechaRegistro, r.fechaInicio, r.fechaFin, r.estado, r.motivoCancelacion, r.total, " +
                            "r.idTour, r.idAgencia, " +
                            "(SELECT COUNT(*) FROM Calificacion c WHERE c.idReserva = r.idReserva AND (c.eliminadoPorAdmin IS NULL OR c.eliminadoPorAdmin = 0)) AS calificadaCount, " +
                            "t.nombre AS tourNombre, t.ubicacion AS tourUbicacion, a.nombreComercial AS agenciaNombre, " +
@@ -709,7 +694,6 @@ public class ReservaPersistencia {
                            "LEFT JOIN Agencia a ON (r.idAgencia = a.idAgencia OR t.idAgencia = a.idAgencia) " +
                            "LEFT JOIN MetodoPago mp ON r.idReserva = mp.idReserva " +
                            "LEFT JOIN TourImagen ti ON (t.idTour = ti.idTour AND ti.esPrincipal = 1) ";
-
             if (idUsuario > 0) {
                 query += "WHERE r.idUsuario = ? ";
             } else {
@@ -719,7 +703,6 @@ public class ReservaPersistencia {
                 return response;
             }
             query += "ORDER BY r.idReserva DESC";
-
             try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setInt(1, idUsuario);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -728,24 +711,20 @@ public class ReservaPersistencia {
                         Map<String, Object> res = new HashMap<>();
                         int idRes = rs.getInt("idReserva");
                         String code = rs.getString("codigoReserva");
-
                         java.sql.Date fSalida = rs.getDate("fechaSalida");
                         if (fSalida == null) fSalida = rs.getDate("fechaInicio");
                         Time hSalida = rs.getTime("horaSalida");
                         String horaStr = hSalida != null ? hSalida.toString().substring(0, 5) : "08:00";
                         String fechaFmt = fSalida != null ? sdf.format(fSalida) + " - " + horaStr : "Próximamente";
-
                         int adultos = rs.getInt("cantAdultos");
                         if (adultos < 1) adultos = 1;
                         int ninos = rs.getInt("cantNinos");
                         int bebes = rs.getInt("cantBebes");
                         int personasTotales = adultos + ninos + bebes;
-
                         BigDecimal pAdulto = rs.getBigDecimal("precioAdulto");
                         BigDecimal pNino = rs.getBigDecimal("precioNino");
                         BigDecimal pBebe = rs.getBigDecimal("precioBebe");
                         String desglose = formatDesglose(adultos, pAdulto, ninos, pNino, bebes, pBebe);
-
                         res.put("id", idRes);
                         res.put("codigo", code != null ? code : String.format("TRK-%03d", idRes));
                         res.put("idTour", rs.getInt("idTour"));
@@ -768,15 +747,33 @@ public class ReservaPersistencia {
                         res.put("marcaTarjeta", rs.getString("marcaTarjeta"));
                         res.put("ultimosDigitos", rs.getString("ultimosDigitos"));
                         res.put("imagen", rs.getString("tourImagen") != null ? rs.getString("tourImagen") : "../../img/valle.jpg");
-
                         Timestamp fReg = rs.getTimestamp("fechaRegistro");
                         res.put("fechaRegistro", fReg != null ? fReg.toString().substring(0, 10) : "");
-
+                        res.put("motivoCancelacion", rs.getString("motivoCancelacion"));
+                        // Obtener lista real de pasajeros de la reserva
+                        List<Map<String, Object>> listaPasajeros = new ArrayList<>();
+                        try (PreparedStatement psPas = con.prepareStatement(
+                                "SELECT idPasajero, nroDocumento, nombre, apellidoPaterno, apellidoMaterno, esTitular, tipo FROM Pasajero WHERE idReserva = ? ORDER BY esTitular DESC, idPasajero ASC")) {
+                            psPas.setInt(1, idRes);
+                            try (ResultSet rsPas = psPas.executeQuery()) {
+                                while (rsPas.next()) {
+                                    Map<String, Object> pas = new HashMap<>();
+                                    pas.put("idPasajero", rsPas.getInt("idPasajero"));
+                                    pas.put("nroDocumento", rsPas.getString("nroDocumento"));
+                                    pas.put("nombre", rsPas.getString("nombre"));
+                                    pas.put("apellidoPaterno", rsPas.getString("apellidoPaterno"));
+                                    pas.put("apellidoMaterno", rsPas.getString("apellidoMaterno"));
+                                    pas.put("esTitular", rsPas.getBoolean("esTitular"));
+                                    pas.put("tipo", rsPas.getString("tipo"));
+                                    listaPasajeros.add(pas);
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                        res.put("pasajeros", listaPasajeros);
                         reservas.add(res);
                     }
                 }
             }
-
             response.put("status", "success");
             response.put("reservas", reservas);
             return response;
@@ -787,23 +784,53 @@ public class ReservaPersistencia {
             return response;
         }
     }
-
-    public boolean cancelarReserva(int idReserva, String motivo) {
+    public static class CancelarResultado {
+        public final int statusCode;
+        public final String message;
+        public final boolean success;
+        public CancelarResultado(int statusCode, String message, boolean success) {
+            this.statusCode = statusCode;
+            this.message = message;
+            this.success = success;
+        }
+    }
+    public CancelarResultado cancelarReservaConDetalle(int idReserva, String motivo) {
+        if (motivo == null || motivo.trim().isEmpty()) {
+            return new CancelarResultado(400, "El motivo de cancelación es obligatorio", false);
+        }
+        motivo = motivo.trim();
+        if (motivo.length() > 255) {
+            motivo = motivo.substring(0, 255);
+        }
         Connection con = null;
         try {
             con = ConexionDB.getConnection();
+            if (con == null) {
+                log.warn("No se pudo obtener conexión en primer intento. Reintentando...");
+                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+                con = ConexionDB.getConnection();
+            }
+            if (con == null) {
+                log.error("Error crítico: no se pudo establecer conexión con la base de datos.");
+                return new CancelarResultado(500, "Error de conexión con la base de datos", false);
+            }
             con.setAutoCommit(false);
-
-            // 1. Obtener datos de la reserva para devolver el cupo atómicamente
+            // 1. Obtener datos de la reserva
             int idTourFecha = 0;
+            int idTour = 0;
+            int idAgencia = 0;
+            String codigoReserva = "";
+            String tourNombre = "";
             int cantAdultos = 1;
             int cantNinos = 0;
             int cantBebes = 0;
             boolean aceptaBebes = false;
             BigDecimal precioBebe = BigDecimal.ZERO;
             String estadoActual = "";
-
-            String sqlRes = "SELECT r.estado, r.idTourFecha, d.cantAdultos, d.cantNinos, d.cantBebes, t.aceptaBebes, t.precioBebe " +
+            java.sql.Date fechaSalida = null;
+            String sqlRes = "SELECT r.estado, r.idTourFecha, r.idTour, r.idAgencia, r.codigoReserva, " +
+                            "tf.fecha AS fechaSalida, " +
+                            "d.cantAdultos, d.cantNinos, d.cantBebes, t.aceptaBebes, t.precioBebe, t.nombre AS tourNombre " +
                             "FROM Reserva r " +
                             "LEFT JOIN DetalleReserva d ON r.idReserva = d.idReserva AND (d.tipo IS NULL OR d.tipo = 'ADULTO') " +
                             "LEFT JOIN TourFecha tf ON r.idTourFecha = tf.idTourFecha " +
@@ -815,6 +842,11 @@ public class ReservaPersistencia {
                     if (rsR.next()) {
                         estadoActual = rsR.getString("estado");
                         idTourFecha = rsR.getInt("idTourFecha");
+                        idTour = rsR.getInt("idTour");
+                        idAgencia = rsR.getInt("idAgencia");
+                        codigoReserva = rsR.getString("codigoReserva");
+                        tourNombre = rsR.getString("tourNombre");
+                        fechaSalida = rsR.getDate("fechaSalida");
                         cantAdultos = rsR.getInt("cantAdultos");
                         if (cantAdultos < 1) cantAdultos = 1;
                         cantNinos = rsR.getInt("cantNinos");
@@ -824,21 +856,28 @@ public class ReservaPersistencia {
                         if (precioBebe == null) precioBebe = BigDecimal.ZERO;
                     } else {
                         con.rollback();
-                        return false;
+                        return new CancelarResultado(404, "Reserva no encontrada", false);
                     }
                 }
             }
-
             if ("Cancelada".equalsIgnoreCase(estadoActual)) {
-                con.commit();
-                return true; // Ya cancelada
+                con.rollback();
+                return new CancelarResultado(409, "La reserva ya ha sido cancelada previamente", false);
             }
-
-            // 2. Devolver cupo atómicamente en TourFecha
-            // "Cancelar la reserva devuelve el cupo"
+            if ("Completada".equalsIgnoreCase(estadoActual) || "Finalizada".equalsIgnoreCase(estadoActual)) {
+                con.rollback();
+                return new CancelarResultado(400, "No se puede cancelar una reserva que ya ha sido completada", false);
+            }
+            if (fechaSalida != null) {
+                java.sql.Date hoy = new java.sql.Date(System.currentTimeMillis());
+                if (fechaSalida.before(hoy)) {
+                    con.rollback();
+                    return new CancelarResultado(400, "No se puede cancelar una reserva cuya fecha de salida ya ha pasado", false);
+                }
+            }
+            // 2. Devolver cupos atómicamente en TourFecha (solo una vez)
             boolean bebeOcupaCupo = aceptaBebes && (precioBebe.compareTo(BigDecimal.ZERO) > 0);
             int cuposADevolver = cantAdultos + cantNinos + (bebeOcupaCupo ? cantBebes : 0);
-
             if (idTourFecha > 0 && cuposADevolver > 0) {
                 String sqlRestore = "UPDATE TourFecha SET cupoDisponible = cupoDisponible + ?, estado = 'DISPONIBLE' WHERE idTourFecha = ?";
                 try (PreparedStatement psUp = con.prepareStatement(sqlRestore)) {
@@ -847,15 +886,13 @@ public class ReservaPersistencia {
                     psUp.executeUpdate();
                 }
             }
-
             // 3. Marcar reserva como Cancelada
             String sqlCancel = "UPDATE Reserva SET estado = 'Cancelada', motivoCancelacion = ? WHERE idReserva = ?";
             try (PreparedStatement psC = con.prepareStatement(sqlCancel)) {
-                psC.setString(1, motivo != null ? motivo : "Cancelado por el usuario");
+                psC.setString(1, motivo);
                 psC.setInt(2, idReserva);
                 psC.executeUpdate();
             }
-
             // 4. Actualizar pagos
             try (PreparedStatement psM = con.prepareStatement("UPDATE MetodoPago SET estadoPago = 'Cancelado' WHERE idReserva = ?")) {
                 psM.setInt(1, idReserva);
@@ -865,22 +902,44 @@ public class ReservaPersistencia {
                 psP.setInt(1, idReserva);
                 psP.executeUpdate();
             } catch (Exception ignored) {}
-
+            // 5. Notificación a la agencia
+            try {
+                String sqlNotif = "INSERT INTO Notificacion (rolTarget, titulo, mensaje) VALUES ('AGENCIA', 'Reserva Cancelada', ?)";
+                try (PreparedStatement psN = con.prepareStatement(sqlNotif)) {
+                    String msg = "La reserva " + (codigoReserva != null ? codigoReserva : ("#" + idReserva)) +
+                                 " para el tour \"" + (tourNombre != null ? tourNombre : "Tour") +
+                                 "\" fue cancelada. Motivo: " + motivo;
+                    psN.setString(1, msg);
+                    psN.executeUpdate();
+                }
+            } catch (Exception ignored) {}
             con.commit();
-            return true;
+            // Emitir evento en tiempo real
+            try {
+                EventosService.emitir("reserva_cancelada", Map.of(
+                    "idReserva", idReserva,
+                    "codigo", codigoReserva != null ? codigoReserva : "",
+                    "idAgencia", idAgencia,
+                    "motivo", motivo
+                ));
+            } catch (Exception ignored) {}
+            return new CancelarResultado(200, "Reserva cancelada correctamente y cupos restaurados", true);
         } catch (SQLException e) {
             if (con != null) {
                 try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             }
             e.printStackTrace();
-            return false;
+            return new CancelarResultado(500, "Error en el servidor al cancelar reserva: " + e.getMessage(), false);
         } finally {
             if (con != null) {
                 try { con.setAutoCommit(true); con.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
         }
     }
-
+    public boolean cancelarReserva(int idReserva, String motivo) {
+        CancelarResultado res = cancelarReservaConDetalle(idReserva, motivo);
+        return res.success;
+    }
     public List<Map<String, Object>> obtenerReservasPorAgencia(int idAgencia) {
         List<Map<String, Object>> reservas = new ArrayList<>();
         String sql = """
@@ -926,7 +985,6 @@ public class ReservaPersistencia {
             WHERE r.idAgencia = ?
             ORDER BY r.fechaRegistro DESC
             """;
-
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idAgencia);
@@ -937,7 +995,6 @@ public class ReservaPersistencia {
                     if (total == null) total = BigDecimal.ZERO;
                     BigDecimal totalPagado = rs.getBigDecimal("totalPagado");
                     BigDecimal comision = total.multiply(new BigDecimal("0.15")).setScale(2, java.math.RoundingMode.HALF_UP);
-
                     int adultos = rs.getInt("cantAdultos");
                     if (adultos < 1) adultos = 1;
                     int ninos = rs.getInt("cantNinos");
@@ -946,7 +1003,6 @@ public class ReservaPersistencia {
                     BigDecimal pNino = rs.getBigDecimal("precioNino");
                     BigDecimal pBebe = rs.getBigDecimal("precioBebe");
                     String desglose = formatDesglose(adultos, pAdulto, ninos, pNino, bebes, pBebe);
-
                     map.put("idReserva", rs.getInt("idReserva"));
                     map.put("codigoReserva", rs.getString("codigoReserva"));
                     map.put("codigo", rs.getString("codigoReserva"));
@@ -971,7 +1027,6 @@ public class ReservaPersistencia {
                     map.put("totalPagado", totalPagado != null ? totalPagado.doubleValue() : 0.0);
                     map.put("comision", comision.doubleValue());
                     map.put("estadoPago", rs.getString("estadoPago"));
-
                     reservas.add(map);
                 }
             }
@@ -981,4 +1036,3 @@ public class ReservaPersistencia {
         return reservas;
     }
 }
-

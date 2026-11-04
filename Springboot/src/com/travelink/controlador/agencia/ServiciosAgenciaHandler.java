@@ -1,11 +1,4 @@
 package com.travelink.controlador.agencia;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import com.travelink.entidades.Usuario;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -20,9 +13,6 @@ import com.travelink.server.JavaApiServer;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import com.travelink.controlador.UsuarioControlador;
-import com.travelink.controlador.CalificacionControlador;
-import com.travelink.repositorio.ReservaRepositorio;
 
     public class ServiciosAgenciaHandler implements HttpHandler {
 
@@ -35,29 +25,46 @@ import com.travelink.repositorio.ReservaRepositorio;
                 return;
             }
 
-            String metodo = exchange.getRequestMethod();
+            String metodo = exchange.getRequestMethod().toUpperCase();
 
-            if ("GET".equalsIgnoreCase(metodo)) {
+            if ("GET".equals(metodo)) {
                 obtenerServicios(exchange);
                 return;
             }
 
-            if ("POST".equalsIgnoreCase(metodo)) {
+            if ("POST".equals(metodo) || "PUT".equals(metodo)) {
                 procesarPostServicio(exchange);
                 return;
             }
 
+            if ("DELETE".equals(metodo)) {
+                String body = JavaApiServer.readRequestBody(exchange);
+                Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
+                Map<String, String> q = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
+                if (!params.containsKey("idTour") && q.containsKey("idTour")) params.put("idTour", q.get("idTour"));
+                else if (!params.containsKey("idTour") && q.containsKey("idServicio")) params.put("idTour", q.get("idServicio"));
+                else if (!params.containsKey("idTour") && q.containsKey("id")) params.put("idTour", q.get("id"));
+                eliminarServicio(exchange, params);
+                return;
+            }
+
             JavaApiServer.sendJsonResponse(exchange, 405,
-                    "{\"status\":\"error\",\"message\":\"Método no permitido\"}");
+                    "{\"status\":\"error\",\"message\":\"MÃ©todo no permitido\"}");
         }
 
         private void obtenerServicios(HttpExchange exchange) throws IOException {
             Map<String, String> params = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
             int idAgencia = 0;
-            try {
-                idAgencia = Integer.parseInt(params.getOrDefault("idAgencia", "1"));
-            } catch (Exception e) {
-                idAgencia = 1;
+            Object sessAgencia = exchange.getAttribute("ID_AGENCIA");
+            if (sessAgencia instanceof Integer) {
+                idAgencia = (Integer) sessAgencia;
+            }
+            if (idAgencia <= 0 && params.containsKey("idAgencia")) {
+                try { idAgencia = Integer.parseInt(params.get("idAgencia")); } catch (Exception ignored) {}
+            }
+            if (idAgencia <= 0) {
+                JavaApiServer.sendJsonResponse(exchange, 401, "{\"status\":\"error\",\"message\":\"SesiÃ³n de agencia no identificada\",\"servicios\":[]}");
+                return;
             }
 
             String buscar = params.getOrDefault("buscar", "").trim().toLowerCase();
@@ -121,7 +128,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                             int horas = rs.getInt("horas");
                             String ubicacion = rs.getString("ubicacion");
 
-                            // Imágenes del tour
+                            // ImÃ¡genes del tour
                             StringBuilder imagenesJson = new StringBuilder("[");
                             String mainImgUrl = "";
                             try (PreparedStatement psImg = con.prepareStatement(
@@ -161,7 +168,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                                 }
                             }
 
-                            // Total de reservas históricas
+                            // Total de reservas histÃ³ricas
                             int reservasHistoricas = 0;
                             try (PreparedStatement psHist = con.prepareStatement(
                                     "SELECT COUNT(*) FROM DetalleReserva dr " +
@@ -245,9 +252,11 @@ import com.travelink.repositorio.ReservaRepositorio;
             } catch (Exception e) {}
 
             int idAgencia = 0;
-            try {
-                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
-            } catch (Exception e) { idAgencia = 1; }
+            Object sessAgencia = exchange.getAttribute("ID_AGENCIA");
+            if (sessAgencia instanceof Integer) idAgencia = (Integer) sessAgencia;
+            if (idAgencia <= 0 && params.containsKey("idAgencia")) {
+                try { idAgencia = Integer.parseInt(String.valueOf(params.get("idAgencia"))); } catch (Exception ignored) {}
+            }
 
             String nuevoEstado = String.valueOf(params.getOrDefault("nuevoEstado", "")).trim().toUpperCase();
             if (nuevoEstado.isEmpty()) {
@@ -257,7 +266,7 @@ import com.travelink.repositorio.ReservaRepositorio;
             }
 
             if (idTour <= 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de servicio no válido\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de servicio no vÃ¡lido\"}");
                 return;
             }
 
@@ -322,17 +331,19 @@ import com.travelink.repositorio.ReservaRepositorio;
             } catch (Exception e) {}
 
             int idAgencia = 0;
-            try {
-                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
-            } catch (Exception e) { idAgencia = 1; }
+            Object sessAgencia = exchange.getAttribute("ID_AGENCIA");
+            if (sessAgencia instanceof Integer) idAgencia = (Integer) sessAgencia;
+            if (idAgencia <= 0 && params.containsKey("idAgencia")) {
+                try { idAgencia = Integer.parseInt(String.valueOf(params.get("idAgencia"))); } catch (Exception ignored) {}
+            }
 
             if (idTour <= 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de servicio no válido\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"ID de servicio no vÃ¡lido\"}");
                 return;
             }
 
             try (Connection con = ConexionDB.getConnection()) {
-                // Verificar reservas históricas
+                // Verificar reservas histÃ³ricas
                 int reservasHistoricas = 0;
                 try (PreparedStatement psHist = con.prepareStatement(
                         "SELECT COUNT(*) FROM DetalleReserva dr " +
@@ -344,14 +355,14 @@ import com.travelink.repositorio.ReservaRepositorio;
                     }
                 }
 
-                // Si tuvo reservas, NO se elimina: se pausa automáticamente
+                // Si tuvo reservas, NO se elimina: se pausa automÃ¡ticamente
                 if (reservasHistoricas > 0) {
                     try (PreparedStatement psPausar = con.prepareStatement("UPDATE Tour SET estado = 'PAUSADO' WHERE idTour = ? AND idAgencia = ?")) {
                         psPausar.setInt(1, idTour);
                         psPausar.setInt(2, idAgencia);
                         psPausar.executeUpdate();
                     }
-                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"warning\",\"canPause\":true,\"message\":\"El servicio no se puede eliminar porque tiene historial de reservas registradas. Ha sido pausado automáticamente.\"}");
+                    JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"warning\",\"canPause\":true,\"message\":\"El servicio no se puede eliminar porque tiene historial de reservas registradas. Ha sido pausado automÃ¡ticamente.\"}");
                     return;
                 }
 
@@ -385,18 +396,19 @@ import com.travelink.repositorio.ReservaRepositorio;
             String duracion = String.valueOf(params.getOrDefault("duracion", "")).trim();
             String estado = String.valueOf(params.getOrDefault("estado", "ACTIVO")).trim();
 
-            int idAgencia = 1;
-            int idDestino = 0;
-            int idTour = 0;
+            int idAgencia = 0;
+            Object sessAgencia = exchange.getAttribute("ID_AGENCIA");
+            if (sessAgencia instanceof Integer) idAgencia = (Integer) sessAgencia;
+            if (idAgencia <= 0 && params.containsKey("idAgencia")) {
+                try { idAgencia = Integer.parseInt(String.valueOf(params.get("idAgencia"))); } catch (Exception ignored) {}
+            }
 
-            try {
-                idAgencia = Integer.parseInt(String.valueOf(params.getOrDefault("idAgencia", "1")));
-            } catch (Exception ignored) {}
-
+            int idDestino = 2;
             try {
                 idDestino = Integer.parseInt(String.valueOf(params.getOrDefault("idDestino", "2")));
             } catch (Exception ignored) {}
 
+            int idTour = 0;
             try {
                 idTour = Integer.parseInt(String.valueOf(params.getOrDefault("idServicio", params.getOrDefault("idTour", "0"))));
             } catch (Exception ignored) {}
@@ -410,29 +422,29 @@ import com.travelink.repositorio.ReservaRepositorio;
                 pNino = Double.parseDouble(String.valueOf(params.getOrDefault("precioNino", "0")));
                 pBebe = Double.parseDouble(String.valueOf(params.getOrDefault("precioBebe", "0")));
             } catch (Exception e) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Los valores de precios no son números válidos\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Los valores de precios no son nÃºmeros vÃ¡lidos\"}");
                 return;
             }
 
             // Validaciones
             if (nombre.isEmpty() || tipoServicio.isEmpty() || duracion.isEmpty() || idDestino <= 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Completa todos los campos obligatorios: Nombre, Tipo, Destino y Duración.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Completa todos los campos obligatorios: Nombre, Tipo, Destino y DuraciÃ³n.\"}");
                 return;
             }
 
-            // Validación de precios: Adulto > 0 y Adulto >= Niño >= Bebé
+            // ValidaciÃ³n de precios: Adulto > 0 y Adulto >= NiÃ±o >= BebÃ©
             if (pAdulto <= 0) {
                 JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"El precio de adulto debe ser mayor a 0.\"}");
                 return;
             }
 
             if (pAdulto < pNino || pNino < pBebe || pBebe < 0) {
-                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Los precios deben cumplir la regla de jerarquía: Adulto ≥ Niño ≥ Bebé.\"}");
+                JavaApiServer.sendJsonResponse(exchange, 400, "{\"status\":\"error\",\"message\":\"Los precios deben cumplir la regla de jerarquÃ­a: Adulto â‰¥ NiÃ±o â‰¥ BebÃ©.\"}");
                 return;
             }
 
             try (Connection con = ConexionDB.getConnection()) {
-                // Validación: Nombre único dentro de la misma agencia
+                // ValidaciÃ³n: Nombre Ãºnico dentro de la misma agencia
                 try (PreparedStatement psCheckName = con.prepareStatement(
                         "SELECT idTour FROM Tour WHERE idAgencia = ? AND LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND idTour != ?")) {
                     psCheckName.setInt(1, idAgencia);
@@ -448,7 +460,7 @@ import com.travelink.repositorio.ReservaRepositorio;
 
                 if (idTour > 0) {
                     // Actualizar
-                    // Verificar que no esté desactivado por admin
+                    // Verificar que no estÃ© desactivado por admin
                     try (PreparedStatement psCheckAdmin = con.prepareStatement("SELECT estado FROM Tour WHERE idTour = ? AND idAgencia = ?")) {
                         psCheckAdmin.setInt(1, idTour);
                         psCheckAdmin.setInt(2, idAgencia);
@@ -527,7 +539,7 @@ import com.travelink.repositorio.ReservaRepositorio;
                     }
                 }
 
-                // Procesar imágenes si se enviaron (hasta 5)
+                // Procesar imÃ¡genes si se enviaron (hasta 5)
                 String imagenesStr = String.valueOf(params.getOrDefault("imagenes", "")).trim();
                 String imagenPrincipal = String.valueOf(params.getOrDefault("imagenPrincipal", "")).trim();
 

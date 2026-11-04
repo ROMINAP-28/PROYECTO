@@ -23,13 +23,16 @@ public class UsuariosAdminHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         String method = exchange.getRequestMethod();
 
-        if ("POST".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method)) {
+        if ("POST".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
             try {
                 String body = JavaApiServer.readRequestBody(exchange);
                 Map<String, Object> params = JavaApiServer.parseJsonOrFormParams(body);
                 Map<String, String> queryParams = JavaApiServer.parseQueryParams(exchange.getRequestURI().getQuery());
 
                 String action = String.valueOf(params.getOrDefault("action", params.getOrDefault("accion", "")));
+                if ("PUT".equalsIgnoreCase(method) && action.isEmpty()) {
+                    action = "guardar";
+                }
                 int idUsuario = 0;
                 try {
                     if (params.containsKey("idUsuario")) {

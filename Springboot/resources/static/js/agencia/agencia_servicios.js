@@ -9,7 +9,7 @@
         sesion = JSON.parse(raw || "{}");
     } catch (e) { }
 
-    let idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 1;
+    let idAgenciaActual = (sesion && sesion.idAgencia) ? Number(sesion.idAgencia) : 0;
     let nombreAgenciaActual = (sesion && (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario)) ? (sesion.nombreComercial || sesion.nombreAgencia || sesion.nombre || sesion.nombreUsuario) : "Agencia";
 
     let todosLosServicios = [];

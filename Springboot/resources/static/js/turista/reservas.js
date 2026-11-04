@@ -2,9 +2,7 @@
 
 const ITEMS_PER_PAGE = 5;
 let currentPage = 1;
-
-// Default initial reservations list for default user
-
+let reservasMemoria = null; // Fuente de verdad en memoria proveniente de la BD
 
 function getUserReservasKey(user) {
     user = user || (window.getCurrentUser ? window.getCurrentUser() : null);
@@ -13,6 +11,9 @@ function getUserReservasKey(user) {
 }
 
 function getReservasData(user) {
+    if (reservasMemoria !== null) {
+        return reservasMemoria;
+    }
     const key = getUserReservasKey(user);
     const stored = localStorage.getItem(key);
 
@@ -40,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         cargarReservasDesdeDB();
     }
+
+    // Sincronización automática en tiempo real
+    window.addEventListener('travelink:reserva_cancelada', () => cargarReservasDesdeDB());
+    window.addEventListener('travelink:reserva_creada', () => cargarReservasDesdeDB());
 });
 
 function cargarReservasDesdeDB(user) {
@@ -66,7 +71,7 @@ function cargarReservasDesdeDB(user) {
         .then(res => res.json())
         .then(data => {
             if (data && data.status === 'success' && Array.isArray(data.reservas)) {
-                // Guardar reservas reales asociadas al usuario autenticado
+                reservasMemoria = data.reservas;
                 localStorage.setItem(key, JSON.stringify(data.reservas));
             }
         })
@@ -267,6 +272,95 @@ function renderReservasPage(user) {
         `;
         listContainer.innerHTML = tableHtml;
     }
+
+    verificarReservaRecienCreada();
+}
+
+let _verificacionModalMostrada = false;
+function verificarReservaRecienCreada() {
+    if (_verificacionModalMostrada) return;
+
+    let recienCreada = null;
+    try {
+        const stored = sessionStorage.getItem('reserva_recien_creada');
+        if (stored) recienCreada = JSON.parse(stored);
+    } catch (_) {}
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const codigoParam = urlParams.get('nuevaReserva') || urlParams.get('reservaExitosa') || (recienCreada ? recienCreada.codigo : null);
+
+    if (codigoParam) {
+        _verificacionModalMostrada = true;
+
+        try {
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        } catch (_) {}
+        try {
+            sessionStorage.removeItem('reserva_recien_creada');
+        } catch (_) {}
+
+        const codigo = codigoParam;
+        const total = recienCreada ? recienCreada.total : null;
+        const desglose = recienCreada ? recienCreada.desglose : null;
+        const titulo = recienCreada ? recienCreada.titulo : null;
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '¡Reserva Confirmada con Éxito!',
+                html: `
+                    <div style="text-align:center; padding: 4px;">
+                        <div style="width:64px; height:64px; background:#dcfce7; color:#15803d; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:30px; margin-bottom:14px; box-shadow:0 4px 12px rgba(22,163,74,0.18);">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <h3 style="font-size:19px; color:#0f2942; margin:0 0 10px 0; font-weight:800;">¡Tu reserva ha sido procesada!</h3>
+                        <p style="font-size:14px; color:#475569; margin-bottom:16px;">Se ha registrado correctamente en el sistema y ya está disponible aquí en tu lista de <strong>Mis Reservas</strong>.</p>
+                        
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px; text-align:left;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #e2e8f0;">
+                                <span style="font-size:13px; color:#64748b; font-weight:600;">Código de reserva:</span>
+                                <span style="font-size:15px; color:#196f3d; font-weight:800; font-family:monospace; background:#e8f5e9; padding:2px 8px; border-radius:6px;">${codigo}</span>
+                            </div>
+                            ${titulo ? `
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <span style="font-size:13px; color:#64748b;">Tour:</span>
+                                <strong style="font-size:13px; color:#1e293b; max-width:60%; text-align:right;">${titulo}</strong>
+                            </div>` : ''}
+                            ${desglose ? `
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <span style="font-size:13px; color:#64748b;">Pasajeros:</span>
+                                <span style="font-size:13px; color:#334155;">${desglose}</span>
+                            </div>` : ''}
+                            ${total ? `
+                            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #cbd5e1; padding-top:8px; margin-top:8px;">
+                                <span style="font-size:14px; font-weight:700; color:#334155;">Total pagado:</span>
+                                <strong style="font-size:17px; color:#196f3d;">S/ ${Number(total).toFixed(2)}</strong>
+                            </div>` : ''}
+                        </div>
+                        <p style="font-size:12px; color:#64748b; margin:0;"><i class="fa-solid fa-circle-info" style="color:#196f3d;"></i> Puedes hacer clic en "Ver detalles" para consultar los pasajeros o descargar tu voucher en PDF.</p>
+                    </div>
+                `,
+                confirmButtonColor: '#196f3d',
+                confirmButtonText: '<i class="fa-solid fa-check"></i> Entendido'
+            });
+        }
+
+        setTimeout(() => {
+            const filas = document.querySelectorAll('.reservas-table-modern tbody tr');
+            filas.forEach(fila => {
+                if (fila.textContent.includes(codigo)) {
+                    fila.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    fila.style.boxShadow = '0 0 0 3px #16a34a, 0 8px 16px rgba(22,163,74,0.15)';
+                    fila.style.backgroundColor = '#f0fdf4';
+                    fila.style.transition = 'all 0.5s ease';
+                    setTimeout(() => {
+                        fila.style.boxShadow = '';
+                        fila.style.backgroundColor = '';
+                    }, 5000);
+                }
+            });
+        }, 350);
+    }
 }
 
 
@@ -288,10 +382,50 @@ window.abrirDetalleNuevo = function(codigo) {
         document.body.appendChild(overlay);
     }
 
+    const isCancelada = reserva.estado === 'Cancelada';
     const isCompletada = reserva.estado === 'Completada' || reserva.estado === 'Finalizada' || reserva.estado === 'Confirmada';
-    const badgeHtml = isCompletada 
-        ? `<span class="res-badge-confirmada" style="font-size:12px; padding: 4px 10px;">Confirmada</span>` 
-        : `<span class="res-badge-pendiente" style="font-size:12px; padding: 4px 10px;">Pendiente</span>`;
+    let badgeHtml = '';
+    if (isCancelada) badgeHtml = `<span class="res-badge-cancelada" style="font-size:12px; padding: 4px 10px;"><i class="fa-solid fa-xmark"></i> Cancelada</span>`;
+    else if (isCompletada) badgeHtml = `<span class="res-badge-confirmada" style="font-size:12px; padding: 4px 10px;">${reserva.estado}</span>`;
+    else badgeHtml = `<span class="res-badge-pendiente" style="font-size:12px; padding: 4px 10px;">Pendiente</span>`;
+
+    // Pasajeros reales desde la base de datos
+    let passRows = '';
+    if (Array.isArray(reserva.pasajeros) && reserva.pasajeros.length > 0) {
+        reserva.pasajeros.forEach((p, pIdx) => {
+            const fullNom = `${p.nombre || ''} ${p.apellidoPaterno || ''} ${p.apellidoMaterno || ''}`.trim() || `Pasajero ${pIdx + 1}`;
+            passRows += `
+                <tr>
+                    <td>${pIdx + 1}</td>
+                    <td><strong>${fullNom}</strong></td>
+                    <td>${p.nroDocumento || '---'}</td>
+                    <td>${p.esTitular ? '<span class="badge-titular" style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">Titular</span>' : (p.tipo || 'Acompañante')}</td>
+                    <td>Peruana</td>
+                </tr>
+            `;
+        });
+    } else {
+        passRows = `
+            <tr>
+                <td>1</td>
+                <td><strong>${userName}</strong></td>
+                <td>${userDoc}</td>
+                <td><span class="badge-titular" style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">Titular</span></td>
+                <td>Peruana</td>
+            </tr>
+        `;
+    }
+
+    const cancelacionBannerHtml = isCancelada ? `
+        <div style="background:#fef2f2; border:1px solid #fecaca; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin-bottom:20px; color:#991b1b;">
+            <div style="font-weight:700; display:flex; align-items:center; gap:8px; font-size:15px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#dc2626;"></i> Reserva Cancelada
+            </div>
+            <div style="margin-top:6px; font-size:13px; color:#7f1d1d;">
+                <strong>Motivo de cancelación:</strong> ${reserva.motivoCancelacion || 'Cancelado por el usuario'}
+            </div>
+        </div>
+    ` : '';
 
     overlay.innerHTML = `
         <div class="modal-detalles-card">
@@ -301,6 +435,7 @@ window.abrirDetalleNuevo = function(codigo) {
             </div>
             
             <div class="md-body">
+                ${cancelacionBannerHtml}
                 <div class="md-top-grid">
                     <div class="md-main-info">
                         <img loading="lazy" src="${reserva.imagen || '../../img/valle.jpg'}" alt="Tour">
@@ -328,7 +463,7 @@ window.abrirDetalleNuevo = function(codigo) {
                             <span style="font-size: 12px; color: #64748b;">Total pagado</span>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div style="font-size: 20px; font-weight: 700; color: #0f172a;">${rFormattedTotal(reserva.total)}</div>
-                                <span class="res-badge-confirmada" style="font-size: 11px; padding: 2px 8px;">Pagado</span>
+                                <span class="${isCancelada ? 'res-badge-cancelada' : 'res-badge-confirmada'}" style="font-size: 11px; padding: 2px 8px;">${isCancelada ? 'Cancelada' : 'Pagado'}</span>
                             </div>
                         </div>
                     </div>
@@ -353,22 +488,7 @@ window.abrirDetalleNuevo = function(codigo) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>${userName}</td>
-                                <td>${userDoc}</td>
-                                <td>Titular</td>
-                                <td>Peruana</td>
-                            </tr>
-                            ${parseInt(reserva.personas) > 1 ? `
-                            <tr>
-                                <td>2</td>
-                                <td>Carlos Garcia</td>
-                                <td>87654321</td>
-                                <td>22/08/1992</td>
-                                <td>Peruana</td>
-                            </tr>
-                            ` : ''}
+                            ${passRows}
                         </tbody>
                     </table>
                     
@@ -403,11 +523,11 @@ window.abrirDetalleNuevo = function(codigo) {
             <div class="md-footer">
                 <button class="md-btn md-btn-cerrar" onclick="cerrarDetalleNuevo()">Cerrar</button>
                 <button class="md-btn" style="background:#0b1f38; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" onclick="descargarVoucherPDF('${reserva.codigo}')"><i class="fa-solid fa-download"></i> Comprobante PDF</button>
-                ${reserva.calificada ? `
+                ${(!isCancelada && reserva.calificada) ? `
                     <span style="color:#b45309; font-weight:600; font-size:14px; display:inline-flex; align-items:center; gap:6px; margin-left:auto;">
                         <i class="fa-solid fa-star" style="color:#eab308;"></i> Experiencia ya calificada
                     </span>
-                ` : ((reserva.estado === 'Completada' || reserva.estado === 'Finalizada' || reserva.estado === 'Confirmada') ? `
+                ` : (!isCancelada && (reserva.estado === 'Completada' || reserva.estado === 'Finalizada' || reserva.estado === 'Confirmada') ? `
                     <button class="md-btn md-btn-calificar" onclick="cerrarDetalleNuevo(); abrirModalCalificarReserva('${reserva.codigo}')">
                         <i class="fa-solid fa-star"></i> Calificar experiencia
                     </button>
@@ -689,56 +809,152 @@ window.enviarCalificacion = function() {
 };
 
 window.cancelarReservaConfirm = function(codigo) {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: 'Esta acción cancelará tu reserva ' + codigo + ' y devolverá los cupos a la disponibilidad del tour.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Sí, cancelar reserva',
-            cancelButtonText: 'No, mantener'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const res = await fetch('/api/cancelar_reserva', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ codigo: codigo, motivo: 'Cancelado por el usuario desde Mis Reservas' })
-                    });
-                    const data = await res.json();
-                    if (res.ok && data.status === 'success') {
-                        // Actualizar en localStorage
-                        const key = getUserReservasKey();
-                        let list = getReservasData();
-                        list.forEach(r => { if (r.codigo === codigo) r.estado = 'Cancelada'; });
-                        localStorage.setItem(key, JSON.stringify(list));
+    let overlay = document.getElementById('modal-cancelar-reserva');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'modal-cancelar-reserva';
+        overlay.className = 'modal-detalles-overlay';
+        document.body.appendChild(overlay);
+    }
 
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Reserva Cancelada',
-                            text: 'La reserva ' + codigo + ' ha sido cancelada correctamente y los cupos han sido restaurados.',
-                            confirmButtonColor: '#196f3d'
-                        }).then(() => {
-                            cargarReservasDesdeDB();
-                        });
-                    } else {
-                        throw new Error(data.message || 'Error al cancelar la reserva');
-                    }
-                } catch (e) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#0b1f38' });
-                }
-            }
-        });
-    } else {
-        if (confirm('¿Estás seguro de cancelar la reserva ' + codigo + '?')) {
-            fetch('/api/cancelar_reserva', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codigo: codigo, motivo: 'Cancelado por el usuario desde Mis Reservas' })
-            }).then(() => cargarReservasDesdeDB());
+    overlay.innerHTML = `
+        <div class="modal-detalles-card" style="width: 520px; max-width: 95%;">
+            <div class="md-header" style="border-bottom: 1px solid #fee2e2; background:#fef2f2;">
+                <h2 style="color:#b91c1c; font-size:18px; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Cancelar Reserva ${codigo}
+                </h2>
+                <button class="md-close" onclick="cerrarModalCancelar()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="md-body" style="padding: 24px;">
+                <p style="color:#334155; font-size:14px; margin-top:0;">
+                    Estás a punto de cancelar tu reserva <strong>${codigo}</strong>. Los cupos reservados se devolverán a la disponibilidad del tour.
+                </p>
+                <div style="margin-top:16px;">
+                    <label style="display:block; font-weight:600; font-size:13px; color:#0f172a; margin-bottom:6px;">
+                        Motivo de cancelación *
+                    </label>
+                    <select id="selectMotivoCancelacion" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; background:white;" onchange="onCambioMotivoCancelacion(this)">
+                        <option value="" disabled selected>-- Selecciona un motivo --</option>
+                        <option value="Cambio de planes">Cambio de planes</option>
+                        <option value="Problemas de salud">Problemas de salud</option>
+                        <option value="Error en la reserva">Error en la reserva</option>
+                        <option value="Encontré otra opción">Encontré otra opción</option>
+                        <option value="Problemas de pago">Problemas de pago</option>
+                        <option value="Otro">Otro (especificar)</option>
+                    </select>
+                </div>
+                <div id="boxOtroMotivo" style="display:none; margin-top:14px;">
+                    <label style="display:block; font-weight:600; font-size:13px; color:#0f172a; margin-bottom:6px;">
+                        Especifica el motivo * <span style="font-size:11px; color:#64748b; font-weight:normal;">(Entre 5 y 255 caracteres)</span>
+                    </label>
+                    <textarea id="txtOtroMotivo" rows="3" maxlength="255" placeholder="Escribe el motivo detallado de la cancelación..." style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; font-family:inherit; resize:vertical;"></textarea>
+                    <small id="otroMotivoHelp" style="display:block; margin-top:4px; font-size:12px; color:#64748b;"></small>
+                </div>
+            </div>
+            <div class="md-footer" style="padding: 16px 24px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="md-btn md-btn-cerrar" onclick="cerrarModalCancelar()" style="padding:8px 16px;">Volver</button>
+                <button id="btnEjecutarCancelacion" class="md-btn" style="background:#dc2626; color:white; border:none; padding:8px 18px; border-radius:6px; font-weight:600; cursor:pointer;" onclick="ejecutarCancelacionReserva('${codigo}')">
+                    <i class="fa-solid fa-xmark"></i> Confirmar cancelación
+                </button>
+            </div>
+        </div>
+    `;
+
+    setTimeout(() => overlay.classList.add('active'), 10);
+};
+
+window.cerrarModalCancelar = function() {
+    const overlay = document.getElementById('modal-cancelar-reserva');
+    if (overlay) {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 300);
+    }
+};
+
+window.onCambioMotivoCancelacion = function(sel) {
+    const boxOtro = document.getElementById('boxOtroMotivo');
+    sel.classList.remove('campo-vacio', 'novalido', 'valido');
+    if (sel.value === 'Otro') {
+        if (boxOtro) boxOtro.style.display = 'block';
+        const txt = document.getElementById('txtOtroMotivo');
+        if (txt) {
+            txt.focus();
+            if (!txt.value.trim()) txt.classList.add('campo-vacio');
         }
+    } else {
+        if (boxOtro) boxOtro.style.display = 'none';
+        sel.classList.add('valido');
+    }
+};
+
+window.ejecutarCancelacionReserva = async function(codigo) {
+    const sel = document.getElementById('selectMotivoCancelacion');
+    const boxOtro = document.getElementById('boxOtroMotivo');
+    const txt = document.getElementById('txtOtroMotivo');
+    const btn = document.getElementById('btnEjecutarCancelacion');
+
+    let motivo = sel ? sel.value.trim() : '';
+    if (!motivo) {
+        if (sel) sel.classList.add('campo-vacio');
+        alert('Por favor selecciona un motivo de cancelación.');
+        return;
+    }
+
+    if (motivo === 'Otro') {
+        const otroTexto = txt ? txt.value.trim() : '';
+        if (!otroTexto) {
+            if (txt) { txt.classList.remove('novalido'); txt.classList.add('campo-vacio'); txt.focus(); }
+            alert('Por favor escribe el motivo de la cancelación en el cuadro de texto.');
+            return;
+        }
+        if (otroTexto.length < 5) {
+            if (txt) { txt.classList.remove('campo-vacio'); txt.classList.add('novalido'); txt.focus(); }
+            alert('El motivo debe tener al menos 5 caracteres.');
+            return;
+        }
+        if (txt) { txt.classList.remove('campo-vacio', 'novalido'); txt.classList.add('valido'); }
+        motivo = otroTexto;
+    }
+
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cancelando...'; }
+
+    try {
+        const fetchFn = window.apiFetch || fetch;
+        const res = await fetchFn('/api/cancelar_reserva', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ codigo: codigo, motivo: motivo })
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.status === 'success') {
+            cerrarModalCancelar();
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reserva Cancelada',
+                    text: 'La reserva ' + codigo + ' ha sido cancelada correctamente y los cupos han sido restaurados.',
+                    confirmButtonColor: '#196f3d'
+                }).then(() => {
+                    cargarReservasDesdeDB();
+                });
+            } else {
+                alert('Reserva ' + codigo + ' cancelada correctamente.');
+                cargarReservasDesdeDB();
+            }
+        } else {
+            const msg = data.message || data.error || 'No se pudo cancelar la reserva.';
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'No se pudo cancelar', text: msg, confirmButtonColor: '#0b1f38' });
+            } else {
+                alert('Error: ' + msg);
+            }
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Confirmar cancelación'; }
+        }
+    } catch (err) {
+        console.error('Error al cancelar:', err);
+        alert('Ocurrió un error al cancelar la reserva: ' + err.message);
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Confirmar cancelación'; }
     }
 };
 

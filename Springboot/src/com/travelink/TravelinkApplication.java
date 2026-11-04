@@ -46,6 +46,34 @@ public class TravelinkApplication {
         return args -> {
             ConexionDB.setDataSource(ds);
             log.info("ConexionDB configurado exitosamente con el pool HikariCP de Spring Boot.");
+            crearIndicesSiNoExisten(ds);
         };
+    }
+
+    private void crearIndicesSiNoExisten(javax.sql.DataSource ds) {
+        String[] indices = {
+            "CREATE INDEX idx_reserva_usuario ON Reserva(idUsuario)",
+            "CREATE INDEX idx_reserva_agencia ON Reserva(idAgencia)",
+            "CREATE INDEX idx_reserva_tour ON Reserva(idTour)",
+            "CREATE INDEX idx_reserva_tourfecha ON Reserva(idTourFecha)",
+            "CREATE INDEX idx_reserva_estado ON Reserva(estado)",
+            "CREATE INDEX idx_tour_agencia ON Tour(idAgencia)",
+            "CREATE INDEX idx_tourfecha_tour ON TourFecha(idTour)",
+            "CREATE INDEX idx_calificacion_agencia ON Calificacion(idAgencia)",
+            "CREATE INDEX idx_calificacion_usuario ON Calificacion(idUsuario)",
+            "CREATE INDEX idx_calificacion_reserva ON Calificacion(idReserva)"
+        };
+        try (java.sql.Connection con = ds.getConnection()) {
+            for (String sql : indices) {
+                try (java.sql.Statement st = con.createStatement()) {
+                    st.execute(sql);
+                } catch (java.sql.SQLException ignored) {
+                    // Ya existe el índice en MySQL
+                }
+            }
+            log.info("Verificación y optimización de índices de BD completada exitosamente.");
+        } catch (Exception e) {
+            log.warn("Verificación de índices completada con aviso: {}", e.getMessage());
+        }
     }
 }

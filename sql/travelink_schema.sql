@@ -242,6 +242,18 @@ CREATE TABLE MetodoPago (
     CONSTRAINT fk_pago_reserva FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- 14b. Pago (Estructura real Aiven)
+CREATE TABLE Pago (
+    idPago INT AUTO_INCREMENT PRIMARY KEY,
+    idReserva INT DEFAULT NULL,
+    monto DECIMAL(10,2) NOT NULL,
+    fechaPago DATETIME DEFAULT NULL,
+    metodoPago VARCHAR(50) DEFAULT NULL,
+    estado VARCHAR(50) DEFAULT 'COMPLETADO',
+    numeroOperacion VARCHAR(100) DEFAULT NULL,
+    CONSTRAINT fk_tbl_pago_reserva_p7 FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva) ON DELETE CASCADE
+);
+
 -- 15. Calificacion
 CREATE TABLE Calificacion (
     idCalificacion INT AUTO_INCREMENT PRIMARY KEY,

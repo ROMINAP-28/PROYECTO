@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Ejecuta el escaneo DAST OWASP ZAP Baseline sobre el contenedor de la aplicación.
 .DESCRIPTION
@@ -78,3 +78,4 @@ if (Test-Path "$OutDir\zap-report.html") {
 } else {
     Write-Host "[AVISO] Revisa los logs de ZAP para verificar la finalización del reporte." -ForegroundColor Yellow
 }
+

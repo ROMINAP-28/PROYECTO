@@ -6,6 +6,7 @@ set -euo pipefail
 
 TARGET_HOST="${1:-127.0.0.1}"
 PORT="${2:-8080}"
+DOCKER_NETWORK="${3:-travelink-net}"
 USER_TIERS=(100 300 500)
 
 # Guard de seguridad
@@ -61,12 +62,14 @@ for USERS in "${USER_TIERS[@]}"; do
             -e -o "$HTML_DIR" || true
         echo "Completado escenario $USERS usuarios." >> "$SUMMARY_FILE"
     elif command -v docker &>/dev/null; then
-        docker run --rm --network host \
+        echo "[INFO] Ejecutando JMeter vía Docker justb4/jmeter en red $DOCKER_NETWORK contra http://app:8080..."
+        docker run --rm \
+            --network "$DOCKER_NETWORK" \
             -v "$PROJECT_ROOT/jmeter:/jmeter:ro" \
             -v "$TIER_DIR:/results:rw" \
             justb4/jmeter \
             -n -t /jmeter/travelink.jmx \
-            -Jhost=127.0.0.1 -Jport="$PORT" -Jusers="$USERS" -Jrampup="$RAMP_UP" -Jloops=2 \
+            -Jhost=app -Jport=8080 -Jusers="$USERS" -Jrampup="$RAMP_UP" -Jloops=2 \
             -l /results/results.jtl -e -o /results/html_report || true
     else
         echo "[AVISO] JMeter no instalado."

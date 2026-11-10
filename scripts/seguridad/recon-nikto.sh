@@ -43,3 +43,4 @@ else
     echo "[AVISO] Nikto no está instalado."
     echo "[PENDIENTE] Instalar Nikto con: sudo apt install -y nikto o docker run sullo/nikto" > "$OUT_FILE"
 fi
+

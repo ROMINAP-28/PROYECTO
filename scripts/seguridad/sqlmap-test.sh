@@ -31,14 +31,18 @@ LOG_FILE="$OUT_DIR/sqlmap-results.txt"
 echo "=========================================================="
 echo " [SQLi] Pruebas sqlmap - TRAVELINK"
 echo " Objetivo: http://${TARGET_HOST}:${PORT}"
+echo " Recursos reales: tours 100/101, destinos 8/15, reservas 500/501"
 echo "=========================================================="
 
 echo "PRUEBAS CONTROLADAS DE INYECCIÓN SQL (SQLMAP) - TRAVELINK" > "$LOG_FILE"
 echo "Fecha: $(date)" >> "$LOG_FILE"
 
 ENDPOINTS=(
-    "http://${TARGET_HOST}:${PORT}/api/tours?idTour=1"
-    "http://${TARGET_HOST}:${PORT}/api/destinos?idDestino=1"
+    "http://${TARGET_HOST}:${PORT}/api/tours?idTour=100"
+    "http://${TARGET_HOST}:${PORT}/api/tours?idTour=101"
+    "http://${TARGET_HOST}:${PORT}/api/destinos?idDestino=8"
+    "http://${TARGET_HOST}:${PORT}/api/destinos?idDestino=15"
+    "http://${TARGET_HOST}:${PORT}/api/obtener_reservas?idUsuario=100"
     "http://${TARGET_HOST}:${PORT}/api/obtener_reservas?idUsuario=101"
 )
 

@@ -10,7 +10,8 @@
 param (
     [string]$TargetHost = "127.0.0.1",
     [int]$Port = 8080,
-    [int[]]$UserTiers = @(100, 300, 500)
+    [int[]]$UserTiers = @(100, 300, 500),
+    [string]$DockerNetwork = "travelink-net"
 )
 
 # ==========================================
@@ -88,17 +89,16 @@ foreach ($Users in $UserTiers) {
             -l $JtlFile `
             -e -o $ReportHtmlDir
     } elseif ($DockerCmd) {
-        Write-Host "[INFO] Ejecutando JMeter vía contenedor Docker justb4/jmeter..." -ForegroundColor DarkYellow
+        Write-Host "[INFO] Ejecutando JMeter vía contenedor Docker justb4/jmeter en red $DockerNetwork..." -ForegroundColor DarkYellow
         $LinuxJmx = "/jmeter/travelink.jmx"
-        $LinuxOut = "/results"
         docker run --rm `
-            --network host `
+            --network $DockerNetwork `
             -v "${ProjectRoot}\jmeter:/jmeter:ro" `
             -v "${TierOutDir}:/results:rw" `
             justb4/jmeter `
             -n -t $LinuxJmx `
-            -Jhost=127.0.0.1 `
-            -Jport=$Port `
+            -Jhost=app `
+            -Jport=8080 `
             -Jusers=$Users `
             -Jrampup=$RampUp `
             -Jloops=2 `
@@ -110,7 +110,6 @@ foreach ($Users in $UserTiers) {
     if (Test-Path $JtlFile) {
         Write-Host "[ÉXITO] Escenario $Users usuarios finalizado. Reporte HTML en: $ReportHtmlDir\index.html" -ForegroundColor Green
         
-        # Parseo liviano de resultados
         $lines = Get-Content $JtlFile | Select-Object -Skip 1
         $totalSamples = $lines.Count
         if ($totalSamples -gt 0) {

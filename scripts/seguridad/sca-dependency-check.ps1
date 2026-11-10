@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Ejecuta el análisis de composición de software (SCA) sobre dependencias del proyecto.
 .DESCRIPTION
@@ -75,3 +75,4 @@ if (Test-Path "$OutDir\dependency-check-report.html") {
 } else {
     Write-Host "[AVISO] Finalizó el comando. Revisa el log para detalles de descarga de la BD de NVD." -ForegroundColor Yellow
 }
+

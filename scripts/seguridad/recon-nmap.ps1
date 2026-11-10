@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Ejecuta reconocimiento de puertos y servicios con nmap sobre la app local.
 .DESCRIPTION
@@ -66,3 +66,4 @@ if ($NmapCmd) {
     "[PENDIENTE] Nmap no está instalado en el sistema. Ejecutar manualmente con: nmap -sV -p $Ports $TargetHost" | Out-File -FilePath $OutputFile -Encoding utf8
     Write-Host "Se creó el registro de estado pendiente en $OutputFile" -ForegroundColor Gray
 }
+

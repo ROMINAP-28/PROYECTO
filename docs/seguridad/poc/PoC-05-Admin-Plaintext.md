@@ -9,23 +9,38 @@
 ---
 
 ## 1. Descripción Técnica del Fallo
-En `sql/datos_minimos.sql:22-24`, el script que inicializa los datos mínimos del sistema inserta el usuario administrador con el nombre de usuario `'admin'` y la contraseña `'123456'` en texto plano (sin hash BCrypt). En conjunto con el bypass de `UsuarioServicioImpl.java:119-121` (que acepta contraseñas sin hash mediante comparación por igualdad directa), cualquier atacante puede iniciar sesión inmediatamente como superadministrador con la credencial pública por defecto `admin / 123456`.
+En `sql/datos_minimos.sql:22-24`, el script que inicializa los datos mínimos del sistema inserta el usuario administrador con el nombre de usuario `'admin'` y la contraseña `'123456'` en texto plano (sin hash BCrypt). En conjunto con el bypass de `UsuarioServicioImpl.java:119-121` (que acepta contraseñas sin hash mediante comparación directa), cualquier atacante puede iniciar sesión inmediatamente como superadministrador con la credencial pública por defecto `admin / 123456`.
+
+### Confirmación de Campos del Body en `AuthApiController.java`:
+Revisando `AuthApiController.java` (líneas 60–73), el controlador soporta múltiples nombres de campo para compatibilidad con distintos formularios:
+- **Identificador de usuario:** busca en orden `"correo"`, `"usuario"`, `"usuarioCorreo"`, `"email"` o `"login"`.
+- **Contraseña:** busca en orden `"clave"`, `"contrasena"`, `"contraseña"` o `"password"`.
+- **Validación de Portal:** `"rolEsperado": "ADMIN"` (o `"rol"`, `"portal"`).
+
+Por tanto, son válidas tanto la sintaxis con `"usuario": "admin"` como con `"correo": "admin@travelink.pe"`.
 
 ---
 
 ## 2. Precondiciones
-1. Base de datos inicializada con `sql/datos_minimos.sql`.
+1. Base de datos inicializada con `sql/datos_minimos.sql` (usuario `admin`, idUsuario `1`, correo `admin@travelink.pe`, contraseña `'123456'`).
 2. App local levantada en `http://127.0.0.1:8080`.
 
 ---
 
 ## 3. Procedimiento de Ejecución Manual (Request Exacta)
 
-### Petición `curl` para Login de Administrador con Credencial por Defecto:
+### Opción A: Usando el campo `"usuario"`
 ```bash
 curl -i -s -X POST "http://127.0.0.1:8080/api/admin/login" \
      -H "Content-Type: application/json" \
      -d '{"usuario":"admin","clave":"123456","rolEsperado":"ADMIN"}'
+```
+
+### Opción B: Usando el campo `"correo"`
+```bash
+curl -i -s -X POST "http://127.0.0.1:8080/api/admin/login" \
+     -H "Content-Type: application/json" \
+     -d '{"correo":"admin@travelink.pe","clave":"123456","rolEsperado":"ADMIN"}'
 ```
 
 ### Formato para Burp Suite Repeater:

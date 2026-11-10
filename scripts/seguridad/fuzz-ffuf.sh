@@ -42,3 +42,4 @@ else
     echo "Instalar con: sudo apt install -y ffuf"
     echo "[PENDIENTE] ffuf no instalado. Ejecutar: ffuf -u $TARGET_URL -w $WORDLIST -mc 200,401,403,500 -o $OUT_FILE -of json" > "$OUT_FILE"
 fi
+

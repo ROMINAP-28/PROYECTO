@@ -3,7 +3,7 @@
     Ejecuta pruebas de inyección SQL controladas y no destructivas con sqlmap.
 .DESCRIPTION
     Ejecuta sqlmap con --level=1 --risk=1 --batch únicamente sobre la app local en 127.0.0.1:8080.
-    Evalúa endpoints con parámetros (tours, destinos, reservas).
+    Evalúa endpoints con parámetros sobre recursos reales del seed (tours 100 y 101, destinos 8 y 15, reservas 500 y 501).
     Guarda los reportes en docs/seguridad/evidencias/sqlmap/.
 #>
 
@@ -36,11 +36,15 @@ $LogFile = "$OutDir\sqlmap-results.txt"
 " PRUEBAS CONTROLADAS DE INYECCIÓN SQL (SQLMAP) - TRAVELINK" | Out-File -FilePath $LogFile -Append -Encoding utf8
 " Fecha: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -FilePath $LogFile -Append -Encoding utf8
 " Parámetros de Seguridad: --level=1 --risk=1 --batch (No destructivo)" | Out-File -FilePath $LogFile -Append -Encoding utf8
+" Recursos reales del seed evaluados: tours 100/101, destinos 8/15, reservas 500/501 (usuarios 100/101)" | Out-File -FilePath $LogFile -Append -Encoding utf8
 "==========================================================" | Out-File -FilePath $LogFile -Append -Encoding utf8
 
 $TestEndpoints = @(
-    "http://${TargetHost}:${Port}/api/tours?idTour=1",
-    "http://${TargetHost}:${Port}/api/destinos?idDestino=1",
+    "http://${TargetHost}:${Port}/api/tours?idTour=100",
+    "http://${TargetHost}:${Port}/api/tours?idTour=101",
+    "http://${TargetHost}:${Port}/api/destinos?idDestino=8",
+    "http://${TargetHost}:${Port}/api/destinos?idDestino=15",
+    "http://${TargetHost}:${Port}/api/obtener_reservas?idUsuario=100",
     "http://${TargetHost}:${Port}/api/obtener_reservas?idUsuario=101"
 )
 
@@ -53,7 +57,6 @@ Write-Host "==========================================================" -Foregro
 $SqlmapCmd = Get-Command sqlmap -ErrorAction SilentlyContinue
 
 if (-not $SqlmapCmd) {
-    # Comprobar python -m sqlmap o WSL
     $PythonCmd = Get-Command python -ErrorAction SilentlyContinue
     $WslCmd = Get-Command wsl -ErrorAction SilentlyContinue
     
@@ -62,14 +65,14 @@ if (-not $SqlmapCmd) {
         Write-Host "Instrucciones para ejecutar sqlmap:" -ForegroundColor Cyan
         Write-Host " - Con Python: pip install sqlmap" -ForegroundColor Gray
         Write-Host " - Con WSL:    sudo apt update && sudo apt install -y sqlmap" -ForegroundColor Gray
-        "[PENDIENTE] sqlmap no disponible en PATH. Ejecutar: sqlmap -u 'http://127.0.0.1:8080/api/tours?idTour=1' --level=1 --risk=1 --batch" | Out-File -FilePath $LogFile -Append -Encoding utf8
+        "[PENDIENTE] sqlmap no disponible en PATH. Ejecutar: sqlmap -u 'http://127.0.0.1:8080/api/tours?idTour=100' --level=1 --risk=1 --batch" | Out-File -FilePath $LogFile -Append -Encoding utf8
         exit 0
     }
 }
 
 foreach ($Endpoint in $TestEndpoints) {
     Write-Host ""
-    Write-Host "Analizando endpoint: $Endpoint ..." -ForegroundColor Yellow
+    Write-Host "Analizando endpoint con recurso real: $Endpoint ..." -ForegroundColor Yellow
     "----------------------------------------------------------" | Out-File -FilePath $LogFile -Append -Encoding utf8
     "ENDPOINT: $Endpoint" | Out-File -FilePath $LogFile -Append -Encoding utf8
     "----------------------------------------------------------" | Out-File -FilePath $LogFile -Append -Encoding utf8

@@ -41,3 +41,4 @@ else
     echo "Instalar con: sudo apt update && sudo apt install -y nmap"
     echo "[PENDIENTE] Nmap no instalado. Ejecutar: nmap -sV -p $PORTS $TARGET_HOST" > "$OUT_FILE"
 fi
+

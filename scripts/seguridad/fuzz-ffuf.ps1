@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Ejecuta fuzzing de endpoints con ffuf contra http://127.0.0.1:8080/api/FUZZ.
 .DESCRIPTION
@@ -70,3 +70,4 @@ if ($FfufCmd) {
     "[PENDIENTE] ffuf no instalado en el host. Ejecutar: ffuf -u $TargetUrl -w $Wordlist -mc 200,401,403,500 -o $OutputFile -of json" | Out-File -FilePath $OutputFile -Encoding utf8
     Write-Host "Se creó el registro de estado pendiente en $OutputFile" -ForegroundColor Gray
 }
+

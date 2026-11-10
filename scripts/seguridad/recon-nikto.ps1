@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Ejecuta escaneo web con Nikto contra la app local en 127.0.0.1:8080.
 .DESCRIPTION
@@ -76,3 +76,4 @@ if ($NiktoCmd) {
     "[PENDIENTE] Nikto no disponible localmente. Ejecutar con: docker run --rm sullo/nikto -h http://host.docker.internal:$Port" | Out-File -FilePath $OutputFile -Encoding utf8
     Write-Host "Se creó el registro de estado pendiente en $OutputFile" -ForegroundColor Gray
 }
+

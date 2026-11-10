@@ -55,3 +55,4 @@ $MVN_CMD org.owasp:dependency-check-maven:10.0.4:check \
     "${EXTRA_ARGS[@]}"
 
 echo "[ÉXITO] Reportes guardados en $OUT_DIR"
+

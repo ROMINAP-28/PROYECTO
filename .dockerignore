@@ -1,0 +1,18 @@
+# .dockerignore para TRAVELINK
+# Excluye artefactos generados, respaldos, secretos y logs locales
+# Permite .mvn y mvnw para compilación multi-stage
+
+.git/
+.gitignore
+**/target/
+**/.settings/
+*.log
+*.log.gz
+logs/
+.env
+*.zip
+*.class
+.vscode/
+.idea/
+docs/seguridad/evidencias/
+docs/seguridad/reportes/

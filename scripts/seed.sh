@@ -23,3 +23,4 @@ echo "Cargando datos sintéticos desde sql/seed_pruebas.sql..."
 cat sql/seed_pruebas.sql | docker exec -i travelink-db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" DBTravelink'
 
 echo "Seed sintético cargado exitosamente en travelink-db."
+

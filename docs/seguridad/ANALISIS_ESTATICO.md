@@ -420,3 +420,4 @@ El análisis estático de seguridad (SAST) de TRAVELINK se efectuó mediante ins
   - Gestionada por Tomcat embebido. No tiene el atributo `SameSite` forzado a `Strict` en `application.properties`, incrementando la viabilidad de ataques CSRF en navegadores antiguos o configuraciones no predeterminadas.
 - **Cookie `XSRF-TOKEN`:**
   - En `SecurityConfig.java:54`, `CookieCsrfTokenRepository.withHttpOnlyFalse()` establece `HttpOnly=false`. Esto es un compromiso arquitectónico común para permitir la lectura del token desde JavaScript (`api.js`), pero significa que cualquier explotación exitosa de XSS ([H-06]) puede leer directamente el token antifalsificación.
+

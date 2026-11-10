@@ -149,3 +149,4 @@ El análisis de la configuración de seguridad (`com.travelink.config.SecurityCo
 | `/html/turista/reservas.html` | Protegido | `authenticated()` | Redirige a `/html/turista/login.html?redirect=...` |
 | `/html/administrador/**` | Protegido | `hasRole("ADMIN")` | Redirige a `/html/administrador/login.html` |
 | `/html/agencia/**` (Paneles de gestión) | Protegido | `hasRole("AGENCIA")` | Redirige a `/html/agencia/R_agencia_login.html` |
+

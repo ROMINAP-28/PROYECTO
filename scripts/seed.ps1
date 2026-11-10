@@ -1,4 +1,4 @@
-﻿# ==========================================================
+# ==========================================================
 # TRAVELINK - SCRIPT DE CARGA DE SEED SINTÉTICO LOCAL
 # Entorno: Local exclusivamente (Docker / Windows PowerShell)
 # ==========================================================
@@ -25,3 +25,4 @@ Write-Host "Cargando datos sintéticos desde sql/seed_pruebas.sql..." -Foregroun
 Get-Content -Path "sql/seed_pruebas.sql" -Raw | docker exec -i travelink-db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" DBTravelink' 2>&1
 
 Write-Host "Seed sintético cargado exitosamente en travelink-db." -ForegroundColor Green
+

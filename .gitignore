@@ -41,3 +41,12 @@ application-*.properties
 .env.local
 .env.*.local
 !.env.example
+
+# Respaldos de base de datos con datos reales
+sql/01-travelink.sql
+sql/prueba-init/
+
+# Evidencias y reportes de seguridad
+docs/seguridad/evidencias/
+zap-report.html
+dependency-check-report.html

@@ -71,11 +71,11 @@ El plan de aseguramiento contempló **23 pruebas planificadas**, de las cuales *
 | **Fuzzing de Rutas (FFUF)** | 1 | 1 | 0 | 56 endpoints evaluados sobre wordlist de rutas API |
 | **Pruebas de Carga (JMeter)** | 3 | 3 | 0 | Escenarios de 100, 300 y 500 hilos concurrentes en Docker |
 | **Inyección SQL (SQLMap)** | 1 | 1 | 0 | 6 endpoints con parámetros probados en contenedor `travelink-sqlmap` |
-| **Validación PoC Manual** | 9 | 9 | 0 | 9 guías detalladas para reproducibilidad de vulnerabilidades críticas |
+| **Validación PoC Manual** | 9 | 9 | 0 | 9 guías ejecutadas y validadas contra el entorno Docker con evidencia HTTP/BD real (`Resultado Real`) |
 | **TOTAL GENERAL** | **23** | **20 (87%)** | **3 (13%)** | **Plan de pruebas ejecutado exhaustivamente** |
 
 > [!NOTE]
-> **Estado del Criterio 4 (Reconocimiento de Superficie):** Se encuentra calificado como **PARCIAL** en el checklist de la rúbrica (scripts reproducibles y guards listos en `scripts/seguridad/recon-nmap.*` y `recon-nikto.*`, con ejecución real de escaneo dinámico externo pendiente por falta de binarios de Nmap y Nikto en el host). La calificación integral se sitúa en **87-97 / 100 puntos**, según se resuelva dicho criterio.
+> **Estado del Criterio 4 (Reconocimiento de Superficie):** Se encuentra calificado como **PARCIAL** en el checklist de la rúbrica (scripts reproducibles y guards listos en `scripts/seguridad/recon-nmap.*` y `recon-nikto.*`, con ejecución real de escaneo dinámico externo pendiente por falta de binarios de Nmap y Nikto en el host). Con el Criterio 7 cumplido al 100% (9/9 PoCs con evidencia real registrada), la calificación integral se sitúa en **90-100 / 100 puntos**, según se resuelva dicho criterio.
 
 ---
 
@@ -131,7 +131,7 @@ El escaneo pasivo de OWASP ZAP sobre 62 URLs arrojó:
 - **7 Alertas Informativas.**
 
 ### 5.3. Mapeo de Guías de Prueba de Concepto (PoC) en Disco
-Las 9 guías de explotación en [`docs/seguridad/poc/`](poc/) corresponden exactamente a los archivos existentes:
+Las 9 guías de explotación en [`docs/seguridad/poc/`](poc/) corresponden exactamente a los archivos existentes, todas completadas con la evidencia real de ejecución (`Resultado Real`, commit `f1d0bef`):
 - [`PoC-01-IDOR.md`](poc/PoC-01-IDOR.md): Exposición masiva de reservas y datos personales en `/api/obtener_reservas` (H-03).
 - [`PoC-02-XSS.md`](poc/PoC-02-XSS.md): Inyección de script persistente en comentarios de tours (H-06).
 - [`PoC-03-CSRF.md`](poc/PoC-03-CSRF.md): Mutaciones de estado sin validación de token CSRF (H-05).

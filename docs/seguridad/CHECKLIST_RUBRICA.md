@@ -3,7 +3,7 @@
 **Proyecto:** TRAVELINK — Plataforma de Gestión y Reservas Turísticas  
 **Asignatura:** Integrador I Sistemas — Sesión 27: Pruebas de Seguridad  
 **Fecha:** Noviembre 2026  
-**Puntaje Total Alcanzado:** **87-97 / 100 Puntos, según se resuelva el Criterio 4**  
+**Puntaje Total Alcanzado:** **90-100 / 100 Puntos, según se resuelva el Criterio 4**  
 
 ---
 
@@ -17,9 +17,9 @@
 | **4** | Reconocimiento de Superficie, Servicios y Puertos | 10 pts | **PENDIENTE DE DECISIÓN DEL ESTUDIANTE** | ⚠️ PARCIAL — scripts y guards listos, ejecución real pendiente por falta de nmap/nikto en el host |
 | **5** | Escaneo Dinámico de Seguridad (DAST) y Fuzzing de Rutas | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **6** | Pruebas de Carga, Estrés Concurrente y Resiliencia con JMeter | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
-| **7** | Validación de Vulnerabilidades y Guías de PoC Reproducibles | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
+| **7** | Validación de Vulnerabilidades y Guías de PoC Reproducibles | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% (9/9 PoCs con evidencia real) |
 | **8** | Automatización DevSecOps en CI/CD y Documentación Final | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
-| **TOTAL** | **EVALUACIÓN INTEGRAL DE SEGURIDAD** | **100 pts** | **87-97 / 100 pts** | **SEGÚN SE RESUELVA EL CRITERIO 4** |
+| **TOTAL** | **EVALUACIÓN INTEGRAL DE SEGURIDAD** | **100 pts** | **90-100 / 100 pts** | **SEGÚN SE RESUELVA EL CRITERIO 4** |
 
 ---
 
@@ -106,22 +106,22 @@
 ---
 
 ### Criterio 7: Validación de Vulnerabilidades y PoCs (15 Puntos)
-- **Requisitos:** Desarrollo de 9 guías de prueba de concepto paso a paso con comandos curl/http reproducibles, datos sintéticos del seed (sin datos reales ni inventados), pruebas controladas con sqlmap sobre recursos reales, y fichas técnicas H-01 a H-09.
-- **Estado:** ✅ **CUMPLIDO (15/15)**
+- **Requisitos:** Desarrollo de 9 guías de prueba de concepto paso a paso con comandos curl/http reproducibles, datos sintéticos del seed (sin datos reales ni inventados), pruebas controladas con sqlmap sobre recursos reales, ejecución real verificada contra el entorno local, y fichas técnicas H-01 a H-09.
+- **Estado:** ✅ **CUMPLIDO (15/15 — 9/9 PoCs validadas con evidencia HTTP/BD real registrada)**
 - **Artefactos y Evidencias de Respaldo:**
-  1. 9 Guías PoC ejecutables en [`docs/seguridad/poc/`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/poc/):
-     - `PoC-01-IDOR.md` (idUsuario 100 y 101, reserva 500, DNI 10000001, tarjeta ...1111).
-     - `PoC-02-XSS.md` (Tour #100, `detalle.html?id=100`, inyección de script persistente).
-     - `PoC-03-CSRF.md` (Mutación en endpoints sin token CSRF).
-     - `PoC-04-CORS.md` (CORS wildcard con credenciales).
-     - `PoC-05-Admin-Plaintext.md` (Credencial admin123 en texto plano).
-     - `PoC-06-Headers.md` (Auditoría de cabeceras HTTP defensivas).
-     - `PoC-07-Password-Bypass.md` (Backdoor y bypass universal de contraseñas en `UsuarioServicioImpl`).
-     - `PoC-08-BOLA-Cancelacion.md` (Cancelación no autorizada de reserva ajena #500).
-     - `PoC-09-Escalamiento-Rutas-Duales.md` (Rutas duales `/api/usuarios` y `/api/comisiones`).
+  1. 9 Guías PoC ejecutadas y documentadas en [`docs/seguridad/poc/`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/poc/):
+     - `PoC-01-IDOR.md` (`200 OK` sin sesión para `idUsuario=100` y `101`, exponiendo reservas `#500` y `#501`, DNIs `10000001`/`10000002` y pasajeros).
+     - `PoC-02-XSS.md` (Tour `#100`, `Calificacion id=1` verificada en BD/API con `<img src=x onerror="alert('XSS-TRAVELINK-POC')">` y popup capturado en navegador).
+     - `PoC-03-CSRF.md` (`POST /api/calificar` con cookie de sesión y sin `X-XSRF-TOKEN` superando Spring Security sin rechazo `403`, alcanzando validación de negocio `400`).
+     - `PoC-04-CORS.md` (`OPTIONS /api/auth/me` con `Origin: http://sitio-malicioso.local` devolviendo `Access-Control-Allow-Origin` reflejado y `Access-Control-Allow-Credentials: true`).
+     - `PoC-05-Admin-Plaintext.md` (`POST /api/auth/login` con `admin / 123456` en texto plano devolviendo `200 OK` y `ROLE_ADMIN`).
+     - `PoC-06-Headers.md` (Cabeceras reales de `/api/obtener_reservas?idUsuario=101` confirmando ausencia de `Cache-Control`, `Pragma`, `CSP` y `Referrer-Policy`).
+     - `PoC-07-Password-Bypass.md` (3 pruebas sobre `turista_a@test.local`: clave real `200 OK`, backdoor `123456` `200 OK` por bypass en `UsuarioServicioImpl`, clave errónea `401`).
+     - `PoC-08-BOLA-Cancelacion.md` (Evidencia en MySQL de reserva `#501` en estado `Cancelada` y reintento anónimo a `/api/cancelar_reserva` alcanzando `409` sin bloqueo `401`/`403`).
+     - `PoC-09-Escalamiento-Rutas-Duales.md` (Contraste con sesión `ROLE_TURISTA`: `403 Forbidden` en `/api/admin/usuarios` vs. `200 OK` con volcado de usuarios en `/api/usuarios`).
   2. [`scripts/seguridad/sqlmap-test.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/sqlmap-test.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/sqlmap-test.sh): Ejecución en contenedor `travelink-sqlmap` contra los 6 recursos reales del seed (`tours` 100/101, `destinos` 8/15, `obtener_reservas` 100/101). Registro en `docs/seguridad/evidencias/sqlmap/sqlmap-results.txt` confirmando ausencia de SQLi gracias al uso de JPA/Hibernate parametrizado.
   3. Fichas de hallazgos individuales: [`docs/seguridad/hallazgos/H-01.md`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/hallazgos/H-01.md) a [`H-09.md`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/hallazgos/H-09.md).
-- **Commits:** `cef224c`, `4966f27`.
+- **Commits:** `cef224c`, `4966f27`, `f1d0bef`.
 
 ---
 

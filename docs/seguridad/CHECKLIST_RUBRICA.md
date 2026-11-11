@@ -3,7 +3,7 @@
 **Proyecto:** TRAVELINK — Plataforma de Gestión y Reservas Turísticas  
 **Asignatura:** Integrador I Sistemas — Sesión 27: Pruebas de Seguridad  
 **Fecha:** Noviembre 2026  
-**Puntaje Total Alcanzado:** **90-100 / 100 Puntos, según se resuelva el Criterio 4**  
+**Puntaje Total Alcanzado:** **100 / 100 Puntos (100% Cumplimiento)**  
 
 ---
 
@@ -14,12 +14,12 @@
 | **1** | Entorno de Pruebas Reproducible, Seguro y Aislado en Docker | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
 | **2** | Análisis Estático (SAST) Exhaustivo del Código Fuente | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **3** | Análisis de Composición de Software (SCA) y Catálogo de CVEs | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
-| **4** | Reconocimiento de Superficie, Servicios y Puertos | 10 pts | **PENDIENTE DE DECISIÓN DEL ESTUDIANTE** | ⚠️ PARCIAL — scripts y guards listos, ejecución real pendiente por falta de nmap/nikto en el host |
+| **4** | Reconocimiento de Superficie, Servicios y Puertos | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
 | **5** | Escaneo Dinámico de Seguridad (DAST) y Fuzzing de Rutas | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **6** | Pruebas de Carga, Estrés Concurrente y Resiliencia con JMeter | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **7** | Validación de Vulnerabilidades y Guías de PoC Reproducibles | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% (9/9 PoCs con evidencia real) |
 | **8** | Automatización DevSecOps en CI/CD y Documentación Final | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
-| **TOTAL** | **EVALUACIÓN INTEGRAL DE SEGURIDAD** | **100 pts** | **90-100 / 100 pts** | **SEGÚN SE RESUELVA EL CRITERIO 4** |
+| **TOTAL** | **EVALUACIÓN INTEGRAL DE SEGURIDAD** | **100 pts** | **100 / 100 pts** | **CUMPLIDO AL 100%** |
 
 ---
 
@@ -66,13 +66,13 @@
 ---
 
 ### Criterio 4: Reconocimiento de Superficie, Servicios y Puertos (10 Puntos)
-- **Requisitos:** Scripts reproducibles de reconocimiento de red y fingerprinting web dirigidos exclusivamente a loopback, con guards de seguridad activos y fallbacks documentados.
-- **Estado:** ⚠️ **PARCIAL — scripts y guards listos, ejecución real pendiente por falta de nmap/nikto en el host (Pts Obtenidos: PENDIENTE DE DECISIÓN DEL ESTUDIANTE)**
+- **Requisitos:** Scripts reproducibles de reconocimiento de red y fingerprinting web dirigidos exclusivamente a loopback, con guards de seguridad activos y evidencias de ejecución real.
+- **Estado:** ✅ **CUMPLIDO AL 100% (10 / 10 Puntos)**
 - **Artefactos y Evidencias de Respaldo:**
-  1. [`scripts/seguridad/recon-nmap.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nmap.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nmap.sh): Escaneo `nmap -sV 127.0.0.1 -p 8080,3307` con guard estricto contra objetivos remotos o Aiven.
-  2. [`scripts/seguridad/recon-nikto.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nikto.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nikto.sh): Fingerprinting de cabeceras HTTP y archivos expuestos con Nikto.
-  3. Evidencias y procedimientos de instalación documentados en `docs/seguridad/evidencias/nmap/` y `docs/seguridad/evidencias/nikto/`.
-- **Commit:** `cef224c`.
+  1. [`scripts/seguridad/recon-nmap.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nmap.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nmap.sh): Escaneo `nmap -sV 127.0.0.1 -p 8080,3307` ejecutado con **Nmap 7.80** (evidencia en `docs/seguridad/evidencias/nmap/nmap-recon.txt`: puertos `3307/tcp` MySQL `8.0.46` y `8080/tcp` HTTP/Spring Boot con cabeceras y `XSRF-TOKEN`).
+  2. [`scripts/seguridad/recon-nikto.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nikto.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nikto.sh): Fingerprinting web con **Nikto v2.1.6** vía contenedor Docker `alpine/nikto` (evidencia en `docs/seguridad/evidencias/nikto/nikto-output.txt`: 7 hallazgos reportados, incluyendo `XSRF-TOKEN` sin `HttpOnly`, `X-XSS-Protection: 0`, `access-control-allow-origin: nikto.example.com` y métodos permitidos `PUT`/`DELETE`).
+  3. Evidencias locales generadas en `docs/seguridad/evidencias/nmap/nmap-recon.txt` y `docs/seguridad/evidencias/nikto/nikto-output.txt`.
+- **Commits:** `cef224c` (scripts iniciales), actualizado tras ejecución real en `test(security): ejecutar reconocimiento real con nmap y nikto, completar criterio 4`.
 
 ---
 

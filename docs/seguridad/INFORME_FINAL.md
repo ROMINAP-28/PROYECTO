@@ -60,22 +60,22 @@ El servicio `travelink-db` monta tres scripts secuenciales en `/docker-entrypoin
 
 ## 3. Métricas de Ejecución de Pruebas
 
-El plan de aseguramiento contempló **23 pruebas planificadas**, de las cuales **20 fueron ejecutadas efectivamente** con generación de artefactos y evidencias reales, y **3 pruebas quedaron documentadas y preparadas con scripts de fallback** debido a ausencia de binarios nativos en el host de desarrollo:
+El plan de aseguramiento contempló **23 pruebas planificadas**, de las cuales **23 (100%) fueron ejecutadas efectivamente** con generación de artefactos y evidencias reales contra el laboratorio Docker:
 
 | Categoría de Prueba | Total Planificado | Ejecutadas Exitosamente | Pendientes / Fallback | Notas de Ejecución |
 |---|:---:|:---:|:---:|---|
 | **SAST (Inspección Estática)** | 5 | 5 | 0 | Revisión integral de controladores, servicios y configuraciones Spring |
 | **SCA (Dependency-Check)** | 1 | 1 | 0 | Reportes HTML (1.25 MB) y JSON (753 KB) generados vía Maven ODC |
-| **Reconocimiento y Puertos** | 2 | 0 | 2 | Nmap y Nikto documentados en scripts con comandos para instalación |
+| **Reconocimiento y Puertos** | 2 | 2 | 0 | Nmap 7.80 (`127.0.0.1:8080,3307`) y Nikto v2.1.6 vía Docker `alpine/nikto` (7 ítems reportados) |
 | **DAST Baseline (ZAP)** | 1 | 1 | 0 | Ejecutado en Docker sobre `travelink-net` (62 URLs, 16 alertas analizadas) |
 | **Fuzzing de Rutas (FFUF)** | 1 | 1 | 0 | 56 endpoints evaluados sobre wordlist de rutas API |
 | **Pruebas de Carga (JMeter)** | 3 | 3 | 0 | Escenarios de 100, 300 y 500 hilos concurrentes en Docker |
 | **Inyección SQL (SQLMap)** | 1 | 1 | 0 | 6 endpoints con parámetros probados en contenedor `travelink-sqlmap` |
 | **Validación PoC Manual** | 9 | 9 | 0 | 9 guías ejecutadas y validadas contra el entorno Docker con evidencia HTTP/BD real (`Resultado Real`) |
-| **TOTAL GENERAL** | **23** | **20 (87%)** | **3 (13%)** | **Plan de pruebas ejecutado exhaustivamente** |
+| **TOTAL GENERAL** | **23** | **23 (100%)** | **0 (0%)** | **Plan de pruebas ejecutado al 100%** |
 
 > [!NOTE]
-> **Estado del Criterio 4 (Reconocimiento de Superficie):** Se encuentra calificado como **PARCIAL** en el checklist de la rúbrica (scripts reproducibles y guards listos en `scripts/seguridad/recon-nmap.*` y `recon-nikto.*`, con ejecución real de escaneo dinámico externo pendiente por falta de binarios de Nmap y Nikto en el host). Con el Criterio 7 cumplido al 100% (9/9 PoCs con evidencia real registrada), la calificación integral se sitúa en **90-100 / 100 puntos**, según se resuelva dicho criterio.
+> **Estado del Criterio 4 (Reconocimiento de Superficie) y Criterio 7 (PoCs):** Ambos criterios se encuentran calificados como **CUMPLIDO AL 100%** en el checklist de la rúbrica tras ejecutarse los escaneos reales de Nmap 7.80 (`docs/seguridad/evidencias/nmap/nmap-recon.txt`) y Nikto v2.1.6 con `alpine/nikto` (`docs/seguridad/evidencias/nikto/nikto-output.txt`), alcanzando **100 / 100 puntos**.
 
 ---
 

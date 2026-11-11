@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta escaneo web con Nikto contra la app local en 127.0.0.1:8080.
 .DESCRIPTION
@@ -43,37 +43,40 @@ if ($NiktoCmd) {
 } else {
     Write-Host "[AVISO] Nikto no se encuentra instalado en el PATH del host." -ForegroundColor Yellow
     
-    # Comprobar si se puede ejecutar mediante contenedor Docker sullo/nikto
+    # Comprobar si se puede ejecutar mediante contenedor Docker alpine/nikto
     $DockerCmd = Get-Command docker -ErrorAction SilentlyContinue
     if ($DockerCmd) {
-        Write-Host "[INFO] Intentando ejecutar Nikto mediante imagen oficial Docker (sullo/nikto)..." -ForegroundColor Yellow
+        Write-Host "[INFO] Intentando ejecutar Nikto mediante imagen Docker (alpine/nikto)..." -ForegroundColor Yellow
         $DockerTarget = "http://host.docker.internal:$Port"
-        docker run --rm sullo/nikto -h $DockerTarget -o /tmp/nikto.txt 2>$null | Tee-Object -FilePath $OutputFile
-        if (Test-Path $OutputFile) {
-            Write-Host "[ÉXITO] Escaneo ejecutado con Docker sullo/nikto en $OutputFile" -ForegroundColor Green
+        docker run --rm --add-host=host.docker.internal:host-gateway alpine/nikto -h $DockerTarget | Tee-Object -FilePath $OutputFile
+        if ($LASTEXITCODE -eq 0 -and (Test-Path $OutputFile) -and ((Get-Item $OutputFile).Length -gt 0)) {
+            Write-Host "[ÉXITO] Escaneo ejecutado con Docker alpine/nikto en $OutputFile" -ForegroundColor Green
             exit 0
         }
+        Write-Warning "[ERROR] Docker alpine/nikto falló con código de salida $LASTEXITCODE."
     }
 
     # Comprobar WSL
     $WslCmd = Get-Command wsl -ErrorAction SilentlyContinue
     if ($WslCmd) {
         $WslNikto = wsl which nikto 2>$null
-        if ($WslNikto) {
+        if ($LASTEXITCODE -eq 0 -and $WslNikto) {
             Write-Host "[INFO] Ejecutando Nikto a través de WSL..." -ForegroundColor Green
             wsl nikto -h $TargetUrl | Tee-Object -FilePath $OutputFile
-            Write-Host "[ÉXITO] Resultados guardados en: $OutputFile" -ForegroundColor Green
-            exit 0
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "[ÉXITO] Resultados guardados en: $OutputFile" -ForegroundColor Green
+                exit 0
+            }
         }
     }
 
     Write-Host ""
     Write-Host "Instrucciones para instalar Nikto:" -ForegroundColor Cyan
-    Write-Host "1. Con Docker: docker run --rm sullo/nikto -h http://host.docker.internal:$Port" -ForegroundColor Gray
+    Write-Host "1. Con Docker: docker run --rm --add-host=host.docker.internal:host-gateway alpine/nikto -h http://host.docker.internal:$Port" -ForegroundColor Gray
     Write-Host "2. Con WSL:    sudo apt update && sudo apt install -y nikto" -ForegroundColor Gray
     Write-Host "               wsl nikto -h http://127.0.0.1:$Port" -ForegroundColor Gray
     Write-Host ""
-    "[PENDIENTE] Nikto no disponible localmente. Ejecutar con: docker run --rm sullo/nikto -h http://host.docker.internal:$Port" | Out-File -FilePath $OutputFile -Encoding utf8
+    "[PENDIENTE] Nikto no disponible localmente. Ejecutar con: docker run --rm --add-host=host.docker.internal:host-gateway alpine/nikto -h http://host.docker.internal:$Port" | Out-File -FilePath $OutputFile -Encoding utf8
     Write-Host "Se creó el registro de estado pendiente en $OutputFile" -ForegroundColor Gray
 }
 

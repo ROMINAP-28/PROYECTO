@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Ejecuta pruebas de carga y concurrencia con Apache JMeter (100, 300 y 500 usuarios).
 .DESCRIPTION
@@ -81,27 +81,29 @@ foreach ($Users in $UserTiers) {
 
     if ($JmeterCmd) {
         & jmeter -n -t $JmxFile `
-            -Jhost=$TargetHost `
-            -Jport=$Port `
-            -Jusers=$Users `
-            -Jrampup=$RampUp `
-            -Jloops=2 `
+            "-Jhost=$TargetHost" `
+            "-Jport=$Port" `
+            "-Jusers=$Users" `
+            "-Jrampup=$RampUp" `
+            "-Jloops=2" `
             -l $JtlFile `
             -e -o $ReportHtmlDir
     } elseif ($DockerCmd) {
         Write-Host "[INFO] Ejecutando JMeter vía contenedor Docker justb4/jmeter en red $DockerNetwork..." -ForegroundColor DarkYellow
         $LinuxJmx = "/jmeter/travelink.jmx"
+        $NormProjectRoot = $ProjectRoot.ToString().Replace('\', '/')
+        $NormTierOutDir = $TierOutDir.ToString().Replace('\', '/')
         docker run --rm `
             --network $DockerNetwork `
-            -v "${ProjectRoot}\jmeter:/jmeter:ro" `
-            -v "${TierOutDir}:/results:rw" `
+            -v "${NormProjectRoot}/jmeter:/jmeter:ro" `
+            -v "${NormTierOutDir}:/results:rw" `
             justb4/jmeter `
             -n -t $LinuxJmx `
-            -Jhost=app `
-            -Jport=8080 `
-            -Jusers=$Users `
-            -Jrampup=$RampUp `
-            -Jloops=2 `
+            "-Jhost=app" `
+            "-Jport=8080" `
+            "-Jusers=$Users" `
+            "-Jrampup=$RampUp" `
+            "-Jloops=2" `
             -l /results/results.jtl `
             -e -o /results/html_report
     }

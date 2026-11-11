@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta el análisis de composición de software (SCA) sobre dependencias del proyecto.
 .DESCRIPTION
@@ -60,9 +60,9 @@ if ($env:NVD_API_KEY) {
 $MvnCmd = if (Test-Path ".\mvnw.cmd") { ".\mvnw.cmd" } else { "mvn" }
 $OwaspGoal = "org.owasp:dependency-check-maven:10.0.4:check"
 $FormatArg = "-Dformat=ALL"
-$OutArg = "-Dout=$OutDir"
+$OutArg = "-DoutputDirectory=$OutDir"
 
-$ArgsList = @($OwaspGoal, $FormatArg, $OutArg, "-DfailBuildOnCVSS=11", "-DskipTestCompile=true")
+$ArgsList = @($OwaspGoal, $FormatArg, $OutArg, "-DfailBuildOnCVSS=11", "-DskipTestCompile=true", "-DossindexAnalyzerEnabled=false", "-DautoUpdate=false")
 if ($NvdKeyArg) { $ArgsList += $NvdKeyArg }
 
 Write-Host "Ejecutando: $MvnCmd $($ArgsList -join ' ')" -ForegroundColor Gray

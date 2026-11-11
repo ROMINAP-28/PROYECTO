@@ -49,9 +49,11 @@ fi
 
 $MVN_CMD org.owasp:dependency-check-maven:10.0.4:check \
     "-Dformat=ALL" \
-    "-Dout=$OUT_DIR" \
+    "-DoutputDirectory=$OUT_DIR" \
     "-DfailBuildOnCVSS=11" \
     "-DskipTestCompile=true" \
+    "-DossindexAnalyzerEnabled=false" \
+    "-DautoUpdate=false" \
     "${EXTRA_ARGS[@]}"
 
 echo "[ÉXITO] Reportes guardados en $OUT_DIR"

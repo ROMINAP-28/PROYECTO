@@ -74,6 +74,9 @@ El plan de aseguramiento contempló **23 pruebas planificadas**, de las cuales *
 | **Validación PoC Manual** | 9 | 9 | 0 | 9 guías detalladas para reproducibilidad de vulnerabilidades críticas |
 | **TOTAL GENERAL** | **23** | **20 (87%)** | **3 (13%)** | **Plan de pruebas ejecutado exhaustivamente** |
 
+> [!NOTE]
+> **Estado del Criterio 4 (Reconocimiento de Superficie):** Se encuentra calificado como **PARCIAL** en el checklist de la rúbrica (scripts reproducibles y guards listos en `scripts/seguridad/recon-nmap.*` y `recon-nikto.*`, con ejecución real de escaneo dinámico externo pendiente por falta de binarios de Nmap y Nikto en el host). La calificación integral se sitúa en **87-97 / 100 puntos**, según se resuelva dicho criterio.
+
 ---
 
 ## 4. Resultados de Rendimiento y Pruebas de Carga (JMeter)
@@ -105,15 +108,15 @@ Se ejecutaron pruebas de estrés sobre `http://app:8080` evaluando llamadas mixt
 
 | ID | Vulnerabilidad / Debilidad | Severidad | CVSS v3.1 | CWE | OWASP 2021 | Componente Principal Afectado |
 |---|---|:---:|:---:|:---:|:---:|---|
-| **H-01** | Puerta Trasera (Backdoor) en Verificación de Contraseñas | **CRÍTICO** | `9.8` | CWE-798 | A07: Ident. & Auth. | `UsuarioServicioImpl.java` (L119-127) |
-| **H-02** | Credencial de Administrador en Texto Plano en Seed Inicial | **ALTO** | `7.5` | CWE-256 | A07: Ident. & Auth. | `sql/datos_minimos.sql` (L22-24) |
+| **H-01** | Puerta Trasera (Backdoor) en Verificación de Contraseñas | **CRÍTICO** | `9.8` | CWE-798 | A07: Ident. & Auth. | `UsuarioServicioImpl.java` (L109-134) |
+| **H-02** | Credencial de Administrador en Texto Plano en Seed Inicial | **ALTO** | `7.5` | CWE-256 | A07: Ident. & Auth. | `sql/datos_minimos.sql` (L18-26) |
 | **H-03** | Fuga Masiva de Datos e IDOR / BOLA en Consulta y Cancelación | **CRÍTICO** | `9.1` | CWE-639 | A01: Broken Access | `ObtenerReservasHandler.java` (L20-35) |
 | **H-04** | Configuración CORS Excesivamente Permisiva con Credenciales | **ALTO** | `7.5` | CWE-942 | A05: Security Misconfig | `SecurityConfig.java` (L267-278) |
-| **H-05** | Desactivación Masiva de Protección CSRF en Transacciones | **MEDIO** | `6.5` | CWE-352 | A01: Broken Access | `SecurityConfig.java` (L66-91) |
+| **H-05** | Desactivación Masiva de Protección CSRF en Transacciones | **MEDIO** | `6.5` | CWE-352 | A01: Broken Access | `SecurityConfig.java` (L63-92) |
 | **H-06** | Cross-Site Scripting Almacenado (Stored XSS) en Reseñas | **ALTO** | `8.0` | CWE-79 | A03: Injection | `CalificarHandler.java` / `detalle.js` |
-| **H-07** | Ausencia de Cabeceras Defensivas HTTP y Cache-Control Desactivado | **MEDIO** | `5.3` | CWE-16 | A05: Security Misconfig | `SecurityConfig.java` (L191-196) |
-| **H-08** | Escalamiento de Privilegios por Rutas Duales sin Prefijo `/api/admin/` | **CRÍTICO** | `8.8` | CWE-863 | A01: Broken Access | `AdminApiController.java` (L67-95) |
-| **H-09** | Broken Object Level Authorization (BOLA) en Reseñas | **ALTO** | `8.1` | CWE-639 | A01: Broken Access | `CalificarHandler.java` (L53-126) |
+| **H-07** | Ausencia de Cabeceras Defensivas HTTP y Cache-Control Desactivado | **MEDIO** | `5.3` | CWE-16 | A05: Security Misconfig | `SecurityConfig.java` (L191-197) |
+| **H-08** | Escalamiento de Privilegios por Rutas Duales sin Prefijo `/api/admin/` | **CRÍTICO** | `8.8` | CWE-863 | A01: Broken Access | `AdminApiController.java` (L67-85) |
+| **H-09** | Broken Object Level Authorization (BOLA) en Cancelaciones y Reseñas | **ALTO** | `8.1` | CWE-639 | A01: Broken Access | `CancelarReservaHandler.java` (L66-85) / `CalificarHandler.java` (L53-126) |
 
 ### 5.1. Hallazgos del Análisis de Dependencias (SCA)
 El escaneo con OWASP Dependency-Check analizó todas las dependencias transitivas del `pom.xml`, identificando **15 componentes vulnerables** y un total de **179 CVEs**:
@@ -127,11 +130,23 @@ El escaneo pasivo de OWASP ZAP sobre 62 URLs arrojó:
 - **7 Alertas de Riesgo Bajo:** Cookie `XSRF-TOKEN` sin atributo `HttpOnly`, cookie de sesión sin directiva `SameSite`, y ausencia de cabeceras de aislamiento cross-origin (COEP, COOP, CORP) y `Permissions-Policy`.
 - **7 Alertas Informativas.**
 
+### 5.3. Mapeo de Guías de Prueba de Concepto (PoC) en Disco
+Las 9 guías de explotación en [`docs/seguridad/poc/`](poc/) corresponden exactamente a los archivos existentes:
+- [`PoC-01-IDOR.md`](poc/PoC-01-IDOR.md): Exposición masiva de reservas y datos personales en `/api/obtener_reservas` (H-03).
+- [`PoC-02-XSS.md`](poc/PoC-02-XSS.md): Inyección de script persistente en comentarios de tours (H-06).
+- [`PoC-03-CSRF.md`](poc/PoC-03-CSRF.md): Mutaciones de estado sin validación de token CSRF (H-05).
+- [`PoC-04-CORS.md`](poc/PoC-04-CORS.md): Explotación de CORS wildcard con credenciales habilitadas (H-04).
+- [`PoC-05-Admin-Plaintext.md`](poc/PoC-05-Admin-Plaintext.md): Credencial de superadministrador `admin / 123456` en texto plano (H-02).
+- [`PoC-06-Headers.md`](poc/PoC-06-Headers.md): Auditoría de cabeceras de seguridad HTTP y Cache-Control desactivado (H-07).
+- [`PoC-07-Password-Bypass.md`](poc/PoC-07-Password-Bypass.md): Backdoor y bypass universal de contraseñas débiles en `UsuarioServicioImpl` (H-01).
+- [`PoC-08-BOLA-Cancelacion.md`](poc/PoC-08-BOLA-Cancelacion.md): BOLA y anulación no autorizada de reservas ajenas en `/api/cancelar_reserva` (H-09).
+- [`PoC-09-Escalamiento-Rutas-Duales.md`](poc/PoC-09-Escalamiento-Rutas-Duales.md): Escalamiento de privilegios vía rutas duales sin prefijo `/api/admin/` (H-08).
+
 ---
 
 ## 6. Automatización de Seguridad en CI/CD
 
-Se configuró el pipeline de GitHub Actions ([`.github/workflows/ci.yml`](file:///d:/ProyectosU/PROYECTO/.github/workflows/ci.yml)) implementando dos *Security Gates* automáticos en cada `push` o `pull_request`:
+Se configuró el pipeline de GitHub Actions ([`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)) implementando dos *Security Gates* automáticos en cada `push` o `pull_request`:
 
 1. **Gate SCA (Dependency-Check):**  
    Ejecuta el plugin Maven con `-DfailBuildOnCVSS=9`. Si se detecta alguna dependencia con vulnerabilidad crítica (CVSS >= 9), el build de integración continua falla automáticamente. Soporta la variable secreta `NVD_API_KEY` para acelerar las descargas de NVD.

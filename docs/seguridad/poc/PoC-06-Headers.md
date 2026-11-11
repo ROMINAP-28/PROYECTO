@@ -67,9 +67,22 @@ Content-Type: application/json;charset=UTF-8
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Cabeceras HTTP reales devueltas por `curl.exe -i -s "http://127.0.0.1:8080/api/obtener_reservas?idUsuario=101"` en sesión (`Wed, 11 Nov 2026 12:39:58 GMT`):
 
-```text
-
+```http
+HTTP/1.1 200 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Set-Cookie: XSRF-TOKEN=90bd8c2b-5db2-40b4-9cc8-18d144172e27; Path=/
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Content-Length: 917
+Date: Wed, 11 Nov 2026 12:39:58 GMT
 ```
 

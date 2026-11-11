@@ -97,9 +97,34 @@ Connection: close
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Estado confirmado en la base de datos (`DBTravelink`) tras la ejecución anónima previa sobre la reserva `#501` (de `idUsuario = 101`) y salida HTTP real al reintentar sin cookie de sesión (`cancel.json`: `{"idReserva":501,"motivo":"Cancelacion no autorizada - prueba de seguridad"}`):
 
+### Evidencia persistida en MySQL (`SELECT idReserva, idUsuario, estado, motivoCancelacion, nombreTour FROM Reserva WHERE idReserva IN (500, 501);`)
 ```text
-
+idReserva	idUsuario	estado	motivoCancelacion	nombreTour
+500	100	Confirmada	NULL	Tour SintÃ©tico Machu Picchu MÃ¡gico
+501	101	Cancelada	Cancelacion no autorizada - prueba de seguridad	City Tour Lima Colonial SintÃ©tico
 ```
+
+### Reintento anónimo (`curl.exe -i -s -X POST "http://127.0.0.1:8080/api/cancelar_reserva" -H "Content-Type: application/json" -d "@cancel.json"`)
+```http
+HTTP/1.1 409 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Set-Cookie: XSRF-TOKEN=4b0f8867-e77d-4b57-bcd0-279fa150cc3f; Path=/
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Content-Length: 74
+Date: Wed, 11 Nov 2026 22:13:48 GMT
+
+{"status":"error","message":"La reserva ya ha sido cancelada previamente"}
+```
+
+*Nota de verificación:* Como la reserva `501` ya había quedado cancelada en la ejecución previa (evidenciado en MySQL con `estado = Cancelada` y el motivo inyectado), la repetición devolvió `409` (`"La reserva ya ha sido cancelada previamente"`). Esto confirma igualmente que la petición sin autenticación ni validación de propiedad alcanzó la lógica de negocio sin recibir `401 Unauthorized` ni `403 Forbidden`.
 

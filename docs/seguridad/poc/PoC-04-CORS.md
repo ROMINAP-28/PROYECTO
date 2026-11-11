@@ -74,9 +74,22 @@ Connection: close
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Salida HTTP real del preflight CORS simulando un origen externo no confiable (`http://sitio-malicioso.local`):
 
-```text
-
+### `curl.exe -i -s -X OPTIONS "http://127.0.0.1:8080/api/auth/me" -H "Origin: http://sitio-malicioso.local" -H "Access-Control-Request-Method: GET"`
+```http
+HTTP/1.1 200 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Access-Control-Allow-Origin: http://sitio-malicioso.local
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+Access-Control-Expose-Headers: Authorization, X-XSRF-TOKEN
+Access-Control-Allow-Credentials: true
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Length: 0
+Date: Wed, 11 Nov 2026 22:13:31 GMT
 ```
 

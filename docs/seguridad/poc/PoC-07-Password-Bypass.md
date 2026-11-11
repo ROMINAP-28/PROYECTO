@@ -74,9 +74,52 @@ curl -i -s -X POST "http://127.0.0.1:8080/api/auth/login" \
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Salidas HTTP reales de las 3 pruebas controladas sobre `turista_a@test.local` contra `POST http://127.0.0.1:8080/api/auth/login`:
 
-```text
+### Prueba 1: Contraseña real (`TestTurista#2026`)
+```http
+HTTP/1.1 200 
+Vary: origin,access-control-request-method,access-control-request-headers,accept-encoding
+Set-Cookie: XSRF-TOKEN=e4df5ce0-2009-4c8a-8537-84c348ca614b; Path=/
+Set-Cookie: JSESSIONID=C02622AA824F14FDB32060A267C8568E; Path=/; HttpOnly; SameSite=Lax
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 11 Nov 2026 22:13:22 GMT
 
+{"idUsuario":100,"nombre":"Turista Alfa Prueba","correo":"turista_a@test.local","rol":"ROLE_TURISTA","status":"success","user":{"apellidos":"Alfa Prueba","apellidoPaterno":"Alfa","idRol":1,"idUsuario":100,"correo":"turista_a@test.local","telefono":"900000001","nombre":"Turista Alfa Prueba","nroDocumento":"10000001","email":"turista_a@test.local","rol":"ROLE_TURISTA","nombres":"Turista","apellidoMaterno":"Prueba"},"nombres":"Turista","apellidoPaterno":"Alfa","apellidoMaterno":"Prueba","nroDocumento":"10000001","telefono":"900000001","apellidos":"Alfa Prueba"}
+```
+
+### Prueba 2: Contraseña backdoor (`123456`) — Bypass confirmado
+```http
+HTTP/1.1 200 
+Vary: origin,access-control-request-method,access-control-request-headers,accept-encoding
+Set-Cookie: XSRF-TOKEN=53891036-33b9-4707-be12-e83f53885217; Path=/
+Set-Cookie: JSESSIONID=AA33FF7752BEB28F35F83AABB0755389; Path=/; HttpOnly; SameSite=Lax
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 11 Nov 2026 22:13:22 GMT
+
+{"idUsuario":100,"nombre":"Turista Alfa Prueba","correo":"turista_a@test.local","rol":"ROLE_TURISTA","status":"success","user":{"apellidos":"Alfa Prueba","apellidoPaterno":"Alfa","idRol":1,"idUsuario":100,"correo":"turista_a@test.local","telefono":"900000001","nombre":"Turista Alfa Prueba","nroDocumento":"10000001","email":"turista_a@test.local","rol":"ROLE_TURISTA","nombres":"Turista","apellidoMaterno":"Prueba"},"nombres":"Turista","apellidoPaterno":"Alfa","apellidoMaterno":"Prueba","nroDocumento":"10000001","telefono":"900000001","apellidos":"Alfa Prueba"}
+```
+
+### Prueba 3: Contraseña errónea (`claveInventada999`) — Control negativo
+```http
+HTTP/1.1 401 
+Vary: origin,access-control-request-method,access-control-request-headers,accept-encoding
+Set-Cookie: XSRF-TOKEN=45551e33-7682-433e-b98c-2b186606988d; Path=/
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 11 Nov 2026 22:13:22 GMT
+
+{"status":"error","message":"Credenciales incorrectas"}
 ```
 

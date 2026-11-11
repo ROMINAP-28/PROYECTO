@@ -83,8 +83,20 @@ Connection: close
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Salida HTTP real iniciando sesión con la credencial administrativa por defecto en texto plano (`adminlogin.json`: `{"usuario":"admin","clave":"123456"}`):
 
-```text
+### `curl.exe -i -s -X POST "http://127.0.0.1:8080/api/auth/login" -H "Content-Type: application/json" -d "@adminlogin.json"`
+```http
+HTTP/1.1 200 
+Vary: origin,access-control-request-method,access-control-request-headers,accept-encoding
+Set-Cookie: XSRF-TOKEN=828629da-6afc-464d-9ac3-8122e92edb99; Path=/
+Set-Cookie: JSESSIONID=E0DC2969CEF798519E6348FBB77641CE; Path=/; HttpOnly; SameSite=Lax
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 11 Nov 2026 22:13:31 GMT
 
+{"idUsuario":1,"nombre":"Administrador Travelink Sistema","correo":"admin@travelink.pe","rol":"ROLE_ADMIN","status":"success","user":{"apellidos":"Travelink Sistema","apellidoPaterno":"Travelink","idRol":3,"idUsuario":1,"correo":"admin@travelink.pe","telefono":"999888777","nombre":"Administrador Travelink Sistema","nroDocumento":"00000001","email":"admin@travelink.pe","rol":"ROLE_ADMIN","nombres":"Administrador","apellidoMaterno":"Sistema"},"nombres":"Administrador","apellidoPaterno":"Travelink","apellidoMaterno":"Sistema","nroDocumento":"00000001","telefono":"999888777","apellidos":"Travelink Sistema"}
 ```

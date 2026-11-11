@@ -87,8 +87,44 @@ Connection: close
 ---
 
 ## 6. Resultado Real (Completar tras la prueba)
-*(Espacio reservado para el evaluador)*
+Salidas HTTP reales obtenidas en sesión sin cookies de sesión ni cabecera `Authorization` (`Wed, 11 Nov 2026 12:39:48 GMT` y `12:39:58 GMT`):
 
-```text
+### `curl.exe -i -s "http://127.0.0.1:8080/api/obtener_reservas?idUsuario=100"`
+```http
+HTTP/1.1 200 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Set-Cookie: XSRF-TOKEN=64764cda-6907-49fc-bb7f-603619177ae5; Path=/
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Content-Length: 922
+Date: Wed, 11 Nov 2026 12:39:48 GMT
 
+{"status":"success","reservas":[{"id":500,"codigo":"TRV-A100-TEST","titulo":"Tour SintÃ©tico Machu Picchu MÃ¡gico","ubicacion":"Cusco, Perú","fechas":"26 Nov. 2026 - 08:00","fechaSalida":"2026-11-26","horaSalida":"08:00","personas":"2 personas","cantAdultos":2,"cantNinos":0,"cantBebes":0,"desglose":"2 adultos × S/ 250.00","agencia":"Agencia Demo Tours","estado":"Confirmada","total":500.0,"metodoPago":"Tarjeta","marcaTarjeta":"null","ultimosDigitos":"null","imagen":"../../img/valle.jpg","idTour":100,"idAgencia":10,"calificada":false,"fechaRegistro":"2026-11-11","motivoCancelacion":"null","pasajeros":[{"idPasajero":500,"nroDocumento":"10000001","nombre":"Turista","apellidoPaterno":"Alfa","apellidoMaterno":"Prueba","esTitular":true,"tipo":"ADULTO"},{"idPasajero":501,"nroDocumento":"10000099","nombre":"AcompaÃ±ante","apellidoPaterno":"Alfa","apellidoMaterno":"Prueba","esTitular":false,"tipo":"ADULTO"}]}]}
+```
+
+### `curl.exe -i -s "http://127.0.0.1:8080/api/obtener_reservas?idUsuario=101"`
+```http
+HTTP/1.1 200 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Set-Cookie: XSRF-TOKEN=90bd8c2b-5db2-40b4-9cc8-18d144172e27; Path=/
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Content-Length: 917
+Date: Wed, 11 Nov 2026 12:39:58 GMT
+
+{"status":"success","reservas":[{"id":501,"codigo":"TRV-B101-TEST","titulo":"City Tour Lima Colonial SintÃ©tico","ubicacion":"Cusco, Perú","fechas":"01 Dec. 2026 - 09:00","fechaSalida":"2026-12-01","horaSalida":"09:00","personas":"2 personas","cantAdultos":2,"cantNinos":0,"cantBebes":0,"desglose":"2 adultos × S/ 80.00","agencia":"Agencia Demo Tours","estado":"Confirmada","total":160.0,"metodoPago":"Tarjeta","marcaTarjeta":"null","ultimosDigitos":"null","imagen":"../../img/valle.jpg","idTour":101,"idAgencia":10,"calificada":false,"fechaRegistro":"2026-11-11","motivoCancelacion":"null","pasajeros":[{"idPasajero":502,"nroDocumento":"10000002","nombre":"Turista","apellidoPaterno":"Beta","apellidoMaterno":"Prueba","esTitular":true,"tipo":"ADULTO"},{"idPasajero":503,"nroDocumento":"10000098","nombre":"AcompaÃ±ante","apellidoPaterno":"Beta","apellidoMaterno":"Prueba","esTitular":false,"tipo":"ADULTO"}]}]}
 ```

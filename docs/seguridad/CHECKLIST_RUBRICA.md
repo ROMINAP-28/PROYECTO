@@ -3,7 +3,7 @@
 **Proyecto:** TRAVELINK — Plataforma de Gestión y Reservas Turísticas  
 **Asignatura:** Integrador I Sistemas — Sesión 27: Pruebas de Seguridad  
 **Fecha:** Noviembre 2026  
-**Puntaje Total Alcanzado:** **100 / 100 Puntos (100% Cumplido)**  
+**Puntaje Total Alcanzado:** **87-97 / 100 Puntos, según se resuelva el Criterio 4**  
 
 ---
 
@@ -14,12 +14,12 @@
 | **1** | Entorno de Pruebas Reproducible, Seguro y Aislado en Docker | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
 | **2** | Análisis Estático (SAST) Exhaustivo del Código Fuente | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **3** | Análisis de Composición de Software (SCA) y Catálogo de CVEs | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
-| **4** | Reconocimiento de Superficie, Servicios y Puertos | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
+| **4** | Reconocimiento de Superficie, Servicios y Puertos | 10 pts | **PENDIENTE DE DECISIÓN DEL ESTUDIANTE** | ⚠️ PARCIAL — scripts y guards listos, ejecución real pendiente por falta de nmap/nikto en el host |
 | **5** | Escaneo Dinámico de Seguridad (DAST) y Fuzzing de Rutas | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **6** | Pruebas de Carga, Estrés Concurrente y Resiliencia con JMeter | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **7** | Validación de Vulnerabilidades y Guías de PoC Reproducibles | 15 pts | **15 pts** | ✅ CUMPLIDO AL 100% |
 | **8** | Automatización DevSecOps en CI/CD y Documentación Final | 10 pts | **10 pts** | ✅ CUMPLIDO AL 100% |
-| **TOTAL** | **EVALUACIÓN INTEGRAL DE SEGURIDAD** | **100 pts** | **100 pts** | **CALIFICACIÓN MÁXIMA** |
+| **TOTAL** | **EVALUACIÓN INTEGRAL DE SEGURIDAD** | **100 pts** | **87-97 / 100 pts** | **SEGÚN SE RESUELVA EL CRITERIO 4** |
 
 ---
 
@@ -67,7 +67,7 @@
 
 ### Criterio 4: Reconocimiento de Superficie, Servicios y Puertos (10 Puntos)
 - **Requisitos:** Scripts reproducibles de reconocimiento de red y fingerprinting web dirigidos exclusivamente a loopback, con guards de seguridad activos y fallbacks documentados.
-- **Estado:** ✅ **CUMPLIDO (10/10)**
+- **Estado:** ⚠️ **PARCIAL — scripts y guards listos, ejecución real pendiente por falta de nmap/nikto en el host (Pts Obtenidos: PENDIENTE DE DECISIÓN DEL ESTUDIANTE)**
 - **Artefactos y Evidencias de Respaldo:**
   1. [`scripts/seguridad/recon-nmap.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nmap.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nmap.sh): Escaneo `nmap -sV 127.0.0.1 -p 8080,3307` con guard estricto contra objetivos remotos o Aiven.
   2. [`scripts/seguridad/recon-nikto.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nikto.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/recon-nikto.sh): Fingerprinting de cabeceras HTTP y archivos expuestos con Nikto.
@@ -112,13 +112,13 @@
   1. 9 Guías PoC ejecutables en [`docs/seguridad/poc/`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/poc/):
      - `PoC-01-IDOR.md` (idUsuario 100 y 101, reserva 500, DNI 10000001, tarjeta ...1111).
      - `PoC-02-XSS.md` (Tour #100, `detalle.html?id=100`, inyección de script persistente).
-     - `PoC-03-Privilege-Escalation.md` (Rutas duales `/api/usuarios` y `/api/comisiones`).
-     - `PoC-04-Backdoor-Login.md` (Bypass en `UsuarioServicioImpl`).
+     - `PoC-03-CSRF.md` (Mutación en endpoints sin token CSRF).
+     - `PoC-04-CORS.md` (CORS wildcard con credenciales).
      - `PoC-05-Admin-Plaintext.md` (Credencial admin123 en texto plano).
-     - `PoC-06-CSRF-Exemption.md` (Mutación en endpoints sin token CSRF).
-     - `PoC-07-CORS-Exploitation.md` (CORS wildcard con credenciales).
-     - `PoC-08-Security-Headers.md` (Auditoría de cabeceras HTTP defensivas).
-     - `PoC-09-IDOR-Cancelacion.md` (Cancelación no autorizada de reserva ajena #500).
+     - `PoC-06-Headers.md` (Auditoría de cabeceras HTTP defensivas).
+     - `PoC-07-Password-Bypass.md` (Backdoor y bypass universal de contraseñas en `UsuarioServicioImpl`).
+     - `PoC-08-BOLA-Cancelacion.md` (Cancelación no autorizada de reserva ajena #500).
+     - `PoC-09-Escalamiento-Rutas-Duales.md` (Rutas duales `/api/usuarios` y `/api/comisiones`).
   2. [`scripts/seguridad/sqlmap-test.ps1`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/sqlmap-test.ps1) y [`.sh`](file:///d:/ProyectosU/PROYECTO/scripts/seguridad/sqlmap-test.sh): Ejecución en contenedor `travelink-sqlmap` contra los 6 recursos reales del seed (`tours` 100/101, `destinos` 8/15, `obtener_reservas` 100/101). Registro en `docs/seguridad/evidencias/sqlmap/sqlmap-results.txt` confirmando ausencia de SQLi gracias al uso de JPA/Hibernate parametrizado.
   3. Fichas de hallazgos individuales: [`docs/seguridad/hallazgos/H-01.md`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/hallazgos/H-01.md) a [`H-09.md`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/hallazgos/H-09.md).
 - **Commits:** `cef224c`, `4966f27`.
@@ -141,3 +141,4 @@
   4. [`docs/seguridad/INVENTARIO_DOCUMENTACION.md`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/INVENTARIO_DOCUMENTACION.md): Inventario de activos y trazabilidad.
   5. [`docs/seguridad/CHECKLIST_RUBRICA.md`](file:///d:/ProyectosU/PROYECTO/docs/seguridad/CHECKLIST_RUBRICA.md): Este documento de verificación.
 - **Commits:** `6050d4e`, `8c36b5f`.
+

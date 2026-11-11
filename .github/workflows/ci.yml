@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Dar permisos de ejecucion a mvnw
+        run: chmod +x mvnw
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -27,6 +29,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      - name: Dar permisos de ejecucion a mvnw
+        run: chmod +x mvnw
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -126,5 +130,5 @@ jobs:
       - name: Cleanup Docker Environment
         if: always()
         run: |
-          docker compose down -v
+          docker compose down -v || true
           rm -f .env

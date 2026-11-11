@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: Build & Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,3 +21,87 @@ jobs:
           name: coverage-report
           path: target/site/jacoco
 
+  security:
+    name: Security Gate (SCA & DAST)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # 1. SCA: OWASP Dependency-Check (falla en CVSS >= 9)
+      - name: Run OWASP Dependency-Check (SCA)
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          EXTRA_ARGS=""
+          if [ -n "$NVD_API_KEY" ]; then
+            echo "[INFO] Usando NVD_API_KEY desde secretos del repositorio."
+            EXTRA_ARGS="-DnvdApiKey=$NVD_API_KEY"
+          else
+            echo "[AVISO] NVD_API_KEY no configurado; ejecutando con rate limit público."
+          fi
+          ./mvnw -B org.owasp:dependency-check-maven:10.0.4:check \
+            -Dformat=ALL \
+            -DoutputDirectory=target/dependency-check \
+            -DfailBuildOnCVSS=9 \
+            -DskipTestCompile=true \
+            -DossindexAnalyzerEnabled=false \
+            $EXTRA_ARGS
+
+      - name: Upload Dependency-Check Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-reports
+          path: target/dependency-check/
+
+      # 2. DAST: ZAP Baseline contra contenedor Docker local
+      - name: Provision Synthetic Local Environment
+        run: |
+          cat << 'EOF' > .env
+          DB_USERNAME=root
+          DB_PASSWORD=TestCiPassword#2026
+          MYSQL_ROOT_PASSWORD=TestCiPassword#2026
+          MYSQL_DATABASE=travelink
+          EOF
+          chmod +x mvnw
+          docker compose up -d --build
+          echo "[INFO] Esperando estado saludable de app y db..."
+          for i in $(seq 1 40); do
+            if docker compose ps | grep -E "travelink-app.*\(healthy\)"; then
+              echo "[OK] Aplicación saludable y lista para escaneo."
+              break
+            fi
+            echo "Esperando arranque ($i/40)..."
+            sleep 3
+          done
+
+      - name: Run OWASP ZAP Baseline Scan (DAST)
+        if: always()
+        run: |
+          docker run --rm \
+            --network travelink-net \
+            -v $(pwd):/zap/wrk/:rw \
+            zaproxy/zap-stable:latest \
+            zap-baseline.py -t http://app:8080 -r zap-report.html -J zap-report.json -I || true
+
+      - name: Upload ZAP Scan Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-baseline-reports
+          path: |
+            zap-report.html
+            zap-report.json
+
+      - name: Cleanup Docker Environment
+        if: always()
+        run: |
+          docker compose down -v
+          rm -f .env

@@ -38,15 +38,23 @@ application-*.properties
 
 # Environment variables & secrets
 .env
+.env.*
+*.env
 .env.local
 .env.*.local
 !.env.example
 
-# Respaldos de base de datos con datos reales
+# Respaldos y volcados de base de datos
 sql/01-travelink.sql
 sql/prueba-init/
+*.sql.dump
+*.dump
+*.dmp
+*.bak
 
-# Evidencias y reportes de seguridad
+# Evidencias y reportes de seguridad crudos
 docs/seguridad/evidencias/
-zap-report.html
-dependency-check-report.html
+*.jtl
+results.jtl
+zap-report.*
+dependency-check-report.*

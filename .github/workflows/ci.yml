@@ -40,7 +40,7 @@ jobs:
 
       # 1. SCA: OWASP Dependency-Check (falla en CVSS >= 9)
       - name: SCA con Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           scan-ref: .

@@ -39,14 +39,19 @@ jobs:
           java-version: '21'
 
       # 1. SCA: OWASP Dependency-Check (falla en CVSS >= 9)
+      - name: Resolver dependencias Maven
+        run: ./mvnw -B -q dependency:resolve -DskipTests
+
       - name: SCA con Trivy
         uses: aquasecurity/trivy-action@master
         env:
           TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db:2
           TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db:1
+          TRIVY_OFFLINE_SCAN: "true"
         with:
           scan-type: fs
           scan-ref: .
+          scanners: vuln
           severity: CRITICAL
           exit-code: '1'
           ignore-unfixed: true

@@ -39,6 +39,13 @@ jobs:
           java-version: '21'
 
       # 1. SCA: OWASP Dependency-Check (falla en CVSS >= 9)
+      - name: Cache NVD data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: depcheck-data-${{ github.run_id }}
+          restore-keys: depcheck-data-
+
       - name: Run OWASP Dependency-Check (SCA)
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -50,12 +57,14 @@ jobs:
           else
             echo "[AVISO] NVD_API_KEY no configurado; ejecutando con rate limit público."
           fi
-          ./mvnw -B org.owasp:dependency-check-maven:10.0.4:check \
+          ./mvnw -B org.owasp:dependency-check-maven:12.1.0:check \
             -Dformat=ALL \
             -DoutputDirectory=target/dependency-check \
             -DfailBuildOnCVSS=9 \
             -DskipTestCompile=true \
             -DossindexAnalyzerEnabled=false \
+            -DnvdApiDelay=6000 \
+            -DnvdMaxRetryCount=10 \
             $EXTRA_ARGS
 
       - name: Upload Dependency-Check Artifacts

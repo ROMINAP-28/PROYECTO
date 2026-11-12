@@ -39,8 +39,8 @@ jobs:
           java-version: '21'
 
       # 1. SCA: OWASP Dependency-Check (falla en CVSS >= 9)
-      - name: Cache NVD data
-        uses: actions/cache@v4
+      - name: Restore NVD data
+        uses: actions/cache/restore@v4
         with:
           path: ~/.m2/repository/org/owasp/dependency-check-data
           key: depcheck-data-${{ github.run_id }}
@@ -63,9 +63,16 @@ jobs:
             -DfailBuildOnCVSS=9 \
             -DskipTestCompile=true \
             -DossindexAnalyzerEnabled=false \
-            -DnvdApiDelay=6000 \
+            -DnvdApiDelay=2000 \
             -DnvdMaxRetryCount=10 \
             $EXTRA_ARGS
+
+      - name: Save NVD data
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: depcheck-data-${{ github.run_id }}
 
       - name: Upload Dependency-Check Artifacts
         if: always()

@@ -73,7 +73,7 @@ public class ToursAdminHandler implements HttpHandler {
                      PreparedStatement ps = con.prepareStatement("UPDATE Tour SET estado = 'INACTIVO' WHERE idTour = ?")) {
                     ps.setInt(1, id);
                     ps.executeUpdate();
-                    JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Tour desactivado lÃ³gicamente\"}");
+                    JavaApiServer.sendJsonResponse(exchange, 200, "{\"status\":\"success\",\"message\":\"Tour desactivado lógicamente\"}");
                     return;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -251,7 +251,7 @@ public class ToursAdminHandler implements HttpHandler {
                     String descCompleta = descCorta;
                     String agNombre = rs.getString("agenciaNombre");
                     String destNombre = rs.getString("destinoNombre") != null ? rs.getString("destinoNombre") : rs.getString("ubicacion");
-                    String duracion = rs.getString("duracion") != null ? rs.getString("duracion") : "1 dÃ­a";
+                    String duracion = rs.getString("duracion") != null ? rs.getString("duracion") : "1 día";
                     BigDecimal pAdulto = rs.getBigDecimal("precioAdulto");
                     if (pAdulto == null) pAdulto = BigDecimal.ZERO;
                     BigDecimal pNino = rs.getBigDecimal("precioNino");
@@ -282,8 +282,8 @@ public class ToursAdminHandler implements HttpHandler {
                         .append("\"descripcionCorta\":\"").append(JavaApiServer.jsonEscape(descCorta)).append("\",")
                         .append("\"descripcion\":\"").append(JavaApiServer.jsonEscape(descCompleta)).append("\",")
                         .append("\"agencia\":\"").append(JavaApiServer.jsonEscape(agNombre)).append("\",")
-                        .append("\"destino\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "PerÃº")).append("\",")
-                        .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "PerÃº")).append("\",")
+                        .append("\"destino\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "Perú")).append("\",")
+                        .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(destNombre != null ? destNombre : "Perú")).append("\",")
                         .append("\"categoria\":\"").append(JavaApiServer.jsonEscape(cat)).append("\",")
                         .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion)).append("\",")
                         .append("\"precio\":").append(pAdulto).append(",")
@@ -327,7 +327,7 @@ public class ToursAdminHandler implements HttpHandler {
             SELECT t.idTour AS id, t.nombre, t.descripcion, t.descripcionCorta, t.itinerario,
                    t.precioAdulto, t.precioNino, t.precioBebe, t.aceptaNinos, t.edadMaxNino, t.edadMaxBebe,
                    t.descuento, t.condiciones, t.minAsientosOferta,
-                   t.duracion, COALESCE(t.ubicacion, d.nombre, 'PerÃº') AS ubicacion,
+                   t.duracion, COALESCE(t.ubicacion, d.nombre, 'Perú') AS ubicacion,
                    COALESCE(t.categoria, 'Cultural') AS categoria,
                    COALESCE(
                        (SELECT ROUND(AVG(c.estrellas), 1) FROM Calificacion c JOIN Reserva r ON c.idReserva = r.idReserva WHERE r.idTour = t.idTour AND (c.eliminadoPorAdmin IS NULL OR c.eliminadoPorAdmin = 0)),
@@ -369,8 +369,8 @@ public class ToursAdminHandler implements HttpHandler {
             BigDecimal descuento = BigDecimal.ZERO;
             String condiciones = "";
             int minAsientosOferta = 5;
-            String duracion = "1 dÃ­a";
-            String ubicacion = "PerÃº";
+            String duracion = "1 día";
+            String ubicacion = "Perú";
             String categoria = "Cultural";
             BigDecimal calif = BigDecimal.ZERO;
             String estado = "PUBLICADO";
@@ -447,9 +447,9 @@ public class ToursAdminHandler implements HttpHandler {
                 .append("\"precio\":").append(pAdulto != null ? pAdulto : 0).append(",")
                 .append("\"precioNino\":").append(pNino != null ? pNino : 0).append(",")
                 .append("\"precioBebe\":").append(pBebe != null ? pBebe : 0).append(",")
-                .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion != null ? duracion : "1 dÃ­a")).append("\",")
-                .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "PerÃº")).append("\",")
-                .append("\"destino\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "PerÃº")).append("\",")
+                .append("\"duracion\":\"").append(JavaApiServer.jsonEscape(duracion != null ? duracion : "1 día")).append("\",")
+                .append("\"ubicacion\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "Perú")).append("\",")
+                .append("\"destino\":\"").append(JavaApiServer.jsonEscape(ubicacion != null ? ubicacion : "Perú")).append("\",")
                 .append("\"categoria\":\"").append(JavaApiServer.jsonEscape(categoria != null ? categoria : "Cultural")).append("\",")
                 .append("\"calificacionPromedio\":").append(calif != null ? calif : 0.0).append(",")
                 .append("\"totalCalificaciones\":").append(totalCalificaciones).append(",")

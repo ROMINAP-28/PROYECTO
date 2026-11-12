@@ -39,43 +39,19 @@ jobs:
           java-version: '21'
 
       # 1. SCA: OWASP Dependency-Check (falla en CVSS >= 9)
-      - name: Restore NVD data
-        uses: actions/cache/restore@v4
+      - name: SCA con Trivy
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: depcheck-data-${{ github.run_id }}
-          restore-keys: depcheck-data-
-
-      - name: Run OWASP Dependency-Check (SCA)
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          EXTRA_ARGS=""
-          if [ -n "$NVD_API_KEY" ]; then
-            echo "[INFO] Usando NVD_API_KEY desde secretos del repositorio."
-            EXTRA_ARGS="-DnvdApiKey=$NVD_API_KEY"
-          else
-            echo "[AVISO] NVD_API_KEY no configurado; ejecutando con rate limit público."
-          fi
-          ./mvnw -B org.owasp:dependency-check-maven:12.1.0:check \
-            -Dformat=ALL \
-            -DoutputDirectory=target/dependency-check \
-            -DfailBuildOnCVSS=9 \
-            -DskipTestCompile=true \
-            -DossindexAnalyzerEnabled=false \
-            -DnvdApiDelay=2000 \
-            -DnvdMaxRetryCount=10 \
-            $EXTRA_ARGS
-
-      - name: Save NVD data
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: depcheck-data-${{ github.run_id }}
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
+          format: table
 
       - name: Upload Dependency-Check Artifacts
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-reports

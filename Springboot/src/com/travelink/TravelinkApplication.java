@@ -44,17 +44,27 @@ public class TravelinkApplication {
     @org.springframework.context.annotation.Bean
     @org.springframework.context.annotation.Primary
     public javax.sql.DataSource dataSource() {
+        String jdbcUrl = ConexionDB.getUrl();
+        String user = ConexionDB.getUser();
+        String pass = ConexionDB.getPassword();
+        System.out.println("=================================================");
+        System.out.println("CONFIGURING HIKARI DATA SOURCE:");
+        System.out.println("  JDBC URL: " + jdbcUrl);
+        System.out.println("  USERNAME: " + user);
+        System.out.println("=================================================");
+
         com.zaxxer.hikari.HikariConfig config = new com.zaxxer.hikari.HikariConfig();
-        config.setJdbcUrl(ConexionDB.getUrl());
-        config.setUsername(ConexionDB.getUser());
-        config.setPassword(ConexionDB.getPassword());
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(user);
+        config.setPassword(pass);
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         config.setPoolName("TravelinkHikariPool");
-        config.setMaximumPoolSize(15);
-        config.setMinimumIdle(3);
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(2);
         config.setIdleTimeout(30000);
         config.setMaxLifetime(180000);
         config.setConnectionTimeout(30000);
+        config.setInitializationFailTimeout(10000);
         com.zaxxer.hikari.HikariDataSource ds = new com.zaxxer.hikari.HikariDataSource(config);
         ConexionDB.setDataSource(ds);
         return ds;

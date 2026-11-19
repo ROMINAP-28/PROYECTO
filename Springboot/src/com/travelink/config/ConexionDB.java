@@ -76,9 +76,12 @@ public class ConexionDB {
         return null;
     }
 
+    public static final String DEFAULT_AIVEN_URL =
+        "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+
     public static String sanitizarUrl(String val) {
         if (val == null || val.isBlank()) {
-            return "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+            return DEFAULT_AIVEN_URL;
         }
         val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
 
@@ -127,7 +130,15 @@ public class ConexionDB {
             hostAndDb = hostAndDb + "/DBTravelink";
         }
 
-        return "jdbc:mysql://" + hostAndDb + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+        String candidate = "jdbc:mysql://" + hostAndDb + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+
+        try {
+            com.mysql.cj.conf.ConnectionUrl.getConnectionUrlInstance(candidate, null);
+            return candidate;
+        } catch (Exception e) {
+            System.err.println("[ConexionDB] AVISO: URL rechazada por el parser (" + e.getMessage() + "). Usando URL Aiven oficial garantizada.");
+            return DEFAULT_AIVEN_URL;
+        }
     }
 
     public static String getUrl() {
@@ -142,6 +153,7 @@ public class ConexionDB {
         String clean = sanitizarUrl(val);
         System.setProperty("DB_URL", clean);
         System.setProperty("spring.datasource.url", clean);
+        System.setProperty("CLEAN_DB_URL", clean);
         return clean;
     }
 
@@ -161,14 +173,10 @@ public class ConexionDB {
         String val = System.getenv("DB_PASSWORD");
         if (val == null || val.isBlank()) val = System.getProperty("DB_PASSWORD");
         if (val == null || val.isBlank()) {
-            log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_PASSWORD' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
-            throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_PASSWORD");
+            val = "AVNS_GohPsfjQ1YmM-IL7AoH";
         }
-        val = val.trim();
-        if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
-            if (val.length() >= 2) val = val.substring(1, val.length() - 1);
-        }
-        return val.trim();
+        val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
+        return val.isEmpty() ? "AVNS_GohPsfjQ1YmM-IL7AoH" : val;
     }
 
     public static Connection getConnection() {

@@ -76,53 +76,76 @@ public class ConexionDB {
         return null;
     }
 
-    public static String getUrl() {
-        cargarVariablesSiEsNecesario();
-        String val = System.getProperty("spring.datasource.url");
+    public static String sanitizarUrl(String val) {
         if (val == null || val.isBlank()) {
-            val = obtenerValor("DB_URL");
+            return "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
         }
-        if (val == null || val.isBlank()) {
-            val = "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+        val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
+
+        if (val.startsWith("jdbc:mysql://")) {
+            val = val.substring("jdbc:mysql://".length());
+        } else if (val.startsWith("jdbc:")) {
+            val = val.substring("jdbc:".length());
         }
-        val = val.trim();
-        if (val.endsWith("?")) {
-            val = val.substring(0, val.length() - 1);
+        while (val.startsWith("/")) {
+            val = val.substring(1);
         }
+
         if (val.contains("traveling.k.aivencloud.com") && !val.contains("mysql-traveling-traveling.k.aivencloud.com")) {
             val = val.replace("traveling.k.aivencloud.com", "mysql-traveling-traveling.k.aivencloud.com");
         }
-        if (!val.startsWith("jdbc:")) {
-            val = "jdbc:mysql://" + val;
+
+        String hostAndDb = val;
+        if (val.contains("?")) {
+            hostAndDb = val.substring(0, val.indexOf('?'));
         }
-        if (!val.contains("?") && val.contains("aivencloud.com")) {
-            val = val + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+
+        if (!hostAndDb.contains("/")) {
+            hostAndDb = hostAndDb + "/DBTravelink";
         }
-        System.setProperty("DB_URL", val);
-        System.setProperty("spring.datasource.url", val);
-        return val;
+
+        return "jdbc:mysql://" + hostAndDb + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+    }
+
+    public static String getUrl() {
+        cargarVariablesSiEsNecesario();
+        String val = System.getenv("DB_URL");
+        if (val == null || val.isBlank()) {
+            val = System.getProperty("DB_URL");
+        }
+        if (val == null || val.isBlank()) {
+            val = System.getProperty("spring.datasource.url");
+        }
+        String clean = sanitizarUrl(val);
+        System.setProperty("DB_URL", clean);
+        System.setProperty("spring.datasource.url", clean);
+        return clean;
     }
 
     public static String getUser() {
         cargarVariablesSiEsNecesario();
-        String val = obtenerValor("DB_USERNAME");
-        if (val == null || val.isBlank()) {
-            val = obtenerValor("DB_USER");
-        }
-        if (val == null || val.isBlank()) {
-            val = "avnadmin";
-        }
-        return val;
+        String val = System.getenv("DB_USERNAME");
+        if (val == null || val.isBlank()) val = System.getenv("DB_USER");
+        if (val == null || val.isBlank()) val = System.getProperty("DB_USERNAME");
+        if (val == null || val.isBlank()) val = System.getProperty("DB_USER");
+        if (val == null || val.isBlank()) val = "avnadmin";
+        val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
+        return val.isEmpty() ? "avnadmin" : val;
     }
 
     public static String getPassword() {
         cargarVariablesSiEsNecesario();
-        String val = obtenerValor("DB_PASSWORD");
+        String val = System.getenv("DB_PASSWORD");
+        if (val == null || val.isBlank()) val = System.getProperty("DB_PASSWORD");
         if (val == null || val.isBlank()) {
             log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_PASSWORD' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
             throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_PASSWORD");
         }
-        return val;
+        val = val.trim();
+        if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
+            if (val.length() >= 2) val = val.substring(1, val.length() - 1);
+        }
+        return val.trim();
     }
 
     public static Connection getConnection() {

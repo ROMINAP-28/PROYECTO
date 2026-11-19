@@ -25,13 +25,13 @@ echo "--> Iniciando servicios (DB, App, Nginx)..."
 docker compose -f "${COMPOSE_FILE}" up -d
 
 # 4. Esperar estado saludable (máximo 120s)
-echo "--> Esperando que travelink-prod-app alcance estado saludable..."
+echo "--> Esperando que travelink-app-prod alcance estado saludable..."
 ATTEMPTS=0
 MAX_ATTEMPTS=24
 HEALTHY=false
 
 while [ ${ATTEMPTS} -lt ${MAX_ATTEMPTS} ]; do
-    STATUS=$(docker inspect --format='{{json .State.Health.Status}}' travelink-prod-app 2>/dev/null || echo "\"starting\"")
+    STATUS=$(docker inspect --format='{{json .State.Health.Status}}' travelink-app-prod 2>/dev/null || echo "\"starting\"")
     if [ "${STATUS}" == "\"healthy\"" ]; then
         HEALTHY=true
         break
@@ -42,9 +42,9 @@ while [ ${ATTEMPTS} -lt ${MAX_ATTEMPTS} ]; do
 done
 
 if [ "${HEALTHY}" = true ]; then
-    echo "[OK] travelink-prod-app está saludable."
+    echo "[OK] travelink-app-prod está saludable."
 else
-    echo "[ERROR] Timeout esperando que travelink-prod-app esté saludable." >&2
+    echo "[ERROR] Timeout esperando que travelink-app-prod esté saludable." >&2
     docker compose -f "${COMPOSE_FILE}" logs app --tail 40
     exit 1
 fi

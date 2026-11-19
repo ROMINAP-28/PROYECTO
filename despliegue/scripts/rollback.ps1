@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Script de rollback para el entorno de producción de TRAVELINK por Tag / Versión.
 .DESCRIPTION
@@ -12,7 +12,7 @@ param (
     [string]$TargetTag = "previous"
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = (Get-Item "$ScriptDir\..\..").FullName
 $ComposeFile = "$ProjectRoot\despliegue\docker\docker-compose.prod.yml"
@@ -45,14 +45,20 @@ Write-Host "--> 3. Reiniciando servicio de aplicacion con la imagen restaurada..
 docker compose --env-file "$EnvFile" -f "$ComposeFile" up -d app
 
 Write-Host "--> 4. Verificando estado de salud del contenedor..." -ForegroundColor Cyan
-for ($i = 1; $i -le 20; $i++) {
+$restored = $false
+for ($i = 1; $i -le 30; $i++) {
     $health = docker compose --env-file "$EnvFile" -f "$ComposeFile" ps app --format "{{.Health}}"
     if ($health -match "healthy") {
         Write-Host "[OK] Aplicación restaurada y en estado saludable." -ForegroundColor Green
+        $restored = $true
         break
     }
-    Write-Host "Esperando estado saludable ($i/20)..." -ForegroundColor Gray
+    Write-Host "Esperando estado saludable ($i/30)..." -ForegroundColor Gray
     Start-Sleep -Seconds 3
+}
+
+if (-not $restored) {
+    Write-Error "[ERROR] Timeout esperando que travelink-app-prod alcance estado saludable tras rollback."
 }
 
 docker compose --env-file "$EnvFile" -f "$ComposeFile" ps app

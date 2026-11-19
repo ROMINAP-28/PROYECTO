@@ -8,7 +8,7 @@ param (
     [string]$ComposeFile = "$PSScriptRoot\..\docker\docker-compose.prod.yml"
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = (Get-Item "$ScriptDir\..\..").FullName
 $EnvFile = "$ProjectRoot\.env"
@@ -24,6 +24,12 @@ if (Test-Path $EnvFile) {
     $envArgs = @("--env-file", "$EnvFile")
 }
 
+Write-Host "--> Verificando puertos disponibles..." -ForegroundColor Yellow
+if (docker ps -q -f name=travelink-db) {
+    Write-Host "--> [INFO] Deteniendo entorno de desarrollo local para evitar conflicto de puerto 3307..." -ForegroundColor Gray
+    docker compose down 2>$null
+}
+
 Write-Host "--> Reconstruyendo contenedores de produccion..." -ForegroundColor Yellow
 try {
     docker compose @envArgs -f $ComposeFile build app
@@ -37,8 +43,8 @@ docker compose @envArgs -f $ComposeFile up -d
 Write-Host "--> Esperando que travelink-app-prod alcance estado saludable..." -ForegroundColor Yellow
 $healthy = $false
 for ($i = 1; $i -le 24; $i++) {
-    $status = docker inspect --format='{{json .State.Health.Status}}' travelink-app-prod 2>$null
-    if ($status -eq '"healthy"') {
+    $status = docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}starting{{end}}' travelink-app-prod 2>$null
+    if ($status -eq 'healthy') {
         $healthy = $true
         break
     }

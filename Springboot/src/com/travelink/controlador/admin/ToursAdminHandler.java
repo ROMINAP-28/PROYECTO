@@ -233,17 +233,20 @@ public class ToursAdminHandler implements HttpHandler {
         StringBuilder json = new StringBuilder("{\"status\":\"success\",\"data\":[");
         boolean primero = true;
 
-        try (Connection con = ConexionDB.getConnection()) {
-            if (con == null) {
-                JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"No se pudo establecer conexión con la base de datos MySQL\"}");
-                return;
-            }
-            try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
-                for (int i = 0; i < params.size(); i++) {
-                    ps.setObject(i + 1, params.get(i));
-                }
+        Connection con = ConexionDB.getConnection();
+        if (con == null) {
+            JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"No se pudo establecer conexión con la base de datos MySQL\"}");
+            return;
+        }
 
-                try (ResultSet rs = ps.executeQuery()) {
+        try (con;
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     if (!primero) json.append(",");
                     primero = false;

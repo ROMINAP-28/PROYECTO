@@ -83,6 +83,10 @@ public class ConexionDB {
             log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_URL' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
             throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_URL");
         }
+        if (!val.startsWith("jdbc:")) {
+            val = "jdbc:mysql://" + val;
+            System.setProperty("DB_URL", val);
+        }
         return val;
     }
 

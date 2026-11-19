@@ -42,7 +42,7 @@
 
 .layout-grid {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 280px 1fr;
     gap: 30px;
     padding: 40px 50px;
     max-width: 1400px;
@@ -51,7 +51,12 @@
 
 /* Sidebar Filtros */
 .filtros-sidebar {
-    background: transparent;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    height: fit-content;
+    box-sizing: border-box;
 }
 
 .filtros-sidebar h3 {
@@ -124,6 +129,91 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+}
+
+/* Barra de búsqueda superior */
+.search-bar-wrap {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    align-items: center;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.search-input-box {
+    flex: 1 1 200px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    min-width: 0;
+}
+
+.search-input-box i {
+    color: #64748b;
+}
+
+.search-input-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #334155;
+    background: transparent;
+    min-width: 0;
+}
+
+.btn-buscar-exp {
+    background: #0f3f2d;
+    color: #ffffff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+
+.btn-buscar-exp:hover {
+    background: #145a32;
+}
+
+/* Grid de Experiencias dinámico y fluido */
+#experiencias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-exp {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-exp:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.detail-page-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 25px 40px 60px 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ==============================
@@ -459,16 +549,24 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
     margin-bottom: 16px;
 }
 
+.title-price-row > div:first-child {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
 .detail-main-title {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
     color: #0f2942;
     margin: 0;
     line-height: 1.25;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .detail-price-box {
@@ -590,7 +688,7 @@
 /* Cards Grid 3 Cols */
 .detail-3cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
     margin-bottom: 40px;
 }
@@ -771,10 +869,57 @@
 }
 
 @media (max-width: 992px) {
+    .layout-grid {
+        grid-template-columns: 1fr !important;
+        padding: 24px 20px !important;
+        gap: 24px !important;
+    }
+    .filtros-sidebar {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
     .detail-top-grid {
         grid-template-columns: 1fr;
+        gap: 24px;
     }
     .detail-3cards-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero-small {
+        height: 220px !important;
+        padding: 0 16px !important;
+    }
+    .hero-small h1 {
+        font-size: 24px !important;
+    }
+    .hero-small .hero-content {
+        padding: 0 16px !important;
+    }
+    .layout-grid {
+        padding: 16px 12px !important;
+    }
+    #experiencias-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    .detail-page-container {
+        padding: 16px 12px !important;
+    }
+    .main-detail-img-wrap {
+        height: 230px !important;
+    }
+    .detail-price-box {
+        text-align: left !important;
+        width: 100% !important;
+    }
+    .detail-main-title {
+        font-size: 22px !important;
+    }
+    .btn-buscar-exp {
+        width: 100% !important;
+        margin-top: 6px !important;
     }
 }

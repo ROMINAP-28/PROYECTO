@@ -24,10 +24,16 @@ public class TravelinkApplication {
         String cleanUser = ConexionDB.getUser();
         String cleanPass = ConexionDB.getPassword();
 
+        System.setProperty("CLEAN_DB_URL", cleanUrl);
+        System.setProperty("spring.datasource.url", cleanUrl);
+        System.setProperty("spring.datasource.username", cleanUser);
+        System.setProperty("spring.datasource.password", cleanPass);
+
         log.info("Iniciando TRAVELINK con DB_URL sanitizada: {}", cleanUrl.split("\\?")[0]);
 
         SpringApplication app = new SpringApplication(TravelinkApplication.class);
         java.util.Map<String, Object> props = new java.util.HashMap<>();
+        props.put("CLEAN_DB_URL", cleanUrl);
         props.put("spring.datasource.url", cleanUrl);
         props.put("spring.datasource.username", cleanUser);
         props.put("spring.datasource.password", cleanPass);

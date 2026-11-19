@@ -82,24 +82,47 @@ public class ConexionDB {
         }
         val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
 
-        if (val.startsWith("jdbc:mysql://")) {
-            val = val.substring("jdbc:mysql://".length());
-        } else if (val.startsWith("jdbc:")) {
+        // 1. Quitar todos los prefijos posibles: "jdbc:mysql://", "jdbc:", "mysql://"
+        while (val.startsWith("jdbc:")) {
             val = val.substring("jdbc:".length());
+        }
+        while (val.startsWith("mysql://")) {
+            val = val.substring("mysql://".length());
         }
         while (val.startsWith("/")) {
             val = val.substring(1);
         }
 
+        // 2. Si viene formato con credenciales incrustadas (user:password@host:port/db)
+        if (val.contains("@")) {
+            int atIdx = val.indexOf('@');
+            String creds = val.substring(0, atIdx);
+            val = val.substring(atIdx + 1); // dejar solo host:port/db...
+            if (creds.contains(":")) {
+                int colonIdx = creds.indexOf(':');
+                String user = creds.substring(0, colonIdx);
+                String pass = creds.substring(colonIdx + 1);
+                if (!user.isBlank() && System.getProperty("DB_USERNAME") == null && System.getenv("DB_USERNAME") == null) {
+                    System.setProperty("DB_USERNAME", user);
+                }
+                if (!pass.isBlank() && System.getProperty("DB_PASSWORD") == null && System.getenv("DB_PASSWORD") == null) {
+                    System.setProperty("DB_PASSWORD", pass);
+                }
+            }
+        }
+
+        // 3. Corregir dominio Aiven si le falta el prefijo
         if (val.contains("traveling.k.aivencloud.com") && !val.contains("mysql-traveling-traveling.k.aivencloud.com")) {
             val = val.replace("traveling.k.aivencloud.com", "mysql-traveling-traveling.k.aivencloud.com");
         }
 
+        // 4. Separar host:port/db de los query parameters
         String hostAndDb = val;
         if (val.contains("?")) {
             hostAndDb = val.substring(0, val.indexOf('?'));
         }
 
+        // 5. Garantizar nombre de base de datos
         if (!hostAndDb.contains("/")) {
             hostAndDb = hostAndDb + "/DBTravelink";
         }

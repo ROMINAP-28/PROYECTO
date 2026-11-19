@@ -47,11 +47,7 @@ public class TravelinkApplication {
         String jdbcUrl = ConexionDB.getUrl();
         String user = ConexionDB.getUser();
         String pass = ConexionDB.getPassword();
-        System.out.println("=================================================");
-        System.out.println("CONFIGURING HIKARI DATA SOURCE:");
-        System.out.println("  JDBC URL: " + jdbcUrl);
-        System.out.println("  USERNAME: " + user);
-        System.out.println("=================================================");
+        log.info("Configurando Hikari DataSource para URL: {}", jdbcUrl.split("\\?")[0]);
 
         com.zaxxer.hikari.HikariConfig config = new com.zaxxer.hikari.HikariConfig();
         config.setJdbcUrl(jdbcUrl);

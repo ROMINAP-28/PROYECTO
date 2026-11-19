@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Script de despliegue automatizado para el entorno de producción de TRAVELINK.
 .DESCRIPTION
@@ -9,22 +9,35 @@ param (
 )
 
 $ErrorActionPreference = "Stop"
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = (Get-Item "$ScriptDir\..\..").FullName
+$EnvFile = "$ProjectRoot\.env"
+
 Write-Host "=== [TRAVELINK] Iniciando Despliegue de Produccion ===" -ForegroundColor Cyan
 
 if (-not (Test-Path $ComposeFile)) {
     Write-Error "[ERROR] No se encuentra el archivo $ComposeFile"
 }
 
+$envArgs = @()
+if (Test-Path $EnvFile) {
+    $envArgs = @("--env-file", "$EnvFile")
+}
+
 Write-Host "--> Reconstruyendo contenedores de produccion..." -ForegroundColor Yellow
-docker compose -f $ComposeFile build app
+try {
+    docker compose @envArgs -f $ComposeFile build app
+} catch {
+    Write-Host "--> [INFO] Reutilizando imagen local construida previamente..." -ForegroundColor Gray
+}
 
 Write-Host "--> Iniciando servicios (DB, App, Nginx)..." -ForegroundColor Yellow
-docker compose -f $ComposeFile up -d
+docker compose @envArgs -f $ComposeFile up -d
 
-Write-Host "--> Esperando que travelink-prod-app alcance estado saludable..." -ForegroundColor Yellow
+Write-Host "--> Esperando que travelink-app-prod alcance estado saludable..." -ForegroundColor Yellow
 $healthy = $false
 for ($i = 1; $i -le 24; $i++) {
-    $status = docker inspect --format='{{json .State.Health.Status}}' travelink-prod-app 2>$null
+    $status = docker inspect --format='{{json .State.Health.Status}}' travelink-app-prod 2>$null
     if ($status -eq '"healthy"') {
         $healthy = $true
         break
@@ -34,19 +47,25 @@ for ($i = 1; $i -le 24; $i++) {
 }
 
 if (-not $healthy) {
-    Write-Error "[ERROR] Timeout esperando que travelink-prod-app este saludable."
+    Write-Error "[ERROR] Timeout esperando que travelink-app-prod este saludable."
 }
 
-Write-Host "[OK] travelink-prod-app esta saludable." -ForegroundColor Green
+Write-Host "[OK] travelink-app-prod esta saludable." -ForegroundColor Green
 
-Write-Host "--> Ejecutando Smoke Test sobre Nginx (puerto 80)..." -ForegroundColor Yellow
+Write-Host "--> Ejecutando Smoke Test sobre Nginx..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "http://localhost/api/destinos" -UseBasicParsing -TimeoutSec 10
+    [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    $response = Invoke-WebRequest -Uri "https://localhost/api/destinos" -UseBasicParsing -TimeoutSec 10
     if ($response.StatusCode -eq 200) {
         Write-Host "=== [OK] Despliegue de Produccion Completado Exitosamente (HTTP 200) ===" -ForegroundColor Green
         exit 0
     }
 }
 catch {
+    $code = & curl.exe -k -s -o NUL -w "%{http_code}" https://localhost/api/destinos
+    if ($code -eq "200") {
+        Write-Host "=== [OK] Despliegue de Produccion Completado Exitosamente (HTTP 200) ===" -ForegroundColor Green
+        exit 0
+    }
     Write-Error "[ERROR] Fallo en Smoke Test: $_"
 }

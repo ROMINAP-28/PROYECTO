@@ -578,7 +578,7 @@ public class ReservaPersistencia {
                     psPO.executeUpdate();
                 }
             } catch (Exception exP) {
-                System.out.println("Aviso Pago: " + exP.getMessage());
+                log.warn("Aviso Pago: {}", exP.getMessage());
             }
             // 11. Comisión del 15% sobre el total real
             try {
@@ -600,7 +600,7 @@ public class ReservaPersistencia {
                     psC.executeUpdate();
                 }
             } catch (Exception exCom) {
-                System.out.println("Aviso Comision: " + exCom.getMessage());
+                log.warn("Aviso Comision: {}", exCom.getMessage());
             }
             // 12. Notificaciones
             try {

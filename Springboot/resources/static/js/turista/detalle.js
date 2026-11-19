@@ -1,4 +1,4 @@
-﻿// Travelink - Detalle del Tour Dinámico (Fase 6)
+// Travelink - Detalle del Tour Dinámico (Fase 6)
 // Muestra exactamente lo cargado por la agencia, salidas reales, galería, calificaciones reales y redirección a reserva.
 
 let currentTour = null;

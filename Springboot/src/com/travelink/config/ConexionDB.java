@@ -130,15 +130,7 @@ public class ConexionDB {
             hostAndDb = hostAndDb + "/DBTravelink";
         }
 
-        String candidate = "jdbc:mysql://" + hostAndDb + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
-
-        try {
-            com.mysql.cj.conf.ConnectionUrl.getConnectionUrlInstance(candidate, null);
-            return candidate;
-        } catch (Exception e) {
-            System.err.println("[ConexionDB] AVISO: URL rechazada por el parser (" + e.getMessage() + "). Usando URL Aiven oficial garantizada.");
-            return DEFAULT_AIVEN_URL;
-        }
+        return "jdbc:mysql://" + hostAndDb + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
     }
 
     public static String getUrl() {

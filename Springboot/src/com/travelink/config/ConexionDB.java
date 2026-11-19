@@ -78,19 +78,28 @@ public class ConexionDB {
 
     public static String getUrl() {
         cargarVariablesSiEsNecesario();
-        String val = obtenerValor("DB_URL");
+        String val = System.getProperty("spring.datasource.url");
         if (val == null || val.isBlank()) {
-            log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_URL' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
-            throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_URL");
+            val = obtenerValor("DB_URL");
+        }
+        if (val == null || val.isBlank()) {
+            val = "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
         }
         val = val.trim();
         if (val.endsWith("?")) {
             val = val.substring(0, val.length() - 1);
         }
+        if (val.contains("traveling.k.aivencloud.com") && !val.contains("mysql-traveling-traveling.k.aivencloud.com")) {
+            val = val.replace("traveling.k.aivencloud.com", "mysql-traveling-traveling.k.aivencloud.com");
+        }
         if (!val.startsWith("jdbc:")) {
             val = "jdbc:mysql://" + val;
-            System.setProperty("DB_URL", val);
         }
+        if (!val.contains("?") && val.contains("aivencloud.com")) {
+            val = val + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+        }
+        System.setProperty("DB_URL", val);
+        System.setProperty("spring.datasource.url", val);
         return val;
     }
 
@@ -101,8 +110,7 @@ public class ConexionDB {
             val = obtenerValor("DB_USER");
         }
         if (val == null || val.isBlank()) {
-            log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_USERNAME' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
-            throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_USERNAME");
+            val = "avnadmin";
         }
         return val;
     }
@@ -118,18 +126,22 @@ public class ConexionDB {
     }
 
     public static Connection getConnection() {
-        try {
-            if (pooledDataSource != null) {
+        if (pooledDataSource != null) {
+            try {
                 return pooledDataSource.getConnection();
+            } catch (SQLException e) {
+                log.warn("Fallo al obtener conexion desde HikariDataSource pool ({}), intentando DriverManager directo...", e.getMessage());
             }
+        }
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(getUrl(), getUser(), getPassword());
         } catch (ClassNotFoundException e) {
             log.error("No se encontró el driver JDBC de MySQL (com.mysql.cj.jdbc.Driver).");
             return null;
         } catch (SQLException e) {
-            log.error("Error al establecer conexión JDBC con la base de datos: código estado SQL={}, código error={}",
-                    e.getSQLState(), e.getErrorCode());
+            log.error("Error al establecer conexión JDBC con la base de datos ({}): código estado SQL={}, código error={}",
+                    e.getMessage(), e.getSQLState(), e.getErrorCode());
             return null;
         }
     }

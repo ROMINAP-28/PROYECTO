@@ -24,11 +24,10 @@ services:
         value: prod
 
       # Credenciales de conexión a MySQL (Aiven Cloud o instancia externa)
-      # sync: false indica a Render que deben configurarse en el Dashboard de forma segura
       - key: DB_URL
-        sync: false
+        value: jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima
       - key: DB_USERNAME
-        sync: false
+        value: avnadmin
       - key: DB_PASSWORD
         sync: false
 

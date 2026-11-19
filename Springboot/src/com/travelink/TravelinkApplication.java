@@ -27,11 +27,18 @@ public class TravelinkApplication {
             if (dbUrl.endsWith("?")) {
                 dbUrl = dbUrl.substring(0, dbUrl.length() - 1);
             }
+            if (dbUrl.contains("traveling.k.aivencloud.com") && !dbUrl.contains("mysql-traveling-traveling.k.aivencloud.com")) {
+                dbUrl = dbUrl.replace("traveling.k.aivencloud.com", "mysql-traveling-traveling.k.aivencloud.com");
+            }
             if (!dbUrl.startsWith("jdbc:")) {
                 dbUrl = "jdbc:mysql://" + dbUrl;
             }
+            if (!dbUrl.contains("?")) {
+                dbUrl = dbUrl + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+            }
             System.setProperty("DB_URL", dbUrl);
-            log.info("DB_URL sanitizada correctamente.");
+            System.setProperty("spring.datasource.url", dbUrl);
+            log.info("DB_URL sanitizada correctamente: {}", dbUrl.split("\\?")[0]);
         }
         String dbUser = System.getenv("DB_USERNAME") != null ? System.getenv("DB_USERNAME")
                 : (System.getenv("DB_USER") != null ? System.getenv("DB_USER") : System.getProperty("DB_USERNAME"));

@@ -143,7 +143,7 @@ public class ToursAdminHandler implements HttpHandler {
                    t.categoria, t.estado, t.aceptaBebes, t.dias, t.horas,
                    COALESCE(NULLIF(a.nombreComercial, ''), a.razonSocial, 'Agencia Travelink') AS agenciaNombre,
                    d.nombre AS destinoNombre,
-                   COALESCE(ti.url, 'img/machupicchu.png') AS imagenPrincipal,
+                   COALESCE(ti.url, 'img/machupicchu.jpg') AS imagenPrincipal,
                    COALESCE(t.calificacionPromedio, a.promedioCalificacion, 0.0) AS califProm,
                    COALESCE((SELECT COUNT(*) FROM Calificacion c WHERE c.idAgencia = t.idAgencia AND (c.eliminadoPorAdmin IS NULL OR c.eliminadoPorAdmin = 0)), 0) AS totalCalif,
                    COALESCE(tfAgg.cuposMinimos, 0) AS cuposMinimos,
@@ -484,7 +484,7 @@ public class ToursAdminHandler implements HttpHandler {
                 }
             }
             if (imagenes.isEmpty()) {
-                imagenes.add("img/machupicchu.png");
+                imagenes.add("img/machupicchu.jpg");
             }
 
             json.append("\"imagenPrincipal\":\"").append(JavaApiServer.jsonEscape(imagenes.get(0))).append("\",");

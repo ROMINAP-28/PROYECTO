@@ -171,23 +171,36 @@ public class ConexionDB {
         return val.isEmpty() ? "AVNS_GohPsfjQ1YmM-IL7AoH" : val;
     }
 
+    private static volatile String ultimoError = "No se ha intentado conexión";
+
+    public static String getUltimoError() {
+        return ultimoError;
+    }
+
     public static Connection getConnection() {
         if (pooledDataSource != null) {
             try {
                 return pooledDataSource.getConnection();
             } catch (SQLException e) {
-                log.warn("Fallo al obtener conexion desde HikariDataSource pool ({}), intentando DriverManager directo...", e.getMessage());
+                ultimoError = "HikariPool: " + e.getMessage() + " [SQLState=" + e.getSQLState() + ", Code=" + e.getErrorCode() + "]";
+                log.warn("Fallo al obtener conexión desde HikariDataSource pool ({}), intentando DriverManager directo...", e.getMessage());
             }
         }
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(getUrl(), getUser(), getPassword());
         } catch (ClassNotFoundException e) {
+            ultimoError = "ClassNotFoundException: " + e.getMessage();
             log.error("No se encontró el driver JDBC de MySQL (com.mysql.cj.jdbc.Driver).");
             return null;
         } catch (SQLException e) {
+            ultimoError = "DriverManager: " + e.getMessage() + " [SQLState=" + e.getSQLState() + ", Code=" + e.getErrorCode() + "]";
             log.error("Error al establecer conexión JDBC con la base de datos ({}): código estado SQL={}, código error={}",
                     e.getMessage(), e.getSQLState(), e.getErrorCode());
+            return null;
+        } catch (Throwable t) {
+            ultimoError = "Throwable: " + t.getClass().getName() + " -> " + t.getMessage();
+            log.error("Error inesperado en ConexionDB: {}", t.getMessage(), t);
             return null;
         }
     }

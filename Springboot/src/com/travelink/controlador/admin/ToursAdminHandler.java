@@ -235,7 +235,9 @@ public class ToursAdminHandler implements HttpHandler {
 
         Connection con = ConexionDB.getConnection();
         if (con == null) {
-            JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"No se pudo establecer conexión con la base de datos MySQL\"}");
+            String err = ConexionDB.getUltimoError();
+            String safeUrl = ConexionDB.getUrl().replaceAll("(?<=:)[^/@]+(?=@)", "****");
+            JavaApiServer.sendJsonResponse(exchange, 500, "{\"status\":\"error\",\"message\":\"" + JavaApiServer.jsonEscape(err) + "\",\"db_url\":\"" + JavaApiServer.jsonEscape(safeUrl) + "\",\"db_user\":\"" + JavaApiServer.jsonEscape(ConexionDB.getUser()) + "\"}");
             return;
         }
 

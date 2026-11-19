@@ -22,10 +22,16 @@ public class TravelinkApplication {
 
         // Validar variables requeridas de base de datos
         String dbUrl = System.getenv("DB_URL") != null ? System.getenv("DB_URL") : System.getProperty("DB_URL");
-        if (dbUrl != null && !dbUrl.isBlank() && !dbUrl.startsWith("jdbc:")) {
-            dbUrl = "jdbc:mysql://" + dbUrl;
+        if (dbUrl != null && !dbUrl.isBlank()) {
+            dbUrl = dbUrl.trim();
+            if (dbUrl.endsWith("?")) {
+                dbUrl = dbUrl.substring(0, dbUrl.length() - 1);
+            }
+            if (!dbUrl.startsWith("jdbc:")) {
+                dbUrl = "jdbc:mysql://" + dbUrl;
+            }
             System.setProperty("DB_URL", dbUrl);
-            log.info("Prefijo 'jdbc:mysql://' agregado automáticamente a DB_URL.");
+            log.info("DB_URL sanitizada correctamente.");
         }
         String dbUser = System.getenv("DB_USERNAME") != null ? System.getenv("DB_USERNAME")
                 : (System.getenv("DB_USER") != null ? System.getenv("DB_USER") : System.getProperty("DB_USERNAME"));

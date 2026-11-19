@@ -1,0 +1,351 @@
+{
+  "command": "ffuf / node-fuzz probe",
+  "target": "http://127.0.0.1:8080/api/FUZZ",
+  "wordlist_size": 56,
+  "results": [
+    {
+      "input": "auth/login",
+      "url": "http://127.0.0.1:8080/api/auth/login",
+      "status": 500,
+      "length": 114
+    },
+    {
+      "input": "auth/logout",
+      "url": "http://127.0.0.1:8080/api/auth/logout",
+      "status": 500,
+      "length": 114
+    },
+    {
+      "input": "auth/me",
+      "url": "http://127.0.0.1:8080/api/auth/me",
+      "status": 401,
+      "length": 26
+    },
+    {
+      "input": "registro",
+      "url": "http://127.0.0.1:8080/api/registro",
+      "status": 405,
+      "length": 51
+    },
+    {
+      "input": "obtener_reservas",
+      "url": "http://127.0.0.1:8080/api/obtener_reservas",
+      "status": 200,
+      "length": 34
+    },
+    {
+      "input": "guardar_reserva",
+      "url": "http://127.0.0.1:8080/api/guardar_reserva",
+      "status": 200,
+      "length": 34
+    },
+    {
+      "input": "cancelar_reserva",
+      "url": "http://127.0.0.1:8080/api/cancelar_reserva",
+      "status": 405,
+      "length": 50
+    },
+    {
+      "input": "calificar",
+      "url": "http://127.0.0.1:8080/api/calificar",
+      "status": 200,
+      "length": 90
+    },
+    {
+      "input": "destinos",
+      "url": "http://127.0.0.1:8080/api/destinos",
+      "status": 200,
+      "length": 30
+    },
+    {
+      "input": "destinos/tours",
+      "url": "http://127.0.0.1:8080/api/destinos/tours",
+      "status": 200,
+      "length": 30
+    },
+    {
+      "input": "tours",
+      "url": "http://127.0.0.1:8080/api/tours",
+      "status": 200,
+      "length": 1434
+    },
+    {
+      "input": "agencias",
+      "url": "http://127.0.0.1:8080/api/agencias",
+      "status": 200,
+      "length": 382
+    },
+    {
+      "input": "admin/usuarios",
+      "url": "http://127.0.0.1:8080/api/admin/usuarios",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/dashboard",
+      "url": "http://127.0.0.1:8080/api/admin/dashboard",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/tours",
+      "url": "http://127.0.0.1:8080/api/admin/tours",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/comisiones",
+      "url": "http://127.0.0.1:8080/api/admin/comisiones",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/agencias",
+      "url": "http://127.0.0.1:8080/api/admin/agencias",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/destinos",
+      "url": "http://127.0.0.1:8080/api/admin/destinos",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/calidad",
+      "url": "http://127.0.0.1:8080/api/admin/calidad",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "admin/notificaciones",
+      "url": "http://127.0.0.1:8080/api/admin/notificaciones",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "usuarios",
+      "url": "http://127.0.0.1:8080/api/usuarios",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "usuario/guardar",
+      "url": "http://127.0.0.1:8080/api/usuario/guardar",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "usuario/eliminar",
+      "url": "http://127.0.0.1:8080/api/usuario/eliminar",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "comisiones",
+      "url": "http://127.0.0.1:8080/api/comisiones",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "comision/liquidar",
+      "url": "http://127.0.0.1:8080/api/comision/liquidar",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "calidad",
+      "url": "http://127.0.0.1:8080/api/calidad",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "calidad/eliminar",
+      "url": "http://127.0.0.1:8080/api/calidad/eliminar",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "reserva/eliminar",
+      "url": "http://127.0.0.1:8080/api/reserva/eliminar",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/login",
+      "url": "http://127.0.0.1:8080/api/agencia/login",
+      "status": 500,
+      "length": 114
+    },
+    {
+      "input": "agencia/registro",
+      "url": "http://127.0.0.1:8080/api/agencia/registro",
+      "status": 405,
+      "length": 51
+    },
+    {
+      "input": "agencia/dashboard",
+      "url": "http://127.0.0.1:8080/api/agencia/dashboard",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/destinos",
+      "url": "http://127.0.0.1:8080/api/agencia/destinos",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/tipos",
+      "url": "http://127.0.0.1:8080/api/agencia/tipos",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/servicios",
+      "url": "http://127.0.0.1:8080/api/agencia/servicios",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/disponibilidad",
+      "url": "http://127.0.0.1:8080/api/agencia/disponibilidad",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/paquetes",
+      "url": "http://127.0.0.1:8080/api/agencia/paquetes",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/reservas",
+      "url": "http://127.0.0.1:8080/api/agencia/reservas",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/pagos",
+      "url": "http://127.0.0.1:8080/api/agencia/pagos",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "agencia/importar/disponibilidad",
+      "url": "http://127.0.0.1:8080/api/agencia/importar/disponibilidad",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "eventos",
+      "url": "http://127.0.0.1:8080/api/eventos",
+      "status": 0,
+      "error": "timeout"
+    },
+    {
+      "input": "eventos/poll",
+      "url": "http://127.0.0.1:8080/api/eventos/poll",
+      "status": 200,
+      "length": 278
+    },
+    {
+      "input": "eventos/emitir",
+      "url": "http://127.0.0.1:8080/api/eventos/emitir",
+      "status": 500,
+      "length": 114
+    },
+    {
+      "input": "turista/reservas",
+      "url": "http://127.0.0.1:8080/api/turista/reservas",
+      "status": 200,
+      "length": 34
+    },
+    {
+      "input": "reservas",
+      "url": "http://127.0.0.1:8080/api/reservas",
+      "status": 200,
+      "length": 34
+    },
+    {
+      "input": "calificaciones",
+      "url": "http://127.0.0.1:8080/api/calificaciones",
+      "status": 404,
+      "length": 72
+    },
+    {
+      "input": "login",
+      "url": "http://127.0.0.1:8080/api/login",
+      "status": 500,
+      "length": 114
+    },
+    {
+      "input": "logout",
+      "url": "http://127.0.0.1:8080/api/logout",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "session",
+      "url": "http://127.0.0.1:8080/api/session",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "me",
+      "url": "http://127.0.0.1:8080/api/me",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "actuator",
+      "url": "http://127.0.0.1:8080/api/actuator",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "status",
+      "url": "http://127.0.0.1:8080/api/status",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "health",
+      "url": "http://127.0.0.1:8080/api/health",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "metrics",
+      "url": "http://127.0.0.1:8080/api/metrics",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "info",
+      "url": "http://127.0.0.1:8080/api/info",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "swagger-ui.html",
+      "url": "http://127.0.0.1:8080/api/swagger-ui.html",
+      "status": 401,
+      "length": 154
+    },
+    {
+      "input": "api-docs",
+      "url": "http://127.0.0.1:8080/api/api-docs",
+      "status": 401,
+      "length": 154
+    }
+  ],
+  "status_summary": {
+    "0": 1,
+    "200": 10,
+    "401": 36,
+    "404": 1,
+    "405": 3,
+    "500": 5
+  }
+}

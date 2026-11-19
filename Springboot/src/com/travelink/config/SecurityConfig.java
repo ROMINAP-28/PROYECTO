@@ -107,6 +107,12 @@ public class SecurityConfig {
                     "/favicon.ico"
                 ).permitAll()
 
+                // Monitoreo Spring Boot Actuator (Health & Info únicamente)
+                .requestMatchers(
+                    "/actuator/health",
+                    "/actuator/info"
+                ).permitAll()
+
                 // 2. Páginas de login y registro de cada rol
                 .requestMatchers(
                     "/html/turista/login.html",

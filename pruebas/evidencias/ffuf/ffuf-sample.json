@@ -1,0 +1,62 @@
+[
+  {
+    "input": "auth/login",
+    "url": "http://127.0.0.1:8080/api/auth/login",
+    "status": 500,
+    "length": 114
+  },
+  {
+    "input": "auth/logout",
+    "url": "http://127.0.0.1:8080/api/auth/logout",
+    "status": 500,
+    "length": 114
+  },
+  {
+    "input": "auth/me",
+    "url": "http://127.0.0.1:8080/api/auth/me",
+    "status": 401,
+    "length": 26
+  },
+  {
+    "input": "registro",
+    "url": "http://127.0.0.1:8080/api/registro",
+    "status": 405,
+    "length": 51
+  },
+  {
+    "input": "obtener_reservas",
+    "url": "http://127.0.0.1:8080/api/obtener_reservas",
+    "status": 200,
+    "length": 34
+  },
+  {
+    "input": "guardar_reserva",
+    "url": "http://127.0.0.1:8080/api/guardar_reserva",
+    "status": 200,
+    "length": 34
+  },
+  {
+    "input": "cancelar_reserva",
+    "url": "http://127.0.0.1:8080/api/cancelar_reserva",
+    "status": 405,
+    "length": 50
+  },
+  {
+    "input": "calificar",
+    "url": "http://127.0.0.1:8080/api/calificar",
+    "status": 200,
+    "length": 90
+  },
+  {
+    "input": "destinos",
+    "url": "http://127.0.0.1:8080/api/destinos",
+    "status": 200,
+    "length": 30
+  },
+  {
+    "input": "destinos/tours",
+    "url": "http://127.0.0.1:8080/api/destinos/tours",
+    "status": 200,
+    "length": 30
+  }
+]

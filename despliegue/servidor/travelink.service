@@ -1,0 +1,43 @@
+[Unit]
+Description=TRAVELINK Platform - Spring Boot Production Service
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=travelink
+Group=travelink
+WorkingDirectory=/opt/travelink
+
+# JVM Tuning: G1GC, String Deduplication, memoria acotada y registro GC
+Environment="JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64"
+EnvironmentFile=/etc/travelink/travelink.env
+ExecStart=/usr/bin/java \
+    -Xms512m \
+    -Xmx1024m \
+    -XX:+UseG1GC \
+    -XX:+UseStringDeduplication \
+    -Xlog:gc*:file=/var/log/travelink/gc.log:time,uptime:filecount=5,filesize=10M \
+    -Dspring.profiles.active=prod \
+    -Dfile.encoding=UTF-8 \
+    -jar /opt/travelink/app.jar
+
+StandardOutput=append:/var/log/travelink/travelink.log
+StandardError=append:/var/log/travelink/error.log
+
+# Reinicio automático y límites del sistema operativo (Hardening)
+Restart=always
+RestartSec=10
+LimitNOFILE=65536
+LimitNPROC=4096
+TimeoutStopSec=60
+SuccessExitStatus=143
+
+# Aislamiento de seguridad Linux (Systemd Sandboxing)
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

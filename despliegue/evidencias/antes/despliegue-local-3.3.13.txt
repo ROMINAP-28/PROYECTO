@@ -1,0 +1,60 @@
+==============================================================================
+EVIDENCIA DE DESPLIEGUE LOCAL Y RECONSTRUCCIÓN CON SPRING BOOT 3.3.13
+TRAVELINK - Entorno Docker Compose Reproducible
+Fecha: 2026-11-18
+==============================================================================
+
+1. ESTADO DE LOS CONTENEDORES (docker compose ps)
+------------------------------------------------------------------------------
+NAME            IMAGE          COMMAND                  SERVICE   CREATED       STATUS                 PORTS
+travelink-app   proyecto-app   "sh -c 'java $JAVA_O…"   app       3 hours ago   Up 3 hours (healthy)   127.0.0.1:8080->8080/tcp
+travelink-db    mysql:8.0      "docker-entrypoint.s…"   db        7 days ago    Up 4 hours (healthy)   127.0.0.1:3307->3306/tcp
+
+2. LOGS DE ARRANQUE CON SPRING BOOT 3.3.13 (docker compose logs app --tail 35)
+------------------------------------------------------------------------------
+travelink-app  |   .   ____          _            __ _ _
+travelink-app  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+travelink-app  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+travelink-app  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+travelink-app  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+travelink-app  |  =========|_|==============|___/=/_/_/_/
+travelink-app  | 
+travelink-app  |  :: Spring Boot ::               (v3.3.13)
+travelink-app  | 
+travelink-app  | 2026-11-18 12:16:47.756 [main] INFO  com.travelink.TravelinkApplication - Starting TravelinkApplication v1.0.0 using Java 21.0.13 with PID 7 (/app/app.jar started by travelink in /app)
+travelink-app  | 2026-11-18 12:16:47.759 [main] INFO  com.travelink.TravelinkApplication - No active profile set, falling back to 1 default profile: "default"
+travelink-app  | 2026-11-18 12:16:49.073 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+travelink-app  | 2026-11-18 12:16:49.207 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 122 ms. Found 17 JPA repository interfaces.
+travelink-app  | 2026-11-18 12:16:50.258 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+travelink-app  | 2026-11-18 12:16:50.276 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+travelink-app  | 2026-11-18 12:16:50.334 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2491 ms
+travelink-app  | 2026-11-18 12:16:51.964 [main] INFO  com.zaxxer.hikari.HikariDataSource - TravelinkHikariPool - Starting...
+travelink-app  | 2026-11-18 12:16:52.224 [main] INFO  com.zaxxer.hikari.pool.HikariPool - TravelinkHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@28f90752
+travelink-app  | 2026-11-18 12:16:52.227 [main] INFO  com.zaxxer.hikari.HikariDataSource - TravelinkHikariPool - Start completed.
+travelink-app  | 2026-11-18 12:16:54.933 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+travelink-app  | 2026-11-18 12:19:42.943 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+travelink-app  | 2026-11-18 12:19:43.622 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+travelink-app  | 2026-11-18 12:19:43.644 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+travelink-app  | 2026-11-18 12:19:43.663 [main] INFO  com.travelink.TravelinkApplication - Started TravelinkApplication in 176.52 seconds (process running for 13.862)
+travelink-app  | 2026-11-18 12:19:43.666 [main] INFO  com.travelink.config.ConexionDB - Pool de conexiones DataSource asignado exitosamente a ConexionDB.
+travelink-app  | 2026-11-18 12:19:43.667 [main] INFO  com.travelink.TravelinkApplication - ConexionDB configurado exitosamente con el pool HikariCP de Spring Boot.
+travelink-app  | 2026-11-18 12:19:43.697 [main] INFO  com.travelink.TravelinkApplication - Verificación y optimización de índices de BD completada exitosamente.
+travelink-app  | 2026-11-18 18:44:54.290 [http-nio-8080-exec-5] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+travelink-app  | 2026-11-18 18:44:54.299 [http-nio-8080-exec-5] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 7 ms
+
+3. COMPROBACIÓN HTTP LOCAL (curl.exe -i http://localhost:8080/api/destinos)
+------------------------------------------------------------------------------
+HTTP/1.1 200 
+Vary: origin,access-control-request-method,access-control-request-headers,accept-encoding
+Set-Cookie: XSRF-TOKEN=2ce2c53d-4d6e-46e3-87ad-838b7064c1a7; Path=/
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json;charset=UTF-8
+Content-Length: 2840
+Date: Wed, 18 Nov 2026 18:44:54 GMT
+
+{"status":"success","data":[{"id":1,"nombre":"Amazonas","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":2,"nombre":"Áncash","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":3,"nombre":"Apurímac","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":4,"nombre":"Arequipa","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":5,"nombre":"Ayacucho","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":6,"nombre":"Cajamarca","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":7,"nombre":"Callao","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":8,"nombre":"Cusco","descripcion":"","toursActivos":1,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":9,"nombre":"Huancavelica","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":10,"nombre":"Huánuco","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":11,"nombre":"Ica","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":12,"nombre":"Junín","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":13,"nombre":"La Libertad","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":14,"nombre":"Lambayeque","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":15,"nombre":"Lima","descripcion":"","toursActivos":1,"estado":"Activo","imagen":"../../img/lima.jpg"},{"id":16,"nombre":"Loreto","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":17,"nombre":"Madre de Dios","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/madrededios.jpg"},{"id":18,"nombre":"Moquegua","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/moquegua.jpg"},{"id":19,"nombre":"Pasco","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/pasco.jpg"},{"id":20,"nombre":"Piura","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":21,"nombre":"Puno","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":22,"nombre":"San Martín","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":23,"nombre":"Tacna","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/arequipa.jpg"},{"id":24,"nombre":"Tumbes","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"},{"id":25,"nombre":"Ucayali","descripcion":"","toursActivos":0,"estado":"Activo","imagen":"../../img/cusco.jpg"}]}

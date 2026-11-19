@@ -1,0 +1,62 @@
+# ==============================================================================
+# Excepciones justificadas de vulnerabilidades CRITICAL para Trivy en CI
+# TRAVELINK - Spring Boot 3.3.13 / Java 21 / Maven
+# Referencia técnica: docs/seguridad/02-analisis/tabla-dependencias-cve.md
+# Nota de vencimiento: exp:2027-06-30 (revisión programada en migración a Spring Boot 4.x)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Spring Security Web (Lazy HTTP Headers Writing)
+# ------------------------------------------------------------------------------
+# CVE-2026-22732: CWE-425 (Direct Request / Failure to Write Security Headers).
+# Justificación: Riesgo aceptado temporalmente; mitigación planificada: cabeceras de
+# seguridad en Nginx (Sesión 15) y actualización planificada a Spring Boot 4.x.
+# Corregido upstream en Spring Security 6.5.9 y 7.0.4.
+CVE-2026-22732 exp:2027-06-30
+
+# ------------------------------------------------------------------------------
+# 2. Spring WebMVC (XsltView Path Limitation)
+# ------------------------------------------------------------------------------
+# CVE-2026-47884: CWE-22 (Path Traversal / RCE via XsltView).
+# Justificación: Condicionado a mapeos '/**' con renderizado de vistas XsltView.
+# TRAVELINK opera exclusivamente como API REST desacoplada (JSON) y vistas estáticas
+# en cliente; verificado que no existen controladores ni vistas XsltView.
+# Versión corregida en upstream: Spring Framework 6.1.29 (serie 6.1.x) y 7.0.9.
+CVE-2026-47884 exp:2027-06-30
+
+# ------------------------------------------------------------------------------
+# 3. Apache Tomcat Embed Core (Tomcat 10.1.42 en Spring Boot 3.3.13)
+# ------------------------------------------------------------------------------
+# CVE-2026-41293: HTTP/2 request headers sin validación en Coyote.
+# Justificación: Verificado en application.properties que server.http2.enabled no está activo;
+# la aplicación opera en HTTP/1.1 en local y la terminación HTTP/2 se delega a Nginx.
+CVE-2026-41293 exp:2027-06-30
+
+# CVE-2026-43512: Authentication Bypass en digest authentication de Tomcat.
+# Justificación: TRAVELINK no implementa autenticación HTTP Digest; autentica vía Form/REST
+# en Spring Security y hashes BCrypt en MySQL.
+CVE-2026-43512 exp:2027-06-30
+
+# CVE-2026-43515: Bypass de autorización en Tomcat realm.
+# Justificación: TRAVELINK no define Realms nativos de contenedor; la autorización se gestiona
+# íntegramente en Spring SecurityFilterChain.
+CVE-2026-43515 exp:2027-06-30
+
+# CVE-2026-55276: Logs de seguridad engañosos por control de flujo incorrecto (CWE-670).
+# Justificación: Impacto limitado a la fiabilidad de los registros de auditoría de Tomcat, sin
+# afectación en los mecanismos de autenticación ni en el control de acceso. No hay evidencia
+# de que TRAVELINK dependa de esos logs para decisiones de seguridad. Riesgo aceptado temporalmente.
+CVE-2026-55276 exp:2027-06-30
+
+# CVE-2026-65182: Constraint bypass en web.xml.
+# Justificación: Verificado por nombre de archivo que no existe web.xml; las restricciones se aplican en SecurityFilterChain.
+CVE-2026-65182 exp:2027-06-30
+
+# CVE-2026-65905: Replay attack en autenticador DIGEST de Tomcat.
+# Justificación: El autenticador DIGEST de Tomcat no está configurado ni en uso en el aplicativo.
+CVE-2026-65905 exp:2027-06-30
+
+# CVE-2026-68525: FORM authentication bypass en contenedor Tomcat.
+# Justificación: El endpoint de login es gestionado por Spring Security (/api/auth/login), no por
+# el mecanismo FORM nativo del contenedor Tomcat embebido.
+CVE-2026-68525 exp:2027-06-30

@@ -1,0 +1,82 @@
+# Nmap 7.80 scan initiated Wed Nov 11 17:31:31 2026 as: "C:\\Program Files (x86)\\Nmap\\nmap.exe" -sV -p 8080,3307 -oN D:\\ProyectosU\\PROYECTO\\docs\\seguridad\\evidencias\\nmap\\nmap-recon.txt 127.0.0.1
+Nmap scan report for 127.0.0.1
+Host is up (0.0010s latency).
+
+PORT     STATE SERVICE         VERSION
+3307/tcp open  opsession-prxy?
+8080/tcp open  http-proxy
+2 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port3307-TCP:V=7.80%I=7%D=11/11%Time=6AF4ECCF%P=i686-pc-windows-windows
+SF:%r(NULL,4E,"J\0\0\0\n8\.0\.46\0V\x0b\0\0Q22I6\[\"y\0\xff\xff\xe0\x02\0\
+SF:xff\xdf\x15\0\0\0\0\0\0\0\0\0\0w;\x20\+w\x07D\x0cJ&m>\0caching_sha2_pas
+SF:sword\0")%r(GenericLines,73,"J\0\0\0\n8\.0\.46\0V\x0b\0\0Q22I6\[\"y\0\x
+SF:ff\xff\xe0\x02\0\xff\xdf\x15\0\0\0\0\0\0\0\0\0\0w;\x20\+w\x07D\x0cJ&m>\
+SF:0caching_sha2_password\0!\0\0\x01\xff\x84\x04#08S01Got\x20packets\x20ou
+SF:t\x20of\x20order")%r(GetRequest,73,"J\0\0\0\n8\.0\.46\0Y\x0b\0\0q\x01M\
+SF:x1f\n\x0c\x1c\.\0\xff\xff\xe0\x02\0\xff\xdf\x15\0\0\0\0\0\0\0\0\0\0\(9\
+SF:x0f\x08M-:\\1p\x14\x20\0caching_sha2_password\0!\0\0\x01\xff\x84\x04#08
+SF:S01Got\x20packets\x20out\x20of\x20order")%r(HTTPOptions,73,"J\0\0\0\n8\
+SF:.0\.46\0Z\x0b\0\0\x01=<\x1eq\x07\x17\x07\0\xff\xff\xe0\x02\0\xff\xdf\x1
+SF:5\0\0\0\0\0\0\0\0\0\0}0y\+q>\x10\r\t\^;\t\0caching_sha2_password\0!\0\0
+SF:\x01\xff\x84\x04#08S01Got\x20packets\x20out\x20of\x20order")%r(RTSPRequ
+SF:est,73,"J\0\0\0\n8\.0\.46\0\[\x0b\0\0/{J>xu~0\0\xff\xff\xe0\x02\0\xff\x
+SF:df\x15\0\0\0\0\0\0\0\0\0\0O\x19\x176Z5\|C`q`2\0caching_sha2_password\0!
+SF:\0\0\x01\xff\x84\x04#08S01Got\x20packets\x20out\x20of\x20order")%r(RPCC
+SF:heck,73,"J\0\0\0\n8\.0\.46\0\\\x0b\0\0CA0o\x16lW#\0\xff\xff\xe0\x02\0\x
+SF:ff\xdf\x15\0\0\0\0\0\0\0\0\0\0\x01\(\x1e<\x1eb\x1e\x04\x19\x08=\x1f\0ca
+SF:ching_sha2_password\0!\0\0\x01\xff\x84\x04#08S01Got\x20packets\x20out\x
+SF:20of\x20order")%r(DNSVersionBindReqTCP,73,"J\0\0\0\n8\.0\.46\0\]\x0b\0\
+SF:0XDa#\[\]\x1e5\0\xff\xff\xe0\x02\0\xff\xdf\x15\0\0\0\0\0\0\0\0\0\0eN}GC
+SF:3/!\t5Y\"\0caching_sha2_password\0!\0\0\x01\xff\x84\x04#08S01Got\x20pac
+SF:kets\x20out\x20of\x20order")%r(DNSStatusRequestTCP,73,"J\0\0\0\n8\.0\.4
+SF:6\0\^\x0b\0\0\^\x20&v=;\x0eI\0\xff\xff\xe0\x02\0\xff\xdf\x15\0\0\0\0\0\
+SF:0\0\0\0\0\t2\|%\x1c\?2\nJ\x1dxW\0caching_sha2_password\0!\0\0\x01\xff\x
+SF:84\x04#08S01Got\x20packets\x20out\x20of\x20order")%r(Help,73,"J\0\0\0\n
+SF:8\.0\.46\0_\x0b\0\0fZL\]\x13\x1e\[L\0\xff\xff\xe0\x02\0\xff\xdf\x15\0\0
+SF:\0\0\0\0\0\0\0\0I\x0ec\x7f8\x1c1\*E\?A\x7f\0caching_sha2_password\0!\0\
+SF:0\x01\xff\x84\x04#08S01Got\x20packets\x20out\x20of\x20order")%r(SSLSess
+SF:ionReq,73,"J\0\0\0\n8\.0\.46\0`\x0b\0\0v\x20\x13H\x14\|\x11G\0\xff\xff\
+SF:xe0\x02\0\xff\xdf\x15\0\0\0\0\0\0\0\0\0\0\x1fi\(\.xj\x04C\x11\x1fOa\0ca
+SF:ching_sha2_password\0!\0\0\x01\xff\x84\x04#08S01Got\x20packets\x20out\x
+SF:20of\x20order");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port8080-TCP:V=7.80%I=7%D=11/11%Time=6AF4ECCF%P=i686-pc-windows-windows
+SF:%r(GetRequest,4D99,"HTTP/1\.1\x20200\x20\r\nVary:\x20origin,access-cont
+SF:rol-request-method,access-control-request-headers,accept-encoding\r\nSe
+SF:t-Cookie:\x20XSRF-TOKEN=f9eb3699-2e59-4c43-9d81-a88d895d79c4;\x20Path=/
+SF:\r\nLast-Modified:\x20Tue,\x2010\x20Nov\x202026\x2022:08:08\x20GMT\r\nA
+SF:ccept-Ranges:\x20bytes\r\nX-Content-Type-Options:\x20nosniff\r\nX-XSS-P
+SF:rotection:\x200\r\nX-Frame-Options:\x20SAMEORIGIN\r\nContent-Type:\x20t
+SF:ext/html;charset=UTF-8\r\nContent-Language:\x20en-US\r\nContent-Length:
+SF:\x2019394\r\nDate:\x20Wed,\x2011\x20Nov\x202026\x2022:31:43\x20GMT\r\nC
+SF:onnection:\x20close\r\n\r\n<!DOCTYPE\x20html>\r\n<html\x20lang=\"es\">\
+SF:r\n\r\n<head>\n\x20\x20\x20\x20<meta\x20charset=\"UTF-8\">\n\x20\x20\x2
+SF:0\x20<meta\x20http-equiv=\"Content-Type\"\x20content=\"text/html;\x20ch
+SF:arset=UTF-8\">\n\x20\x20\x20\x20<meta\x20name=\"viewport\"\x20content=\
+SF:"width=device-width,\x20initial-scale=1\.0\">\r\n\x20\x20\x20\x20\r\n\x
+SF:20\x20\x20\x20<script\x20src=\"js/comun/config\.js\"></script>\r\n\x20\
+SF:x20\x20\x20<meta\x20name=\"viewport\"\x20content=\"width=device-width,\
+SF:x20initial-scale=1\.0\">\r\n\x20\x20\x20\x20<title>Travelink\x20-\x20In
+SF:icio</title>\r\n\x20\x20\x20\x20<link\x20rel=\"preconnect\"\x20href=\"h
+SF:ttps://")%r(HTTPOptions,166,"HTTP/1\.1\x20200\x20\r\nVary:\x20Origin\r\
+SF:nVary:\x20Access-Control-Request-Method\r\nVary:\x20Access-Control-Requ
+SF:est-Headers\r\nSet-Cookie:\x20XSRF-TOKEN=a0cae112-5114-466d-b0bb-4fca17
+SF:adc625;\x20Path=/\r\nAllow:\x20GET,HEAD,OPTIONS\r\nX-Content-Type-Optio
+SF:ns:\x20nosniff\r\nX-XSS-Protection:\x200\r\nX-Frame-Options:\x20SAMEORI
+SF:GIN\r\nContent-Length:\x200\r\nDate:\x20Wed,\x2011\x20Nov\x202026\x2022
+SF::31:43\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(RTSPRequest,24E,"HTTP
+SF:/1\.1\x20400\x20\r\nContent-Type:\x20text/html;charset=utf-8\r\nContent
+SF:-Language:\x20en\r\nContent-Length:\x20435\r\nDate:\x20Wed,\x2011\x20No
+SF:v\x202026\x2022:31:43\x20GMT\r\nConnection:\x20close\r\n\r\n<!doctype\x
+SF:20html><html\x20lang=\"en\"><head><title>HTTP\x20Status\x20400\x20\xe2\
+SF:x80\x93\x20Bad\x20Request</title><style\x20type=\"text/css\">body\x20{f
+SF:ont-family:Tahoma,Arial,sans-serif;}\x20h1,\x20h2,\x20h3,\x20b\x20{colo
+SF:r:white;background-color:#525D76;}\x20h1\x20{font-size:22px;}\x20h2\x20
+SF:{font-size:16px;}\x20h3\x20{font-size:14px;}\x20p\x20{font-size:12px;}\
+SF:x20a\x20{color:black;}\x20\.line\x20{height:1px;background-color:#525D7
+SF:6;border:none;}</style></head><body><h1>HTTP\x20Status\x20400\x20\xe2\x
+SF:80\x93\x20Bad\x20Request</h1></body></html>");
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Nov 11 17:31:54 2026 -- 1 IP address (1 host up) scanned in 23.13 seconds

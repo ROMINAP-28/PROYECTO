@@ -264,8 +264,13 @@ public class AuthApiController {
     public ResponseEntity<?> me(HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "No autenticado"));
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("authenticated", false);
+            resp.put("autenticado", false);
+            resp.put("idUsuario", null);
+            resp.put("rol", null);
+            resp.put("message", "No autenticado");
+            return ResponseEntity.ok(resp);
         }
 
         HttpSession session = request.getSession(false);
@@ -282,8 +287,13 @@ public class AuthApiController {
         }
 
         if (usuario == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "No autenticado"));
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("authenticated", false);
+            resp.put("autenticado", false);
+            resp.put("idUsuario", null);
+            resp.put("rol", null);
+            resp.put("message", "No autenticado");
+            return ResponseEntity.ok(resp);
         }
 
         String rolName = "ROLE_TURISTA";

@@ -68,7 +68,7 @@ function renderizarDetalle(tour) {
     const thumbsCont = document.getElementById('thumbsContainer');
     const imagenes = Array.isArray(tour.imagenes) && tour.imagenes.length > 0 
         ? tour.imagenes 
-        : [tour.imagenPrincipal || tour.imagen || '../../img/machupicchu.png'];
+        : [tour.imagenPrincipal || tour.imagen || '../../img/machupicchu.jpg'];
 
     if (mainImg) {
         mainImg.src = imagenes[0];
@@ -82,7 +82,7 @@ function renderizarDetalle(tour) {
                 const thumb = document.createElement('div');
                 thumb.className = 'thumb-item-wrap';
                 thumb.style.cssText = `width: 70px; height: 50px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid ${idx === 0 ? '#196f3d' : 'transparent'}; flex-shrink: 0;`;
-                thumb.innerHTML = `<img loading="lazy" src="${imgUrl}" alt="Miniatura ${idx + 1}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='../../img/machupicchu.png';">`;
+                thumb.innerHTML = `<img loading="lazy" src="${imgUrl}" alt="Miniatura ${idx + 1}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='../../img/machupicchu.jpg';">`;
                 thumb.onclick = () => {
                     if (mainImg) mainImg.src = imgUrl;
                     document.querySelectorAll('.thumb-item-wrap').forEach(t => t.style.borderColor = 'transparent');
@@ -252,13 +252,13 @@ function renderizarSalidas(fechas) {
     const btnReservar = document.getElementById('btn-reservar-main');
     if (!cont) return;
 
-    const salidasValidas = (fechas || []).filter(f => f.cupoDisponible > 0);
+    const listaFechas = Array.isArray(fechas) ? fechas : [];
 
-    if (salidasValidas.length === 0) {
+    if (listaFechas.length === 0) {
         cont.innerHTML = `
-            <div style="padding:14px; color:#ef4444; font-size:13.5px; background:#fef2f2; border-radius:8px; border:1px solid #fee2e2; text-align:center;">
-                <i class="fa-solid fa-calendar-xmark" style="font-size:20px; display:block; margin-bottom:6px;"></i>
-                No hay salidas disponibles próximamente para este paquete.
+            <div style="padding:16px 14px; color:#64748b; font-size:13.5px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; text-align:center;">
+                <i class="fa-regular fa-calendar-xmark" style="font-size:24px; display:block; margin-bottom:8px; color:#94a3b8;"></i>
+                No hay salidas programadas próximamente para este paquete.
             </div>`;
         if (btnReservar) {
             btnReservar.disabled = true;
@@ -269,35 +269,69 @@ function renderizarSalidas(fechas) {
         return;
     }
 
+    const salidasDisponibles = listaFechas.filter(f => (f.cupoDisponible || 0) > 0);
+    const hayDisponibles = salidasDisponibles.length > 0;
+
     if (btnReservar) {
-        btnReservar.disabled = false;
-        btnReservar.style.opacity = '1';
-        btnReservar.style.cursor = 'pointer';
+        btnReservar.disabled = !hayDisponibles;
+        btnReservar.style.opacity = hayDisponibles ? '1' : '0.5';
+        btnReservar.style.cursor = hayDisponibles ? 'pointer' : 'not-allowed';
+        btnReservar.title = hayDisponibles ? 'Continuar con la reserva' : 'Todas las salidas están agotadas';
     }
 
-    cont.innerHTML = salidasValidas.map((f, idx) => {
+    let primerSeleccionado = false;
+    let html = listaFechas.map((f) => {
         const fechaFormateada = formatearFecha(f.fecha);
-        const horaStr = f.horaInicio || '08:00';
-        const cupos = f.cupoDisponible;
-        const total = f.cupoTotal;
-        const esPocosCupos = cupos <= (currentTour.minAsientosOferta || 5);
-        const colorCupos = esPocosCupos ? '#dc2626' : '#15803d';
+        const horaStr = f.horaInicio ? f.horaInicio.substring(0, 5) : '08:00';
+        const cupos = f.cupoDisponible || 0;
+        const estaDisponible = cupos > 0;
 
-        return `
-            <label class="schedule-radio-label">
-                <input type="radio" name="tourSchedule" value="${f.idTourFecha}" data-fecha="${f.fecha}" data-hora="${horaStr}" data-cupo="${cupos}" ${idx === 0 ? 'checked' : ''}>
-                <div class="schedule-box-inner">
-                    <div>
-                        <strong><i class="fa-regular fa-calendar"></i> ${fechaFormateada}</strong>
-                        <span style="margin-left: 8px; color:#64748b;"><i class="fa-regular fa-clock"></i> ${horaStr}</span>
+        if (estaDisponible) {
+            const checkAttr = !primerSeleccionado ? 'checked' : '';
+            primerSeleccionado = true;
+            const esPocosCupos = cupos <= (currentTour.minAsientosOferta || 5);
+            const colorCupos = esPocosCupos ? '#dc2626' : '#15803d';
+
+            return `
+                <label class="schedule-radio-label">
+                    <input type="radio" name="tourSchedule" value="${f.idTourFecha}" data-fecha="${f.fecha}" data-hora="${horaStr}" data-cupo="${cupos}" ${checkAttr}>
+                    <div class="schedule-box-inner">
+                        <div>
+                            <strong><i class="fa-regular fa-calendar"></i> ${fechaFormateada}</strong>
+                            <span style="margin-left: 8px; color:#64748b;"><i class="fa-regular fa-clock"></i> ${horaStr}</span>
+                        </div>
+                        <span class="schedule-seats-badge" style="font-weight:700; color:${colorCupos};">
+                            ${cupos} cupos disponibles
+                        </span>
                     </div>
-                    <span class="schedule-seats-badge" style="font-weight:700; color:${colorCupos};">
-                        ${cupos} cupos disponibles
-                    </span>
+                </label>
+            `;
+        } else {
+            return `
+                <div class="schedule-radio-label" style="opacity: 0.75; cursor: not-allowed; margin-bottom: 8px;">
+                    <div class="schedule-box-inner" style="background: #f8fafc; border-color: #e2e8f0;">
+                        <div>
+                            <strong style="color: #64748b;"><i class="fa-regular fa-calendar"></i> ${fechaFormateada}</strong>
+                            <span style="margin-left: 8px; color:#94a3b8;"><i class="fa-regular fa-clock"></i> ${horaStr}</span>
+                        </div>
+                        <span style="font-weight:700; color:#ef4444; background: #fee2e2; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                            Agotado
+                        </span>
+                    </div>
                 </div>
-            </label>
-        `;
+            `;
+        }
     }).join('');
+
+    if (!hayDisponibles) {
+        html += `
+            <div style="margin-top: 10px; font-size: 12.5px; color: #b91c1c; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 8px 12px; text-align: center;">
+                <i class="fa-solid fa-circle-exclamation" style="margin-right: 4px;"></i> Todas las fechas programadas están agotadas temporalmente.
+            </div>
+        `;
+    }
+
+    cont.innerHTML = html;
 }
 
 async function cargarCalificacionesYComentarios(idTour, idAgencia) {

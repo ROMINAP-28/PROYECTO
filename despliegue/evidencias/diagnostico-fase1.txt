@@ -1,0 +1,44 @@
+==============================================================================
+FASE 1: DIAGNÓSTICO DE DESPLIEGUE Y OPERACIÓN — TRAVELINK (SESIÓN 15)
+Fecha: 2026-11-18
+Rama: feature/despliegue
+==============================================================================
+
+1. MATRIZ DE DIAGNÓSTICO DE REQUISITOS (SESIÓN 15)
+------------------------------------------------------------------------------
+| Requisito DevOps | Estado Actual | Qué Falta para Cumplimiento |
+|---|---|---|
+| Ciclo de Vida Maven | Configurado básico (compile, test, package) | Perfiles dev, staging, prod en pom.xml; settings.xml.example; documentación validate->deploy |
+| JAR vs WAR | Empaquetado como fat JAR ejecutable | Justificación técnica de Tomcat embebido vs WAR en servidores externos |
+| Perfiles de Entorno | application.properties y application-dev.properties | Perfil staging y perfiles Maven sincronizados con Spring Boot |
+| Despliegue Manual | Scripts deploy.sh y deploy.ps1 creados en fase previa | Script setup-servidor.sh para aprovisionar Linux desde cero |
+| CI/CD | ci.yml implementado y probado (SCA, Tests, ZAP) | deploy.yml con pipeline de release semántico, build, push a GHCR, staging y prod |
+| Estrategias y Rollback | rollback.sh/ps1 básico creado | Soporte de rollback por tag específico, análisis Blue/Green, Rolling y Canary |
+| Servidor | travelink.service creado en despliegue/servidor/ | Añadir límites de descriptores (LimitNOFILE, LimitNPROC) y usuario travelink |
+| Nginx / TLS | nginx.conf genérico | travelink.conf con TLS autofirmado, HSTS, CSP estricto, Referrer-Policy, bloqueo /api/admin |
+| Tuning JVM | Básico (-XX:MaxRAMPercentage=75.0) | Flags explícitos (-Xms, -Xmx, G1GC, StringDeduplication, GC logging) |
+| Monitoreo | Logs en archivo diario con rotación | Spring Boot Actuator (/actuator/health, /actuator/info) con acceso seguro |
+| Hardening | Usuario no-root, variables desacopladas | Restringir CORS de wildcard '*' a orígenes seguros; puerto 8080 no expuesto al host |
+
+------------------------------------------------------------------------------
+2. INVESTIGACIÓN DE LA CAUSA DEL HUECO DE ARRANQUE (176 s vs 13.8 s)
+------------------------------------------------------------------------------
+Evidencia en log de arranque previo:
+- 12:16:54.933: Initialized JPA EntityManagerFactory for persistence unit 'default'
+- 12:19:42.943: WelcomePageHandlerMapping - Adding welcome page: static/index.html
+- 12:19:43.663: "Started TravelinkApplication in 176.52 seconds (process running for 13.862)"
+
+Causas Técnicas Identificadas:
+1. Métrica de Spring Boot vs Tiempo Real de CPU:
+   - "process running for 13.862": El proceso JVM estuvo ejecutándose activamente en CPU solo 13.86 segundos.
+   - "Started in 176.52 seconds": Mide la diferencia entre System.currentTimeMillis() y el StartTime reportado por el RuntimeMXBean.
+   - En entornos Docker Desktop sobre Windows/WSL2, la pausa de ~162 segundos ocurre durante la fase de espera y sincronización del reloj del hipervisor WSL2 mientras se construía la imagen multi-stage (builder) y se esperaba el healthcheck del contenedor MySQL (start_period: 15s + retries).
+2. Verificación Dinámica de Índices en TravelinkApplication:
+   - La clase CommandLineRunner ejecuta 10 sentencias CREATE INDEX de manera síncrona. Si bien en una base vacía tarda ~30 ms, si la conexión aún está negociando el handshake TLS/characterEncoding con MySQL o si existen bloqueos de tabla por scripts de inicialización /docker-entrypoint-initdb.d/, la verificación de índices puede retener el hilo 'main'.
+3. Escaneo de Rutas Estáticas Inexistentes:
+   - spring.web.resources.static-locations incluía rutas inexistentes como "file:./backend/resources/static/". Spring escanea múltiples ubicaciones en disco antes de mapear la WelcomePage.
+
+Acción de Mitigación:
+- Desacoplar rutas inexistentes.
+- Ajustar timeouts y optimizar el healthcheck mediante Spring Boot Actuator nativo (/actuator/health).
+==============================================================================

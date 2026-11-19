@@ -1,0 +1,46 @@
+==========================================================
+ RESUMEN DE PRUEBAS DE CARGA JMETER - TRAVELINK
+ Fecha: 2026-11-10 22:12:50
+ Objetivo: http://127.0.0.1:8080
+==========================================================
+--- Nivel: 100 Usuarios Concurrentes ---
+Total de Peticiones: 800
+Tasa de Error: 0% (0 fallos)
+Tiempo de Respuesta Promedio: 178.36 ms
+Percentil 95 (p95): 834 ms
+Percentil 99 (p99): 1122 ms
+Reporte HTML: D:\ProyectosU\PROYECTO\docs\seguridad\evidencias\jmeter\tier_100_users\html_report\index.html
+--- Nivel: 300 Usuarios Concurrentes ---
+Total de Peticiones: 2400
+Tasa de Error: 0% (0 fallos)
+Tiempo de Respuesta Promedio: 40.96 ms
+Percentil 95 (p95): 151 ms
+Percentil 99 (p99): 239 ms
+Reporte HTML: D:\ProyectosU\PROYECTO\docs\seguridad\evidencias\jmeter\tier_300_users\html_report\index.html
+--- Nivel: 500 Usuarios Concurrentes ---
+Total de Peticiones: 4000
+Tasa de Error: 0% (0 fallos)
+Tiempo de Respuesta Promedio: 42 ms
+Percentil 95 (p95): 145 ms
+Percentil 99 (p99): 332 ms
+Reporte HTML: D:\ProyectosU\PROYECTO\docs\seguridad\evidencias\jmeter\tier_500_users\html_report\index.html
+
+==========================================================
+ NOTAS TÉCNICAS Y ANÁLISIS DE ARQUITECTURA
+==========================================================
+1. Efecto de Arranque en Frío (Cold Start / JVM Warmup):
+   El escenario inicial con 100 usuarios concurrentes registró tiempos más altos
+   (promedio 178.36 ms, p95 de 834 ms) debido a que se ejecutó con el sistema en frío
+   (JIT compilation de la JVM, inicialización de EntityManagerFactory de Hibernate,
+   precarga del contexto de Spring y apertura inicial de conexiones físicas en el pool).
+   Los escenarios de 300 y 500 usuarios operaron con el sistema ya caliente (warm state),
+   estabilizándose en tiempos promedio de ~41-42 ms y p95 < 152 ms.
+
+2. Estabilización de Throughput y Límite de Conexiones HikariCP:
+   El throughput del servidor se estabiliza alrededor de ~157 req/s tanto en 300
+   como en 500 usuarios concurrentes. Este comportamiento es coherente y esperado
+   debido al límite configurado en application.properties:
+   'spring.datasource.hikari.maximum-pool-size=15'.
+   Representa un cuello de botella arquitectónico natural y deliberado para proteger
+   el motor MySQL de saturación por conexiones concurrentes, garantizando 0% de errores HTTP.
+==========================================================

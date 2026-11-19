@@ -1,0 +1,22 @@
+==============================================================================
+TABLA COMPARATIVA DE CABECERAS: ANTES (DEV DIRECTO) VS DESPUÉS (NGINX TLS PROD)
+TRAVELINK - Auditoría de Seguridad Perimetral y Despliegue
+Fecha: 2026-11-18
+==============================================================================
+
+| Cabecera HTTP | ANTES (Local Directo 8080) | DESPUÉS (Nginx Proxy TLS 443) | Impacto de Seguridad / Remediación |
+|---|---|---|---|
+| Protocolo | HTTP/1.1 (Plano en claro) | HTTPS (TLSv1.2/TLSv1.3 con HTTP/2) | Cifrado perimetral total en tránsito |
+| Puerto Expuesto al Host | 8080/tcp público | 8080 interno (solo 80 y 443 expuestos) | Minimiza superficie de ataque |
+| Strict-Transport-Security (HSTS) | FALTANTE (No enviada) | max-age=31536000; includeSubDomains | Fuerza HTTPS permanente en navegadores |
+| Content-Security-Policy (CSP) | FALTANTE (No enviada) | default-src 'self'; script-src ... | Mitiga XSS y secuestro de scripts |
+| Referrer-Policy | FALTANTE (No enviada) | strict-origin-when-cross-origin | Previene fuga de URLs con IDs en referer |
+| Permissions-Policy | FALTANTE (No enviada) | camera=(), microphone=(), payment=() | Desactiva APIs de hardware del navegador |
+| X-Frame-Options | SAMEORIGIN | SAMEORIGIN | Previene Clickjacking |
+| X-Content-Type-Options | nosniff | nosniff | Previene MIME-sniffing |
+| X-XSS-Protection | 0 (desactivada en Spring) | 1; mode=block (en Nginx) | Activa filtro XSS de navegadores antiguos |
+| Access-Control-Allow-Origin | * (Comodín inseguro) | Orígenes específicos (localhost/travelink) | Restringe abuso de API desde terceros |
+| Cookie XSRF-TOKEN | Path=/ (sin flags) | Path=/; Secure; SameSite=Lax | Previene envío en HTTP y ataques CSRF |
+| Cookie JSESSIONID | HttpOnly (sin Secure en local) | HttpOnly; Secure; SameSite=Lax | Protección total de cookie de sesión |
+| Monitoreo Actuator | No configurado | /actuator/health expuesto (UP) | Healthcheck nativo para orquestadores |
+==============================================================================

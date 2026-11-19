@@ -1,0 +1,64 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: travelink-db
+    restart: "no"
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Define MYSQL_ROOT_PASSWORD en .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?Define MYSQL_DATABASE en .env}
+    # Solo expuesto a 127.0.0.1 (loopback) para herramientas locales (DBeaver)
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - travelink_mysql_data:/var/lib/mysql
+      # Inicialización ordenada: 1) Schema, 2) Datos mínimos, 3) Seed sintético
+      - ./sql/travelink_schema.sql:/docker-entrypoint-initdb.d/01-travelink_schema.sql:ro
+      - ./sql/datos_minimos.sql:/docker-entrypoint-initdb.d/02-datos_minimos.sql:ro
+      - ./sql/seed_pruebas.sql:/docker-entrypoint-initdb.d/03-seed_pruebas.sql:ro
+    networks:
+      - travelink-net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 15s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travelink-app
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    # Solo expuesto a 127.0.0.1 (loopback) para pruebas de seguridad locales
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      # Conexión interna a MySQL usando el nombre del servicio 'db'
+      DB_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:?Define MYSQL_DATABASE en .env}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Lima&characterEncoding=UTF-8
+      DB_USERNAME: ${DB_USERNAME:?Define DB_USERNAME en .env}
+      DB_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
+    networks:
+      - travelink-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+networks:
+  travelink-net:
+    name: travelink-net
+    driver: bridge
+
+volumes:
+  travelink_mysql_data:
+    name: travelink_mysql_data

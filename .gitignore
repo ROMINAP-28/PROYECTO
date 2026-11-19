@@ -35,9 +35,38 @@ application-local.properties
 application-*.properties
 !application.properties
 !application-dev.properties
+!application-staging.properties
+!application-prod.properties
 
 # Environment variables & secrets
 .env
+.env.*
+*.env
 .env.local
 .env.*.local
 !.env.example
+
+# Respaldos y volcados de base de datos
+sql/01-travelink.sql
+sql/prueba-init/
+*.sql.dump
+*.dump
+*.dmp
+*.bak
+
+# Evidencias pesadas y reportes generados automáticamente
+*.jtl
+results.jtl
+dependency-check-report.*
+dependency-check-jenkins.html
+dependency-check-junit.xml
+dependency-check-gitlab.json
+zap-report.html
+zap-report.json
+pruebas/evidencias/jmeter/**/html_report/index.html
+pruebas/evidencias/jmeter/**/html_report/content/
+pruebas/evidencias/jmeter/**/html_report/sbadmin2-1.0.7/
+
+# Sesiones y cookies temporales de pruebas
+cookies*.txt
+pruebas/**/cookies*.txt

@@ -1,0 +1,43 @@
+﻿=================================================================
+DEMOSTRACION REAL DE PROCEDIMIENTOS DE ROLLBACK EN GIT
+Fecha: 2026-11-18 16:41:14
+Repositorio: ROMINAP-28/PROYECTO
+=================================================================
+
+[PASO 1] Creacion de rama temporal descartable 'test-rollback-demo'
+Switched to branch 'test-rollback-demo'
+
+[PASO 2] Introduccion de un commit simulado con fallo en produccion
+[test-rollback-demo 292e4e7] feat(simulacion): introduciendo regresion que requiere rollback urgente
+ 1 file changed, 1 insertion(+)
+ create mode 100644 prueba-revert.txt
+Historial reciente tras el commit defectuoso:
+292e4e7 feat(simulacion): introduciendo regresion que requiere rollback urgente
+457fb60 docs(despliegue): fase 6 plan maestro de despliegue sesion 15 e inventario maestro
+
+[PASO 3] Procedimiento 1: git revert (Rollback no destructivo en historial compartido)
+[test-rollback-demo 6c306b8] Revert "feat(simulacion): introduciendo regresion que requiere rollback urgente"
+ Date: Wed Nov 18 16:41:15 2026 -0500
+ 1 file changed, 1 deletion(-)
+ delete mode 100644 prueba-revert.txt
+Historial tras git revert (nuevo commit de compensacion generado):
+6c306b8 Revert "feat(simulacion): introduciendo regresion que requiere rollback urgente"
+292e4e7 feat(simulacion): introduciendo regresion que requiere rollback urgente
+457fb60 docs(despliegue): fase 6 plan maestro de despliegue sesion 15 e inventario maestro
+
+[PASO 4] Procedimiento 2: git restore (Deshacer modificaciones locales no confirmadas)
+Estado con archivo modificado antes de git restore:
+?? prueba-revert.txt
+error: pathspec 'prueba-revert.txt' did not match any file(s) known to git
+Estado tras git restore (archivo revertido al estado del commit):
+?? prueba-revert.txt
+
+[PASO 5] Procedimiento 3: checkout por tag/commit (Inspeccion y despliegue inmutable)
+HEAD is now at 457fb60 docs(despliegue): fase 6 plan maestro de despliegue sesion 15 e inventario maestro
+Puntero HEAD desasociado (detached HEAD) en version previa estable:
+457fb60 docs(despliegue): fase 6 plan maestro de despliegue sesion 15 e inventario maestro
+
+[PASO 6] Limpieza de entorno de demostracion
+Switched to branch 'feature/docs-cierre'
+Deleted branch test-rollback-demo (was 6c306b8).
+Demostracion finalizada y rama temporal eliminada correctamente.

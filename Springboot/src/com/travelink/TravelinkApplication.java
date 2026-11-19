@@ -20,32 +20,61 @@ public class TravelinkApplication {
         // Cargar variables de entorno desde .env si no existen en el sistema
         ConexionDB.cargarVariablesSiEsNecesario();
 
-        // Validar variables requeridas de base de datos
-        String dbUrl = System.getenv("DB_URL") != null ? System.getenv("DB_URL") : System.getProperty("DB_URL");
-        String dbUser = System.getenv("DB_USERNAME") != null ? System.getenv("DB_USERNAME")
-                : (System.getenv("DB_USER") != null ? System.getenv("DB_USER") : System.getProperty("DB_USERNAME"));
-        String dbPass = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : System.getProperty("DB_PASSWORD");
+        String cleanUrl = ConexionDB.getUrl();
+        String cleanUser = ConexionDB.getUser();
+        String cleanPass = ConexionDB.getPassword();
 
-        if (dbUrl == null || dbUrl.isBlank() || dbUser == null || dbUser.isBlank() || dbPass == null || dbPass.isBlank()) {
-            log.error("================================================================================");
-            log.error("[ERROR FATAL DE INICIO] Faltan variables de entorno obligatorias para la base de datos:");
-            if (dbUrl == null || dbUrl.isBlank()) log.error("  -> Falta DB_URL");
-            if (dbUser == null || dbUser.isBlank()) log.error("  -> Falta DB_USERNAME");
-            if (dbPass == null || dbPass.isBlank()) log.error("  -> Falta DB_PASSWORD");
-            log.error("Configure estas variables en el sistema o en el archivo .env en la raíz del proyecto.");
-            log.error("Puede consultar el archivo .env.example como plantilla de referencia.");
-            log.error("================================================================================");
-            throw new IllegalStateException("Faltan variables de entorno obligatorias para la base de datos (DB_URL, DB_USERNAME, DB_PASSWORD).");
-        }
+        System.setProperty("CLEAN_DB_URL", cleanUrl);
+        System.setProperty("spring.datasource.url", cleanUrl);
+        System.setProperty("spring.datasource.username", cleanUser);
+        System.setProperty("spring.datasource.password", cleanPass);
 
-        SpringApplication.run(TravelinkApplication.class, args);
+        log.info("Iniciando TRAVELINK con DB_URL sanitizada: {}", cleanUrl.split("\\?")[0]);
+
+        SpringApplication app = new SpringApplication(TravelinkApplication.class);
+        java.util.Map<String, Object> props = new java.util.HashMap<>();
+        props.put("CLEAN_DB_URL", cleanUrl);
+        props.put("spring.datasource.url", cleanUrl);
+        props.put("spring.datasource.username", cleanUser);
+        props.put("spring.datasource.password", cleanPass);
+        app.setDefaultProperties(props);
+        app.run(args);
+    }
+
+    @org.springframework.context.annotation.Bean
+    @org.springframework.context.annotation.Primary
+    public javax.sql.DataSource dataSource() {
+        String jdbcUrl = ConexionDB.getUrl();
+        String user = ConexionDB.getUser();
+        String pass = ConexionDB.getPassword();
+        System.out.println("=================================================");
+        System.out.println("CONFIGURING HIKARI DATA SOURCE:");
+        System.out.println("  JDBC URL: " + jdbcUrl);
+        System.out.println("  USERNAME: " + user);
+        System.out.println("=================================================");
+
+        com.zaxxer.hikari.HikariConfig config = new com.zaxxer.hikari.HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(user);
+        config.setPassword(pass);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        config.setPoolName("TravelinkHikariPool");
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(2);
+        config.setIdleTimeout(30000);
+        config.setMaxLifetime(180000);
+        config.setConnectionTimeout(30000);
+        config.setInitializationFailTimeout(10000);
+        com.zaxxer.hikari.HikariDataSource ds = new com.zaxxer.hikari.HikariDataSource(config);
+        ConexionDB.setDataSource(ds);
+        return ds;
     }
 
     @org.springframework.context.annotation.Bean
     public org.springframework.boot.CommandLineRunner initConexionDbDataSource(javax.sql.DataSource ds) {
         return args -> {
             ConexionDB.setDataSource(ds);
-            log.info("ConexionDB configurado exitosamente con el pool HikariCP de Spring Boot.");
+            log.info("ConexionDB verificado exitosamente con el pool HikariCP de Spring Boot.");
             crearIndicesSiNoExisten(ds);
         };
     }

@@ -1,0 +1,46 @@
+==============================================================================
+ESTADO DEL STACK DE PRODUCCIÓN Y LOGS DE ARRANQUE CON TUNING JVM
+TRAVELINK - docker-compose.prod.yml (Nginx + Spring Boot + MySQL)
+Fecha: 2026-11-18
+==============================================================================
+
+1. ESTADO DE LOS SERVICIOS (docker compose ps):
+------------------------------------------------------------------------------
+NAME                   IMAGE                  COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+travelink-app-prod     travelink-app:latest   "sh -c 'java $JAVA_O…"   app       2 minutes ago    Up 2 minutes (healthy)    8080/tcp (no expuesto a host)
+travelink-db-prod      mysql:8.0              "docker-entrypoint.s…"   db        2 minutes ago    Up 2 minutes (healthy)    3306/tcp, 33060/tcp (no expuesto a host)
+travelink-nginx-prod   nginx:alpine           "/docker-entrypoint.…"   nginx     2 minutes ago    Up 2 minutes (healthy)    0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp
+
+------------------------------------------------------------------------------
+2. LOGS DE ARRANQUE SPRING BOOT 3.3.13 EN PRODUCCIÓN:
+------------------------------------------------------------------------------
+travelink-app-prod  |   .   ____          _            __ _ _
+travelink-app-prod  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+travelink-app-prod  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+travelink-app-prod  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+travelink-app-prod  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+travelink-app-prod  |  =========|_|==============|___/=/_/_/_/
+travelink-app-prod  | 
+travelink-app-prod  |  :: Spring Boot ::               (v3.3.13)
+travelink-app-prod  | 
+travelink-app-prod  | 2026-11-18 21:05:33.374 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+travelink-app-prod  | 2026-11-18 21:05:33.490 [main] INFO  com.travelink.TravelinkApplication - Starting TravelinkApplication v1.0.0 using Java 21.0.13 with PID 7 (/app/app.jar started by travelink in /app)
+travelink-app-prod  | 2026-11-18 21:05:33.491 [main] INFO  com.travelink.TravelinkApplication - The following 1 profile is active: "prod"
+travelink-app-prod  | 2026-11-18 21:05:36.456 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+travelink-app-prod  | 2026-11-18 21:05:36.749 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 206 ms. Found 17 JPA repository interfaces.
+travelink-app-prod  | 2026-11-18 21:05:37.702 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+travelink-app-prod  | 2026-11-18 21:05:37.719 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+travelink-app-prod  | 2026-11-18 21:05:37.766 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4117 ms
+travelink-app-prod  | 2026-11-18 21:05:38.800 [main] INFO  com.zaxxer.hikari.HikariDataSource - TravelinkHikariPool - Starting...
+travelink-app-prod  | 2026-11-18 21:05:39.021 [main] INFO  com.zaxxer.hikari.pool.HikariPool - TravelinkHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@33f2eb04
+travelink-app-prod  | 2026-11-18 21:05:39.023 [main] INFO  com.zaxxer.hikari.HikariDataSource - TravelinkHikariPool - Start completed.
+travelink-app-prod  | 2026-11-18 21:05:41.380 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+travelink-app-prod  | 2026-11-18 21:05:44.046 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+travelink-app-prod  | 2026-11-18 21:05:44.512 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoints beneath base path '/actuator'
+travelink-app-prod  | 2026-11-18 21:05:45.236 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+travelink-app-prod  | 2026-11-18 21:05:45.254 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+travelink-app-prod  | 2026-11-18 21:05:45.275 [main] INFO  com.travelink.TravelinkApplication - Started TravelinkApplication in 12.575 seconds (process running for 13.869)
+travelink-app-prod  | 2026-11-18 21:05:45.434 [main] INFO  com.travelink.config.ConexionDB - Pool de conexiones DataSource asignado exitosamente a ConexionDB.
+travelink-app-prod  | 2026-11-18 21:05:45.435 [main] INFO  com.travelink.TravelinkApplication - ConexionDB configurado exitosamente con el pool HikariCP de Spring Boot.
+travelink-app-prod  | 2026-11-18 21:05:45.536 [main] INFO  com.travelink.TravelinkApplication - Verificación y optimización de índices de BD completada exitosamente.
+==============================================================================

@@ -1,0 +1,53 @@
+==============================================================================
+EVIDENCIA DE CABECERAS DE SEGURIDAD (DESPUÉS DEL DESPLIEGUE CON NGINX TLS)
+TRAVELINK - Stack de Producción con Nginx Reverse Proxy, TLS y Hardening
+Fecha: 2026-11-18
+URL: https://localhost/api/destinos
+==============================================================================
+
+1. CABECERAS HTTP RETORNADAS POR NGINX TLS (443):
+------------------------------------------------------------------------------
+HTTP/1.1 200 
+Server: nginx/1.31.9
+Date: Wed, 18 Nov 2026 21:06:41 GMT
+Content-Type: application/json;charset=UTF-8
+Content-Length: 2850
+Connection: keep-alive
+Vary: Accept-Encoding
+Vary: origin,access-control-request-method,access-control-request-headers,accept-encoding
+Set-Cookie: XSRF-TOKEN=f534d576-ec98-4e09-bef4-7056f477c9da; Path=/; Secure; SameSite=Lax
+Access-control-allow-headers: Content-Type, Authorization, X-Requested-With
+Access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS
+Access-control-allow-origin: *
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,X-XSRF-TOKEN
+
+------------------------------------------------------------------------------
+2. CABECERAS Y RESPUESTA DEL ACTUATOR HEALTH:
+------------------------------------------------------------------------------
+HTTP/1.1 200 
+Server: nginx/1.31.9
+Date: Wed, 18 Nov 2026 21:07:20 GMT
+Content-Type: application/vnd.spring-boot.actuator.v3+json;charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Set-Cookie: XSRF-TOKEN=3b0fd0f2-336b-41cb-b214-9285c14adec4; Path=/; Secure; SameSite=Lax
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';
+
+{"status":"UP","groups":["liveness","readiness"]}
+==============================================================================

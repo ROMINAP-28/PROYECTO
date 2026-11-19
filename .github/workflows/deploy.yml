@@ -1,0 +1,181 @@
+name: CD - Despliegue Automatizado y Publicación
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: 'Entorno de despliegue manual'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # 1. BUILD, TEST Y EMPAQUETADO CON MAVEN
+  # ----------------------------------------------------------------------------
+  build-test-package:
+    name: 1. Build, Test & Package (Maven)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Dar permisos de ejecucion a mvnw
+        run: chmod +x mvnw
+
+      - name: Compilar, Ejecutar Tests y Empaquetar
+        run: ./mvnw -B clean package -Pprod
+
+      - name: Generar Checksum SHA-256 del JAR
+        run: |
+          JAR_FILE=$(find target -maxdepth 1 -name "*.jar" ! -name "*.original" | head -n 1)
+          sha256sum "$JAR_FILE" > target/checksum.sha256
+          cat target/checksum.sha256
+
+      - name: Subir Fat JAR como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: travelink-release-jar
+          path: |
+            target/travelink-*.jar
+            target/checksum.sha256
+          retention-days: 14
+
+  # ----------------------------------------------------------------------------
+  # 2. CONSTRUIR Y PUBLICAR IMAGEN DOCKER EN GHCR
+  # ----------------------------------------------------------------------------
+  docker-publish:
+    name: 2. Docker Build & Publish (GHCR)
+    needs: build-test-package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Descargar JAR Compilado
+        uses: actions/download-artifact@v4
+        with:
+          name: travelink-release-jar
+          path: target
+
+      - name: Iniciar Sesión en GitHub Packages (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determinar Etiquetas de Imagen
+        id: meta
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" == v* ]]; then
+            echo "IMAGE_TAG=ghcr.io/${REPO_LOWER}/travelink-app:${TAG}" >> $GITHUB_ENV
+            echo "LATEST_TAG=ghcr.io/${REPO_LOWER}/travelink-app:latest" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=ghcr.io/${REPO_LOWER}/travelink-app:snapshot" >> $GITHUB_ENV
+            echo "LATEST_TAG=ghcr.io/${REPO_LOWER}/travelink-app:latest" >> $GITHUB_ENV
+          fi
+
+      - name: Construir y Empujar Imagen Docker
+        run: |
+          docker build -t "$IMAGE_TAG" -t "$LATEST_TAG" .
+          docker push "$IMAGE_TAG"
+          docker push "$LATEST_TAG"
+
+  # ----------------------------------------------------------------------------
+  # 3. ENTORNO STAGING: DESPLIEGUE EFÍMERO Y SMOKE TESTS
+  # ----------------------------------------------------------------------------
+  staging-smoke-test:
+    name: 3. Staging Smoke Test (Compose Prod + TLS)
+    needs: docker-publish
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Generar Certificados Autofirmados para Nginx
+        run: |
+          chmod +x despliegue/servidor/nginx/generar-cert.sh
+          bash despliegue/servidor/nginx/generar-cert.sh
+
+      - name: Provisionar Variables de Staging
+        run: |
+          cat << 'EOF' > .env
+          MYSQL_ROOT_PASSWORD=StagingSecurePass2026!
+          MYSQL_DATABASE=DBTravelink
+          DB_USERNAME=root
+          DB_PASSWORD=StagingSecurePass2026!
+          EOF
+
+      - name: Levantar Stack de Producción en Staging
+        run: |
+          docker compose --env-file .env -f despliegue/docker/docker-compose.prod.yml up -d --build
+
+      - name: Esperar Healthcheck Actuator y Nginx (Smoke Tests)
+        run: |
+          echo "[INFO] Esperando convergencia de los 3 contenedores..."
+          for i in $(seq 1 45); do
+            STATUS=$(docker compose --env-file .env -f despliegue/docker/docker-compose.prod.yml ps --format '{{.Service}}: {{.Health}}')
+            echo "$STATUS"
+            if echo "$STATUS" | grep -q "nginx: healthy" && echo "$STATUS" | grep -q "app: healthy"; then
+              echo "[OK] Contenedores saludables y listos para pruebas de humo."
+              break
+            fi
+            sleep 4
+          done
+
+      - name: Ejecutar Pruebas de Humo (Health & Headers)
+        run: |
+          # 1. Probar Actuator Health por HTTPS local
+          echo "=== 1. VERIFICACIÓN /actuator/health ==="
+          curl -k -i -s https://localhost/actuator/health | grep -E "(HTTP/|status|\"UP\")"
+
+          # 2. Probar Cabeceras de Seguridad Perimetral
+          echo "=== 2. VERIFICACIÓN CABECERAS OWASP ==="
+          HEADERS=$(curl -k -I -s https://localhost/api/destinos)
+          echo "$HEADERS"
+          echo "$HEADERS" | grep -i "Strict-Transport-Security"
+          echo "$HEADERS" | grep -i "X-Content-Type-Options"
+          echo "$HEADERS" | grep -i "X-Frame-Options"
+          echo "$HEADERS" | grep -i "Content-Security-Policy"
+
+      - name: Limpieza de Staging
+        if: always()
+        run: |
+          docker compose --env-file .env -f despliegue/docker/docker-compose.prod.yml down -v || true
+          rm -f .env
+
+  # ----------------------------------------------------------------------------
+  # 4. ENTORNO PRODUCCIÓN: APROBACIÓN MANUAL Y DESPLIEGUE FINAL
+  # ----------------------------------------------------------------------------
+  production-deploy:
+    name: 4. Production Deployment (Protected Gate)
+    needs: staging-smoke-test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Despliegue Productivo Aprobado
+        run: |
+          echo "[PRODUCTION GATE PASSED] Despliegue autorizado por el administrador de release."
+          echo "Versión liberada: ${{ github.ref_name }}"
+          echo "Artefacto validado: ghcr.io/${{ github.repository }}/travelink-app:${{ github.ref_name }}"

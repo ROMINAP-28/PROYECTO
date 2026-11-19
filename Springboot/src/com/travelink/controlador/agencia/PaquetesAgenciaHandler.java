@@ -160,7 +160,7 @@ public class PaquetesAgenciaHandler implements HttpHandler {
                     int totalReservas = rs.getInt("totalReservas");
 
                     // Imagen principal y galer├¡a desde TourImagen
-                    String imagenPrincipal = "img/machupicchu.png";
+                    String imagenPrincipal = "img/machupicchu.jpg";
                     StringBuilder galeriaSb = new StringBuilder("[");
                     boolean primImg = true;
                     try (PreparedStatement psImg = con.prepareStatement(

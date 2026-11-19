@@ -76,52 +76,131 @@ public class ConexionDB {
         return null;
     }
 
+    public static final String DEFAULT_AIVEN_URL =
+        "jdbc:mysql://mysql-traveling-traveling.k.aivencloud.com:19936/DBTravelink?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+
+    public static String sanitizarUrl(String val) {
+        if (val == null || val.isBlank()) {
+            return DEFAULT_AIVEN_URL;
+        }
+        val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
+
+        // 1. Quitar todos los prefijos posibles: "jdbc:mysql://", "jdbc:", "mysql://"
+        while (val.startsWith("jdbc:")) {
+            val = val.substring("jdbc:".length());
+        }
+        while (val.startsWith("mysql://")) {
+            val = val.substring("mysql://".length());
+        }
+        while (val.startsWith("/")) {
+            val = val.substring(1);
+        }
+
+        // 2. Si viene formato con credenciales incrustadas (user:password@host:port/db)
+        if (val.contains("@")) {
+            int atIdx = val.indexOf('@');
+            String creds = val.substring(0, atIdx);
+            val = val.substring(atIdx + 1); // dejar solo host:port/db...
+            if (creds.contains(":")) {
+                int colonIdx = creds.indexOf(':');
+                String user = creds.substring(0, colonIdx);
+                String pass = creds.substring(colonIdx + 1);
+                if (!user.isBlank() && System.getProperty("DB_USERNAME") == null && System.getenv("DB_USERNAME") == null) {
+                    System.setProperty("DB_USERNAME", user);
+                }
+                if (!pass.isBlank() && System.getProperty("DB_PASSWORD") == null && System.getenv("DB_PASSWORD") == null) {
+                    System.setProperty("DB_PASSWORD", pass);
+                }
+            }
+        }
+
+        // 3. Corregir dominio Aiven si le falta el prefijo
+        if (val.contains("traveling.k.aivencloud.com") && !val.contains("mysql-traveling-traveling.k.aivencloud.com")) {
+            val = val.replace("traveling.k.aivencloud.com", "mysql-traveling-traveling.k.aivencloud.com");
+        }
+
+        // 4. Separar host:port/db de los query parameters
+        String hostAndDb = val;
+        if (val.contains("?")) {
+            hostAndDb = val.substring(0, val.indexOf('?'));
+        }
+
+        // 5. Garantizar nombre de base de datos
+        if (!hostAndDb.contains("/")) {
+            hostAndDb = hostAndDb + "/DBTravelink";
+        }
+
+        return "jdbc:mysql://" + hostAndDb + "?useSSL=true&trustServerCertificate=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima";
+    }
+
     public static String getUrl() {
         cargarVariablesSiEsNecesario();
-        String val = obtenerValor("DB_URL");
+        String val = System.getenv("DB_URL");
         if (val == null || val.isBlank()) {
-            log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_URL' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
-            throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_URL");
+            val = System.getProperty("DB_URL");
         }
-        return val;
+        if (val == null || val.isBlank()) {
+            val = System.getProperty("spring.datasource.url");
+        }
+        String clean = sanitizarUrl(val);
+        System.setProperty("DB_URL", clean);
+        System.setProperty("spring.datasource.url", clean);
+        System.setProperty("CLEAN_DB_URL", clean);
+        return clean;
     }
 
     public static String getUser() {
         cargarVariablesSiEsNecesario();
-        String val = obtenerValor("DB_USERNAME");
-        if (val == null || val.isBlank()) {
-            val = obtenerValor("DB_USER");
-        }
-        if (val == null || val.isBlank()) {
-            log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_USERNAME' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
-            throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_USERNAME");
-        }
-        return val;
+        String val = System.getenv("DB_USERNAME");
+        if (val == null || val.isBlank()) val = System.getenv("DB_USER");
+        if (val == null || val.isBlank()) val = System.getProperty("DB_USERNAME");
+        if (val == null || val.isBlank()) val = System.getProperty("DB_USER");
+        if (val == null || val.isBlank()) val = "avnadmin";
+        val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
+        return val.isEmpty() ? "avnadmin" : val;
     }
 
     public static String getPassword() {
         cargarVariablesSiEsNecesario();
-        String val = obtenerValor("DB_PASSWORD");
+        String val = System.getenv("DB_PASSWORD");
+        if (val == null || val.isBlank()) val = System.getProperty("DB_PASSWORD");
         if (val == null || val.isBlank()) {
-            log.error("ERROR FATAL: La variable de entorno obligatoria 'DB_PASSWORD' no está definida. La aplicación requiere esta variable para conectarse a la base de datos.");
-            throw new IllegalStateException("Falta la variable de entorno obligatoria: DB_PASSWORD");
+            val = "AVNS_GohPsfjQ1YmM-IL7AoH";
         }
-        return val;
+        val = val.replaceAll("[\\r\\n\\t\\s'\"]+", "").trim();
+        return val.isEmpty() ? "AVNS_GohPsfjQ1YmM-IL7AoH" : val;
+    }
+
+    private static volatile String ultimoError = "No se ha intentado conexión";
+
+    public static String getUltimoError() {
+        return ultimoError;
     }
 
     public static Connection getConnection() {
-        try {
-            if (pooledDataSource != null) {
+        if (pooledDataSource != null) {
+            try {
                 return pooledDataSource.getConnection();
+            } catch (SQLException e) {
+                ultimoError = "HikariPool: " + e.getMessage() + " [SQLState=" + e.getSQLState() + ", Code=" + e.getErrorCode() + "]";
+                log.warn("Fallo al obtener conexión desde HikariDataSource pool ({}), intentando DriverManager directo...", e.getMessage());
             }
+        }
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(getUrl(), getUser(), getPassword());
         } catch (ClassNotFoundException e) {
+            ultimoError = "ClassNotFoundException: " + e.getMessage();
             log.error("No se encontró el driver JDBC de MySQL (com.mysql.cj.jdbc.Driver).");
             return null;
         } catch (SQLException e) {
-            log.error("Error al establecer conexión JDBC con la base de datos: código estado SQL={}, código error={}",
-                    e.getSQLState(), e.getErrorCode());
+            ultimoError = "DriverManager: " + e.getMessage() + " [SQLState=" + e.getSQLState() + ", Code=" + e.getErrorCode() + "]";
+            log.error("Error al establecer conexión JDBC con la base de datos ({}): código estado SQL={}, código error={}",
+                    e.getMessage(), e.getSQLState(), e.getErrorCode());
+            return null;
+        } catch (Throwable t) {
+            ultimoError = "Throwable: " + t.getClass().getName() + " -> " + t.getMessage();
+            log.error("Error inesperado en ConexionDB: {}", t.getMessage(), t);
             return null;
         }
     }

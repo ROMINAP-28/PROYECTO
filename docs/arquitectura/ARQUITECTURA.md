@@ -1,6 +1,6 @@
 # ARQUITECTURA DE SOFTWARE - TRAVELINK 🏛️
 
-Este documento describe la arquitectura, patrones de diseño, componentes técnicos, seguridad y configuración del sistema **TRAVELINK** (Spring Boot 3.3.4 + Java 21).
+Este documento describe la arquitectura, patrones de diseño, componentes técnicos, seguridad y configuración del sistema **TRAVELINK** (Spring Boot 3.3.13 + Java 21; escaneo SCA original auditado sobre línea base 3.3.4).
 
 ---
 
@@ -110,16 +110,19 @@ El sistema mantiene dos capas complementarias con roles estrictamente delimitado
 
 ## 3. Catálogo de Dependencias (`pom.xml`)
 
-| Dependencia Maven | Versión | Propósito Arquitectural |
+> [!NOTE]
+> Las dependencias del ecosistema Spring Boot se actualizaron a **3.3.13** (último release de mantenimiento de la serie 3.3) para remediar vulnerabilidades críticas. La línea base inicial del análisis SCA catalogó las dependencias en su versión 3.3.4.
+
+| Dependencia Maven | Versión Actual | Propósito Arquitectural |
 |---|---|---|
-| `spring-boot-starter-web` | 3.3.4 | Motor HTTP embebido (Apache Tomcat), despachador Spring MVC, serialización Jackson JSON. |
-| `spring-boot-starter-data-jpa` | 3.3.4 | Capa de persistencia JPA con Hibernate ORM y pool de conexiones HikariCP. |
-| `spring-boot-starter-security` | 3.3.4 | Infraestructura de autenticación, autorización basada en roles, filtros de seguridad y encoder BCrypt. |
-| `spring-boot-starter-validation` | 3.3.4 | Proveedor de validación Jakarta Bean Validation (Hibernate Validator) para DTOs. |
+| `spring-boot-starter-web` | 3.3.13 (base: 3.3.4) | Motor HTTP embebido (Apache Tomcat), despachador Spring MVC, serialización Jackson JSON. |
+| `spring-boot-starter-data-jpa` | 3.3.13 (base: 3.3.4) | Capa de persistencia JPA con Hibernate ORM y pool de conexiones HikariCP. |
+| `spring-boot-starter-security` | 3.3.13 (base: 3.3.4) | Infraestructura de autenticación, autorización basada en roles, filtros de seguridad y encoder BCrypt. |
+| `spring-boot-starter-validation` | 3.3.13 (base: 3.3.4) | Proveedor de validación Jakarta Bean Validation (Hibernate Validator) para DTOs. |
 | `mysql-connector-j` | 8.3.0 | Driver JDBC oficial de alto rendimiento para MySQL 8.x. |
 | `openpdf` | 1.3.39 | Generación programática de comprobantes y reportes administrativos en formato PDF (LGPL/MPL). |
 | `poi` y `poi-ooxml` | 5.2.5 | Exportación e importación de libros de cálculo Excel (`.xlsx`) para reportes y carga masiva de cupos. |
-| `spring-boot-starter-test` | 3.3.4 | Suite de pruebas unitarias y de integración con JUnit 5 (Jupiter), AssertJ y Mockito. |
+| `spring-boot-starter-test` | 3.3.13 (base: 3.3.4) | Suite de pruebas unitarias y de integración con JUnit 5 (Jupiter), AssertJ y Mockito. |
 
 ---
 

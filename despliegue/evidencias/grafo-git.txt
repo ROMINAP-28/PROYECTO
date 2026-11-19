@@ -1,0 +1,40 @@
+﻿* 457fb60 docs(despliegue): fase 6 plan maestro de despliegue sesion 15 e inventario maestro
+* 65e237a test(evidencias): fase 5 ejecucion real de despliegue prod, healthcheck, cabeceras tls, rollback y jmeter
+* 8520768 feat(cicd): fase 4 workflow de despliegue automatizado deploy y scripts de rollback por tag
+* 9ea3aec feat(infra): fase 3 configuracion de servidor, nginx tls hardening, compose prod y tuning jvm
+* 071be32 feat(empaquetado): fase 2 perfiles maven, actuator, settings example y evidencia build package
+* 656e269 docs(devops): fase 1 diagnostico de despliegue y analisis de tiempo de arranque
+* bb8384f docs: actualizar inventario maestro de documentacion con los 9 nuevos artefactos de ingenieria y seguridad
+* 201c100 docs(seguridad): documentar consideraciones de seguridad java y matriz de trazabilidad
+* f9f2294 docs(codigo-fuente): documentar arbol de paquetes, pom, perfiles, logback y fichas de ficheros
+* ef0514a docs(reportes): documentar modelo de reportes, columnas, streaming y flujos de importacion y exportacion
+* 15fe0b5 docs(ux-ui): crear inventario de vistas HTML por rol y lista de capturas pendientes
+* a69bd84 docs(base-datos): crear diccionario exhaustivo de datos de las 18 tablas
+* ee15f09 docs(base-datos): crear modelo logico y fisico con erDiagram de 18 tablas e indices
+* 9154c4b docs(diseno): crear diagramas de clases por capas (entidades, dto, servicios, repositorios, controladores)
+* 279c25f docs(diseno): documentar patrones DTO, DAO/Repository, MVC y principios SOLID con clases reales
+* 5ac801e docs(procesos): crear diagramas de procesos de negocio en mermaid (flujos y secuencia)
+* a388128 fix(ci): actualizar trivy-action a v0.36.0 para corregir resolucion de dependencias de github actions
+* 0a932a7 chore(config): actualizar dockerignore y scripts de despliegue
+* 75e70e9 docs: incorporar documentacion de arquitectura, pruebas, control de versiones, despliegue y exposicion
+* 314ee7e docs(ingenieria): crear documentacion de procesos, diseno, bd, ux-ui, reportes y codigo
+* c953330 docs: consolidar inventario general de documentacion y crear indice de seguridad
+* 670d77a feat(despliegue): crear infraestructura ejecutable de despliegue y reubicar evidencia previa
+* 399b956 chore(test): documentar resultado real de testcontainers y despliegue local exitoso con Spring Boot 3.3.13
+* b0f601b chore(security): actualizar vencimientos exp:2027-06-30, clarificar linea base 3.3.4 vs 3.3.13 y documentar excepciones tecnicas
+* a65d655 ci(security): actualizar Spring Boot a 3.3.13, fijar trivy v0.28.0 con trivyignore justificado y security gates estrictos
+* 1d359ae docs(inventario): actualizar inventario general y convertir enlaces absolutos a rutas relativas
+* 4f2200b docs(acceso): clarificar resolucion app vs localhost y protocolo http en documentacion y scripts
+* 9751c8f docs(informe): crear guion de presentacion breve de 10 diapositivas para sustentacion
+* e7fb25f docs(plan): incorporar cronograma de sesiones S1-S6 y matriz de roles y responsabilidades
+* 9674d37 docs(fuzzing): documentar informe de resiliencia con reproduccion de errores 500 y status 0
+* 39ba7c9 fix(sqlmap): re-codificar sqlmap-results.txt a UTF-8 limpio y forzar Out-File UTF-8 en script ps1
+* c4bfcfe docs(analisis): crear validacion de falsos positivos zap con confirmacion manual
+* 1bd7559 docs(rubrica): alinear checklist y mapeo con rubrica oficial de 8 criterios y bonus jmeter
+* 00428f8 chore(structure): reorganizar repositorios en docs y pruebas
+* 5d14cec fix(ui): corregir cadenas UTF-8 con doble codificacion en ToursAdminHandler
+* af244f8 fix(ci): hacer no bloqueante la verificacion de ZAP en CI por inestabilidad del entorno Docker en el runner
+* 58305e1 fix(ci): revertir upgrade de Spring Boot, mantener continue-on-error en Trivy para estabilidad de CI
+* 8034ce5 fix(ci): resolver deps Maven y Trivy offline para evitar 429
+* be63f93 fix(ci): usar mirror ECR para DB de Trivy
+* 63cbde2 fix(ci): usar trivy-action@master

@@ -109,6 +109,7 @@ CREATE TABLE HistorialAgencia (
 CREATE TABLE Destino (
     idDestino INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT NULL,
     estado VARCHAR(20) DEFAULT 'ACTIVO'
 );
 
@@ -208,6 +209,9 @@ CREATE TABLE DetalleReserva (
     cantAdultos INT NOT NULL DEFAULT 1,
     cantNinos INT NOT NULL DEFAULT 0,
     cantBebes INT NOT NULL DEFAULT 0,
+    tipo VARCHAR(20) NULL DEFAULT 'ADULTO',
+    cantidad INT NULL DEFAULT 1,
+    precioUnitario DECIMAL(10,2) NULL DEFAULT 0.00,
     subtotal DECIMAL(10,2) NOT NULL,
     idPaquete INT NULL,
     CONSTRAINT fk_detalle_reserva FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -236,6 +240,8 @@ CREATE TABLE MetodoPago (
     esAdelanto BOOLEAN NOT NULL DEFAULT FALSE,
     estadoPago VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     numeroOperacion VARCHAR(50) NULL,
+    marcaTarjeta VARCHAR(50) NULL,
+    ultimosDigitos VARCHAR(10) NULL,
     urlComprobante VARCHAR(255) NULL,
     url VARCHAR(255) NULL,
     fechaPago DATETIME DEFAULT CURRENT_TIMESTAMP,

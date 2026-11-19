@@ -1,0 +1,21 @@
+==============================================================================
+RESUMEN DE PRUEBA DE ESTRÉS / CARGA JMETER - PRODUCCIÓN (TRAVELINK)
+Fecha: 2026-11-18
+Stack: travelink-app:latest (Spring Boot 3.3.13 con G1GC y JVM Tuning)
+Red: travelink-prod-net (Target: app:8080)
+==============================================================================
+
+PARÁMETROS DE EJECUCIÓN:
+- Usuarios Concurrentes: 50
+- Periodo de Subida (Ramp-up): 5 segundos
+- Iteraciones (Loops): 1
+- Total de Muestras Transaccionadas: 200 peticiones
+- Duración de la Corrida: 17 segundos
+
+MÉTRICAS CONSOLIDADAS:
+- Throughput Efectivo: 11.9 peticiones/segundo
+- Tiempo de Respuesta Promedio: 3,252 ms
+- Tiempo Mínimo de Respuesta: 7 ms
+- Tiempo Máximo de Respuesta: 15,024 ms
+- Archivo de Resultados: despliegue/evidencias/jmeter/results.jtl
+==============================================================================

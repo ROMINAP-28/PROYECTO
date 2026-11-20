@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Script de despliegue automatizado para el entorno de producción de TRAVELINK.
 .DESCRIPTION

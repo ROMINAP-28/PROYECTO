@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Script de Respaldo Automatizado de Base de Datos para TRAVELINK (PowerShell).
 .DESCRIPTION

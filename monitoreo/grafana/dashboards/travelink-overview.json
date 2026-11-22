@@ -24,7 +24,7 @@
       "datasource": { "type": "prometheus", "uid": "Prometheus" },
       "targets": [
         {
-          "expr": "up{job=\"travelink-app\"}",
+          "expr": "max(up{job=\"travelink-app\"})",
           "legendFormat": "Estado"
         }
       ],

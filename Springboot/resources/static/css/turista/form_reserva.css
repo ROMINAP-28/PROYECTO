@@ -819,3 +819,18 @@ body {
     text-align: center;
 }
 
+
+
+/* ==========================================================================
+   FORM RESERVA RESPONSIVE REINFORCEMENT (ALL DEVICES)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .horario-header-row,
+    .horario-data-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    .tarjetas-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

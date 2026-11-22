@@ -2106,3 +2106,251 @@ p, span, label, input, button, select, textarea {
         font-size: 16px !important;
     }
 }
+
+
+/* ==========================================================================
+   UNIVERSAL MULTI-DEVICE RESPONSIVENESS (ALL VIEWPORTS & RESOLUTIONS)
+   ========================================================================== */
+
+/* Universal Reset & Anti-Overflow Guard across ALL devices */
+html, body {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+*, *:before, *:after {
+    box-sizing: border-box !important;
+}
+
+/* 1. ULTRA-WIDE & LARGE DESKTOPS (>= 1441px) */
+@media (min-width: 1441px) {
+    .navbar-home-clean,
+    .hero-card-banner,
+    .portales-acceso-section,
+    .container-destinos,
+    .destinos-grid-4,
+    .footer-inner,
+    .main-container {
+        max-width: 1360px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .hero-card-banner h1 {
+        font-size: 40px !important;
+    }
+
+    .hero-card-banner p {
+        font-size: 17px !important;
+    }
+}
+
+/* 2. STANDARD DESKTOPS & LAPTOPS (1025px - 1440px) */
+@media (min-width: 1025px) {
+    .menu-toggle {
+        display: none !important;
+    }
+
+    .hide-on-desktop {
+        display: none !important;
+    }
+
+    .hide-on-mobile {
+        display: inline-flex !important;
+    }
+
+    .navbar-home-clean {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 14px 36px !important;
+    }
+
+    .nav-links {
+        display: flex !important;
+        align-items: center !important;
+        gap: 22px !important;
+    }
+
+    .nav-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+}
+
+/* 2.1 COMPACT LAPTOPS / SCALED 1080p SCREENS (1025px - 1220px) */
+@media (min-width: 1025px) and (max-width: 1220px) {
+    .navbar-home-clean {
+        padding: 12px 20px !important;
+    }
+
+    .nav-links {
+        gap: 14px !important;
+    }
+
+    .nav-links a {
+        font-size: 13.5px !important;
+        padding: 4px 6px !important;
+    }
+
+    .nav-actions {
+        gap: 8px !important;
+    }
+
+    .nav-actions .btn-unirse-agencia,
+    .nav-actions .btn-auth-login,
+    .nav-actions .btn-auth-register {
+        padding: 6px 12px !important;
+        font-size: 12.5px !important;
+    }
+
+    .nav-actions .btn-admin-nav {
+        padding: 6px 10px !important;
+        font-size: 11.5px !important;
+    }
+}
+
+/* 3. TABLETS IN LANDSCAPE & SMALL LAPTOPS (901px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .navbar, .navbar-home-clean {
+        padding: 12px 22px !important;
+    }
+
+    .destinos-grid-4 {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 18px !important;
+    }
+
+    .portales-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    }
+
+    .hero-card-banner {
+        margin: 16px 20px !important;
+        padding: 36px 24px !important;
+        border-radius: 20px !important;
+    }
+
+    .hero-card-banner h1 {
+        font-size: 28px !important;
+    }
+}
+
+/* 4. TABLETS IN PORTRAIT & MEDIUM SCREENS (601px - 768px) */
+@media (max-width: 768px) and (min-width: 601px) {
+    .navbar, .navbar-home-clean {
+        padding: 10px 16px !important;
+    }
+
+    .destinos-grid-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 14px !important;
+    }
+
+    .portales-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px !important;
+    }
+
+    .hero-card-banner {
+        margin: 12px 14px !important;
+        padding: 30px 18px !important;
+        border-radius: 18px !important;
+    }
+
+    .hero-card-banner h1 {
+        font-size: 24px !important;
+    }
+}
+
+/* 5. PHABLETS & SMARTPHONES (381px - 600px) */
+@media (max-width: 600px) {
+    .destinos-grid-4 {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .portales-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .hero-card-banner {
+        margin: 10px 12px !important;
+        padding: 26px 14px !important;
+        border-radius: 16px !important;
+    }
+
+    .hero-card-banner h1 {
+        font-size: 22px !important;
+        line-height: 1.25 !important;
+    }
+
+    .hero-card-banner p {
+        font-size: 13.5px !important;
+        line-height: 1.4 !important;
+    }
+
+    .hero-search-box-pill {
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 14px !important;
+        padding: 10px !important;
+        gap: 8px !important;
+    }
+
+    .hero-search-input-field {
+        width: 100% !important;
+    }
+
+    .btn-hero-buscar {
+        width: 100% !important;
+        border-radius: 10px !important;
+        padding: 12px !important;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+}
+
+/* 6. ULTRA-COMPACT SMARTPHONES (<= 380px) */
+@media (max-width: 380px) {
+    .navbar, .navbar-home-clean {
+        padding: 6px 8px !important;
+    }
+
+    .logo img {
+        height: 24px !important;
+    }
+
+    .nav-actions .btn-auth-login {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+
+    .menu-toggle {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        font-size: 16px !important;
+    }
+
+    .hero-card-banner {
+        margin: 8px !important;
+        padding: 20px 12px !important;
+        border-radius: 14px !important;
+    }
+
+    .hero-card-banner h1 {
+        font-size: 19px !important;
+    }
+
+    .hero-card-banner p {
+        font-size: 12px !important;
+    }
+}

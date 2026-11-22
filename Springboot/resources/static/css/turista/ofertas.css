@@ -146,3 +146,25 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ==========================================================================
+   OFERTAS RESPONSIVE REINFORCEMENT (ALL DEVICES)
+   ========================================================================== */
+@media (max-width: 560px) {
+    .oferta-card-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 12px !important;
+        gap: 12px !important;
+    }
+    .oferta-card-item img {
+        width: 100% !important;
+        height: 160px !important;
+        object-fit: cover !important;
+        border-radius: 10px !important;
+    }
+    .oferta-card-info {
+        width: 100% !important;
+    }
+}

@@ -1135,3 +1135,85 @@ body {
   gap: 10px;
   margin-top: 20px;
 }
+
+
+/* ==========================================================================
+   ADMIN COMMON RESPONSIVE (ALL DEVICES: DESKTOP, TABLET, MOBILE)
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 68px !important;
+        padding: 14px 8px !important;
+    }
+    .sidebar-header {
+        padding: 0 0 16px 0 !important;
+        justify-content: center !important;
+    }
+    .sidebar-logo-img {
+        max-width: 36px !important;
+    }
+    .sidebar-nav-item span {
+        display: none !important;
+    }
+    .sidebar-nav-item i {
+        margin: 0 auto !important;
+        font-size: 20px !important;
+    }
+    .sidebar-footer span {
+        display: none !important;
+    }
+    .sidebar-footer a {
+        justify-content: center !important;
+        padding: 8px 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+    .admin-sidebar {
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 14px !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+    }
+    .sidebar-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        overflow-x: auto !important;
+        padding: 4px 0 !important;
+    }
+    .admin-main {
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    .admin-topbar {
+        padding: 10px 14px !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+    .admin-content {
+        padding: 14px 12px !important;
+    }
+    .table-container, .admin-card-table {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .stats-grid, .grid-cards {
+        grid-template-columns: 1fr !important;
+    }
+}

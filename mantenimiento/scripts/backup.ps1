@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Script de Respaldo Automatizado de Base de Datos para TRAVELINK (PowerShell).
 .DESCRIPTION
@@ -31,10 +31,10 @@ if (Test-Path $envPath) {
     }
 }
 
-$DbHost = if ($env:DB_HOST) { $env:DB_HOST } else { "127.0.0.1" }
-$DbPort = if ($env:DB_PORT) { $env:DB_PORT } else { "3306" }
+$DbHost = if ($env:DB_HOST) { $env:DB_HOST } else { "mysql-traveling-traveling.k.aivencloud.com" }
+$DbPort = if ($env:DB_PORT) { $env:DB_PORT } else { "19936" }
 $DbName = if ($env:DB_NAME) { $env:DB_NAME } elseif ($env:MYSQL_DATABASE) { $env:MYSQL_DATABASE } else { "DBTravelink" }
-$DbUser = if ($env:DB_USER) { $env:DB_USER } elseif ($env:DB_USERNAME) { $env:DB_USERNAME } else { "root" }
+$DbUser = if ($env:DB_USER) { $env:DB_USER } elseif ($env:DB_USERNAME) { $env:DB_USERNAME } else { "avnadmin" }
 $DbPass = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } elseif ($env:MYSQL_ROOT_PASSWORD) { $env:MYSQL_ROOT_PASSWORD } else { "" }
 
 if (-not $DbPass) {

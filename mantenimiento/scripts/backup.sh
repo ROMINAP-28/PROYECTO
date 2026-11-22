@@ -16,10 +16,10 @@ if [ -f "${PROJECT_ROOT}/.env" ]; then
     set +a
 fi
 
-DB_HOST="${DB_HOST:-127.0.0.1}"
-DB_PORT="${DB_PORT:-3306}"
+DB_HOST="${DB_HOST:-mysql-traveling-traveling.k.aivencloud.com}"
+DB_PORT="${DB_PORT:-19936}"
 DB_NAME="${DB_NAME:-${MYSQL_DATABASE:-DBTravelink}}"
-DB_USER="${DB_USER:-${DB_USERNAME:-root}}"
+DB_USER="${DB_USER:-${DB_USERNAME:-avnadmin}}"
 DB_PASS="${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-}}"
 
 if [ -z "${DB_PASS}" ]; then

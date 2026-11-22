@@ -21,14 +21,25 @@ public class LoginAttemptService {
     }
 
     private final ConcurrentHashMap<String, Attempt> attemptsCache = new ConcurrentHashMap<>();
+    private final com.travelink.config.MetricasService metricasService;
+
+    public LoginAttemptService(com.travelink.config.MetricasService metricasService) {
+        this.metricasService = metricasService;
+    }
 
     public void loginSucceeded(String key) {
+        if (metricasService != null) {
+            metricasService.incrementarLoginsExitosos();
+        }
         if (key != null) {
             attemptsCache.remove(key.toLowerCase().trim());
         }
     }
 
     public void loginFailed(String key) {
+        if (metricasService != null) {
+            metricasService.incrementarLoginsFallidos();
+        }
         if (key == null) return;
         String normalizedKey = key.toLowerCase().trim();
         long now = System.currentTimeMillis();

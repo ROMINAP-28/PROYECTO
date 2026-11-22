@@ -30,12 +30,15 @@ public class ReservaServicioImpl implements ReservaServicio {
     private final ReservaJpaRepositorio reservaJpaRepositorio;
     private final TourFechaRepositorio tourFechaRepositorio;
     private final ReservaPersistencia reservaPersistencia;
+    private final com.travelink.config.MetricasService metricasService;
 
     public ReservaServicioImpl(ReservaJpaRepositorio reservaJpaRepositorio,
-                               TourFechaRepositorio tourFechaRepositorio) {
+                               TourFechaRepositorio tourFechaRepositorio,
+                               com.travelink.config.MetricasService metricasService) {
         this.reservaJpaRepositorio = reservaJpaRepositorio;
         this.tourFechaRepositorio = tourFechaRepositorio;
         this.reservaPersistencia = new ReservaPersistencia();
+        this.metricasService = metricasService;
     }
 
     @Override
@@ -66,7 +69,11 @@ public class ReservaServicioImpl implements ReservaServicio {
     @Override
     @Transactional
     public Reserva guardar(Reserva reserva) {
-        return reservaJpaRepositorio.save(reserva);
+        Reserva guardada = reservaJpaRepositorio.save(reserva);
+        if (metricasService != null) {
+            metricasService.incrementarReservasCreadas();
+        }
+        return guardada;
     }
 
     @Override
@@ -118,6 +125,9 @@ public class ReservaServicioImpl implements ReservaServicio {
                 tourFechaRepositorio.devolverCupo(res.getIdTourFecha(), cuposADevolver);
             }
             log.info("Reserva #{} cancelada exitosamente con motivo: {}", idReserva, motivo);
+            if (metricasService != null) {
+                metricasService.incrementarReservasCanceladas();
+            }
             return true;
         }
         return false;
@@ -125,7 +135,11 @@ public class ReservaServicioImpl implements ReservaServicio {
 
     @Override
     public Map<String, Object> guardarReservaCompleta(Map<String, Object> reqData) {
-        return reservaPersistencia.guardarReservaCompleta(reqData);
+        Map<String, Object> res = reservaPersistencia.guardarReservaCompleta(reqData);
+        if (metricasService != null && res != null && "success".equals(res.get("status"))) {
+            metricasService.incrementarReservasCreadas();
+        }
+        return res;
     }
 
     @Override

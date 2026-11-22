@@ -1,0 +1,62 @@
+groups:
+  - name: travelink_alerts
+    rules:
+      - alert: TravelinkAppDown
+        expr: up{job="travelink-app"} == 0
+        for: 15s
+        labels:
+          severity: critical
+          environment: production
+        annotations:
+          summary: "Instancia de TRAVELINK caída (App Down)"
+          description: "La aplicación Spring Boot de TRAVELINK en el contenedor app no responde en /actuator/prometheus por más de 15 segundos."
+
+      - alert: JvmHeapUsageHigh
+        expr: (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100 > 85
+        for: 30s
+        labels:
+          severity: warning
+          environment: production
+        annotations:
+          summary: "Uso crítico de memoria Heap de la JVM (> 85%)"
+          description: "El consumo de memoria Heap de Java superó el 85% durante más de 30 segundos, riesgo inminente de OutOfMemoryError."
+
+      - alert: Http5xxErrorRateHigh
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[1m])) / sum(rate(http_server_requests_seconds_count[1m])) * 100 > 5
+        for: 30s
+        labels:
+          severity: critical
+          environment: production
+        annotations:
+          summary: "Tasa elevada de errores HTTP 5xx en la API (> 5%)"
+          description: "Más del 5% de las solicitudes HTTP en el último minuto están respondiendo con códigos de error 5xx."
+
+      - alert: HttpLatencyP95High
+        expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[1m])) by (le)) > 1.5
+        for: 30s
+        labels:
+          severity: warning
+          environment: production
+        annotations:
+          summary: "Latencia percentil 95 degradada (> 1.5s)"
+          description: "El percentil 95 de tiempo de respuesta de endpoints de TRAVELINK supera los 1.5 segundos."
+
+      - alert: HighCpuUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 85
+        for: 1m
+        labels:
+          severity: warning
+          environment: production
+        annotations:
+          summary: "Consumo elevado de CPU en el Host/Nodo (> 85%)"
+          description: "La utilización agregada de CPU en la máquina/contenedor supera el 85% sostenido durante 1 minuto."
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 15
+        for: 1m
+        labels:
+          severity: critical
+          environment: production
+        annotations:
+          summary: "Espacio en disco crítico (< 15% libre)"
+          description: "El volumen principal del sistema dispone de menos del 15% de almacenamiento libre."

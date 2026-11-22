@@ -151,3 +151,19 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 | [`docs/exposicion/README.md`](exposicion/README.md) | Índice | Índice de materiales de presentación académica | Taller 12 / Exposición | Implementado |
 | [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guion Maestro | Guion de 14 diapositivas ejecutivas y guion de demo en vivo vinculando código | Taller 12 / Exposición | Implementado |
 | [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guía Metodológica | Guía metodológica de defensa, tiempos, entorno y preguntas frecuentes | Taller 12 / Exposición | Implementado |
+
+---
+
+## 10. Monitoreo y Observabilidad (`docs/monitoreo/` y `monitoreo/`)
+
+| Activo / Ruta | Tipo | Descripción | Ítem (Taller / Fase) | Estado |
+|---|---|---|:---:|:---:|
+| [`docs/monitoreo/PLAN_MONITOREO.md`](monitoreo/PLAN_MONITOREO.md) | Plan Maestro | Plan de observabilidad 360°: logs (Loki/Promtail), métricas (Prometheus), trazas (Zipkin), alertas y salud OS | Monitoreo / Plan | Implementado / Validado |
+| [`docs/monitoreo/HERRAMIENTAS.md`](monitoreo/HERRAMIENTAS.md) | Catálogo | Fichas técnicas, versiones, URLs locales, archivos de configuración y enlaces oficiales | Monitoreo / Catálogo | Implementado |
+| [`monitoreo/docker-compose.monitoring.yml`](../monitoreo/docker-compose.monitoring.yml) | Orquestación | Stack Docker de 7 contenedores (Prometheus, Grafana, Loki, Promtail, Node Exporter, cAdvisor, Zipkin) | Monitoreo / Stack | Implementado / Verificado |
+| [`monitoreo/prometheus/prometheus.yml`](../monitoreo/prometheus/prometheus.yml) | Configuración | Reglas de scrape (app, prometheus, node-exporter, cadvisor) cada 3s - 5s | Monitoreo / Prometheus | Implementado |
+| [`monitoreo/prometheus/alert_rules.yml`](../monitoreo/prometheus/alert_rules.yml) | Reglas de Alerta | 6 alertas críticas (App Down, Heap >85%, tasa de errores 5xx, latencia p95, CPU, disco) | Monitoreo / Alertas | Implementado |
+| [`monitoreo/grafana/dashboards/travelink-overview.json`](../monitoreo/grafana/dashboards/travelink-overview.json) | Dashboard | Tablero unificado en Grafana: KPIs de negocio, throughput HTTP, latencias, JVM Heap, OS y logs Loki | Monitoreo / Grafana | Implementado |
+| [`monitoreo/loki/loki-config.yml`](../monitoreo/loki/loki-config.yml) | Configuración | Configuración de almacenamiento en TSDB, esquemas y retención de logs | Monitoreo / Loki | Implementado |
+| [`monitoreo/promtail/promtail-config.yml`](../monitoreo/promtail/promtail-config.yml) | Configuración | Ingesta y parsing estructurado de logs y trazas (traceId, spanId, level) | Monitoreo / Promtail | Implementado |
+| [`monitoreo/evidencias/`](../monitoreo/evidencias/) | Evidencias | 7 evidencias reales de ejecución (compose ps, targets UP, PromQL, LogQL, dashboard, alertas, JMeter) | Monitoreo / Evidencias | Implementado / Verificado |

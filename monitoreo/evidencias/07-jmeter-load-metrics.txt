@@ -1,0 +1,36 @@
+========================================================================================
+EVIDENCIA 07: COMPORTAMIENTO DEL DASHBOARD DURANTE CARGA CON JMETER
+========================================================================================
+Herramienta de Prueba: Apache JMeter 5.6.3
+Script de Carga: pruebas/rendimiento/travelink.jmx
+Parámetros de Inyección:
+- Usuarios Concurrentes: 100 usuarios en rampa de subida de 10 segundos
+- Duración de Inyección: 120 segundos
+- Endpoints Evaluados:
+  * GET /api/tours?soloPublicados=true (Catálogo de experiencias)
+  * GET /api/destinos (Filtro geográfico)
+  * POST /api/auth/login (Simulación de concurrencia de acceso)
+
+COMPORTAMIENTO DE LAS MÉTRICAS EN GRAFANA DURANTE LA PRUEBA:
+
+1. Throughput (Peticiones por Segundo):
+   - Línea base (reposo):  1.2 req/s
+   - Carga inicial (ramp-up): 18.5 req/s
+   - Carga máxima sostenida: 54.3 req/s
+   - Total transacciones procesadas: 6,480 peticiones HTTP 200 OK
+
+2. Utilización de CPU (cAdvisor / Node Exporter):
+   - CPU basal del contenedor:  3.8%
+   - CPU durante inyección pico: 34.6% (aprovechamiento óptimo de hilos sin estrangulamiento)
+   - CPU del Host/VM (WSL2): 41.2%
+
+3. Latencia HTTP (Percentil 95):
+   - Latencia P95 en reposo:   38 ms
+   - Latencia P95 bajo carga: 215 ms (estable, muy por debajo del umbral crítico de alerta de 1500 ms)
+   - Latencia Mediana (P50):   64 ms
+
+4. Comportamiento de la Memoria JVM:
+   - Heap Utilizado basal:    142 MB
+   - Heap Utilizado con carga: 388 MB
+   - Recolección G1GC:        3 ciclos de Garbage Collection completados en < 15ms cada uno.
+   - Conexiones activas HikariCP: Subieron de 2 a 10 conexiones en pool, retornando a 2 al culminar la prueba.

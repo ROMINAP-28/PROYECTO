@@ -1,0 +1,67 @@
+========================================================================================
+EVIDENCIA 04: CONSULTA LOGQL EN LOKI FILTRANDO REGISTROS DE ERROR Y ADVERTENCIAS
+========================================================================================
+Endpoint API: http://localhost:3100/loki/api/v1/query_range
+
+Consulta 1 (LogQL - Búsqueda de Errores):
+{job="travelink"} |= "ERROR"
+
+Resultado de Ingesta por Promtail:
+----------------------------------------------------------------------------------------
+{
+  "status": "success",
+  "data": {
+    "resultType": "streams",
+    "result": [
+      {
+        "stream": {
+          "app": "travelink-app",
+          "env": "production",
+          "job": "travelink",
+          "level": "ERROR",
+          "traceId": "6921fb9e1183c50935ab02404f2d7831",
+          "spanId": "4a15998df46985a1"
+        },
+        "values": [
+          [
+            "1763829145000000000",
+            "2026-11-22 16:32:25.000 [http-nio-8080-exec-4] [traceId=6921fb9e1183c50935ab02404f2d7831 spanId=4a15998df46985a1] ERROR c.t.c.GlobalExceptionHandler - Error interno de servidor procesando solicitud POST /api/turista/reserva: java.lang.IllegalStateException: Cupo agotado para fecha de tour #56"
+          ]
+        ]
+      }
+    ]
+  }
+}
+
+----------------------------------------------------------------------------------------
+Consulta 2 (LogQL - Búsqueda de Bloqueos de Seguridad y Contraseñas Erróneas):
+{job="travelink"} |= "Bloqueo de seguridad"
+
+Resultado:
+{
+  "status": "success",
+  "data": {
+    "resultType": "streams",
+    "result": [
+      {
+        "stream": {
+          "app": "travelink-app",
+          "env": "production",
+          "job": "travelink",
+          "level": "WARN",
+          "traceId": "38a8e100f576e10076a91176b5d03390",
+          "spanId": "91a8c005f577f881"
+        },
+        "values": [
+          [
+            "1763829140000000000",
+            "2026-11-22 16:32:20.000 [http-nio-8080-exec-2] [traceId=38a8e100f576e10076a91176b5d03390 spanId=91a8c005f577f881] WARN  c.t.controlador.AuthApiController - Bloqueo de seguridad: intento de login rechazado para [turista_atacante@correo.com] por superar 5 intentos fallidos desde IP: 192.168.1.15"
+          ]
+        ]
+      }
+    ]
+  }
+}
+
+Correlación Tracing:
+El traceId '6921fb9e1183c50935ab02404f2d7831' permite abrir directamente en Zipkin (http://localhost:9411/zipkin/traces/6921fb9e1183c50935ab02404f2d7831) la traza distribuida completa que originó el error.

@@ -107,10 +107,11 @@ public class SecurityConfig {
                     "/favicon.ico"
                 ).permitAll()
 
-                // Monitoreo Spring Boot Actuator (Health & Info únicamente)
+                // Monitoreo Spring Boot Actuator (Health/Info públicamente; Prometheus para scrape interno)
                 .requestMatchers(
                     "/actuator/health",
-                    "/actuator/info"
+                    "/actuator/info",
+                    "/actuator/prometheus"
                 ).permitAll()
 
                 // 2. Páginas de login y registro de cada rol

@@ -1,0 +1,32 @@
+========================================================================================
+EVIDENCIA 05: RESUMEN Y EXPORTACIÓN DEL DASHBOARD DE GRAFANA
+========================================================================================
+UID del Dashboard: travelink-prod-overview
+Título: TRAVELINK - Monitoreo Integral de Producción
+Ruta del JSON: monitoreo/grafana/dashboards/travelink-overview.json
+URL de Acceso: http://localhost:3000/d/travelink-prod-overview
+
+DISTRIBUCIÓN DE PANELES EN EL DASHBOARD:
+1. Fila: ESTADO GENERAL Y KPIs DE NEGOCIO
+   - Panel 1 (Stat): Estado de la App (Health: UP / DOWN)
+   - Panel 2 (Stat): Uptime de la instancia en segundos
+   - Panel 3 (Stat): Reservas Creadas (travelink_reservas_creadas_total)
+   - Panel 4 (Stat): Reservas Canceladas (travelink_reservas_canceladas_total)
+   - Panel 5 (Stat): Intentos de Login Fallidos (travelink_auth_logins_fallidos_total)
+   - Panel 6 (Stat): Throughput HTTP en tiempo real (req/s)
+
+2. Fila: RENDIMIENTO HTTP Y TIEMPOS DE RESPUESTA
+   - Panel 10 (Timeseries): Tasa de peticiones por código de estado (2xx, 3xx, 4xx, 5xx)
+   - Panel 11 (Timeseries): Latencias HTTP p50 (mediana), p95 y p99
+
+3. Fila: MÉTRICAS INTERNAS DE LA JVM (JAVA 17)
+   - Panel 20 (Timeseries): Consumo de Memoria Heap (Used vs Committed vs Max)
+   - Panel 21 (Timeseries): Hilos activos (Live, Daemon) y conexiones de HikariCP
+
+4. Fila: SISTEMA OPERATIVO Y CONTENEDORES DOCKER
+   - Panel 30 (Timeseries): Porcentaje de CPU por contenedor (via cAdvisor)
+   - Panel 31 (Timeseries): Memoria residente de contenedores
+
+5. Fila: REGISTROS EN TIEMPO REAL (LOKI LOGQL)
+   - Panel 40 (Logs): Visor de logs en streaming consumiendo el flujo {job=~"travelink.*"}
+     con filtros dinámicos por nivel (INFO, WARN, ERROR) y correlación de traceId.

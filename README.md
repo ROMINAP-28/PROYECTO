@@ -20,7 +20,8 @@ TRAVELINK es una solución web empresarial desarrollada en **Java 21 LTS** y **S
 | **Motor de Base de Datos** | MySQL 8.0 (Instancia local Dockerizada o Aiven Cloud) con HikariCP |
 | **Reportes y Streaming** | OpenPDF 1.3.39 (Comprobantes PDF) y Apache POI 5.2.5 con `SXSSFWorkbook` (Excel streaming) |
 | **Frontend Desacoplado** | HTML5 semántico (34 vistas), CSS3 modular y Vanilla JavaScript moderno (Fetch API asíncrona) |
-| **Monitoreo y Salud** | Spring Boot Actuator (`/actuator/health` y `/actuator/info`) |
+| **Monitoreo y Observabilidad** | Spring Boot Actuator, Micrometer Prometheus, OpenTelemetry, Zipkin, Loki, Promtail y Grafana (Dashboard unificado) |
+| **Mantenimiento y Continuidad** | Backups consistentes (`mysqldump --single-transaction`), compresión Gzip, checksum SHA-256, retención 7d/4w, restauración verificada, Crontab, Systemd, Logrotate, Windows Task Scheduler y Dependabot |
 | **Infraestructura Perimetral** | Nginx Reverse Proxy (Terminación TLS, HSTS, CSP, cookies `Secure; SameSite=Lax`) |
 | **Pruebas Automatizadas** | JUnit 5, Mockito, JaCoCo (cobertura), Testcontainers (MySQL 8.0), Apache JMeter y OWASP ZAP |
 
@@ -38,9 +39,12 @@ PROYECTO/
 ├── docker-compose.yml                 # Orquestación de desarrollo local (travelink-app + travelink-db)
 ├── .env.example                       # Plantilla de variables de entorno requeridas
 ├── .trivyignore                       # 9 excepciones justificadas de vulnerabilidades críticas
-├── .github/workflows/
-│   ├── ci.yml                         # Pipeline CI: Compilación, Tests, SCA Trivy y DAST ZAP
-│   └── deploy.yml                     # Pipeline CD: Build, GHCR Docker Publish, Staging Smoke Test y Prod Gate
+├── .github/
+│   ├── dependabot.yml                 # Mantenimiento automático de dependencias (Maven, Docker, GitHub Actions)
+│   └── workflows/
+│       ├── ci.yml                     # Pipeline CI: Compilación, Tests, SCA Trivy y DAST ZAP
+│       ├── deploy.yml                 # Pipeline CD: Build, GHCR Docker Publish, Staging Smoke Test y Prod Gate
+│       └── mantenimiento.yml          # Pipeline semanal: escaneo SCA Trivy y reporte de actualizaciones
 ├── Springboot/
 │   ├── src/com/travelink/             # Código fuente Java por capas (controlador, servicio, modelo, repositorio, dao)
 │   ├── resources/                     # Configuración application.properties, logback.xml y vistas static (html, css, js)
@@ -68,7 +72,22 @@ PROYECTO/
 │   ├── pruebas-software/              # Plan maestro de pruebas de software, 20 unitarias, JMeter y JaCoCo
 │   ├── control-versiones/             # Modelo de ramas, trazabilidad de PRs (#1, #3, #4, #6), grafo y rollback
 │   ├── despliegue/                    # Plan maestro de despliegue Sesión 15 (JAR vs WAR, Nginx TLS, tuning JVM)
-│   └── exposicion/                    # Guion de exposición (14 diapositivas) y guion de demo en vivo vinculando código
+│   ├── monitoreo/                     # Plan de monitoreo 360°, logs, performance, alertas y catálogo de herramientas
+│   ├── mantenimiento/                 # Plan de mantenimiento, matriz de tareas, política de backups y PITR
+│   └── exposicion/                    # Guiones de exposición (14 diapositivas) y guion de 5 min de monitoreo
+├── monitoreo/                         # Stack ejecutable de observabilidad y métricas
+│   ├── docker-compose.monitoring.yml  # Stack Docker: Prometheus, Grafana, Loki, Promtail, Node Exporter, cAdvisor, Zipkin
+│   ├── prometheus/                    # prometheus.yml y alert_rules.yml (6 alertas críticas)
+│   ├── grafana/                       # Provisioning de datasources y dashboard travelink-overview.json
+│   ├── loki/ y promtail/              # Ingesta y almacenamiento estructurado de logs
+│   └── evidencias/                    # 7 evidencias reales de ejecución (targets UP, PromQL, LogQL, dashboard, alertas)
+├── mantenimiento/                      # Automatización y scripts de mantenimiento operativo
+│   ├── scripts/                       # backup, restore, restore-test, limpiar-logs, healthcheck, reset (.ps1 y .sh)
+│   ├── cron/                          # crontab.txt con programación diaria, semanal y continua
+│   ├── systemd/                       # Unidades .service y .timer para Linux
+│   ├── logrotate/                     # Configuración de rotación de logs travelink
+│   ├── windows/                       # registrar-tarea.ps1 para Windows Task Scheduler
+│   └── evidencias/                    # 6 evidencias de ejecución (backup real, checksum, restore-test, rotación, tarea)
 ├── pruebas/                           # Scripts, configuración, wordlists y evidencias de pruebas
 │   ├── entorno/                       # Scripts de reinicio controlado (reset-db) y siembra sintética (seed)
 │   ├── seguridad/                     # Scripts de escaneo DAST, SAST, SCA, fuzzing y SQLMap
@@ -96,6 +115,9 @@ PROYECTO/
 | **Desarrollo Local** | `http://localhost:8080` | HTTP | `8080` (Local) | Navegación de usuarios, pruebas manuales y depuración |
 | **Producción Hardened** | `https://localhost` | HTTPS (TLS 1.2/1.3) | `443` (Nginx) | Tráfico público cifrado con cabeceras HSTS y CSP |
 | **Monitoreo de Salud** | `https://localhost/actuator/health` | HTTPS | `443` | Healthcheck y sondas liveness/readiness |
+| **Dashboard Grafana** | `http://localhost:3000` | HTTP | `3000` (Local) | Tablero unificado de observabilidad, métricas JVM/HTTP y logs |
+| **Métricas Prometheus** | `http://localhost:9090` | HTTP | `9090` (Local) | Servidor TSDB de métricas y evaluación de alertas PromQL |
+| **Trazabilidad Zipkin** | `http://localhost:9411` | HTTP | `9411` (Local) | Visualización de trazas distribuidas y latencias por span |
 | **Red Interna Docker** | `http://app:8080` | HTTP | Red interna | Escaneos automatizados ZAP, JMeter y runner CI |
 
 ---
@@ -184,4 +206,7 @@ Consulte los índices detallados de cada área del proyecto:
 - 🧪 [**Pruebas de Software**](docs/pruebas-software/PLAN_PRUEBAS_SOFTWARE.md): Pirámide de pruebas, 20 unitarias, Testcontainers y JaCoCo.
 - 🌿 [**Control de Versiones**](docs/control-versiones/CONTROL_VERSIONES.md): Modelo de ramas, trazabilidad de PRs, grafo y rollback.
 - 🚀 [**Plan Maestro de Despliegue**](docs/despliegue/PLAN_DESPLIEGUE.md): Sesión 15, empaquetado JAR, Nginx TLS, Docker prod, JVM tuning y rollback.
-- 🎤 [**Guion de Exposición**](docs/exposicion/GUION_EXPOSICION.md): 14 diapositivas y guion de demostración en vivo vinculando código real.
+- 📊 [**Monitoreo y Observabilidad**](docs/monitoreo/PLAN_MONITOREO.md): Arquitectura 360°, métricas, trazas, logs Loki y alertas.
+- 🛠️ [**Mantenimiento y Continuidad**](docs/mantenimiento/PLAN_MANTENIMIENTO.md): Política de backups, RPO/RTO, pruebas de restauración y automatización.
+- 🎤 [**Guion de Exposición Maestro**](docs/exposicion/GUION_EXPOSICION.md): 14 diapositivas y guion de demostración en vivo vinculando código real.
+- ⏱️ [**Guion de Exposición 5 Minutos**](docs/exposicion/GUION_5MIN_MONITOREO.md): 8 diapositivas con métricas reales, tiempos y evidencias.

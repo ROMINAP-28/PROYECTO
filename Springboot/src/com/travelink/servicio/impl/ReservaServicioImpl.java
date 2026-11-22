@@ -20,7 +20,8 @@ import java.util.Optional;
  * Implementación del Servicio de Reservas.
  * Aplica principios SOLID:
  * - SRP: Encapsula la lógica de negocio de reservas y cupos.
- * - DIP: Implementa la interface ReservaServicio e inyecta dependencias por constructor.
+ * - DIP: Implementa la interface ReservaServicio e inyecta dependencias por
+ * constructor.
  */
 @Service
 public class ReservaServicioImpl implements ReservaServicio {
@@ -33,8 +34,8 @@ public class ReservaServicioImpl implements ReservaServicio {
     private final com.travelink.config.MetricasService metricasService;
 
     public ReservaServicioImpl(ReservaJpaRepositorio reservaJpaRepositorio,
-                               TourFechaRepositorio tourFechaRepositorio,
-                               com.travelink.config.MetricasService metricasService) {
+            TourFechaRepositorio tourFechaRepositorio,
+            com.travelink.config.MetricasService metricasService) {
         this.reservaJpaRepositorio = reservaJpaRepositorio;
         this.tourFechaRepositorio = tourFechaRepositorio;
         this.reservaPersistencia = new ReservaPersistencia();
@@ -111,13 +112,17 @@ public class ReservaServicioImpl implements ReservaServicio {
 
                 if (res.getTour() != null) {
                     aceptaBebes = Boolean.TRUE.equals(res.getTour().getAceptaBebes());
-                    precioBebe = res.getTour().getPrecioBebe() != null ? res.getTour().getPrecioBebe() : BigDecimal.ZERO;
+                    precioBebe = res.getTour().getPrecioBebe() != null ? res.getTour().getPrecioBebe()
+                            : BigDecimal.ZERO;
                 }
                 if (res.getDetalles() != null && !res.getDetalles().isEmpty()) {
                     for (DetalleReserva d : res.getDetalles()) {
-                        if (d.getCantAdultos() != null && d.getCantAdultos() > 0) adultos = d.getCantAdultos();
-                        if (d.getCantNinos() != null) ninos = d.getCantNinos();
-                        if (d.getCantBebes() != null) bebes = d.getCantBebes();
+                        if (d.getCantAdultos() != null && d.getCantAdultos() > 0)
+                            adultos = d.getCantAdultos();
+                        if (d.getCantNinos() != null)
+                            ninos = d.getCantNinos();
+                        if (d.getCantBebes() != null)
+                            bebes = d.getCantBebes();
                     }
                 }
                 boolean bebeOcupa = aceptaBebes && precioBebe.compareTo(BigDecimal.ZERO) > 0;

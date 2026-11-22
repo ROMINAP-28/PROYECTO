@@ -150,7 +150,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 |---|---|---|:---:|:---:|
 | [`docs/exposicion/README.md`](exposicion/README.md) | Índice | Índice de materiales de presentación académica | Taller 12 / Exposición | Implementado |
 | [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guion Maestro | Guion de 14 diapositivas ejecutivas y guion de demo en vivo vinculando código | Taller 12 / Exposición | Implementado |
-| [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guía Metodológica | Guía metodológica de defensa, tiempos, entorno y preguntas frecuentes | Taller 12 / Exposición | Implementado |
+| [`docs/exposicion/GUION_5MIN_MONITOREO.md`](exposicion/GUION_5MIN_MONITOREO.md) | Guion 5 Min | Guion de 8 diapositivas (5 min) enfocado en Monitoreo, Observabilidad, Mantenimiento y Pruebas | Taller 12 / Exposición | Implementado / Validado |
 
 ---
 
@@ -158,12 +158,41 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 
 | Activo / Ruta | Tipo | Descripción | Ítem (Taller / Fase) | Estado |
 |---|---|---|:---:|:---:|
-| [`docs/monitoreo/PLAN_MONITOREO.md`](monitoreo/PLAN_MONITOREO.md) | Plan Maestro | Plan de observabilidad 360°: logs (Loki/Promtail), métricas (Prometheus), trazas (Zipkin), alertas y salud OS | Monitoreo / Plan | Implementado / Validado |
-| [`docs/monitoreo/HERRAMIENTAS.md`](monitoreo/HERRAMIENTAS.md) | Catálogo | Fichas técnicas, versiones, URLs locales, archivos de configuración y enlaces oficiales | Monitoreo / Catálogo | Implementado |
-| [`monitoreo/docker-compose.monitoring.yml`](../monitoreo/docker-compose.monitoring.yml) | Orquestación | Stack Docker de 7 contenedores (Prometheus, Grafana, Loki, Promtail, Node Exporter, cAdvisor, Zipkin) | Monitoreo / Stack | Implementado / Verificado |
-| [`monitoreo/prometheus/prometheus.yml`](../monitoreo/prometheus/prometheus.yml) | Configuración | Reglas de scrape (app, prometheus, node-exporter, cadvisor) cada 3s - 5s | Monitoreo / Prometheus | Implementado |
-| [`monitoreo/prometheus/alert_rules.yml`](../monitoreo/prometheus/alert_rules.yml) | Reglas de Alerta | 6 alertas críticas (App Down, Heap >85%, tasa de errores 5xx, latencia p95, CPU, disco) | Monitoreo / Alertas | Implementado |
-| [`monitoreo/grafana/dashboards/travelink-overview.json`](../monitoreo/grafana/dashboards/travelink-overview.json) | Dashboard | Tablero unificado en Grafana: KPIs de negocio, throughput HTTP, latencias, JVM Heap, OS y logs Loki | Monitoreo / Grafana | Implementado |
-| [`monitoreo/loki/loki-config.yml`](../monitoreo/loki/loki-config.yml) | Configuración | Configuración de almacenamiento en TSDB, esquemas y retención de logs | Monitoreo / Loki | Implementado |
-| [`monitoreo/promtail/promtail-config.yml`](../monitoreo/promtail/promtail-config.yml) | Configuración | Ingesta y parsing estructurado de logs y trazas (traceId, spanId, level) | Monitoreo / Promtail | Implementado |
-| [`monitoreo/evidencias/`](../monitoreo/evidencias/) | Evidencias | 7 evidencias reales de ejecución (compose ps, targets UP, PromQL, LogQL, dashboard, alertas, JMeter) | Monitoreo / Evidencias | Implementado / Verificado |
+| [`docs/monitoreo/PLAN_MONITOREO.md`](monitoreo/PLAN_MONITOREO.md) | Plan Maestro | Plan de observabilidad 360°: logs (Loki/Promtail), métricas (Prometheus), trazas (Zipkin), alertas y salud OS | Monitoreo / Plan | VALIDADO (Local) / DOCUMENTADO (Render) |
+| [`docs/monitoreo/HERRAMIENTAS.md`](monitoreo/HERRAMIENTAS.md) | Catálogo | Fichas técnicas, versiones, URLs locales, archivos de configuración y enlaces compartidos en GitHub | Monitoreo / Catálogo | VALIDADO |
+| [`monitoreo/docker-compose.monitoring.yml`](../monitoreo/docker-compose.monitoring.yml) | Orquestación | Stack Docker de 7 contenedores (Prometheus, Grafana, Loki, Promtail, Node Exporter, cAdvisor, Zipkin) | Monitoreo / Stack | VALIDADO |
+| [`monitoreo/prometheus/prometheus.yml`](../monitoreo/prometheus/prometheus.yml) | Configuración | Reglas de scrape (app, prometheus, node-exporter, cadvisor) cada 3s - 5s | Monitoreo / Prometheus | VALIDADO |
+| [`monitoreo/prometheus/alert_rules.yml`](../monitoreo/prometheus/alert_rules.yml) | Reglas de Alerta | 6 alertas críticas (App Down, Heap >85%, tasa de errores 5xx, latencia p95, CPU, disco) | Monitoreo / Alertas | VALIDADO |
+| [`monitoreo/grafana/dashboards/travelink-overview.json`](../monitoreo/grafana/dashboards/travelink-overview.json) | Dashboard | Tablero unificado en Grafana: KPIs de negocio, throughput HTTP, latencias, JVM Heap, OS y logs Loki | Monitoreo / Grafana | VALIDADO |
+| [`monitoreo/loki/loki-config.yml`](../monitoreo/loki/loki-config.yml) | Configuración | Configuración de almacenamiento en TSDB, esquemas y retención de logs | Monitoreo / Loki | VALIDADO |
+| [`monitoreo/promtail/promtail-config.yml`](../monitoreo/promtail/promtail-config.yml) | Configuración | Ingesta y parsing estructurado de logs y trazas (traceId, spanId, level) | Monitoreo / Promtail | VALIDADO |
+| [`monitoreo/evidencias/`](../monitoreo/evidencias/) | Evidencias | 7 evidencias reales de ejecución (compose ps, targets UP, PromQL, LogQL, dashboard, alertas, JMeter) | Monitoreo / Evidencias | VALIDADO |
+
+---
+
+## 11. Mantenimiento y Continuidad Operativa (`docs/mantenimiento/` y `mantenimiento/`)
+
+| Activo / Ruta | Tipo | Descripción | Ítem (Taller / Fase) | Estado |
+|---|---|---|:---:|:---:|
+| [`docs/mantenimiento/PLAN_MANTENIMIENTO.md`](mantenimiento/PLAN_MANTENIMIENTO.md) | Plan Maestro | Plan de continuidad operativa: matriz de tareas, política de backups (RPO/RTO), dependencias y Aiven PITR | Mantenimiento / Plan | VALIDADO (Local) / DOCUMENTADO (Cloud) |
+| [`mantenimiento/scripts/backup.ps1`](../mantenimiento/scripts/backup.ps1) | Script PowerShell | Respaldo consistente con mysqldump --single-transaction, compresión Gzip, checksum SHA-256 y retención | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/backup.sh`](../mantenimiento/scripts/backup.sh) | Script Bash | Versión Linux/Bash del script de respaldo transaccional, compresión Gzip y hash SHA-256 | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/restore.ps1`](../mantenimiento/scripts/restore.ps1) | Script PowerShell | Restauración automatizada con verificación obligatoria de checksum SHA-256 | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/restore.sh`](../mantenimiento/scripts/restore.sh) | Script Bash | Versión Linux/Bash de restauración automatizada con validación criptográfica SHA-256 | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/restore-test.ps1`](../mantenimiento/scripts/restore-test.ps1) | Script PowerShell | Prueba de restauración en base temporal (travelink_restore_test) y conteo de tablas maestras | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/restore-test.sh`](../mantenimiento/scripts/restore-test.sh) | Script Bash | Versión Linux/Bash de prueba de restauración automatizada en base temporal | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/limpiar-logs.ps1`](../mantenimiento/scripts/limpiar-logs.ps1) | Script PowerShell | Purga de archivos .log.gz y temporales que superen los 14 días de retención | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/limpiar-logs.sh`](../mantenimiento/scripts/limpiar-logs.sh) | Script Bash | Versión Linux/Bash de purga y limpieza periódica de logs históricos | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/healthcheck.ps1`](../mantenimiento/scripts/healthcheck.ps1) | Script PowerShell | Sondeo Actuator (/actuator/health), verificación de status UP y código de salida (0 OK, 1 Alerta) | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/healthcheck.sh`](../mantenimiento/scripts/healthcheck.sh) | Script Bash | Versión Linux/Bash de healthcheck con curl y validación JSON de status UP | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/reset-datos-prueba.ps1`](../mantenimiento/scripts/reset-datos-prueba.ps1) | Script PowerShell | Reinicio de base de datos con seed_pruebas.sql con bloqueo automático para entornos productivos/Aiven | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/reset-datos-prueba.sh`](../mantenimiento/scripts/reset-datos-prueba.sh) | Script Bash | Versión Linux/Bash de reinicio controlado de seed de prueba | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/scripts/imagenes-en-uso.sql`](../mantenimiento/scripts/imagenes-en-uso.sql) | Script SQL | Consulta para auditar rutas de imágenes activas en base de datos (TourImagen, Agencia, Pago) | Mantenimiento / Scripts | VALIDADO |
+| [`mantenimiento/cron/crontab.txt`](../mantenimiento/cron/crontab.txt) | Automatización | Cron maestro: backup diario 02:00, restore-test semanal dom 02:30, purga dom 03:00, healthcheck c/5min | Mantenimiento / Cron | VALIDADO |
+| [`mantenimiento/systemd/`](../mantenimiento/systemd/) | Orquestación OS | Unidades .service y .timer para backup diario, purga semanal y healthcheck continuo en Linux | Mantenimiento / Systemd | VALIDADO |
+| [`mantenimiento/logrotate/travelink`](../mantenimiento/logrotate/travelink) | Configuración OS | Rotación diaria de logs de aplicación con compresión retardada y retención de 14 días | Mantenimiento / Logrotate | VALIDADO |
+| [`mantenimiento/windows/registrar-tarea.ps1`](../mantenimiento/windows/registrar-tarea.ps1) | Automatización OS | Registro y consulta de tarea programada TRAVELINK_Backup_Diario en Windows Task Scheduler | Mantenimiento / Windows | VALIDADO |
+| [`.github/workflows/mantenimiento.yml`](../.github/workflows/mantenimiento.yml) | Pipeline CI/CD | Workflow semanal: escaneo de vulnerabilidades SCA con Trivy y reporte de actualizaciones Maven | Mantenimiento / CI-CD | VALIDADO |
+| [`.github/dependabot.yml`](../.github/dependabot.yml) | Automatización | Configuración de Dependabot para actualizaciones automáticas de Maven, Docker y GitHub Actions | Mantenimiento / Dependabot | VALIDADO |
+| [`mantenimiento/evidencias/`](../mantenimiento/evidencias/) | Evidencias | 6 evidencias reales de ejecución (backup, checksum, restore-test, rotación, tarea Windows, workflow) | Mantenimiento / Evidencias | VALIDADO |
+

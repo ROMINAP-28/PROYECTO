@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Script de empaquetado limpio de entrega final para TRAVELINK.
 .DESCRIPTION

@@ -5,4 +5,4 @@
 ## Contenido
 
 - [CONTROL_VERSIONES.md](CONTROL_VERSIONES.md): Configuración de repositorios remotos, inventario de ramas, trazabilidad de PRs (#1, #3, #4, #6), grafo de confirmaciones y demostración práctica de rollback con git revert, restore y checkout.
-- [FLUJO_GIT.md](FLUJO_GIT.md): Modelo de ramificación (GitHub Flow adaptado), convención de mensajes Conventional Commits 1.0 y compuertas de calidad automatizadas en CI.
+- [CONTROL_VERSIONES.md](CONTROL_VERSIONES.md): Modelo de ramificación (GitHub Flow adaptado), convención de mensajes Conventional Commits 1.0 y compuertas de calidad automatizadas en CI.

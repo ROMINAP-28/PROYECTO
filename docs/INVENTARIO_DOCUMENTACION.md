@@ -44,24 +44,24 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 |---|---|---|:---:|:---:|
 | **General** | [`docs/ingenieria/README.md`](ingenieria/README.md) | Índice consolidado de artefactos de ingeniería de software | Talleres 1 a 6 | Implementado |
 | **Procesos** | [`docs/ingenieria/procesos/README.md`](ingenieria/procesos/README.md) | Índice de procesos de negocio de la plataforma | Taller 1 / Procesos | Implementado |
-| **Procesos** | [`docs/ingenieria/procesos/PROCESOS_NEGOCIO.md`](ingenieria/procesos/PROCESOS_NEGOCIO.md) | Flujos funcionales de reservas, comisiones (15%), agencias y tours | Taller 1 / Procesos | Implementado |
+| **Procesos** | [`docs/ingenieria/procesos/DIAGRAMAS_PROCESOS.md`](ingenieria/procesos/DIAGRAMAS_PROCESOS.md) | Flujos funcionales de reservas, comisiones (15%), agencias y tours | Taller 1 / Procesos | Implementado |
 | **Procesos** | [`docs/ingenieria/procesos/DIAGRAMAS_PROCESOS.md`](ingenieria/procesos/DIAGRAMAS_PROCESOS.md) | Diagramas de flujo y secuencia Mermaid de los procesos del código | Taller 1 / Procesos | Implementado |
 | **Diseño** | [`docs/ingenieria/diseno/README.md`](ingenieria/diseno/README.md) | Índice de diseño estructural y de clases | Taller 2 / Diseño | Implementado |
-| **Diseño** | [`docs/ingenieria/diseno/DISENO_SISTEMA.md`](ingenieria/diseno/DISENO_SISTEMA.md) | Patrones arquitecturales y capas del sistema | Taller 2 / Diseño | Implementado |
+| **Diseño** | [`docs/ingenieria/diseno/PATRONES.md`](ingenieria/diseno/PATRONES.md) | Patrones arquitecturales y capas del sistema | Taller 2 / Diseño | Implementado |
 | **Diseño** | [`docs/ingenieria/diseno/PATRONES.md`](ingenieria/diseno/PATRONES.md) | Implementación de DTO, DAO vs Repository, MVC y principios SOLID | Taller 2 / Diseño | Implementado |
 | **Diseño** | [`docs/ingenieria/diseno/DIAGRAMA_CLASES.md`](ingenieria/diseno/DIAGRAMA_CLASES.md) | Diagramas de clases orientados a objetos (entidades, DTOs, servicios, repos, controladores) | Taller 2 / Diseño | Implementado |
 | **Base de Datos** | [`docs/ingenieria/base-datos/README.md`](ingenieria/base-datos/README.md) | Índice del modelo de datos e integridad referencial | Taller 3 / Base de Datos | Implementado |
-| **Base de Datos** | [`docs/ingenieria/base-datos/MODELO_DATOS.md`](ingenieria/base-datos/MODELO_DATOS.md) | Esquema relacional de tablas, llaves foráneas y reglas de integridad | Taller 3 / Base de Datos | Implementado |
+| **Base de Datos** | [`docs/ingenieria/base-datos/MODELO_LOGICO_FISICO.md`](ingenieria/base-datos/MODELO_LOGICO_FISICO.md) | Esquema relacional de tablas, llaves foráneas y reglas de integridad | Taller 3 / Base de Datos | Implementado |
 | **Base de Datos** | [`docs/ingenieria/base-datos/MODELO_LOGICO_FISICO.md`](ingenieria/base-datos/MODELO_LOGICO_FISICO.md) | Diagrama Entidad-Relación (erDiagram Mermaid), modelo lógico y físico con índices | Taller 3 / Base de Datos | Implementado |
 | **Base de Datos** | [`docs/ingenieria/base-datos/DICCIONARIO_DATOS.md`](ingenieria/base-datos/DICCIONARIO_DATOS.md) | Diccionario de datos exhaustivo de las 18 tablas con tipos, PK/FK y nulos | Taller 3 / Base de Datos | Implementado |
 | **UX / UI** | [`docs/ingenieria/ux-ui/README.md`](ingenieria/ux-ui/README.md) | Índice de interfaces de usuario y experiencia visual | Taller 4 / UX-UI | Implementado |
 | **UX / UI** | [`docs/ingenieria/ux-ui/GUIA_ESTILOS_UX.md`](ingenieria/ux-ui/GUIA_ESTILOS_UX.md) | Arquitectura frontend desacoplada (HTML5/CSS3/Vanilla JS), accesibilidad | Taller 4 / UX-UI | Implementado |
 | **UX / UI** | [`docs/ingenieria/ux-ui/PROTOTIPOS.md`](ingenieria/ux-ui/PROTOTIPOS.md) | Inventario de las 34 páginas HTML por rol, componentes clave y endpoints | Taller 4 / UX-UI | Implementado |
 | **Reportes** | [`docs/ingenieria/reportes/README.md`](ingenieria/reportes/README.md) | Índice de especificación y arquitectura de reportes | Taller 5 / Reportes | Implementado |
-| **Reportes** | [`docs/ingenieria/reportes/ESPECIFICACION_REPORTES.md`](ingenieria/reportes/ESPECIFICACION_REPORTES.md) | Generación PDF (OpenPDF) y carga masiva/exportación Excel (Apache POI) | Taller 5 / Reportes | Implementado |
+| **Reportes** | [`docs/ingenieria/reportes/MODELO_REPORTES.md`](ingenieria/reportes/MODELO_REPORTES.md) | Generación PDF (OpenPDF) y carga masiva/exportación Excel (Apache POI) | Taller 5 / Reportes | Implementado |
 | **Reportes** | [`docs/ingenieria/reportes/MODELO_REPORTES.md`](ingenieria/reportes/MODELO_REPORTES.md) | Columnas por reporte, streaming SXSSFWorkbook, nomenclatura y ficheros | Taller 5 / Reportes | Implementado |
 | **Código Fuente** | [`docs/ingenieria/codigo-fuente/README.md`](ingenieria/codigo-fuente/README.md) | Índice de organización y modularización del código fuente | Taller 6 / Código | Implementado |
-| **Código Fuente** | [`docs/ingenieria/codigo-fuente/ESTRUCTURA_CODIGO.md`](ingenieria/codigo-fuente/ESTRUCTURA_CODIGO.md) | Mapeo de paquetes `com.travelink.*`, controladores, entidades, servicios y DAOs | Taller 6 / Código | Implementado |
+| **Código Fuente** | [`docs/ingenieria/codigo-fuente/RECURSOS_CODIGO.md`](ingenieria/codigo-fuente/RECURSOS_CODIGO.md) | Mapeo de paquetes `com.travelink.*`, controladores, entidades, servicios y DAOs | Taller 6 / Código | Implementado |
 | **Código Fuente** | [`docs/ingenieria/codigo-fuente/RECURSOS_CODIGO.md`](ingenieria/codigo-fuente/RECURSOS_CODIGO.md) | Árbol de paquetes, justificación pom.xml, perfiles properties y logback | Taller 6 / Código | Implementado |
 
 ---
@@ -98,7 +98,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 |---|---|---|:---:|:---:|
 | [`docs/pruebas-software/README.md`](pruebas-software/README.md) | Índice | Índice del módulo de aseguramiento de calidad y pruebas | Taller 12 / Pruebas | Implementado |
 | [`docs/pruebas-software/PLAN_PRUEBAS_SOFTWARE.md`](pruebas-software/PLAN_PRUEBAS_SOFTWARE.md) | Plan Maestro | Plan de pruebas, 20 unitarias, Testcontainers, JMeter, ZAP y JaCoCo | Taller 12 / Pruebas | Implementado |
-| [`docs/pruebas-software/ESTRATEGIA_PRUEBAS.md`](pruebas-software/ESTRATEGIA_PRUEBAS.md) | Estrategia | Pirámide de pruebas, suite de 20 casos unitarios y consideraciones CI | Taller 12 / Pruebas | Implementado |
+| [`docs/pruebas-software/PLAN_PRUEBAS_SOFTWARE.md`](pruebas-software/PLAN_PRUEBAS_SOFTWARE.md) | Estrategia | Pirámide de pruebas, suite de 20 casos unitarios y consideraciones CI | Taller 12 / Pruebas | Implementado |
 | [`pruebas/README.md`](../pruebas/README.md) | Manual | Manual operativo de pruebas, acceso `app` vs `localhost` y orden de ejecución | Taller 7 / Manual Pruebas | Implementado |
 | [`pruebas/entorno/reset-db.ps1`](../pruebas/entorno/reset-db.ps1) / [`.sh`](../pruebas/entorno/reset-db.sh) | Entorno | Reinicio controlado de contenedores y volúmenes Docker con guard de seguridad | Taller 7 / Entorno | Implementado |
 | [`pruebas/entorno/seed.ps1`](../pruebas/entorno/seed.ps1) / [`.sh`](../pruebas/entorno/seed.sh) | Entorno | Carga de datos sintéticos con hashes BCrypt reales | Taller 7 / Entorno | Implementado |
@@ -115,7 +115,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 |---|---|---|:---:|:---:|
 | [`docs/control-versiones/README.md`](control-versiones/README.md) | Índice | Índice de políticas de control de versiones y trazabilidad | Taller 12 / Git | Implementado |
 | [`docs/control-versiones/CONTROL_VERSIONES.md`](control-versiones/CONTROL_VERSIONES.md) | Especificación | Remoto, ramas, PRs (#1, #3, #4, #6), grafo de 40 commits y rollback real | Taller 12 / Git | Implementado |
-| [`docs/control-versiones/FLUJO_GIT.md`](control-versiones/FLUJO_GIT.md) | Flujo | Estrategia de ramas (GitHub Flow), commits semánticos y reglas de protección | Taller 12 / Git | Implementado |
+| [`docs/control-versiones/CONTROL_VERSIONES.md`](control-versiones/CONTROL_VERSIONES.md) | Flujo | Estrategia de ramas (GitHub Flow), commits semánticos y reglas de protección | Taller 12 / Git | Implementado |
 
 ---
 
@@ -150,4 +150,4 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 |---|---|---|:---:|:---:|
 | [`docs/exposicion/README.md`](exposicion/README.md) | Índice | Índice de materiales de presentación académica | Taller 12 / Exposición | Implementado |
 | [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guion Maestro | Guion de 14 diapositivas ejecutivas y guion de demo en vivo vinculando código | Taller 12 / Exposición | Implementado |
-| [`docs/exposicion/GUIA_EXPOSICION.md`](exposicion/GUIA_EXPOSICION.md) | Guía Metodológica | Guía metodológica de defensa, tiempos, entorno y preguntas frecuentes | Taller 12 / Exposición | Implementado |
+| [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guía Metodológica | Guía metodológica de defensa, tiempos, entorno y preguntas frecuentes | Taller 12 / Exposición | Implementado |

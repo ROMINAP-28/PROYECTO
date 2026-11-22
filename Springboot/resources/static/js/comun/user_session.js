@@ -243,13 +243,13 @@
             // Botones escritorio
             document.querySelectorAll('.nav-actions').forEach(actions => {
                 actions.innerHTML = `
-                    <a href="${pathAgencia}" class="btn-unirse-agencia">Únete como agencia</a>
+                    <a href="${pathAgencia}" class="btn-unirse-agencia hide-on-mobile">Únete como agencia</a>
                     <a href="${pathLogin}" class="btn-auth-login">Iniciar sesión</a>
-                    <a href="${pathRegistro}" class="btn-auth-register">Registrarse</a>
+                    <a href="${pathRegistro}" class="btn-auth-register hide-on-mobile">Registrarse</a>
                     ${!isTuristaFolder ? `
-                        <a href="html/administrador/login.html" class="btn-admin-nav" title="Acceso de Administrador"
+                        <a href="html/administrador/login.html" class="btn-admin-nav hide-on-mobile" title="Acceso de Administrador"
                            style="background:#0b1f38; color:#f59e0b; padding:8px 12px; border-radius:8px; font-size:12.5px; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                           <i class="fa-solid fa-shield-halved"></i> Admin
+                            <i class="fa-solid fa-shield-halved"></i> Admin
                         </a>
                     ` : ''}
                 `;

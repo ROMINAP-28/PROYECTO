@@ -98,6 +98,7 @@ public class ServletHttpExchangeAdapter extends HttpExchange {
     @Override
     public void sendResponseHeaders(int rCode, long responseLength) throws IOException {
         this.responseCode = rCode;
+        response.setCharacterEncoding("UTF-8");
         for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
             for (String val : entry.getValue()) {
                 response.addHeader(entry.getKey(), val);

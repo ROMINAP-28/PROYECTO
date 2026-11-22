@@ -1,0 +1,14 @@
+[Unit]
+Description=TRAVELINK - Healthcheck Periódico de Actuator
+After=network.target
+
+[Service]
+Type=oneshot
+User=travelink
+Group=travelink
+ExecStart=/bin/bash /opt/travelink/mantenimiento/scripts/healthcheck.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+=====================================================
+   TRAVELINK - REGISTRO DE TAREA EN WINDOWS          
+=====================================================
+Tarea: TRAVELINK_Backup_Diario
+Script: D:\ProyectosU\PROYECTO\mantenimiento\scripts\backup.ps1
+Hora: 02:00
+[INFO] Ejecutando: schtasks.exe /Create /TN "TRAVELINK_Backup_Diario" /TR "powershell.exe -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -File "D:\ProyectosU\PROYECTO\mantenimiento\scripts\backup.ps1"" /SC DAILY /ST 02:00 /F
+Correcto: se creó correctamente la tarea programada "TRAVELINK_Backup_Diario".
+
+[INFO] Consultando estado de la tarea en Task Scheduler...
+Carpeta: \
+Nombre de host:           BRIANE
+Nombre de tarea:          \TRAVELINK_Backup_Diario
+Hora próxima ejecución:   23/11/2026 02:00:00
+Estado:                   Listo
+Modo de inicio de sesión: Solo interactivo
+
+[ÉXITO] Tarea programada 'TRAVELINK_Backup_Diario' registrada y validada correctamente.

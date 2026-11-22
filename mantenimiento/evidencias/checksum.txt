@@ -1,0 +1,5 @@
+8468fa2eaf56dd5bc9c1ef20db3db1cf208042b210fe8d6ef56291506cd56ca5 *travelink_backup_20261122_164625.sql.gz
+Algoritmo: SHA-256
+Estado: VERIFICADO (Match exacto entre hash calculado y archivo .sha256)
+Fecha de generación: 2026-11-22T16:46:25-05:00
+Tamaño comprimido: 4,374 bytes

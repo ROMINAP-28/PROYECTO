@@ -1,0 +1,22 @@
+==========================================================
+ TRAVELINK - Auditoría de Rotación y Política de Retención
+==========================================================
+Política configurada: 7 respaldos diarios, 4 respaldos semanales
+Directorio auditado:  mantenimiento/backups/
+
+Archivos evaluados en ventana temporal:
+  [CONSERVADO] travelink_backup_20261122_164625.sql.gz (Día actual - Diario 1)
+  [CONSERVADO] travelink_backup_20261121_020000.sql.gz (Día -1 - Diario 2)
+  [CONSERVADO] travelink_backup_20261120_020000.sql.gz (Día -2 - Diario 3)
+  [CONSERVADO] travelink_backup_20261119_020000.sql.gz (Día -3 - Diario 4)
+  [CONSERVADO] travelink_backup_20261118_020000.sql.gz (Día -4 - Diario 5)
+  [CONSERVADO] travelink_backup_20261117_020000.sql.gz (Día -5 - Diario 6)
+  [CONSERVADO] travelink_backup_20261116_020000.sql.gz (Día -6 - Diario 7)
+  [CONSERVADO] travelink_backup_20261115_020000.sql.gz (Domingo - Semanal 1)
+  [CONSERVADO] travelink_backup_20261108_020000.sql.gz (Domingo - Semanal 2)
+  [CONSERVADO] travelink_backup_20261101_020000.sql.gz (Domingo - Semanal 3)
+  [CONSERVADO] travelink_backup_20261025_020000.sql.gz (Domingo - Semanal 4)
+  [PURGADO]    travelink_backup_20261018_020000.sql.gz (Supera retención de 4 semanas -> Eliminado con su .sha256)
+
+Resultado: Rotación automática aplicada correctamente, liberando espacio sin romper RPO/RTO.
+==========================================================

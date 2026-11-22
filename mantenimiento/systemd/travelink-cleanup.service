@@ -1,0 +1,14 @@
+[Unit]
+Description=TRAVELINK - Limpieza y Purga Semanal de Logs
+After=network.target
+
+[Service]
+Type=oneshot
+User=travelink
+Group=travelink
+ExecStart=/bin/bash /opt/travelink/mantenimiento/scripts/limpiar-logs.sh /opt/travelink/logs 14
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=TRAVELINK - Temporizador Healthcheck Cada 5 Minutos
+Requires=travelink-healthcheck.service
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

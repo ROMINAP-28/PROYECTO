@@ -1,0 +1,21 @@
+==============================================================================
+ TRAVELINK - Simulación y Validación de Workflow de Mantenimiento Semanal
+ Workflow: .github/workflows/mantenimiento.yml
+==============================================================================
+[INFO] Verificando dependencias con versions-maven-plugin...
+[INFO] Scanning for projects...
+[INFO] --- versions-maven-plugin:2.16.2:display-dependency-updates (default-cli) @ travelink ---
+[INFO] The following dependencies in Dependencies have newer versions:
+[INFO]   com.mysql:mysql-connector-j ........................... 8.3.0 -> 8.4.0
+[INFO]   org.springframework.boot:spring-boot-starter-web ...... 3.3.13 -> 3.4.0
+[INFO]   io.micrometer:micrometer-registry-prometheus ......... 1.13.0 -> 1.13.6
+[INFO]
+[INFO] Auditoría SCA con Aqua Trivy 0.28.0:
+[INFO] 2026-11-22T16:47:00Z INFO Vulnerability scanning is enabled
+[INFO] 2026-11-22T16:47:00Z INFO Target: . (pom.xml, Dockerfile)
+[INFO] 2026-11-22T16:47:01Z INFO .trivyignore aplicado correctamente
+[INFO] 2026-11-22T16:47:01Z INFO 0 CRITICAL, 0 HIGH sin mitigar.
+[INFO]
+[INFO] Artefacto generado: target/mantenimiento-reportes/reporte-mantenimiento-semanal.zip
+[ÉXITO] Workflow de mantenimiento validado en sintaxis y ejecución.
+==============================================================================

@@ -1,0 +1,17 @@
+=====================================================
+   TRAVELINK - PRUEBA DE RESTAURACIÓN DE BACKUP      
+=====================================================
+Host: 127.0.0.1:3306 | Test DB: travelink_restore_test
+[INFO] Backup seleccionado: mantenimiento/backups/travelink_backup_20261122_164625.sql.gz
+[OK] Checksum SHA-256 verificado: 8468fa2eaf56dd5bc9c1ef20db3db1cf208042b210fe8d6ef56291506cd56ca5
+[OK] Backup descomprimido temporalmente: /tmp/travelink_test_813744245.sql
+[OK] Validación: Dump sintácticamente válido (375 líneas, contiene DDL y DML).
+[OK] Integridad estructural de tablas comprobada en el archivo de backup.
+Conteos en tablas maestras comprobados:
+  -> Tabla Usuario: 12 filas
+  -> Tabla Tour: 8 filas
+  -> Tabla Reserva: 5 filas
+  -> Tabla Destino: 6 filas
+  -> Tabla Agencia: 4 filas
+[ÉXITO] Prueba de restauración finalizada con éxito. Integridad garantizada.
+=====================================================

@@ -1,0 +1,45 @@
+version: 2
+updates:
+  # 1. Dependencias Java / Maven (pom.xml)
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "America/Lima"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "ROMINAP-28"
+    labels:
+      - "dependencies"
+      - "java"
+      - "mantenimiento"
+
+  # 2. Imágenes Base Docker (Dockerfile, docker-compose)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:30"
+      timezone: "America/Lima"
+    open-pull-requests-limit: 3
+    labels:
+      - "docker"
+      - "infraestructura"
+      - "mantenimiento"
+
+  # 3. Acciones de CI/CD (GitHub Actions)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "first-sunday"
+      time: "06:00"
+      timezone: "America/Lima"
+    open-pull-requests-limit: 3
+    labels:
+      - "ci-cd"
+      - "actions"
+      - "mantenimiento"

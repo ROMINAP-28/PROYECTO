@@ -49,7 +49,10 @@ application-*.properties
 # Respaldos y volcados de base de datos
 sql/01-travelink.sql
 sql/prueba-init/
+mantenimiento/backups/
 *.sql.dump
+*.sql.gz
+*.sql.gz.sha256
 *.dump
 *.dmp
 *.bak

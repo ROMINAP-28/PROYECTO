@@ -1,0 +1,14 @@
+/opt/travelink/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 0640 travelink travelink
+    sharedscripts
+    postrotate
+        # Logback cierra y reabre descriptores de archivo automáticamente
+        /usr/bin/killall -HUP rsyslog 2>/dev/null || true
+    endscript
+}

@@ -119,6 +119,16 @@ public class ConexionDB {
             val = val.replace("traveling.k.aivencloud.com", "mysql-traveling-traveling.k.aivencloud.com");
         }
 
+        // Si apunta a 'db' (host de docker-compose) fuera del contenedor Docker, redirigir a Aiven
+        if (val.startsWith("db:") || val.startsWith("db/") || val.contains("//db:")) {
+            try {
+                java.net.InetAddress.getByName("db");
+            } catch (Exception ex) {
+                log.info("Host 'db' no resoluble en este entorno; redirigiendo a Aiven Cloud MySQL por defecto.");
+                return DEFAULT_AIVEN_URL;
+            }
+        }
+
         // 4. Separar host:port/db de los query parameters
         String hostAndDb = val;
         if (val.contains("?")) {

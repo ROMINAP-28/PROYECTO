@@ -1,50 +1,9 @@
-========================================================================================
-EVIDENCIA 06: ALERTA DISPARADA AL DETENER EL CONTENEDOR APP (TravelinkAppDown)
-========================================================================================
-Simulación de Fallo:
-Comando ejecutado: docker stop travelink-app-prod
+﻿================================================================================
+TRAVELINK - ESTADO REAL DEL MOTOR DE ALERTAS PROMETHEUS (RULE ENGINE)
+Timestamp: 2026-11-22 19:32:53
+Regla: TravelinkAppDown (for: 1m, severity: critical)
+================================================================================
+Endpoint: http://localhost:9090/api/v1/alerts
 
-Evolución del estado de la regla en Prometheus (http://localhost:9090/alerts):
-Regla evaluada: up{job="travelink-app"} == 0
-Condición 'for': 15s
-
-1. Estado 'Pending' (0s a 14s después del apagado):
-   Prometheus detecta fallo de conexión en scrape:
-   scrape_duration_seconds{job="travelink-app"} = timeout / connection refused.
-   up{instance="app:8080", job="travelink-app"} = 0.
-   La alerta pasa a estado PENDING en el motor de alertas.
-
-2. Estado 'Firing' (a los 15 segundos sostenidos):
-   A las 16:34:45 UTC se activa la alerta:
-
-Respuesta de API de Alertas (http://localhost:9090/api/v1/alerts):
-----------------------------------------------------------------------------------------
-{
-  "status": "success",
-  "data": {
-    "alerts": [
-      {
-        "labels": {
-          "alertname": "TravelinkAppDown",
-          "environment": "production",
-          "instance": "app:8080",
-          "job": "travelink-app",
-          "severity": "critical"
-        },
-        "annotations": {
-          "description": "La aplicación Spring Boot de TRAVELINK en el contenedor app no responde en /actuator/prometheus por más de 15 segundos.",
-          "summary": "Instancia de TRAVELINK caída (App Down)"
-        },
-        "state": "firing",
-        "activeAt": "2026-11-22T16:34:45.321Z",
-        "value": "0e+00"
-      }
-    ]
-  }
-}
-
-Recuperación del Servicio:
-Comando: docker start travelink-app-prod
-A los 3 segundos de levantar el contenedor y responder HTTP 200 en /actuator/prometheus:
-up{job="travelink-app"} vuelve a 1.
-La alerta pasa automáticamente a estado 'Resolved'.
+Estado actual de alertas:
+{"status":"success","data":{"alerts":[]}}

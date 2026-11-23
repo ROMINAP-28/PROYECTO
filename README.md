@@ -74,30 +74,30 @@ PROYECTO/
 │   ├── despliegue/                    # Plan maestro de despliegue Sesión 15 (JAR vs WAR, Nginx TLS, tuning JVM)
 │   ├── monitoreo/                     # Plan de monitoreo 360°, logs, performance, alertas y catálogo de herramientas
 │   ├── mantenimiento/                 # Plan de mantenimiento, matriz de tareas, política de backups y PITR
-│   └── exposicion/                    # Guiones de exposición (14 diapositivas) y guion de 5 min de monitoreo
+│   └── exposicion/                    # Guiones por sesión (GUION_S14, GUION_S15, GUION_S16) y presentacion/
 ├── monitoreo/                         # Stack ejecutable de observabilidad y métricas
 │   ├── docker-compose.monitoring.yml  # Stack Docker: Prometheus, Grafana, Loki, Promtail, Node Exporter, cAdvisor, Zipkin
 │   ├── prometheus/                    # prometheus.yml y alert_rules.yml (6 alertas críticas)
 │   ├── grafana/                       # Provisioning de datasources y dashboard travelink-overview.json
 │   ├── loki/ y promtail/              # Ingesta y almacenamiento estructurado de logs
-│   └── evidencias/                    # 7 evidencias reales de ejecución (targets UP, PromQL, LogQL, dashboard, alertas)
+│   └── evidencias/                    # 7 evidencias reales numeradas y subcarpeta capturas/
 ├── mantenimiento/                      # Automatización y scripts de mantenimiento operativo
 │   ├── scripts/                       # backup, restore, restore-test, limpiar-logs, healthcheck, reset (.ps1 y .sh)
 │   ├── cron/                          # crontab.txt con programación diaria, semanal y continua
 │   ├── systemd/                       # Unidades .service y .timer para Linux
 │   ├── logrotate/                     # Configuración de rotación de logs travelink
 │   ├── windows/                       # registrar-tarea.ps1 para Windows Task Scheduler
-│   └── evidencias/                    # 6 evidencias de ejecución (backup real, checksum, restore-test, rotación, tarea)
+│   └── evidencias/                    # Evidencias de ejecución (backup real, checksum, restore-test, rotación, tarea)
 ├── pruebas/                           # Scripts, configuración, wordlists y evidencias de pruebas
 │   ├── entorno/                       # Scripts de reinicio controlado (reset-db) y siembra sintética (seed)
 │   ├── seguridad/                     # Scripts de escaneo DAST, SAST, SCA, fuzzing y SQLMap
 │   ├── rendimiento/                   # Scripts de pruebas de carga Apache JMeter (.jmx)
-│   └── evidencias/                    # Reportes de auditoría generados (Trivy, ZAP, JMeter, FFUF, SQLMap)
+│   └── evidencias/                    # Evidencias ordenadas: seguridad/, rendimiento/, integracion/, cobertura/ y ci/
 └── despliegue/                        # Infraestructura ejecutable de servidor y producción
     ├── docker/                        # Orquestación multicontenedor prod (docker-compose.prod.yml con Nginx TLS)
     ├── servidor/                      # travelink.service (systemd), setup-servidor.sh y travelink.conf (Nginx)
     ├── maven/                         # settings.xml.example y scripts de empaquetado con checksum SHA-256
-    ├── scripts/                       # Scripts ejecutables de deploy y rollback por tag
+    ├── scripts/                       # deploy-prod, rollback y ejecutar-local.bat
     └── evidencias/                    # Evidencias de empaquetado, compose ps, cabeceras TLS, healthcheck y rollback
 ```
 
@@ -208,5 +208,8 @@ Consulte los índices detallados de cada área del proyecto:
 - 🚀 [**Plan Maestro de Despliegue**](docs/despliegue/PLAN_DESPLIEGUE.md): Sesión 15, empaquetado JAR, Nginx TLS, Docker prod, JVM tuning y rollback.
 - 📊 [**Monitoreo y Observabilidad**](docs/monitoreo/PLAN_MONITOREO.md): Arquitectura 360°, métricas, trazas, logs Loki y alertas.
 - 🛠️ [**Mantenimiento y Continuidad**](docs/mantenimiento/PLAN_MANTENIMIENTO.md): Política de backups, RPO/RTO, pruebas de restauración y automatización.
-- 🎤 [**Guion de Exposición Maestro**](docs/exposicion/GUION_EXPOSICION.md): 14 diapositivas y guion de demostración en vivo vinculando código real.
-- ⏱️ [**Guion de Exposición 5 Minutos**](docs/exposicion/GUION_5MIN_MONITOREO.md): 8 diapositivas con métricas reales, tiempos y evidencias.
+- 🎤 [**Guiones de Exposición Técnica**](docs/exposicion/README.md):
+  - [Sesión 14: Seguridad](docs/exposicion/GUION_S14_SEGURIDAD.md)
+  - [Sesión 15: Despliegue y CI/CD](docs/exposicion/GUION_S15_DESPLIEGUE.md)
+  - [Sesión 16: Monitoreo y Mantenimiento (Vigente)](docs/exposicion/GUION_S16_MONITOREO.md)
+- 💻 **Ejecución Local Rápida:** Ejecutar `despliegue/scripts/ejecutar-local.bat` para iniciar la aplicación con perfiles locales.

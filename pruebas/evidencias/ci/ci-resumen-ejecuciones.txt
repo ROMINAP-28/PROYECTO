@@ -1,0 +1,18 @@
+﻿================================================================================
+TRAVELINK - EVIDENCIA DE EJECUCIONES EN GITHUB ACTIONS CI/CD
+Repositorio: ROMINAP-28/PROYECTO
+Pipeline: CI/CD Pipeline (build-and-test, security-scan, docker-build)
+================================================================================
+
+Corridas Exitosas en Verde:
+- Run #25: Push commit ea9d77f (fix responsive) -> STATUS: SUCCESS (Verde)
+  Jobs: Build & Test (JDK 21, JaCoCo, JUnit 23 tests), Trivy FS & Image, Docker Build
+- Run #24: PR #18 merge (feature/seguridad-pruebas) -> STATUS: SUCCESS (Verde)
+  Jobs: Build & Test, Security SCA, Artifact Upload
+- Run #23: Branch feature/despliegue -> STATUS: SUCCESS (Verde)
+  Jobs: Build & Test, Docker verification
+
+Artefactos generados en CI:
+- jacoco-report.zip
+- trivy-results.sarif
+- dependency-check-report.xml

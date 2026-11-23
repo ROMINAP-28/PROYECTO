@@ -1,9 +1,9 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta reconocimiento de puertos y servicios con nmap sobre la app local.
 .DESCRIPTION
     Inspecciona 127.0.0.1 en puertos 8080 (app) y 3307 (MySQL Docker).
-    Guarda la salida en pruebas/evidencias/nmap/nmap-recon.txt.
+    Guarda la salida en pruebas/evidencias/seguridad/nmap/nmap-recon.txt.
 #>
 
 [CmdletBinding()]
@@ -23,7 +23,7 @@ if ($TargetHost -match "aivencloud" -or ($ALLOWED_HOSTS -notcontains $TargetHost
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
-$OutDir = "$ProjectRoot\pruebas\evidencias\nmap"
+$OutDir = "$ProjectRoot\pruebas/evidencias/seguridad/nmap"
 if (-not (Test-Path $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 }

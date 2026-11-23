@@ -1,9 +1,9 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta escaneo web con Nikto contra la app local en 127.0.0.1:8080.
 .DESCRIPTION
     Inspecciona vulnerabilidades web conocidas y cabeceras inseguras.
-    Almacena el resultado en pruebas/evidencias/nikto/nikto-output.txt.
+    Almacena el resultado en pruebas/evidencias/seguridad/nikto/nikto-output.txt.
 #>
 
 [CmdletBinding()]
@@ -23,7 +23,7 @@ if ($TargetHost -match "aivencloud" -or ($ALLOWED_HOSTS -notcontains $TargetHost
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
-$OutDir = "$ProjectRoot\pruebas\evidencias\nikto"
+$OutDir = "$ProjectRoot\pruebas/evidencias/seguridad/nikto"
 if (-not (Test-Path $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 }

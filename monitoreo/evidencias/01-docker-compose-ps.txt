@@ -1,26 +1,8 @@
-========================================================================================
-EVIDENCIA 01: ESTADO DE CONTENEDORES DEL STACK DE MONITOREO (docker compose ps)
-========================================================================================
-Fecha de Ejecución: 2026-11-22 16:30:00 UTC
-Comando: docker compose -f monitoreo/docker-compose.monitoring.yml ps
-Red: travelink-monitoring-net
-
-NAME                     IMAGE                           COMMAND                  SERVICE         CREATED         STATUS                   PORTS
-travelink-prometheus     prom/prometheus:v2.51.0         "/bin/prometheus --c…"   prometheus      5 minutes ago   Up 5 minutes (healthy)   127.0.0.1:9090->9090/tcp
-travelink-grafana        grafana/grafana:10.4.1          "/run.sh"                grafana         5 minutes ago   Up 5 minutes             127.0.0.1:3000->3000/tcp
-travelink-loki           grafana/loki:2.9.6              "/usr/bin/loki -conf…"   loki            5 minutes ago   Up 5 minutes             127.0.0.1:3100->3100/tcp
-travelink-promtail       grafana/promtail:2.9.6          "/usr/bin/promtail -…"   promtail        5 minutes ago   Up 5 minutes             
-travelink-node-exporter  prom/node-exporter:v1.7.0       "/bin/node_exporter …"   node-exporter   5 minutes ago   Up 5 minutes             127.0.0.1:9100->9100/tcp
-travelink-cadvisor       gcr.io/cadvisor/cadvisor:v0.49.1 "/usr/bin/cadvisor -…"  cadvisor        5 minutes ago   Up 5 minutes (healthy)   127.0.0.1:8081->8080/tcp
-travelink-zipkin         openzipkin/zipkin:3.1.1         "start-zipkin"           zipkin          5 minutes ago   Up 5 minutes             127.0.0.1:9411->9411/tcp
-
-========================================================================================
-LÍMITES DE RECURSOS VERIFICADOS:
-- Prometheus:    CPU 0.5, Memoria 384MB
-- Grafana:       CPU 0.5, Memoria 384MB
-- Loki:          CPU 0.5, Memoria 384MB
-- Promtail:      CPU 0.2, Memoria 128MB
-- Node Exporter: CPU 0.2, Memoria 128MB
-- cAdvisor:      CPU 0.3, Memoria 256MB
-- Zipkin:        CPU 0.3, Memoria 256MB
-Consumo total reservado: ~1.9 GB RAM / 2.5 Cores
+﻿NAME                      IMAGE                              COMMAND                  SERVICE         CREATED         STATUS                 PORTS
+travelink-cadvisor        gcr.io/cadvisor/cadvisor:v0.49.1   "/usr/bin/cadvisor -…"   cadvisor        2 hours ago     Up 2 hours (healthy)   127.0.0.1:8081->8080/tcp
+travelink-grafana         grafana/grafana:10.4.1             "/run.sh"                grafana         2 hours ago     Up 58 minutes          127.0.0.1:3000->3000/tcp
+travelink-loki            grafana/loki:2.9.6                 "/usr/bin/loki -conf…"   loki            8 minutes ago   Up 7 minutes           127.0.0.1:3100->3100/tcp
+travelink-node-exporter   prom/node-exporter:v1.7.0          "/bin/node_exporter …"   node-exporter   2 hours ago     Up 2 hours             127.0.0.1:9100->9100/tcp
+travelink-prometheus      prom/prometheus:v2.51.0            "/bin/prometheus --c…"   prometheus      2 hours ago     Up 58 minutes          127.0.0.1:9090->9090/tcp
+travelink-promtail        grafana/promtail:2.9.6             "/usr/bin/promtail -…"   promtail        2 hours ago     Up 2 hours             
+travelink-zipkin          openzipkin/zipkin:3.1.1            "start-zipkin"           zipkin          2 hours ago     Up 2 hours (healthy)   127.0.0.1:9411->9411/tcp

@@ -1,9 +1,9 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta el análisis de composición de software (SCA) sobre dependencias del proyecto.
 .DESCRIPTION
     Genera el árbol de dependencias con Maven y ejecuta OWASP Dependency-Check.
-    Almacena los reportes en pruebas/evidencias/dependency-check/.
+    Almacena los reportes en pruebas/evidencias/seguridad/dependency-check/.
 #>
 
 [CmdletBinding()]
@@ -24,7 +24,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
 Set-Location $ProjectRoot
 
-$OutDir = "$ProjectRoot\pruebas\evidencias\dependency-check"
+$OutDir = "$ProjectRoot\pruebas/evidencias/seguridad/dependency-check"
 if (-not (Test-Path $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 }

@@ -88,7 +88,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 | **Informe** | [`docs/seguridad/05-informe/INFORME_FINAL.md`](seguridad/05-informe/INFORME_FINAL.md) | Reporte ejecutivo consolidado, carga JMeter y plan de remediación | Taller 12 / Informe | Implementado |
 | **Rúbrica** | [`docs/seguridad/05-informe/CHECKLIST_RUBRICA.md`](seguridad/05-informe/CHECKLIST_RUBRICA.md) | Matriz oficial contra los 8 criterios de evaluación académica (105/100 pts) | Taller 12 / Rúbrica | Implementado |
 | **Cuentas** | [`docs/seguridad/05-informe/CUENTAS_PRUEBA.md`](seguridad/05-informe/CUENTAS_PRUEBA.md) | Credenciales sintéticas y roles del seed local de pruebas | Taller 7 / Cuentas | Implementado |
-| **Sustentación** | [`docs/seguridad/05-informe/PRESENTACION_BREVE.md`](seguridad/05-informe/PRESENTACION_BREVE.md) | Guion de defensa técnica de 10 diapositivas para exposición rápida | Taller 12 / Sustentación | Implementado |
+| **Sustentación S14** | [`docs/exposicion/GUION_S14_SEGURIDAD.md`](exposicion/GUION_S14_SEGURIDAD.md) | Guion de defensa técnica de 10 diapositivas para exposición rápida (Sesión 14) | Taller 12 / Sustentación | Implementado |
 
 ---
 
@@ -104,8 +104,11 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 | [`pruebas/entorno/seed.ps1`](../pruebas/entorno/seed.ps1) / [`.sh`](../pruebas/entorno/seed.sh) | Entorno | Carga de datos sintéticos con hashes BCrypt reales | Taller 7 / Entorno | Implementado |
 | [`pruebas/seguridad/scripts/`](../pruebas/seguridad/scripts/) | Scripts | Scripts de escaneo (SCA, Nmap, Nikto, ZAP, FFUF, SQLMap) | Talleres 8 a 10 | Implementado |
 | [`pruebas/rendimiento/scripts/`](../pruebas/rendimiento/scripts/) | Scripts | Automatización de pruebas de carga con Apache JMeter (100, 300, 500 hilos) | Taller 11 / Rendimiento | Implementado |
-| [`pruebas/evidencias/`](../pruebas/evidencias/) | Evidencias | Reportes generados (Dependency-Check, FFUF, JMeter, Nmap, Nikto, SQLMap, ZAP) | Talleres 8 a 11 | Implementado |
-| [`pruebas/evidencias/integracion-testcontainers.txt`](../pruebas/evidencias/integracion-testcontainers.txt) | Evidencia | Salida de ejecución JUnit 5 de `ReservaPersistenciaIntegracionTest` | Taller 12 / Integración | Implementado |
+| [`pruebas/evidencias/seguridad/`](../pruebas/evidencias/seguridad/) | Evidencias | Reportes generados (Dependency-Check, FFUF, Nmap, Nikto, SQLMap, ZAP) | Talleres 8 a 10 | Implementado |
+| [`pruebas/evidencias/rendimiento/jmeter/`](../pruebas/evidencias/rendimiento/jmeter/) | Evidencias | Reportes HTML de carga JMeter (100, 300, 500 usuarios) | Taller 11 / Rendimiento | Implementado |
+| [`pruebas/evidencias/integracion/integracion-testcontainers.txt`](../pruebas/evidencias/integracion/integracion-testcontainers.txt) | Evidencia | Salida de ejecución JUnit 5 de `ReservaPersistenciaIntegracionTest` | Taller 12 / Integración | Implementado |
+| [`pruebas/evidencias/cobertura/`](../pruebas/evidencias/cobertura/) | Evidencia | Reporte de cobertura de código JaCoCo (HTML, XML y CSV) | Taller 12 / Cobertura | Implementado |
+| [`pruebas/evidencias/ci/`](../pruebas/evidencias/ci/) | Evidencia | Resumen y bitácora de ejecuciones de GitHub Actions CI/CD (#23 a #25) | Taller 12 / CI | Implementado |
 
 ---
 
@@ -133,6 +136,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 | [`despliegue/servidor/setup-servidor.sh`](../despliegue/servidor/setup-servidor.sh) | Scripts | Aprovisionamiento automatizado de servidor Linux (Java 21, UFW, Nginx) | Despliegue / Servidor | Implementado |
 | [`despliegue/scripts/deploy.sh`](../despliegue/scripts/deploy.sh) / [`.ps1`](../despliegue/scripts/deploy.ps1) | Scripts | Automatización de despliegue, healthcheck y smoke test HTTP | Despliegue / Scripts | Implementado |
 | [`despliegue/scripts/rollback.sh`](../despliegue/scripts/rollback.sh) / [`.ps1`](../despliegue/scripts/rollback.ps1) | Scripts | Procedimiento automatizado de reversión a versión anterior estable o tag | Despliegue / Scripts | Implementado |
+| [`despliegue/scripts/ejecutar-local.bat`](../despliegue/scripts/ejecutar-local.bat) | Scripts | Lanzador por lotes para ejecución local directa de la aplicación | Despliegue / Scripts | Implementado |
 | [`despliegue/maven/build.sh`](../despliegue/maven/build.sh) / [`.ps1`](../despliegue/maven/build.ps1) | Scripts | Empaquetado de producción y verificación de checksum SHA-256 | Despliegue / Maven | Implementado |
 | [`despliegue/maven/settings.xml.example`](../despliegue/maven/settings.xml.example) | Configuración | Plantilla corporativa de repositorios Maven y credenciales desacopladas | Despliegue / Maven | Implementado |
 | [`despliegue/evidencias/antes/despliegue-local-3.3.13.txt`](../despliegue/evidencias/antes/despliegue-local-3.3.13.txt) | Evidencia | Evidencia histórica de despliegue local inicial con Spring Boot 3.3.13 | Despliegue / Evidencia | Implementado |
@@ -148,9 +152,11 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 
 | Documento | Tipo | Descripción | Ítem (Taller / Fase) | Estado |
 |---|---|---|:---:|:---:|
-| [`docs/exposicion/README.md`](exposicion/README.md) | Índice | Índice de materiales de presentación académica | Taller 12 / Exposición | Implementado |
-| [`docs/exposicion/GUION_EXPOSICION.md`](exposicion/GUION_EXPOSICION.md) | Guion Maestro | Guion de 14 diapositivas ejecutivas y guion de demo en vivo vinculando código | Taller 12 / Exposición | Implementado |
-| [`docs/exposicion/GUION_5MIN_MONITOREO.md`](exposicion/GUION_5MIN_MONITOREO.md) | Guion 5 Min | Guion de 8 diapositivas (5 min) enfocado en Monitoreo, Observabilidad, Mantenimiento y Pruebas | Taller 12 / Exposición | Implementado / Validado |
+| [`docs/exposicion/README.md`](exposicion/README.md) | Índice | Índice de guiones por sesión y directorio de presentaciones finales | Taller 12 / Exposición | Implementado |
+| [`docs/exposicion/GUION_S14_SEGURIDAD.md`](exposicion/GUION_S14_SEGURIDAD.md) | Guion S14 | Guion de sustentación técnica de Seguridad (SAST, DAST, Fuzzing, ZAP, SQLMap) | Taller 12 / Exposición | Implementado |
+| [`docs/exposicion/GUION_S15_DESPLIEGUE.md`](exposicion/GUION_S15_DESPLIEGUE.md) | Guion S15 | Guion de 14 diapositivas ejecutivas y demo en vivo de Despliegue y CI/CD | Taller 12 / Exposición | Implementado |
+| [`docs/exposicion/GUION_S16_MONITOREO.md`](exposicion/GUION_S16_MONITOREO.md) | Guion S16 | Guion de 8 diapositivas (5 min) de Monitoreo, Observabilidad y Mantenimiento | Taller 12 / Exposición | **⭐ VIGENTE / Validado** |
+| [`docs/exposicion/presentacion/`](exposicion/presentacion/) | Presentación | Directorio reservado para archivos de diapositivas finales (.pptx / .pdf) | Taller 12 / Exposición | Implementado |
 
 ---
 
@@ -158,6 +164,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 
 | Activo / Ruta | Tipo | Descripción | Ítem (Taller / Fase) | Estado |
 |---|---|---|:---:|:---:|
+| [`docs/monitoreo/README.md`](monitoreo/README.md) | Índice | Índice del módulo de monitoreo, dashboards y catálogo de herramientas | Monitoreo / Índice | VALIDADO |
 | [`docs/monitoreo/PLAN_MONITOREO.md`](monitoreo/PLAN_MONITOREO.md) | Plan Maestro | Plan de observabilidad 360°: logs (Loki/Promtail), métricas (Prometheus), trazas (Zipkin), alertas y salud OS | Monitoreo / Plan | VALIDADO (Local) / DOCUMENTADO (Render) |
 | [`docs/monitoreo/HERRAMIENTAS.md`](monitoreo/HERRAMIENTAS.md) | Catálogo | Fichas técnicas, versiones, URLs locales, archivos de configuración y enlaces compartidos en GitHub | Monitoreo / Catálogo | VALIDADO |
 | [`monitoreo/docker-compose.monitoring.yml`](../monitoreo/docker-compose.monitoring.yml) | Orquestación | Stack Docker de 7 contenedores (Prometheus, Grafana, Loki, Promtail, Node Exporter, cAdvisor, Zipkin) | Monitoreo / Stack | VALIDADO |
@@ -167,6 +174,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 | [`monitoreo/loki/loki-config.yml`](../monitoreo/loki/loki-config.yml) | Configuración | Configuración de almacenamiento en TSDB, esquemas y retención de logs | Monitoreo / Loki | VALIDADO |
 | [`monitoreo/promtail/promtail-config.yml`](../monitoreo/promtail/promtail-config.yml) | Configuración | Ingesta y parsing estructurado de logs y trazas (traceId, spanId, level) | Monitoreo / Promtail | VALIDADO |
 | [`monitoreo/evidencias/`](../monitoreo/evidencias/) | Evidencias | 7 evidencias reales de ejecución (compose ps, targets UP, PromQL, LogQL, dashboard, alertas, JMeter) | Monitoreo / Evidencias | VALIDADO |
+| [`monitoreo/evidencias/capturas/README.md`](../monitoreo/evidencias/capturas/README.md) | Checklist | Lista de capturas requeridas de UI (Grafana, Prometheus, Zipkin, Loki) con nombres de archivo esperados | Monitoreo / Capturas | VALIDADO |
 
 ---
 
@@ -174,6 +182,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 
 | Activo / Ruta | Tipo | Descripción | Ítem (Taller / Fase) | Estado |
 |---|---|---|:---:|:---:|
+| [`docs/mantenimiento/README.md`](mantenimiento/README.md) | Índice | Índice del módulo de mantenimiento, políticas operativas y procedimientos | Mantenimiento / Índice | VALIDADO |
 | [`docs/mantenimiento/PLAN_MANTENIMIENTO.md`](mantenimiento/PLAN_MANTENIMIENTO.md) | Plan Maestro | Plan de continuidad operativa: matriz de tareas, política de backups (RPO/RTO), dependencias y Aiven PITR | Mantenimiento / Plan | VALIDADO (Local) / DOCUMENTADO (Cloud) |
 | [`mantenimiento/scripts/backup.ps1`](../mantenimiento/scripts/backup.ps1) | Script PowerShell | Respaldo consistente con mysqldump --single-transaction, compresión Gzip, checksum SHA-256 y retención | Mantenimiento / Scripts | VALIDADO |
 | [`mantenimiento/scripts/backup.sh`](../mantenimiento/scripts/backup.sh) | Script Bash | Versión Linux/Bash del script de respaldo transaccional, compresión Gzip y hash SHA-256 | Mantenimiento / Scripts | VALIDADO |
@@ -192,7 +201,7 @@ Este documento es el catálogo maestro y punto único de referencia de todos los
 | [`mantenimiento/systemd/`](../mantenimiento/systemd/) | Orquestación OS | Unidades .service y .timer para backup diario, purga semanal y healthcheck continuo en Linux | Mantenimiento / Systemd | VALIDADO |
 | [`mantenimiento/logrotate/travelink`](../mantenimiento/logrotate/travelink) | Configuración OS | Rotación diaria de logs de aplicación con compresión retardada y retención de 14 días | Mantenimiento / Logrotate | VALIDADO |
 | [`mantenimiento/windows/registrar-tarea.ps1`](../mantenimiento/windows/registrar-tarea.ps1) | Automatización OS | Registro y consulta de tarea programada TRAVELINK_Backup_Diario en Windows Task Scheduler | Mantenimiento / Windows | VALIDADO |
-| [`.github/workflows/mantenimiento.yml`](../.github/workflows/mantenimiento.yml) | Pipeline CI/CD | Workflow semanal: escaneo de vulnerabilidades SCA con Trivy y reporte de actualizaciones Maven | Mantenimiento / CI-CD | VALIDADO |
+| [`.github/workflows/mantenimiento.yml`](../.github/workflows/mantenimiento.yml) | Pipeline CI/CD | Workflow semanal: escaneo de vulnerabilidades SCA con Trivy y reporte de actualizaciones Maven | Mantenimiento / CI-CD | DOCUMENTADO (Ejecutable en GitHub) |
 | [`.github/dependabot.yml`](../.github/dependabot.yml) | Automatización | Configuración de Dependabot para actualizaciones automáticas de Maven, Docker y GitHub Actions | Mantenimiento / Dependabot | VALIDADO |
 | [`mantenimiento/evidencias/`](../mantenimiento/evidencias/) | Evidencias | 6 evidencias reales de ejecución (backup, checksum, restore-test, rotación, tarea Windows, workflow) | Mantenimiento / Evidencias | VALIDADO |
 

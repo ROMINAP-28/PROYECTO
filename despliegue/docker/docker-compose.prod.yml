@@ -10,8 +10,8 @@ services:
       --innodb_buffer_pool_size=512M
       --innodb_log_file_size=128M
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Define MYSQL_ROOT_PASSWORD en .env}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:?Define MYSQL_DATABASE en .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root1234}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-DBTravelink}
     # Publicado para depuración e inspección con DBeaver (IPv4 e IPv6)
     ports:
       - "3307:3306"

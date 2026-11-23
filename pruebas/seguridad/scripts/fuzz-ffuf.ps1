@@ -3,7 +3,7 @@
     Ejecuta fuzzing de endpoints con ffuf contra http://127.0.0.1:8080/api/FUZZ.
 .DESCRIPTION
     Inspecciona rutas descubribles, códigos 200, 401, 403 y anomalías 500.
-    Guarda los resultados en pruebas/evidencias/ffuf/ffuf-result.json.
+    Guarda los resultados en pruebas/evidencias/seguridad/ffuf/ffuf-result.json.
 #>
 
 [CmdletBinding()]
@@ -23,7 +23,7 @@ if ($TargetHost -match "aivencloud" -or ($ALLOWED_HOSTS -notcontains $TargetHost
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
-$OutDir = "$ProjectRoot\pruebas\evidencias\ffuf"
+$OutDir = "$ProjectRoot\pruebas/evidencias/seguridad/ffuf"
 if (-not (Test-Path $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 }

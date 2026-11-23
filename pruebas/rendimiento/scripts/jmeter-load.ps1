@@ -1,9 +1,9 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta pruebas de carga y concurrencia con Apache JMeter (100, 300 y 500 usuarios).
 .DESCRIPTION
     Ejecuta el plan pruebas/rendimiento/travelink.jmx en modo non-GUI.
-    Genera reportes HTML y métricas (p95, p99, error %, throughput) en pruebas/evidencias/jmeter/.
+    Genera reportes HTML y métricas (p95, p99, error %, throughput) en pruebas/evidencias/rendimiento/jmeter/.
 
     NOTA DE RED Y HOSTS (app vs localhost):
     - http://app:8080 es el nombre de servicio dentro de la red Docker interna travelink-net;
@@ -35,7 +35,7 @@ $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
 Set-Location $ProjectRoot
 
 $JmxFile = "$ProjectRoot\pruebas\rendimiento\travelink.jmx"
-$BaseOutDir = "$ProjectRoot\pruebas\evidencias\jmeter"
+$BaseOutDir = "$ProjectRoot\pruebas/evidencias/rendimiento/jmeter"
 if (-not (Test-Path $BaseOutDir)) {
     New-Item -ItemType Directory -Path $BaseOutDir -Force | Out-Null
 }

@@ -1,10 +1,10 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta el escaneo DAST OWASP ZAP Baseline sobre el contenedor de la aplicación.
 .DESCRIPTION
     Utiliza la imagen oficial actual zaproxy/zap-stable.
     Se conecta a la red travelink-net y ataca http://app:8080.
-    Genera reportes HTML y JSON en pruebas/evidencias/zap/.
+    Genera reportes HTML y JSON en pruebas/evidencias/seguridad/zap/.
 
     NOTA DE RED Y HOSTS (app vs localhost):
     - http://app:8080 es el nombre de servicio dentro de la red Docker interna travelink-net;
@@ -32,7 +32,7 @@ if ($TargetHost -match "aivencloud" -or ($ALLOWED_HOSTS -notcontains $TargetHost
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
-$OutDir = "$ProjectRoot\pruebas\evidencias\zap"
+$OutDir = "$ProjectRoot\pruebas/evidencias/seguridad/zap"
 if (-not (Test-Path $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 }

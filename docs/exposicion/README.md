@@ -1,8 +1,15 @@
 # Exposición y Sustentación Técnica
 
-Índice de materiales, guiones de presentación y recursos para la defensa técnica del proyecto TRAVELINK ante el comité evaluador.
+Índice oficial de guiones y materiales de exposición para las sesiones de evaluación técnica de **TRAVELINK**.
 
-## Contenido
+## Estado de Guiones por Sesión
 
-- [GUION_EXPOSICION.md](GUION_EXPOSICION.md): Guion ejecutivo de 14 diapositivas y guion de demostración práctica en vivo (*live demo*) con vinculación directa a evidencias del repositorio.
-- [GUION_EXPOSICION.md](GUION_EXPOSICION.md): Guía metodológica de defensa, distribución de tiempos, preparación del entorno y preguntas frecuentes.
+| Sesión | Archivo de Guion | Temática Principal | Estado |
+|---|---|---|---|
+| **S14** | [GUION_S14_SEGURIDAD.md](GUION_S14_SEGURIDAD.md) | Pruebas de Seguridad (SAST, DAST, Fuzzing, ZAP, SQLMap, Nikto) | Archivado (Sesión 14) |
+| **S15** | [GUION_S15_DESPLIEGUE.md](GUION_S15_DESPLIEGUE.md) | Plan de Despliegue, CI/CD, Docker Compose Prod, Nginx TLS y Rollback | Archivado (Sesión 15) |
+| **S16** | [GUION_S16_MONITOREO.md](GUION_S16_MONITOREO.md) | **Taller: Monitoreo Integral (Prometheus, Grafana, Loki, Zipkin) y Mantenimiento (Backups SHA-256, Restore-Test, Cron/Timers, Dependabot)** | **⭐ GUION VIGENTE (Sesión 16)** |
+
+## Recursos Adicionales
+
+- `presentacion/`: Subdirectorio reservado para los archivos de diapositivas finales (`.pptx` o `.pdf`) para proyección ante el jurado evaluador.

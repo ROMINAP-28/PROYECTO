@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==============================================================================
 # Script: sqlmap-test.sh
 # Descripción: Pruebas de inyección SQL controladas (--level=1 --risk=1 --batch).
@@ -32,7 +32,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/sqlmap"
+OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/seguridad/sqlmap"
 mkdir -p "$OUT_DIR"
 LOG_FILE="$OUT_DIR/sqlmap-results.txt"
 

@@ -1,10 +1,10 @@
-<#
+﻿<#
 .SYNOPSIS
     Ejecuta pruebas de inyeccion SQL controladas y no destructivas con sqlmap.
 .DESCRIPTION
     Ejecuta sqlmap con --level=1 --risk=1 --batch unicamente sobre la app local.
     Evalua endpoints con parametros sobre recursos reales del seed (tours 100 y 101, destinos 8 y 15, reservas 500 y 501).
-    Guarda los reportes en pruebas/evidencias/sqlmap/.
+    Guarda los reportes en pruebas/evidencias/seguridad/sqlmap/.
 
     NOTA DE RED Y HOSTS (app vs localhost):
     - http://app:8080 es el nombre de servicio dentro de la red Docker interna travelink-net;
@@ -34,7 +34,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path "$ScriptDir\..\..\.."
 Set-Location $ProjectRoot
 
-$OutDir = "$ProjectRoot\pruebas\evidencias\sqlmap"
+$OutDir = "$ProjectRoot\pruebas/evidencias/seguridad/sqlmap"
 if (-not (Test-Path $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 }

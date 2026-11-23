@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==========================================
 # SCA Dependency-Check - TRAVELINK (Linux/macOS/WSL)
 # ==========================================
@@ -25,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 cd "$PROJECT_ROOT"
 
-OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/dependency-check"
+OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/seguridad/dependency-check"
 mkdir -p "$OUT_DIR"
 
 echo "=========================================================="

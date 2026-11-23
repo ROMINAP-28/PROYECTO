@@ -73,3 +73,5 @@ pruebas/evidencias/jmeter/**/html_report/sbadmin2-1.0.7/
 # Sesiones y cookies temporales de pruebas
 cookies*.txt
 pruebas/**/cookies*.txt
+
+dist/

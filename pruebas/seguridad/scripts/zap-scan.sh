@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==============================================================================
 # OWASP ZAP Baseline Scan - TRAVELINK
 # NOTA DE RED (app vs localhost):
@@ -31,7 +31,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/zap"
+OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/seguridad/zap"
 mkdir -p "$OUT_DIR"
 
 TARGET_URL="http://${TARGET_HOST}:${PORT}"

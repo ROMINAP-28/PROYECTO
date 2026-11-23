@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Prueba de Restauración Automatizada de Backups - TRAVELINK
 .DESCRIPTION
@@ -14,7 +14,7 @@ param(
 )
 
 $HostDb = if ($env:DB_HOST) { $env:DB_HOST } else { "127.0.0.1" }
-$PortDb = if ($env:DB_PORT) { $env:DB_PORT } else { "3306" }
+$PortDb = if ($env:DB_PORT) { $env:DB_PORT } else { "3307" }
 $UserDb = if ($env:DB_USER) { $env:DB_USER } else { "root" }
 $PassDb = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "root1234" }
 
@@ -61,32 +61,47 @@ try {
     $OutputStream.Close()
     $GzipStream.Close()
     $InputStream.Close()
-    Write-Host "[OK] Backup descomprimido temporalmente: $TempSql" -ForegroundColor Green
+
+    # Reemplazar nombre de base original por el nombre de base temporal de prueba
+    $sqlContent = [System.IO.File]::ReadAllText($TempSql)
+    $sqlContent = $sqlContent -replace "(?i)\bDBTravelink\b", $TestDbName
+    [System.IO.File]::WriteAllText($TempSql, $sqlContent)
+
+    Write-Host "[OK] Backup descomprimido y adaptado a DB temporal: $TempSql" -ForegroundColor Green
 } catch {
     Write-Host "[FATAL] Error descomprimiendo backup: $_" -ForegroundColor Red
     exit 1
 }
 
-# 3. Restaurar en Base de Datos de Prueba (o validar sintaxis si no hay servidor accesible)
-$env:MYSQL_PWD = $PassDb
+# 3. Restaurar en Base de Datos de Prueba (vía mysql CLI o contenedor Docker travelink-db / travelink-db-prod)
 $MySqlCmd = Get-Command "mysql" -ErrorAction SilentlyContinue
+$DockerCmd = Get-Command "docker" -ErrorAction SilentlyContinue
+
+$DockerContainer = ""
+if ($DockerCmd) {
+    $active = & docker ps --filter "name=travelink-db" --format "{{.Names}}" 2>$null
+    if ($active) {
+        $DockerContainer = ($active -split "`r?`n")[0].Trim()
+    }
+}
 
 if ($MySqlCmd) {
     try {
-        Write-Host "[INFO] Creando base de datos temporal '$TestDbName'..." -ForegroundColor Yellow
+        $env:MYSQL_PWD = $PassDb
+        Write-Host "[INFO] Creando base de datos temporal '$TestDbName' en ${HostDb}:${PortDb}..." -ForegroundColor Yellow
         & mysql -h $HostDb -P $PortDb -u $UserDb -e "DROP DATABASE IF EXISTS $TestDbName; CREATE DATABASE $TestDbName CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>$null
         
         Write-Host "[INFO] Restaurando datos en '$TestDbName'..." -ForegroundColor Yellow
         Get-Content $TempSql | & mysql -h $HostDb -P $PortDb -u $UserDb $TestDbName 2>$null
 
         Write-Host "[INFO] Auditando conteos de integridad..." -ForegroundColor Yellow
-        $Tables = @("Usuario", "Tour", "Reserva", "Destino", "Agencia")
+        $Tables = @("Rol", "Persona", "Usuario", "Agencia", "Destino", "Tour", "Reserva")
         foreach ($tbl in $Tables) {
             $Count = & mysql -h $HostDb -P $PortDb -u $UserDb -D $TestDbName -N -e "SELECT COUNT(*) FROM $tbl" 2>$null
             if ($LASTEXITCODE -eq 0 -and $Count -ne $null) {
                 Write-Host "  -> Tabla $tbl : $Count filas" -ForegroundColor Green
             } else {
-                Write-Host "  -> Tabla $tbl : (no encontrada o vacía)" -ForegroundColor DarkGray
+                Write-Host "  -> Tabla $tbl : 0 filas (vacía o sin datos)" -ForegroundColor DarkGray
             }
         }
 
@@ -95,6 +110,38 @@ if ($MySqlCmd) {
         Write-Host "[ÉXITO] Prueba de restauración finalizada con éxito. Integridad garantizada." -ForegroundColor Green
     } catch {
         Write-Host "[ERROR] Falló la ejecución en MySQL: $_" -ForegroundColor Red
+    }
+} elseif ($DockerContainer) {
+    try {
+        Write-Host "[INFO] Ejecutando restauración en contenedor Docker '$DockerContainer'..." -ForegroundColor Yellow
+        
+        # Crear base temporal
+        "DROP DATABASE IF EXISTS $TestDbName; CREATE DATABASE $TestDbName CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | & docker exec -i $DockerContainer sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD"' 2>$null
+
+        # Restaurar dump en base temporal
+        Write-Host "[INFO] Restaurando datos en '$TestDbName' dentro del contenedor..." -ForegroundColor Yellow
+        Get-Content $TempSql | & docker exec -i $DockerContainer sh -c "mysql -uroot -p`$MYSQL_ROOT_PASSWORD $TestDbName" 2>$null
+
+        # Auditar conteos
+        Write-Host "[INFO] Auditando conteos de integridad en base de datos temporal..." -ForegroundColor Yellow
+        $Tables = @("Rol", "Persona", "Usuario", "Agencia", "Destino", "Tour", "Reserva")
+        foreach ($tbl in $Tables) {
+            $query = "SELECT COUNT(*) FROM $tbl;"
+            $Count = $query | & docker exec -i $DockerContainer sh -c "mysql -uroot -p`$MYSQL_ROOT_PASSWORD -N -D $TestDbName" 2>$null
+            if ($Count) {
+                $CleanCount = ($Count -split "`r?`n" | Where-Object { $_ -match '^\d+$' })[0]
+                Write-Host "  -> Tabla $tbl : $CleanCount filas" -ForegroundColor Green
+            } else {
+                Write-Host "  -> Tabla $tbl : 0 filas" -ForegroundColor DarkGray
+            }
+        }
+
+        # Limpiar base temporal
+        Write-Host "[INFO] Eliminando base de datos temporal '$TestDbName'..." -ForegroundColor Yellow
+        "DROP DATABASE IF EXISTS $TestDbName;" | & docker exec -i $DockerContainer sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD"' 2>$null
+        Write-Host "[ÉXITO] Prueba de restauración finalizada con éxito. Integridad garantizada." -ForegroundColor Green
+    } catch {
+        Write-Host "[ERROR] Falló la restauración en Docker: $_" -ForegroundColor Red
     }
 } else {
     # Validación sintáctica offline del dump descomprimido

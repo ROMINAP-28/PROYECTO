@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==============================================================================
 # Pruebas de Carga JMeter - TRAVELINK
 # NOTA DE RED (app vs localhost):
@@ -35,7 +35,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 cd "$PROJECT_ROOT"
 
 JMX_FILE="$PROJECT_ROOT/pruebas/rendimiento/travelink.jmx"
-BASE_OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/jmeter"
+BASE_OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/rendimiento/jmeter"
 mkdir -p "$BASE_OUT_DIR"
 SUMMARY_FILE="$BASE_OUT_DIR/resumen-rendimiento.txt"
 

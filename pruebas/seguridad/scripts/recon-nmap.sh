@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==========================================
 # Reconocimiento Nmap - TRAVELINK
 # ==========================================
@@ -24,7 +24,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/nmap"
+OUT_DIR="$PROJECT_ROOT/pruebas/evidencias/seguridad/nmap"
 mkdir -p "$OUT_DIR"
 OUT_FILE="$OUT_DIR/nmap-recon.txt"
 

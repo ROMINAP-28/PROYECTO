@@ -1,110 +1,13 @@
-========================================================================================
-EVIDENCIA 03: CONSULTAS PROMQL EJECUTADAS CONTRA PROMETHEUS
-========================================================================================
-Endpoint API: http://localhost:9090/api/v1/query
+﻿================================================================================
+TRAVELINK - EVIDENCIA REAL DE CONSULTAS PROMQL (PROMETHEUS ENGINE)
+Timestamp: 2026-11-22 19:32:50
+================================================================================
 
-----------------------------------------------------------------------------------------
-1. CONSULTA: Estado de salud de la aplicación
-PromQL: up{job="travelink-app"}
-Respuesta JSON:
-{
-  "status": "success",
-  "data": {
-    "resultType": "vector",
-    "result": [
-      {
-        "metric": {
-          "instance": "app:8080",
-          "job": "travelink-app"
-        },
-        "value": [ 1763829150.000, "1" ]
-      }
-    ]
-  }
-}
-Interpretación: Valor 1 indica estado UP operativo y respondiendo al scrape cada 3 segundos.
+1. QUERY: up (Estado de todos los targets de monitoreo)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"up","instance":"node-exporter:9100","job":"node-exporter"},"value":[1795393970.660,"1"]},{"metric":{"__name__":"up","instance":"host.docker.internal:8080","job":"travelink-app"},"value":[1795393970.660,"1"]},{"metric":{"__name__":"up","instance":"localhost:9090","job":"prometheus"},"value":[1795393970.660,"1"]},{"metric":{"__name__":"up","instance":"cadvisor:8080","job":"cadvisor"},"value":[1795393970.660,"1"]}]}}
 
-----------------------------------------------------------------------------------------
-2. CONSULTA: Métrica de Negocio - Total de Reservas Creadas
-PromQL: travelink_reservas_creadas_total
-Respuesta JSON:
-{
-  "status": "success",
-  "data": {
-    "resultType": "vector",
-    "result": [
-      {
-        "metric": {
-          "__name__": "travelink_reservas_creadas_total",
-          "instance": "app:8080",
-          "job": "travelink-app"
-        },
-        "value": [ 1763829150.000, "14" ]
-      }
-    ]
-  }
-}
-Interpretación: 14 reservas creadas acumuladas registradas por el MeterRegistry de Micrometer.
+2. QUERY: process_uptime_seconds{job="travelink-app"} (Tiempo de actividad de la aplicación)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"process_uptime_seconds","instance":"host.docker.internal:8080","job":"travelink-app"},"value":[1795393970.682,"915.616"]}]}}
 
-----------------------------------------------------------------------------------------
-3. CONSULTA: Métrica de Seguridad - Intentos Fallidos de Inicio de Sesión
-PromQL: travelink_auth_logins_fallidos_total
-Respuesta JSON:
-{
-  "status": "success",
-  "data": {
-    "resultType": "vector",
-    "result": [
-      {
-        "metric": {
-          "__name__": "travelink_auth_logins_fallidos_total",
-          "instance": "app:8080",
-          "job": "travelink-app"
-        },
-        "value": [ 1763829150.000, "5" ]
-      }
-    ]
-  }
-}
-Interpretación: 5 intentos de autenticación fallidos registrados en LoginAttemptService.
-
-----------------------------------------------------------------------------------------
-4. CONSULTA: Porcentaje de Memoria Heap de la JVM en uso
-PromQL: (jvm_memory_used_bytes{area="heap",job="travelink-app"} / jvm_memory_max_bytes{area="heap",job="travelink-app"}) * 100
-Respuesta JSON:
-{
-  "status": "success",
-  "data": {
-    "resultType": "vector",
-    "result": [
-      {
-        "metric": {
-          "area": "heap",
-          "id": "G1 Survivor Space",
-          "instance": "app:8080",
-          "job": "travelink-app"
-        },
-        "value": [ 1763829150.000, "24.68" ]
-      }
-    ]
-  }
-}
-Interpretación: Uso de Heap actual al 24.68%, dentro de márgenes saludables (< 85%).
-
-----------------------------------------------------------------------------------------
-5. CONSULTA: Latencia Percentil 95 (P95) de peticiones HTTP en segundos
-PromQL: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="travelink-app"}[1m])) by (le))
-Respuesta JSON:
-{
-  "status": "success",
-  "data": {
-    "resultType": "vector",
-    "result": [
-      {
-        "metric": {},
-        "value": [ 1763829150.000, "0.0421" ]
-      }
-    ]
-  }
-}
-Interpretación: El 95% de las peticiones HTTP se procesan en menos de 42.1 milisegundos.
+3. QUERY: http_server_requests_seconds_count (Métricas de tráfico HTTP por código y endpoint)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"http_server_requests_seconds_count","error":"none","exception":"none","instance":"host.docker.internal:8080","job":"travelink-app","method":"GET","outcome":"SUCCESS","status":"200","uri":"/actuator/prometheus"},"value":[1795393970.696,"300"]},{"metric":{"__name__":"http_server_requests_seconds_count","error":"none","exception":"none","instance":"host.docker.internal:8080","job":"travelink-app","method":"GET","outcome":"SUCCESS","status":"200","uri":"/**"},"value":[1795393970.696,"1"]},{"metric":{"__name__":"http_server_requests_seconds_count","error":"none","exception":"none","instance":"host.docker.internal:8080","job":"travelink-app","method":"GET","outcome":"SUCCESS","status":"200","uri":"/api/eventos/poll"},"value":[1795393970.696,"8"]},{"metric":{"__name__":"http_server_requests_seconds_count","error":"none","exception":"none","instance":"host.docker.internal:8080","job":"travelink-app","method":"GET","outcome":"SUCCESS","status":"200","uri":"/api/tours"},"value":[1795393970.696,"3"]}]}}
